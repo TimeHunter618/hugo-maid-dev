@@ -34,35 +34,6 @@
 <a class="header-anchor" href="#%e4%b8%93%e6%a0%8f%e4%bb%8b%e7%bb%8d"></a>
 专栏介绍
 </h2><p>本专栏深入探讨大语言模型（Large Language Model, LLM）的核心技术与前沿进展，涵盖基础原理、架构解析、微调技术、应用开发等多个维度，帮助读者系统掌握大模型时代的技术能力。</p>
-<h3 id="文章列表">
-<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
-文章列表
-</h3><table>
-	<thead>
-			<tr>
-					<th>文章</th>
-					<th>简介</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td><a href="/hugo-maid-dev/post/llm/llm-introduction/">大语言模型基础原理与发展历程</a></td>
-					<td>从统计语言模型到 GPT 时代，全面梳理大语言模型的发展脉络与核心原理</td>
-			</tr>
-			<tr>
-					<td><a href="/hugo-maid-dev/post/llm/transformer-deep-dive/">Transformer 架构深度解析</a></td>
-					<td>从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节</td>
-			</tr>
-			<tr>
-					<td><a href="/hugo-maid-dev/post/llm/fine-tuning-guide/">大模型微调技术全攻略</a></td>
-					<td>从全量微调到 LoRA、QLoRA，系统掌握大语言模型高效微调的核心技术</td>
-			</tr>
-			<tr>
-					<td><a href="/hugo-maid-dev/post/llm/rag-technology/">RAG 检索增强生成技术详解</a></td>
-					<td>从基础原理到高级优化，全面掌握检索增强生成（RAG）的核心技术与实践方法</td>
-			</tr>
-	</tbody>
-</table>
         
         <hr><p>Published on 2026-06-19 at <a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>, last modified on 2026-06-19</p>]]>
       </description>

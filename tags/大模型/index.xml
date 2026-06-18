@@ -41,104 +41,6 @@
 <li><strong>知识更新困难</strong>：通过微调更新知识成本高昂，且容易导致灾难性遗忘</li>
 </ol>
 <p>检索增强生成（Retrieval-Augmented Generation, RAG）为这些问题提供了一个优雅的解决方案。通过在生成过程中引入外部知识检索，RAG 让大模型能够&quot;查资料&quot;后再回答问题，从而大幅提升回答的准确性和时效性。</p>
-<p>本文将从基础原理出发，系统介绍 RAG 的架构设计、核心技术、优化方法和最佳实践，帮助读者全面掌握这一重要技术。</p>
-<h2 id="rag-基础概念">
-<a class="header-anchor" href="#rag-%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5"></a>
-RAG 基础概念
-</h2><h3 id="什么是-rag">
-<a class="header-anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-rag"></a>
-什么是 RAG
-</h3><p>RAG 是一种将信息检索（Retrieval）与文本生成（Generation）相结合的技术范式。在回答用户问题时，系统首先从外部知识库中检索相关的文档片段，然后将这些片段作为上下文提供给大语言模型，引导模型基于检索到的信息生成回答。</p>
-<pre class="mermaid">
-  graph LR
-    A[用户问题] --> B[检索模块]
-    C[知识库] --> B
-    B --> D[相关文档]
-    D --> E[大语言模型]
-    A --> E
-    E --> F[生成回答]
-</pre><h3 id="rag-的核心优势">
-<a class="header-anchor" href="#rag-%e7%9a%84%e6%a0%b8%e5%bf%83%e4%bc%98%e5%8a%bf"></a>
-RAG 的核心优势
-</h3><table>
-	<thead>
-			<tr>
-					<th>优势</th>
-					<th>说明</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td><strong>知识可更新</strong></td>
-					<td>只需更新知识库，无需重新训练模型</td>
-			</tr>
-			<tr>
-					<td><strong>减少幻觉</strong></td>
-					<td>基于事实文档生成，回答更准确可靠</td>
-			</tr>
-			<tr>
-					<td><strong>成本低廉</strong></td>
-					<td>相比微调，构建和维护成本低得多</td>
-			</tr>
-			<tr>
-					<td><strong>可溯源</strong></td>
-					<td>回答可以引用来源，便于验证</td>
-			</tr>
-			<tr>
-					<td><strong>隐私保护</strong></td>
-					<td>敏感数据只需放在知识库中，无需训练</td>
-			</tr>
-			<tr>
-					<td><strong>时效性强</strong></td>
-					<td>可以接入实时数据，提供最新信息</td>
-			</tr>
-	</tbody>
-</table>
-<h3 id="rag-vs-微调">
-<a class="header-anchor" href="#rag-vs-%e5%be%ae%e8%b0%83"></a>
-RAG vs 微调
-</h3><table>
-	<thead>
-			<tr>
-					<th>维度</th>
-					<th>RAG</th>
-					<th>微调（Fine-tuning）</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td>知识更新</td>
-					<td>简单，更新知识库即可</td>
-					<td>困难，需要重新训练</td>
-			</tr>
-			<tr>
-					<td>事实准确性</td>
-					<td>高，基于检索文档</td>
-					<td>中等，可能产生幻觉</td>
-			</tr>
-			<tr>
-					<td>实现成本</td>
-					<td>低</td>
-					<td>高</td>
-			</tr>
-			<tr>
-					<td>适用场景</td>
-					<td>事实性问答、知识库</td>
-					<td>风格模仿、任务适配</td>
-			</tr>
-			<tr>
-					<td>知识来源</td>
-					<td>外部文档</td>
-					<td>训练数据</td>
-			</tr>
-			<tr>
-					<td>可解释性</td>
-					<td>好，可溯源</td>
-					<td>差，黑盒</td>
-			</tr>
-	</tbody>
-</table>
-<p><strong>最佳实践</strong>：RAG 和微调不是互斥的，很多场景下两者结合使用效果最佳——用 RAG 提供事实知识，用微调调整回答风格和格式。</p>
         
         <hr><p>Published on 2026-06-19 at <a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>, last modified on 2026-06-19</p>]]>
       </description>
@@ -162,46 +64,6 @@ RAG vs 微调
 <a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
 引言
 </h2><p>大语言模型（LLM）在海量数据上预训练后，获得了强大的通用能力。但要将这些通用能力适配到特定领域或特定任务上，微调（Fine-tuning）是不可或缺的关键步骤。</p>
-<p>然而，随着模型规模从数十亿增长到数千亿甚至万亿参数，传统的全量微调面临着巨大的挑战：</p>
-<ul>
-<li>显存需求爆炸式增长</li>
-<li>训练成本高昂</li>
-<li>每个任务需要保存一份完整的模型副本</li>
-</ul>
-<p>为了解决这些问题，研究者们提出了各种参数高效微调（Parameter-Efficient Fine-Tuning, PEFT）方法，仅需训练极少的参数就能达到接近全量微调的效果。</p>
-<p>本文将系统梳理大模型微调的技术体系，从基础概念到前沿方法，帮助读者全面掌握大模型微调的核心技术。</p>
-<h2 id="微调技术全景图">
-<a class="header-anchor" href="#%e5%be%ae%e8%b0%83%e6%8a%80%e6%9c%af%e5%85%a8%e6%99%af%e5%9b%be"></a>
-微调技术全景图
-</h2><pre class="mermaid">
-  graph TD
-    A[大模型微调技术] --> B[全量微调]
-    A --> C[参数高效微调 PEFT]
-    
-    C --> D[加法式方法]
-    C --> E[选择式方法]
-    C --> F[重参数化方法]
-    
-    D --> D1[Prefix Tuning]
-    D --> D2[Prompt Tuning]
-    D --> D3[Adapter Tuning]
-    
-    E --> E1[BitFit]
-    E --> E2[Diff Pruning]
-    
-    F --> F1[LoRA]
-    F --> F2[QLoRA]
-    F --> F3[AdaLoRA]
-</pre><h2 id="全量微调full-fine-tuning">
-<a class="header-anchor" href="#%e5%85%a8%e9%87%8f%e5%be%ae%e8%b0%83full-fine-tuning"></a>
-全量微调（Full Fine-tuning）
-</h2><h3 id="基本原理">
-<a class="header-anchor" href="#%e5%9f%ba%e6%9c%ac%e5%8e%9f%e7%90%86"></a>
-基本原理
-</h3><p>全量微调是最直接的方法：在预训练模型的基础上，使用任务特定的数据更新模型的所有参数。</p>
-$$
-\theta_{ft} = \arg\min_{\theta} \mathcal{L}_{task}(\theta; \mathcal{D}_{task})
-$$<p>其中 $\theta$ 是预训练模型的全部参数。</p>
         
         <hr><p>Published on 2026-06-19 at <a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>, last modified on 2026-06-19</p>]]>
       </description>
@@ -225,43 +87,6 @@ $$<p>其中 $\theta$ 是预训练模型的全部参数。</p>
 <a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
 引言
 </h2><p>大语言模型（Large Language Model, LLM）正在深刻改变着人机交互的方式，推动着人工智能技术进入新的时代。从最初的统计语言模型到如今参数规模突破万亿的超大规模预训练模型，语言模型技术经历了数十年的演进与发展。本文将系统梳理大语言模型的发展历程，深入解析其核心技术原理，帮助读者建立对这一前沿技术的全面认知。</p>
-<h2 id="语言模型的定义与本质">
-<a class="header-anchor" href="#%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e5%ae%9a%e4%b9%89%e4%b8%8e%e6%9c%ac%e8%b4%a8"></a>
-语言模型的定义与本质
-</h2><h3 id="什么是语言模型">
-<a class="header-anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b"></a>
-什么是语言模型
-</h3><p>语言模型本质上是一个概率分布函数，用于计算一个句子或文本序列出现的概率。对于一个由 $n$ 个词组成的序列 $W = w_1, w_2, ..., w_n$，语言模型计算该序列的联合概率：</p>
-$$
-P(W) = P(w_1, w_2, ..., w_n)
-$$<p>根据链式法则，可以将其分解为：</p>
-$$
-P(W) = P(w_1)P(w_2|w_1)P(w_3|w_1w_2)...P(w_n|w_1w_2...w_{n-1})
-$$<h3 id="语言模型的核心挑战">
-<a class="header-anchor" href="#%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e6%a0%b8%e5%bf%83%e6%8c%91%e6%88%98"></a>
-语言模型的核心挑战
-</h3><p>语言建模面临的核心挑战在于<strong>维度灾难</strong>——随着上下文长度的增加，可能的词组合数量呈指数级增长，导致数据稀疏和计算不可行。如何有效地建模长距离依赖关系，始终是语言模型研究的核心课题。</p>
-<h2 id="发展历程全景">
-<a class="header-anchor" href="#%e5%8f%91%e5%b1%95%e5%8e%86%e7%a8%8b%e5%85%a8%e6%99%af"></a>
-发展历程全景
-</h2><h3 id="萌芽期统计语言模型时代1980s-2017">
-<a class="header-anchor" href="#%e8%90%8c%e8%8a%bd%e6%9c%9f%e7%bb%9f%e8%ae%a1%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e6%97%b6%e4%bb%a31980s-2017"></a>
-萌芽期：统计语言模型时代（1980s-2017）
-</h3><pre class="mermaid">
-  graph LR
-    A[N-gram模型] --> B[神经网络语言模型]
-    B --> C[RNN/LSTM]
-    C --> D[Transformer]
-    D --> E[预训练语言模型]
-    E --> F[大语言模型时代]
-</pre><h4 id="n-gram-模型">
-<a class="header-anchor" href="#n-gram-%e6%a8%a1%e5%9e%8b"></a>
-N-gram 模型
-</h4><p>N-gram 是最早的统计语言模型，基于马尔可夫假设，认为第 $n$ 个词的出现只与前面 $n-1$ 个词相关：</p>
-$$
-P(w_i|w_1^{i-1}) \approx P(w_i|w_{i-n+1}^{i-1})
-$$<p><strong>优点</strong>：简单直观，计算高效<br>
-<strong>缺点</strong>：无法建模长距离依赖，数据稀疏问题严重</p>
         
         <hr><p>Published on 2026-06-19 at <a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>, last modified on 2026-06-19</p>]]>
       </description>
@@ -285,35 +110,6 @@ $$<p><strong>优点</strong>：简单直观，计算高效<br>
 <a class="header-anchor" href="#%e4%b8%93%e6%a0%8f%e4%bb%8b%e7%bb%8d"></a>
 专栏介绍
 </h2><p>本专栏深入探讨大语言模型（Large Language Model, LLM）的核心技术与前沿进展，涵盖基础原理、架构解析、微调技术、应用开发等多个维度，帮助读者系统掌握大模型时代的技术能力。</p>
-<h3 id="文章列表">
-<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
-文章列表
-</h3><table>
-	<thead>
-			<tr>
-					<th>文章</th>
-					<th>简介</th>
-			</tr>
-	</thead>
-	<tbody>
-			<tr>
-					<td><a href="/hugo-maid-dev/post/llm/llm-introduction/">大语言模型基础原理与发展历程</a></td>
-					<td>从统计语言模型到 GPT 时代，全面梳理大语言模型的发展脉络与核心原理</td>
-			</tr>
-			<tr>
-					<td><a href="/hugo-maid-dev/post/llm/transformer-deep-dive/">Transformer 架构深度解析</a></td>
-					<td>从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节</td>
-			</tr>
-			<tr>
-					<td><a href="/hugo-maid-dev/post/llm/fine-tuning-guide/">大模型微调技术全攻略</a></td>
-					<td>从全量微调到 LoRA、QLoRA，系统掌握大语言模型高效微调的核心技术</td>
-			</tr>
-			<tr>
-					<td><a href="/hugo-maid-dev/post/llm/rag-technology/">RAG 检索增强生成技术详解</a></td>
-					<td>从基础原理到高级优化，全面掌握检索增强生成（RAG）的核心技术与实践方法</td>
-			</tr>
-	</tbody>
-</table>
         
         <hr><p>Published on 2026-06-19 at <a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>, last modified on 2026-06-19</p>]]>
       </description>
