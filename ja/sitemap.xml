@@ -32,6 +32,11 @@
                 />
     <xhtml:link
                 rel="alternate"
+                hreflang="zh-tw"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-tw/"
+                />
+    <xhtml:link
+                rel="alternate"
                 hreflang="ja"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/ja/"
                 />
@@ -39,11 +44,6 @@
                 rel="alternate"
                 hreflang="zh-cn"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-tw"
-                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-tw/"
                 />
   </url><url>
     <loc>https://TimeHunter618.github.io/hugo-maid-dev/ja/tags/</loc>

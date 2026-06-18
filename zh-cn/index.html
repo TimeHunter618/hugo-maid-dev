@@ -143,7 +143,7 @@
 
         selectOptions.forEach((item) => {
           item.addEventListener("click", () => {
-            const langMap = {};langMap['en'] = '\/hugo-maid-dev\/';langMap['ja'] = '\/hugo-maid-dev\/ja\/';langMap['zh-tw'] = '\/hugo-maid-dev\/zh-tw\/';selectedLang.textContent = item.textContent;
+            const langMap = {};langMap['en'] = '\/hugo-maid-dev\/';langMap['zh-tw'] = '\/hugo-maid-dev\/zh-tw\/';langMap['ja'] = '\/hugo-maid-dev\/ja\/';selectedLang.textContent = item.textContent;
             selectItems.classList.remove("show");
             selectOptions.forEach((option) => {
               option.classList.remove("selected");
