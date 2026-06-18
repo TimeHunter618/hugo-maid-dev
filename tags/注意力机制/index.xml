@@ -5,12 +5,12 @@
     <link>https://TimeHunter618.github.io/hugo-maid-dev/tags/%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6/</link>
     <description>Recent content from My New Hugo Site</description>
     <generator>Hugo</generator>
-    <language>en</language>
+    <language>zh-CN</language>
     
     <managingEditor>xxx@example.com (D-Sketon)</managingEditor>
     <webMaster>xxx@example.com (D-Sketon)</webMaster>
     
-    <copyright>All articles on this blog are licensed under the BY-NC-SA license agreement unless otherwise stated. Please indicate the source when reprinting!</copyright>
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
     
     <lastBuildDate>Fri, 19 Jun 2026 03:10:00 +0800</lastBuildDate>
     
@@ -28,14 +28,14 @@
       <author>xxx@example.com (D-Sketon)</author>
       <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/transformer-deep-dive/</guid>
       <description>
-        <![CDATA[<h1>Transformer 架构深度解析</h1><p>Author: D-Sketon(xxx@example.com)</p>
+        <![CDATA[<h1>Transformer 架构深度解析</h1><p>作者：D-Sketon（xxx@example.com）</p>
         
           <h2 id="引言">
 <a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
 引言
 </h2><p>Transformer 架构自 2017 年提出以来，已经成为自然语言处理乃至整个深度学习领域的基石。从 GPT 系列到 BERT，从 ViT 到 Diffusion Model，Transformer 的身影无处不在。本文将从第一性原理出发，深入拆解 Transformer 的每一个核心组件，帮助读者彻底理解这一革命性的架构设计。</p>
         
-        <hr><p>Published on 2026-06-19 at <a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>, last modified on 2026-06-19</p>]]>
+        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
       </description>
       
         <category>人工智能</category><category>大语言模型</category>

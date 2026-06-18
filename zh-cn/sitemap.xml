@@ -18,7 +18,7 @@
     <lastmod>2026-06-19T03:20:00+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="en"
+                hreflang="zh-CN"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/categories/"
                 />
     <xhtml:link
@@ -31,7 +31,7 @@
     <lastmod>2026-06-19T03:20:00+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="en"
+                hreflang="zh-CN"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/"
                 />
     <xhtml:link
@@ -47,7 +47,7 @@
     <lastmod>2026-06-19T03:20:00+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="en"
+                hreflang="zh-CN"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/tags/"
                 />
     <xhtml:link
@@ -117,7 +117,7 @@
     <lastmod>2022-07-26T21:46:25+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="en"
+                hreflang="zh-CN"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/archives/"
                 />
     <xhtml:link
@@ -130,7 +130,7 @@
     <lastmod>2022-07-26T21:46:25+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="en"
+                hreflang="zh-CN"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/post/"
                 />
     <xhtml:link
@@ -139,11 +139,24 @@
                 href="https://TimeHunter618.github.io/hugo-maid-dev/en/post/"
                 />
   </url><url>
+    <loc>https://TimeHunter618.github.io/hugo-maid-dev/about/</loc>
+    <lastmod>2022-06-09T20:12:52+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-CN"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/about/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/en/about/"
+                />
+  </url><url>
     <loc>https://TimeHunter618.github.io/hugo-maid-dev/friend/</loc>
     <lastmod>2022-06-09T20:12:52+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="en"
+                hreflang="zh-CN"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/friend/"
                 />
     <xhtml:link
