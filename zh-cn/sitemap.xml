@@ -2,70 +2,70 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/hugo-maid/zh-cn/categories/</loc>
+    <loc>https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/categories/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://localhost:1313/hugo-maid/categories/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ja"
-                href="http://localhost:1313/hugo-maid/ja/categories/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/ja/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="http://localhost:1313/hugo-maid/zh-cn/categories/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/categories/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-tw"
-                href="http://localhost:1313/hugo-maid/zh-tw/categories/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-tw/categories/"
                 />
   </url><url>
-    <loc>http://localhost:1313/hugo-maid/zh-cn/</loc>
+    <loc>https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://localhost:1313/hugo-maid/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ja"
-                href="http://localhost:1313/hugo-maid/ja/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/ja/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="http://localhost:1313/hugo-maid/zh-cn/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-tw"
-                href="http://localhost:1313/hugo-maid/zh-tw/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-tw/"
                 />
   </url><url>
-    <loc>http://localhost:1313/hugo-maid/zh-cn/tags/</loc>
+    <loc>https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/tags/</loc>
     <xhtml:link
                 rel="alternate"
                 hreflang="en"
-                href="http://localhost:1313/hugo-maid/tags/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="ja"
-                href="http://localhost:1313/hugo-maid/ja/tags/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/ja/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-cn"
-                href="http://localhost:1313/hugo-maid/zh-cn/tags/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/tags/"
                 />
     <xhtml:link
                 rel="alternate"
                 hreflang="zh-tw"
-                href="http://localhost:1313/hugo-maid/zh-tw/tags/"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-tw/tags/"
                 />
   </url>
 </urlset>

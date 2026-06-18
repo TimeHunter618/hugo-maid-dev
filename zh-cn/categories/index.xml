@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on My New Hugo Site</title>
-    <link>http://localhost:1313/hugo-maid/zh-cn/categories/</link>
+    <link>https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/categories/</link>
     <description>Recent content from My New Hugo Site</description>
     <generator>Hugo</generator>
     <language>zh-cn</language>
@@ -13,7 +13,7 @@
     <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
     
     
-    <atom:link href="http://localhost:1313/hugo-maid/zh-cn/categories/index.xml" rel="self" type="application/rss&#43;xml" />
+    <atom:link href="https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/categories/index.xml" rel="self" type="application/rss&#43;xml" />
     
 
     
