@@ -1,25 +1,45 @@
 baseURL = 'https://TimeHunter618.github.io/hugo-maid-dev'
-languageCode = 'en'
+locale = 'en'
 title = 'My New Hugo Site'
 theme = 'hugo-theme-reimu'
 
-defaultContentLanguage = 'en'
+defaultContentLanguage = 'zh-CN'
+
+[params]
+[[params.menu]]
+name = 'Home'
+url = ''
+[[params.menu]]
+name = 'Archives'
+url = 'archives'
+[[params.menu]]
+name = 'About'
+url = 'about'
+[[params.menu]]
+name = 'Friend'
+url = 'friend'
+
 [languages]
 [languages.en]
-languageName = 'English'
-weight = 1
-[languages.zh-CN]
-languageName = '简体中文'
-weight = 1
-hasCJKLanguage = true
-[languages.zh-TW]
-languageName = '繁體中文'
+label = 'English'
+weight = 2
+[languages."zh-CN"]
+label = '简体中文'
 weight = 1
 hasCJKLanguage = true
-[languages.ja]
-languageName = '日本語'
-weight = 1
-hasCJKLanguage = true
+[languages."zh-CN".params]
+[[languages."zh-CN".params.menu]]
+name = '首页'
+url = ''
+[[languages."zh-CN".params.menu]]
+name = '归档'
+url = 'archives'
+[[languages."zh-CN".params.menu]]
+name = '关于'
+url = 'about'
+[[languages."zh-CN".params.menu]]
+name = '友链'
+url = 'friend'
 
 [markup.goldmark.extensions.passthrough]
 enable = true
