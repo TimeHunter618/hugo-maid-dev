@@ -191,7 +191,7 @@ sort_order:
     category: date-reverse # controlled by categories_weight
     tag: date-reverse # controlled by tags_weight
   archive: date-reverse # controlled by weight
-  home: default # controlled by weight
+  home: weight # controlled by weight
 
 # Pagination
 paginate:
