@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>知识库 on My New Hugo Site</title>
+    <link>https://TimeHunter618.github.io/hugo-maid-dev/tags/%E7%9F%A5%E8%AF%86%E5%BA%93/</link>
+    <description>Recent content from My New Hugo Site</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    
+    <managingEditor>xxx@example.com (D-Sketon)</managingEditor>
+    <webMaster>xxx@example.com (D-Sketon)</webMaster>
+    
+    <copyright>All articles on this blog are licensed under the BY-NC-SA license agreement unless otherwise stated. Please indicate the source when reprinting!</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:20:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://TimeHunter618.github.io/hugo-maid-dev/tags/%E7%9F%A5%E8%AF%86%E5%BA%93/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>RAG 检索增强生成技术详解</title>
+      <link>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/rag-technology/</link>
+      <pubDate>Fri, 19 Jun 2026 03:20:00 &#43;0800</pubDate>
+      <author>xxx@example.com (D-Sketon)</author>
+      <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/rag-technology/</guid>
+      <description>
+        <![CDATA[<h1>RAG 检索增强生成技术详解</h1><p>Author: D-Sketon(xxx@example.com)</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）虽然展现出惊人的语言理解和生成能力，但也面临着一些固有的局限性：</p>
+<ol>
+<li><strong>知识时效性差</strong>：模型的知识截止于训练数据的时间点，无法获取最新信息</li>
+<li><strong>领域知识不足</strong>：在专业领域（如医疗、法律、企业内部）的知识往往不够深入</li>
+<li><strong>幻觉问题</strong>：模型可能会&quot;一本正经地胡说八道&quot;，生成看似合理但实际错误的内容</li>
+<li><strong>知识更新困难</strong>：通过微调更新知识成本高昂，且容易导致灾难性遗忘</li>
+</ol>
+<p>检索增强生成（Retrieval-Augmented Generation, RAG）为这些问题提供了一个优雅的解决方案。通过在生成过程中引入外部知识检索，RAG 让大模型能够&quot;查资料&quot;后再回答问题，从而大幅提升回答的准确性和时效性。</p>
+<p>本文将从基础原理出发，系统介绍 RAG 的架构设计、核心技术、优化方法和最佳实践，帮助读者全面掌握这一重要技术。</p>
+<h2 id="rag-基础概念">
+<a class="header-anchor" href="#rag-%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5"></a>
+RAG 基础概念
+</h2><h3 id="什么是-rag">
+<a class="header-anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-rag"></a>
+什么是 RAG
+</h3><p>RAG 是一种将信息检索（Retrieval）与文本生成（Generation）相结合的技术范式。在回答用户问题时，系统首先从外部知识库中检索相关的文档片段，然后将这些片段作为上下文提供给大语言模型，引导模型基于检索到的信息生成回答。</p>
+<pre class="mermaid">
+  graph LR
+    A[用户问题] --> B[检索模块]
+    C[知识库] --> B
+    B --> D[相关文档]
+    D --> E[大语言模型]
+    A --> E
+    E --> F[生成回答]
+</pre><h3 id="rag-的核心优势">
+<a class="header-anchor" href="#rag-%e7%9a%84%e6%a0%b8%e5%bf%83%e4%bc%98%e5%8a%bf"></a>
+RAG 的核心优势
+</h3><table>
+	<thead>
+			<tr>
+					<th>优势</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>知识可更新</strong></td>
+					<td>只需更新知识库，无需重新训练模型</td>
+			</tr>
+			<tr>
+					<td><strong>减少幻觉</strong></td>
+					<td>基于事实文档生成，回答更准确可靠</td>
+			</tr>
+			<tr>
+					<td><strong>成本低廉</strong></td>
+					<td>相比微调，构建和维护成本低得多</td>
+			</tr>
+			<tr>
+					<td><strong>可溯源</strong></td>
+					<td>回答可以引用来源，便于验证</td>
+			</tr>
+			<tr>
+					<td><strong>隐私保护</strong></td>
+					<td>敏感数据只需放在知识库中，无需训练</td>
+			</tr>
+			<tr>
+					<td><strong>时效性强</strong></td>
+					<td>可以接入实时数据，提供最新信息</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="rag-vs-微调">
+<a class="header-anchor" href="#rag-vs-%e5%be%ae%e8%b0%83"></a>
+RAG vs 微调
+</h3><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>RAG</th>
+					<th>微调（Fine-tuning）</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>知识更新</td>
+					<td>简单，更新知识库即可</td>
+					<td>困难，需要重新训练</td>
+			</tr>
+			<tr>
+					<td>事实准确性</td>
+					<td>高，基于检索文档</td>
+					<td>中等，可能产生幻觉</td>
+			</tr>
+			<tr>
+					<td>实现成本</td>
+					<td>低</td>
+					<td>高</td>
+			</tr>
+			<tr>
+					<td>适用场景</td>
+					<td>事实性问答、知识库</td>
+					<td>风格模仿、任务适配</td>
+			</tr>
+			<tr>
+					<td>知识来源</td>
+					<td>外部文档</td>
+					<td>训练数据</td>
+			</tr>
+			<tr>
+					<td>可解释性</td>
+					<td>好，可溯源</td>
+					<td>差，黑盒</td>
+			</tr>
+	</tbody>
+</table>
+<p><strong>最佳实践</strong>：RAG 和微调不是互斥的，很多场景下两者结合使用效果最佳——用 RAG 提供事实知识，用微调调整回答风格和格式。</p>
+        
+        <hr><p>Published on 2026-06-19 at <a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>, last modified on 2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category><category>大语言模型</category>
+      
+    </item>
+    
+  </channel>
+</rss>

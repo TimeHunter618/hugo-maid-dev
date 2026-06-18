@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>深度学习 on My New Hugo Site</title>
+    <link>https://TimeHunter618.github.io/hugo-maid-dev/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/</link>
+    <description>Recent content from My New Hugo Site</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    
+    <managingEditor>xxx@example.com (D-Sketon)</managingEditor>
+    <webMaster>xxx@example.com (D-Sketon)</webMaster>
+    
+    <copyright>All articles on this blog are licensed under the BY-NC-SA license agreement unless otherwise stated. Please indicate the source when reprinting!</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:10:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://TimeHunter618.github.io/hugo-maid-dev/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>Transformer 架构深度解析</title>
+      <link>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/transformer-deep-dive/</link>
+      <pubDate>Fri, 19 Jun 2026 03:10:00 &#43;0800</pubDate>
+      <author>xxx@example.com (D-Sketon)</author>
+      <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/transformer-deep-dive/</guid>
+      <description>
+        <![CDATA[<h1>Transformer 架构深度解析</h1><p>Author: D-Sketon(xxx@example.com)</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Transformer 架构自 2017 年提出以来，已经成为自然语言处理乃至整个深度学习领域的基石。从 GPT 系列到 BERT，从 ViT 到 Diffusion Model，Transformer 的身影无处不在。本文将从第一性原理出发，深入拆解 Transformer 的每一个核心组件，帮助读者彻底理解这一革命性的架构设计。</p>
+<h2 id="整体架构概览">
+<a class="header-anchor" href="#%e6%95%b4%e4%bd%93%e6%9e%b6%e6%9e%84%e6%a6%82%e8%a7%88"></a>
+整体架构概览
+</h2><h3 id="架构图">
+<a class="header-anchor" href="#%e6%9e%b6%e6%9e%84%e5%9b%be"></a>
+架构图
+</h3><pre class="mermaid">
+  graph TD
+    subgraph 编码器 Encoder
+        E1[输入嵌入] --> E2[位置编码]
+        E2 --> E3[多头自注意力]
+        E3 --> E4[残差连接 + 层归一化]
+        E4 --> E5[前馈神经网络]
+        E5 --> E6[残差连接 + 层归一化]
+    end
+    
+    subgraph 解码器 Decoder
+        D1[输出嵌入] --> D2[位置编码]
+        D2 --> D3[掩码多头自注意力]
+        D3 --> D4[残差连接 + 层归一化]
+        D4 --> D5[编码器-解码器注意力]
+        D5 --> D6[残差连接 + 层归一化]
+        D6 --> D7[前馈神经网络]
+        D7 --> D8[残差连接 + 层归一化]
+        D8 --> D9[线性层 + Softmax]
+    end
+    
+    输入 --> E1
+    E6 --> D5
+    D9 --> 输出
+</pre><p>原始的 Transformer 采用编码器-解码器（Encoder-Decoder）架构，适用于序列到序列（seq2seq）任务。但在实际应用中，衍生出了三种主要变体：</p>
+        
+        <hr><p>Published on 2026-06-19 at <a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>, last modified on 2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category><category>大语言模型</category>
+      
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>自然语言处理 on My New Hugo Site</title>
+    <link>https://TimeHunter618.github.io/hugo-maid-dev/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/</link>
+    <description>Recent content from My New Hugo Site</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    
+    <managingEditor>xxx@example.com (D-Sketon)</managingEditor>
+    <webMaster>xxx@example.com (D-Sketon)</webMaster>
+    
+    <copyright>All articles on this blog are licensed under the BY-NC-SA license agreement unless otherwise stated. Please indicate the source when reprinting!</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:05:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://TimeHunter618.github.io/hugo-maid-dev/tags/%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>大语言模型基础原理与发展历程</title>
+      <link>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/llm-introduction/</link>
+      <pubDate>Fri, 19 Jun 2026 03:05:00 &#43;0800</pubDate>
+      <author>xxx@example.com (D-Sketon)</author>
+      <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/llm-introduction/</guid>
+      <description>
+        <![CDATA[<h1>大语言模型基础原理与发展历程</h1><p>Author: D-Sketon(xxx@example.com)</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（Large Language Model, LLM）正在深刻改变着人机交互的方式，推动着人工智能技术进入新的时代。从最初的统计语言模型到如今参数规模突破万亿的超大规模预训练模型，语言模型技术经历了数十年的演进与发展。本文将系统梳理大语言模型的发展历程，深入解析其核心技术原理，帮助读者建立对这一前沿技术的全面认知。</p>
+<h2 id="语言模型的定义与本质">
+<a class="header-anchor" href="#%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e5%ae%9a%e4%b9%89%e4%b8%8e%e6%9c%ac%e8%b4%a8"></a>
+语言模型的定义与本质
+</h2><h3 id="什么是语言模型">
+<a class="header-anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b"></a>
+什么是语言模型
+</h3><p>语言模型本质上是一个概率分布函数，用于计算一个句子或文本序列出现的概率。对于一个由 $n$ 个词组成的序列 $W = w_1, w_2, ..., w_n$，语言模型计算该序列的联合概率：</p>
+$$
+P(W) = P(w_1, w_2, ..., w_n)
+$$<p>根据链式法则，可以将其分解为：</p>
+$$
+P(W) = P(w_1)P(w_2|w_1)P(w_3|w_1w_2)...P(w_n|w_1w_2...w_{n-1})
+$$<h3 id="语言模型的核心挑战">
+<a class="header-anchor" href="#%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e6%a0%b8%e5%bf%83%e6%8c%91%e6%88%98"></a>
+语言模型的核心挑战
+</h3><p>语言建模面临的核心挑战在于<strong>维度灾难</strong>——随着上下文长度的增加，可能的词组合数量呈指数级增长，导致数据稀疏和计算不可行。如何有效地建模长距离依赖关系，始终是语言模型研究的核心课题。</p>
+<h2 id="发展历程全景">
+<a class="header-anchor" href="#%e5%8f%91%e5%b1%95%e5%8e%86%e7%a8%8b%e5%85%a8%e6%99%af"></a>
+发展历程全景
+</h2><h3 id="萌芽期统计语言模型时代1980s-2017">
+<a class="header-anchor" href="#%e8%90%8c%e8%8a%bd%e6%9c%9f%e7%bb%9f%e8%ae%a1%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e6%97%b6%e4%bb%a31980s-2017"></a>
+萌芽期：统计语言模型时代（1980s-2017）
+</h3><pre class="mermaid">
+  graph LR
+    A[N-gram模型] --> B[神经网络语言模型]
+    B --> C[RNN/LSTM]
+    C --> D[Transformer]
+    D --> E[预训练语言模型]
+    E --> F[大语言模型时代]
+</pre><h4 id="n-gram-模型">
+<a class="header-anchor" href="#n-gram-%e6%a8%a1%e5%9e%8b"></a>
+N-gram 模型
+</h4><p>N-gram 是最早的统计语言模型，基于马尔可夫假设，认为第 $n$ 个词的出现只与前面 $n-1$ 个词相关：</p>
+$$
+P(w_i|w_1^{i-1}) \approx P(w_i|w_{i-n+1}^{i-1})
+$$<p><strong>优点</strong>：简单直观，计算高效<br>
+<strong>缺点</strong>：无法建模长距离依赖，数据稀疏问题严重</p>
+        
+        <hr><p>Published on 2026-06-19 at <a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>, last modified on 2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category><category>大语言模型</category>
+      
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>LoRA on My New Hugo Site</title>
+    <link>https://TimeHunter618.github.io/hugo-maid-dev/tags/lora/</link>
+    <description>Recent content from My New Hugo Site</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    
+    <managingEditor>xxx@example.com (D-Sketon)</managingEditor>
+    <webMaster>xxx@example.com (D-Sketon)</webMaster>
+    
+    <copyright>All articles on this blog are licensed under the BY-NC-SA license agreement unless otherwise stated. Please indicate the source when reprinting!</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:15:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://TimeHunter618.github.io/hugo-maid-dev/tags/lora/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>大模型微调技术全攻略</title>
+      <link>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/fine-tuning-guide/</link>
+      <pubDate>Fri, 19 Jun 2026 03:15:00 &#43;0800</pubDate>
+      <author>xxx@example.com (D-Sketon)</author>
+      <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/fine-tuning-guide/</guid>
+      <description>
+        <![CDATA[<h1>大模型微调技术全攻略</h1><p>Author: D-Sketon(xxx@example.com)</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）在海量数据上预训练后，获得了强大的通用能力。但要将这些通用能力适配到特定领域或特定任务上，微调（Fine-tuning）是不可或缺的关键步骤。</p>
+<p>然而，随着模型规模从数十亿增长到数千亿甚至万亿参数，传统的全量微调面临着巨大的挑战：</p>
+<ul>
+<li>显存需求爆炸式增长</li>
+<li>训练成本高昂</li>
+<li>每个任务需要保存一份完整的模型副本</li>
+</ul>
+<p>为了解决这些问题，研究者们提出了各种参数高效微调（Parameter-Efficient Fine-Tuning, PEFT）方法，仅需训练极少的参数就能达到接近全量微调的效果。</p>
+<p>本文将系统梳理大模型微调的技术体系，从基础概念到前沿方法，帮助读者全面掌握大模型微调的核心技术。</p>
+<h2 id="微调技术全景图">
+<a class="header-anchor" href="#%e5%be%ae%e8%b0%83%e6%8a%80%e6%9c%af%e5%85%a8%e6%99%af%e5%9b%be"></a>
+微调技术全景图
+</h2><pre class="mermaid">
+  graph TD
+    A[大模型微调技术] --> B[全量微调]
+    A --> C[参数高效微调 PEFT]
+    
+    C --> D[加法式方法]
+    C --> E[选择式方法]
+    C --> F[重参数化方法]
+    
+    D --> D1[Prefix Tuning]
+    D --> D2[Prompt Tuning]
+    D --> D3[Adapter Tuning]
+    
+    E --> E1[BitFit]
+    E --> E2[Diff Pruning]
+    
+    F --> F1[LoRA]
+    F --> F2[QLoRA]
+    F --> F3[AdaLoRA]
+</pre><h2 id="全量微调full-fine-tuning">
+<a class="header-anchor" href="#%e5%85%a8%e9%87%8f%e5%be%ae%e8%b0%83full-fine-tuning"></a>
+全量微调（Full Fine-tuning）
+</h2><h3 id="基本原理">
+<a class="header-anchor" href="#%e5%9f%ba%e6%9c%ac%e5%8e%9f%e7%90%86"></a>
+基本原理
+</h3><p>全量微调是最直接的方法：在预训练模型的基础上，使用任务特定的数据更新模型的所有参数。</p>
+$$
+\theta_{ft} = \arg\min_{\theta} \mathcal{L}_{task}(\theta; \mathcal{D}_{task})
+$$<p>其中 $\theta$ 是预训练模型的全部参数。</p>
+        
+        <hr><p>Published on 2026-06-19 at <a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>, last modified on 2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category><category>大语言模型</category>
+      
+    </item>
+    
+  </channel>
+</rss>
