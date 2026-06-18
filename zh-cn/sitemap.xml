@@ -10,6 +10,11 @@
                 />
     <xhtml:link
                 rel="alternate"
+                hreflang="zh-tw"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-tw/categories/"
+                />
+    <xhtml:link
+                rel="alternate"
                 hreflang="ja"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/ja/categories/"
                 />
@@ -17,11 +22,6 @@
                 rel="alternate"
                 hreflang="zh-cn"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/categories/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-tw"
-                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-tw/categories/"
                 />
   </url><url>
     <loc>https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/</loc>
@@ -54,6 +54,11 @@
                 />
     <xhtml:link
                 rel="alternate"
+                hreflang="zh-tw"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-tw/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
                 hreflang="ja"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/ja/tags/"
                 />
@@ -61,11 +66,6 @@
                 rel="alternate"
                 hreflang="zh-cn"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/zh-cn/tags/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-tw"
-                href="https://TimeHunter618.github.io/hugo-maid-dev/zh-tw/tags/"
                 />
   </url>
 </urlset>
