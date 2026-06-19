@@ -8,9 +8,9 @@
   name="viewport"
   content="width=device-width, initial-scale=1, shrink-to-fit=no"
 /><title>
-   | Aries
+  ControlMonitor 主程序模块 | Aries
 </title>
-<meta name="description" content="愿世界和平 ✨"/><script>
+<meta name="description" content="系统主程序入口，负责初始化、数据中心管理、插件加载与系统级消息处理"/><script>
   window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://TimeHunter618.github.io/hugo-maid-dev/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
   
 </script>
@@ -33,10 +33,10 @@
     type="font/woff2"
     crossorigin="anonymous"
   /><link rel="stylesheet" href="/hugo-maid-dev/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
-  <meta property="og:title" content=" | Aries" />
+  <meta property="og:title" content="ControlMonitor 主程序模块 | Aries" />
   <meta
     property="og:description"
-    content="愿世界和平 ✨"
+    content="系统主程序入口，负责初始化、数据中心管理、插件加载与系统级消息处理"
   />
   <meta property="og:url" content="https://TimeHunter618.github.io/hugo-maid-dev/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/" />
   <meta
@@ -45,8 +45,8 @@
   />
   <meta property="og:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
   <meta property="article:author" content="Aries" />
-  <meta property="article:published_time" content="0001-01-01T00:00:00&#43;00:00" />
-  <meta property="article:modified_time" content="0001-01-01T00:00:00&#43;00:00" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
+  <meta property="article:published_time" content="2023-04-12T10:00:00&#43;08:00" />
+  <meta property="article:modified_time" content="2023-04-12T10:00:00&#43;08:00" /><meta property="article:tag" content="ATS, 轨道交通, ControlMonitor, Qt" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
 <link rel="shortcut icon" href="/hugo-maid-dev/favicon.ico"><link rel="stylesheet" href="/hugo-maid-dev/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
     rel="preload"
     as="style"
@@ -175,10 +175,10 @@
     </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
       <div class="icon icon-github triangle-badge-icon"></div>
     </a></div>
-<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="/hugo-maid-dev/images/banner.webp" alt=""><div id="header-outer">
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="/hugo-maid-dev/images/banner.webp" alt="ControlMonitor 主程序模块"><div id="header-outer">
     <div id="header-title"><span id="logo">
-            <h1 data-aos="slide-up">Aries的研发手记</h1>
-          </span><h2 id="subtitle-wrap" data-aos="slide-down"></h2></div>
+            <h1 data-aos="slide-up">ControlMonitor 主程序模块</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">系统主程序入口，负责初始化、数据中心管理、插件加载与系统级消息处理</span></h2></div>
   </div>
 </header><div id="content"
           aria-label="Page content"
@@ -256,7 +256,7 @@
 </div>
 <div class="sidebar-state">
   <div class="sidebar-state-article">
-    <div>文章</div><div class="sidebar-state-number">33</div>
+    <div>文章</div><div class="sidebar-state-number">19</div>
   </div>
   <a class="sidebar-state-category" href="/hugo-maid-dev/categories/" aria-label="sidebar-state-category-link">
     <div>分类</div>
@@ -312,14 +312,18 @@
     class="article-date-link icon-calendar"
     data-aos="zoom-in"
   >
-    <time datetime="0001-01-01 00:00:00 &#43;0000 UTC" itemprop="datePublished"
-      >0001-01-01</time
+    <time datetime="2023-04-12 10:00:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2023-04-12</time
     >
     <time style="display: none;" id="post-update-time"
-      >0001-01-01</time
+      >2023-04-12</time
     >
   </span></div>
-</div><div class="hr-line"></div><div class="e-content article-entry" itemprop="articleBody"><h1 id="controlmonitor-模块功能说明">
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=train%20control%20monitor%20main%20application%20window%20with%20plugin%20management%20interface&amp;image_size=landscape_16_9" target="_blank">
+          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=train%20control%20monitor%20main%20application%20window%20with%20plugin%20management%20interface&amp;image_size=landscape_16_9" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h1 id="controlmonitor-模块功能说明">
 <a class="header-anchor" href="#controlmonitor-%e6%a8%a1%e5%9d%97%e5%8a%9f%e8%83%bd%e8%af%b4%e6%98%8e"></a>
 ControlMonitor 模块功能说明
 </h1><h2 id="1-模块概述">
@@ -566,11 +570,11 @@ ControlMonitor 模块功能说明
 <li>使用异常处理器生成的崩溃转储文件分析程序崩溃原因</li>
 </ul>
 </div>
-    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/&amp;appkey=&amp;title=&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="">
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/&amp;appkey=&amp;title=ControlMonitor%20%e4%b8%bb%e7%a8%8b%e5%ba%8f%e6%a8%a1%e5%9d%97&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="ControlMonitor 主程序模块">
       <div class="share-icon icon icon-weibo"></div>
-    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/&amp;title=&amp;desc=%20ControlMonitor%20%e6%a8%a1%e5%9d%97%e5%8a%9f%e8%83%bd%e8%af%b4%e6%98%8e%201.%20%e6%a8%a1%e5%9d%97%e6%a6%82%e8%bf%b0%20ControlMonitor%e6%98%af%e6%95%b4%e4%b8%aa%e7%b3%bb%e7%bb%9f%e7%9a%84%e4%b8%bb%e7%a8%8b%e5%ba%8f%e6%a8%a1%e5%9d%97%ef%bc%8c%e4%bd%9c%e4%b8%ba%e7%b3%bb%e7%bb%9f%e7%9a%84%e5%85%a5%e5%8f%a3%e7%82%b9%ef%bc%8c%e8%b4%9f%e8%b4%a3%e5%88%9d%e5%a7%8b%e5%8c%96%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e3%80%81%e7%ae%a1%e7%90%86%e6%95%b0%e6%8d%ae%e4%b8%ad%e5%bf%83%e3%80%81%e5%8a%a0%e8%bd%bd%e5%92%8c%e7%ae%a1%e7%90%86%e6%8f%92%e4%bb%b6%e3%80%81%e5%88%9b%e5%bb%ba%e4%b8%bb%e7%aa%97%e5%8f%a3%e4%bb%a5%e5%8f%8a%e5%a4%84%e7%90%86%e7%b3%bb%e7%bb%9f%e7%ba%a7%e6%b6%88%e6%81%af%e3%80%82%0a&amp;source=https://TimeHunter618.github.io/hugo-maid-dev/" target="_blank" rel="noopener noreferrer" title="">
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/&amp;title=ControlMonitor%20%e4%b8%bb%e7%a8%8b%e5%ba%8f%e6%a8%a1%e5%9d%97&amp;desc=%e7%b3%bb%e7%bb%9f%e4%b8%bb%e7%a8%8b%e5%ba%8f%e5%85%a5%e5%8f%a3%ef%bc%8c%e8%b4%9f%e8%b4%a3%e5%88%9d%e5%a7%8b%e5%8c%96%e3%80%81%e6%95%b0%e6%8d%ae%e4%b8%ad%e5%bf%83%e7%ae%a1%e7%90%86%e3%80%81%e6%8f%92%e4%bb%b6%e5%8a%a0%e8%bd%bd%e4%b8%8e%e7%b3%bb%e7%bb%9f%e7%ba%a7%e6%b6%88%e6%81%af%e5%a4%84%e7%90%86&amp;source=https://TimeHunter618.github.io/hugo-maid-dev/" target="_blank" rel="noopener noreferrer" title="ControlMonitor 主程序模块">
       <div class="share-icon icon icon-qq"></div>
-    </a><a href="javascript:;"  title="">
+    </a><a href="javascript:;"  title="ControlMonitor 主程序模块">
       <div class="share-icon icon icon-weixin"><div id="share-weixin">
             <div class="share-weixin-dom">
               <div class="share-weixin-content">
@@ -588,12 +592,54 @@ ControlMonitor 模块功能说明
             </div>
             <div class="share-weixin-canvas"></div>
           </div></div>
-    </a><a href="https://twitter.com/intent/tweet?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/&amp;text=&amp;via=https://TimeHunter618.github.io/hugo-maid-dev/" target="_blank" rel="noopener noreferrer" title="">
+    </a><a href="https://twitter.com/intent/tweet?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/&amp;text=ControlMonitor%20%e4%b8%bb%e7%a8%8b%e5%ba%8f%e6%a8%a1%e5%9d%97&amp;via=https://TimeHunter618.github.io/hugo-maid-dev/" target="_blank" rel="noopener noreferrer" title="ControlMonitor 主程序模块">
       <div class="share-icon icon icon-twitter"></div>
-    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/" target="_blank" rel="noopener noreferrer" title="">
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/" target="_blank" rel="noopener noreferrer" title="ControlMonitor 主程序模块">
       <div class="share-icon icon icon-facebook"></div>
-    </a></div><ul class="article-category-list"></ul>
-<ul class="article-tag-list" itemprop="keywords"></ul>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="/hugo-maid-dev/categories/%e8%bd%a8%e9%81%93%e4%ba%a4%e9%80%9a"
+      data-aos="zoom-in"
+      >轨道交通</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="/hugo-maid-dev/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/hugo-maid-dev/tags/ats"
+        rel="tag"
+        >ATS</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/hugo-maid-dev/tags/%e8%bd%a8%e9%81%93%e4%ba%a4%e9%80%9a"
+        rel="tag"
+        >轨道交通</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/hugo-maid-dev/tags/controlmonitor"
+        rel="tag"
+        >ControlMonitor</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/hugo-maid-dev/tags/qt"
+        rel="tag"
+        >Qt</a
+      >
+    </li></ul>
 </footer>
   </div><nav
     id="article-nav"
@@ -602,27 +648,27 @@ ControlMonitor 模块功能说明
   ><div class="article-nav-link-wrap left"><img
               data-src="https://d-sketon.top/img/_backwebp/bg1.webp"
               data-sizes="auto"
-              alt=""
+              alt="PublicExternals 公共外部库"
               class="lazyload"
             /><a
           href="/hugo-maid-dev/post/ats/frontend/publicexternals%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/"
-          aria-label="前一篇:(no title)"
-          title="前一篇:(no title)"
+          aria-label="前一篇:PublicExternals 公共外部库"
+          title="前一篇:PublicExternals 公共外部库"
         ></a>
         <div class="article-nav-caption">前一篇</div>
-        <h3 class="article-nav-title">(no title)</h3>
+        <h3 class="article-nav-title">PublicExternals 公共外部库</h3>
       </div><div class="article-nav-link-wrap right"><img
               data-src="https://d-sketon.top/img/_backwebp/bg1.webp"
               data-sizes="auto"
-              alt=""
+              alt="前端系统架构与功能模块分析"
               class="lazyload"
             /><a
-          href="/hugo-maid-dev/post/ats/frontend/cmtrainnumprocplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/"
-          aria-label="后一篇:(no title)"
-          title="后一篇:(no title)"
+          href="/hugo-maid-dev/post/ats/frontend/%E5%89%8D%E7%AB%AF%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/"
+          aria-label="后一篇:前端系统架构与功能模块分析"
+          title="后一篇:前端系统架构与功能模块分析"
         ></a>
         <div class="article-nav-caption">后一篇</div>
-        <h3 class="article-nav-title">(no title)</h3>
+        <h3 class="article-nav-title">前端系统架构与功能模块分析</h3>
       </div></nav></article></section>
         </div><footer id="footer" aria-label="Site footer">
   <div style="width: 100%; overflow: hidden">
@@ -644,10 +690,10 @@ ControlMonitor 模块功能说明
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;79.6k</span
+          >&nbsp;48.7k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;02:52</span>
+        <span class="icon-coffee">&nbsp;01:45</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -764,7 +810,7 @@ ControlMonitor 模块功能说明
 </div>
 <div class="sidebar-state">
   <div class="sidebar-state-article">
-    <div>文章</div><div class="sidebar-state-number">33</div>
+    <div>文章</div><div class="sidebar-state-number">19</div>
   </div>
   <a class="sidebar-state-category" href="/hugo-maid-dev/categories/" aria-label="sidebar-state-category-link">
     <div>分类</div>
@@ -876,9 +922,9 @@ ControlMonitor 模块功能说明
   <div><script data-pjax>
         window.REIMU_POST = {
           author: "Aries",
-          title: "",
+          title: "ControlMonitor 主程序模块",
           url: "https:\/\/TimeHunter618.github.io\/hugo-maid-dev\/post\/ats\/frontend\/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E\/",
-          description: " ControlMonitor 模块功能说明 1. 模块概述 ControlMonitor是整个系统的主程序模块，作为系统的入口点，负责初始化应用程序、管理数据中心、加载和管理插件、创建主窗口以及处理系统级消息。\n",
+          description: "系统主程序入口，负责初始化、数据中心管理、插件加载与系统级消息处理",
           cover: "https:\/\/TimeHunter618.github.io\/hugo-maid-dev\/images\/banner.webp",
         };
       </script><script src="/hugo-maid-dev/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="/hugo-maid-dev/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {

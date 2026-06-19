@@ -12,12 +12,667 @@
     
     <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
     
-    <lastBuildDate>Thu, 09 Jun 2022 20:12:52 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 08 Oct 2024 09:15:00 +0800</lastBuildDate>
     
     
     <atom:link href="https://TimeHunter618.github.io/hugo-maid-dev/post/index.xml" rel="self" type="application/rss&#43;xml" />
     
 
+    
+    
+
+    <item>
+      <title>后台业务信息流分析</title>
+      <link>https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E4%B8%9A%E5%8A%A1%E4%BF%A1%E6%81%AF%E6%B5%81%E5%88%86%E6%9E%90/</link>
+      <pubDate>Tue, 08 Oct 2024 09:15:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E4%B8%9A%E5%8A%A1%E4%BF%A1%E6%81%AF%E6%B5%81%E5%88%86%E6%9E%90/</guid>
+      <description>
+        <![CDATA[<h1>后台业务信息流分析</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h1 id="hfs1-业务信息流分析">
+<a class="header-anchor" href="#hfs1-%e4%b8%9a%e5%8a%a1%e4%bf%a1%e6%81%af%e6%b5%81%e5%88%86%e6%9e%90"></a>
+HFS1 业务信息流分析
+</h1><h2 id="1-业务信息流概述">
+<a class="header-anchor" href="#1-%e4%b8%9a%e5%8a%a1%e4%bf%a1%e6%81%af%e6%b5%81%e6%a6%82%e8%bf%b0"></a>
+1. 业务信息流概述
+</h2><p>HFS1 轨道交通列车自动监控系统采用&quot;调度-进路-车载-显示&quot;的典型业务信息流模式。各业务功能涉及多个模块协作，通过消息总线、Redis共享内存、协议转换等多种方式实现信息流转。</p>
+        
+        <hr><p>本文2024-10-08首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>Aries的研发手记</a>，最后修改于2024-10-08</p>]]>
+      </description>
+      
+        <category>轨道交通</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>后台系统模块关系与架构分析</title>
+      <link>https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/</link>
+      <pubDate>Sat, 22 Jun 2024 14:30:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/</guid>
+      <description>
+        <![CDATA[<h1>后台系统模块关系与架构分析</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h1 id="后台系统模块关系与架构分析">
+<a class="header-anchor" href="#%e5%90%8e%e5%8f%b0%e7%b3%bb%e7%bb%9f%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%88%86%e6%9e%90"></a>
+后台系统模块关系与架构分析
+</h1><h2 id="1-系统总体架构">
+<a class="header-anchor" href="#1-%e7%b3%bb%e7%bb%9f%e6%80%bb%e4%bd%93%e6%9e%b6%e6%9e%84"></a>
+1. 系统总体架构
+</h2><h3 id="11-系统设计原则">
+<a class="header-anchor" href="#11-%e7%b3%bb%e7%bb%9f%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99"></a>
+1.1 系统设计原则
+</h3><p>轨道交通列车自动监控系统遵循以下设计原则：</p>
+<table>
+	<thead>
+			<tr>
+					<th>设计原则</th>
+					<th>描述</th>
+					<th>实现方式</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>模块化</strong></td>
+					<td>高内聚、低耦合的模块划分</td>
+					<td>每个目录对应独立功能模块</td>
+			</tr>
+			<tr>
+					<td><strong>分层架构</strong></td>
+					<td>清晰的层次结构，职责分明</td>
+					<td>基础库→通信→协议→业务→应用</td>
+			</tr>
+			<tr>
+					<td><strong>松耦合</strong></td>
+					<td>模块间通过消息和接口通信</td>
+					<td>基于msg/brdg消息总线</td>
+			</tr>
+			<tr>
+					<td><strong>高可靠性</strong></td>
+					<td>故障检测、冗余备份</td>
+					<td>1+N主备、双网冗余、SIL2</td>
+			</tr>
+			<tr>
+					<td><strong>可扩展性</strong></td>
+					<td>易于新增功能和模块</td>
+					<td>插件化设计、配置驱动</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="12-系统分层架构">
+<a class="header-anchor" href="#12-%e7%b3%bb%e7%bb%9f%e5%88%86%e5%b1%82%e6%9e%b6%e6%9e%84"></a>
+1.2 系统分层架构
+</h3><pre class="mermaid">
+  graph TD
+    subgraph 应用层["应用层 (Application Layer)"]
+        A1["TDA (调度自动化)"]
+        A2["TICM (列车综合控制)"]
+        A3["TOCM (列车车载控制)"]
+        A4["TRCM (列车进路控制)"]
+        A5["OsmMonitor (系统监控)"]
+        A6["业务应用进程"]
+    end
+  
+    subgraph 业务层["业务逻辑层"]
+        B1["msg (消息中心)"]
+        B2["tdsm (列车数据共享)"]
+        B3["基础通信 (base/brdg)"]
+    end
+  
+    subgraph 数据层["数据与中间件层"]
+        C1["RedisMgr (Redis管理)"]
+        C2["db_wrap (数据库封装)"]
+        C3["工具库 (tools/ftplib/xml)"]
+        C4["协议库与中间件"]
+    end
+  
+    A1 -->|业务消息| B1
+    A1 -->|数据访问| B2
+    A2 -->|业务消息| B1
+    A3 -->|业务消息| B1
+    A4 -->|业务消息| B1
+    A4 -->|数据访问| C1
+    A5 -->|监控数据| C1
+    A6 -->|通信基础| B3
+  
+    B1 -->|消息底层| B3
+    B2 -->|数据存储| C1
+    B2 -->|数据库| C2
+    B3 -->|基础工具| C3
+  
+    C1 -->|Redis底层| C3
+    C2 -->|XML配置| C3
+</pre><h3 id="13-系统版本演进">
+<a class="header-anchor" href="#13-%e7%b3%bb%e7%bb%9f%e7%89%88%e6%9c%ac%e6%bc%94%e8%bf%9b"></a>
+1.3 系统版本演进
+</h3><table>
+	<thead>
+			<tr>
+					<th>版本</th>
+					<th>时间</th>
+					<th>主要变化</th>
+					<th>关键改进</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>1.0</td>
+					<td>2018年初</td>
+					<td>系统初始版本</td>
+					<td>基础架构建立</td>
+			</tr>
+			<tr>
+					<td>2.0</td>
+					<td>2018-2020</td>
+					<td>模块化重构完善</td>
+					<td>协议层独立</td>
+			</tr>
+			<tr>
+					<td>3.0</td>
+					<td>2020-2022</td>
+					<td>业务功能扩展</td>
+					<td>新增多项业务</td>
+			</tr>
+			<tr>
+					<td>4.0</td>
+					<td>2022-至今</td>
+					<td>性能优化Redis引入</td>
+					<td>数据共享优化</td>
+			</tr>
+			<tr>
+					<td>5.0</td>
+					<td>持续演进</td>
+					<td>安全性增强SIL2</td>
+					<td>安全完整性提升</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="2-模块功能分类">
+<a class="header-anchor" href="#2-%e6%a8%a1%e5%9d%97%e5%8a%9f%e8%83%bd%e5%88%86%e7%b1%bb"></a>
+2. 模块功能分类
+</h2><h3 id="21-模块分类总览">
+<a class="header-anchor" href="#21-%e6%a8%a1%e5%9d%97%e5%88%86%e7%b1%bb%e6%80%bb%e8%a7%88"></a>
+2.1 模块分类总览
+</h3><table>
+	<thead>
+			<tr>
+					<th>模块类别</th>
+					<th>模块名称</th>
+					<th>功能描述</th>
+					<th>核心文件</th>
+					<th>依赖</th>
+					<th>目录</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>基础通信</strong></td>
+					<td>base</td>
+					<td>基础通信框架，TCP/IP/Unix socket</td>
+					<td>base/client_base.h, base/server_base.h</td>
+					<td>tools</td>
+					<td>base/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>msg</td>
+					<td>消息封装、传输、解析中心</td>
+					<td>msg/CMsgPack.h, msg/CMsgHead.h</td>
+					<td>base, tools</td>
+					<td>msg/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>brdg</td>
+					<td>业务网桥，进程间业务消息桥接</td>
+					<td>brdg/brdg.h, brdg/brdg_client.h</td>
+					<td>msg, base</td>
+					<td>brdg/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>nbrdg</td>
+					<td>网络网桥，跨节点网络消息桥接</td>
+					<td>nbrdg/brdg.h</td>
+					<td>msg, base</td>
+					<td>nbrdg/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>xbrdg</td>
+					<td>扩展网桥，跨平台扩展消息桥接</td>
+					<td>xbrdg/brdg.h</td>
+					<td>msg, base</td>
+					<td>xbrdg/</td>
+			</tr>
+			<tr>
+					<td><strong>数据中间件</strong></td>
+					<td>tdsm</td>
+					<td>列车数据共享与内存数据库管理</td>
+					<td>tdsm/Tds.h, tdsm/Tds.cpp</td>
+					<td>msg, RedisMgr</td>
+					<td>tdsm/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>RedisMgr</td>
+					<td>Redis连接池与数据管理</td>
+					<td>RedisMgr/RedisMgr.h</td>
+					<td>hiredis</td>
+					<td>RedisMgr/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>db_wrap</td>
+					<td>ODBC数据库操作封装</td>
+					<td>db_wrap/db_wrap.h, db_wrap/odbc.cpp</td>
+					<td>xml, tools</td>
+					<td>db_wrap/</td>
+			</tr>
+			<tr>
+					<td><strong>核心应用</strong></td>
+					<td>tda</td>
+					<td>调度自动化，计划生成与分发</td>
+					<td>tda/tda.h, tda/DealPlan.cpp</td>
+					<td>msg, tdsm, TRCM</td>
+					<td>tda/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>ticm</td>
+					<td>列车综合控制，多定时任务</td>
+					<td>ticm/ticm.h, ticm/Task.cpp</td>
+					<td>msg, tdsm</td>
+					<td>ticm/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>tocm</td>
+					<td>列车车载控制（ATO/ATP）</td>
+					<td>tocm/tocm.h, tocm/AtoTask.cpp</td>
+					<td>msg, tdsm, TRCM</td>
+					<td>tocm/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>trcm</td>
+					<td>列车进路控制，路径搜索</td>
+					<td>trcm/trcm.h, trcm/PathSearch.cpp</td>
+					<td>msg, RedisMgr</td>
+					<td>trcm/</td>
+			</tr>
+			<tr>
+					<td><strong>接口适配</strong></td>
+					<td>edci</td>
+					<td>EDC（设备控制）接口</td>
+					<td>edci/edci.h</td>
+					<td>msg, base</td>
+					<td>edci/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>idci</td>
+					<td>IDC（车站标识）接口</td>
+					<td>idci/idci.h</td>
+					<td>msg, base</td>
+					<td>idci/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>idec</td>
+					<td>IDE（集中站）接口</td>
+					<td>idec/idec.h</td>
+					<td>msg, base</td>
+					<td>idec/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>odci</td>
+					<td>ODC（输出控制）接口</td>
+					<td>odci/odci.h</td>
+					<td>msg, base</td>
+					<td>odci/</td>
+			</tr>
+			<tr>
+					<td><strong>基础工具</strong></td>
+					<td>tools</td>
+					<td>通用工具集（CRC、字符串、文件）</td>
+					<td>tools/utility.h, tools/CRC16.h</td>
+					<td>-</td>
+					<td>tools/</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="22-完整模块清单">
+<a class="header-anchor" href="#22-%e5%ae%8c%e6%95%b4%e6%a8%a1%e5%9d%97%e6%b8%85%e5%8d%95"></a>
+2.2 完整模块清单
+</h3><h4 id="核心业务模块7个">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e4%b8%9a%e5%8a%a1%e6%a8%a1%e5%9d%977%e4%b8%aa"></a>
+核心业务模块（7个）
+</h4><ul>
+<li><strong>TDA</strong> - 调度自动化模块</li>
+<li><strong>TICM</strong> - 列车综合控制模块</li>
+<li><strong>TOCM</strong> - 列车车载控制模块</li>
+<li><strong>TRCM</strong> - 列车进路控制模块</li>
+<li><strong>TACTCM</strong> - 列车实际运行控制模块</li>
+<li><strong>TDSM</strong> - 列车数据共享模块</li>
+<li><strong>CMSM</strong> - 中心管理服务模块</li>
+</ul>
+<h4 id="监控与人机界面12个">
+<a class="header-anchor" href="#%e7%9b%91%e6%8e%a7%e4%b8%8e%e4%ba%ba%e6%9c%ba%e7%95%8c%e9%9d%a212%e4%b8%aa"></a>
+监控与人机界面（12个）
+</h4><ul>
+<li><strong>HmiTransInfo</strong> - HMI信息传输</li>
+<li><strong>HmiTransProtocol</strong> - HMI传输协议</li>
+<li><strong>osm_plot</strong> - OSM绘图</li>
+<li><strong>osm_ind</strong> - OSM表示</li>
+<li><strong>osm_user</strong> - OSM用户</li>
+<li><strong>osm_dict</strong> - OSM字典</li>
+<li><strong>osm_bmp</strong> - OSM位图</li>
+<li><strong>osm_hisinfo</strong> - OSM历史信息</li>
+<li><strong>osm_dispplan</strong> - OSM显示计划</li>
+<li><strong>osm_statisinfo</strong> - OSM统计信息</li>
+<li><strong>osm_maintain</strong> - OSM维护</li>
+<li><strong>OsmMonitor</strong> - OSM系统监控</li>
+</ul>
+<h4 id="通信与消息9个">
+<a class="header-anchor" href="#%e9%80%9a%e4%bf%a1%e4%b8%8e%e6%b6%88%e6%81%af9%e4%b8%aa"></a>
+通信与消息（9个）
+</h4><ul>
+<li><strong>msg</strong> - 消息模块</li>
+<li><strong>base</strong> - 基础通信</li>
+<li><strong>brdg</strong> - 业务网桥</li>
+<li><strong>nbrdg</strong> - 网络网桥</li>
+<li><strong>xbrdg</strong> - 扩展网桥</li>
+<li><strong>cluster</strong> / <strong>cluster_new</strong> - 集群通信</li>
+<li><strong>mssync</strong> - 主备同步</li>
+<li><strong>nicmon</strong> - 网卡监控</li>
+<li><strong>ifstate</strong> - 接口状态</li>
+</ul>
+<h4 id="数据存储与访问5个">
+<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e5%ad%98%e5%82%a8%e4%b8%8e%e8%ae%bf%e9%97%ae5%e4%b8%aa"></a>
+数据存储与访问（5个）
+</h4><ul>
+<li><strong>RedisMgr</strong> - Redis管理</li>
+<li><strong>RedisClient</strong> - Redis客户端</li>
+<li><strong>hiredis</strong> - Redis C客户端基础库</li>
+<li><strong>db_wrap</strong> - 数据库封装</li>
+<li><strong>PublicTd</strong> - 公共数据</li>
+</ul>
+<h4 id="协议模块21个">
+<a class="header-anchor" href="#%e5%8d%8f%e8%ae%ae%e6%a8%a1%e5%9d%9721%e4%b8%aa"></a>
+协议模块（21个）
+</h4><ul>
+<li><strong>AtsVobcProtocol</strong> - ATS-VOBC协议</li>
+<li><strong>CtrlCmdProtocol</strong> - 控制命令协议</li>
+<li><strong>IndicationProtocol</strong> - 表示协议</li>
+<li><strong>HmiTransProtocol</strong> - HMI协议</li>
+<li><strong>DispatchProtocol</strong> - 调度协议</li>
+<li><strong>SyncProtocol</strong> - 同步协议</li>
+<li><strong>AtsZcProtocol</strong> - ATS-ZC协议</li>
+<li><strong>AtsToAtsProtocol</strong> - ATS-ATS协议</li>
+<li><strong>RmProtocol</strong> - 远程监控协议</li>
+<li><strong>DiagramProtocol</strong> - 运行图协议</li>
+<li><strong>InterfaceProtocol</strong> - 接口协议</li>
+<li><strong>InfoProcessProtocol</strong> - 信息处理协议</li>
+<li><strong>PublicProtocol</strong> - 公共协议</li>
+<li><strong>ParamMtnProtocol</strong> - 参数维护协议</li>
+<li><strong>StatAnalProtocol</strong> - 统计分析协议</li>
+<li><strong>DiagramSyncProtocol</strong> - 运行图同步协议</li>
+<li><strong>ExtSysConnProtocol</strong> - 外部系统连接协议</li>
+<li><strong>MatcAtsZcProtocol</strong> - MATC ATS-ZC协议</li>
+<li><strong>DagProtocol</strong> - DAG协议</li>
+<li><strong>BaseProtocol</strong> - 协议基础</li>
+<li><strong>PSDInter</strong> - 屏蔽门接口</li>
+</ul>
+<h4 id="接口适配器8个">
+<a class="header-anchor" href="#%e6%8e%a5%e5%8f%a3%e9%80%82%e9%85%8d%e5%99%a88%e4%b8%aa"></a>
+接口适配器（8个）
+</h4><ul>
+<li><strong>edci</strong> - EDC接口</li>
+<li><strong>idci</strong> - IDC接口</li>
+<li><strong>idec</strong> - IDE接口</li>
+<li><strong>odci</strong> - ODC接口</li>
+<li><strong>PSDInter</strong> - 屏蔽门接口</li>
+<li><strong>dtiinter</strong> - DTI接口</li>
+<li><strong>tcmsinter_A</strong> - TCMS接口</li>
+<li><strong>imcinter_A</strong> - IMC接口</li>
+</ul>
+<h4 id="基础库17个">
+<a class="header-anchor" href="#%e5%9f%ba%e7%a1%80%e5%ba%9317%e4%b8%aa"></a>
+基础库（17个）
+</h4><ul>
+<li><strong>base</strong> - 基础通信库</li>
+<li><strong>tools</strong> / <strong>tools-lock</strong> - 工具集</li>
+<li><strong>xml</strong> - XML库（基于tinyxml）</li>
+<li><strong>ftplib</strong> - FTP库</li>
+<li><strong>Framework</strong> - 框架</li>
+<li><strong>applib</strong> - 应用库</li>
+<li><strong>CheckLib</strong> - 检查库</li>
+<li><strong>packqueue</strong> / <strong>pack_selector</strong> - 包队列</li>
+<li><strong>AppInterface</strong> - 应用接口</li>
+<li><strong>PublicSys</strong> - 公共系统</li>
+<li><strong>PublicConfig</strong> - 公共配置</li>
+<li><strong>ServerConfig</strong> - 服务器配置</li>
+<li><strong>NetworkPlug</strong> - 网络插件</li>
+<li><strong>InterfaceBase</strong> - 接口基础</li>
+<li><strong>BaseProtocol</strong> - 协议基础</li>
+</ul>
+<h4 id="插件模块6个">
+<a class="header-anchor" href="#%e6%8f%92%e4%bb%b6%e6%a8%a1%e5%9d%976%e4%b8%aa"></a>
+插件模块（6个）
+</h4><ul>
+<li><strong>TrainDiagramPlug</strong> - 运行图插件</li>
+<li><strong>LogicTrainTrackPlug</strong> - 逻辑列车轨道插件</li>
+<li><strong>AtoTrainVerifyPlug</strong> - ATO列车校验插件</li>
+<li><strong>ReportTimePlug</strong> - 报表时间插件</li>
+<li><strong>NetworkPlug</strong> - 网络插件</li>
+<li><strong>SyncChannelPlug</strong> - 同步通道插件</li>
+</ul>
+<h4 id="sil2-安全模块">
+<a class="header-anchor" href="#sil2-%e5%ae%89%e5%85%a8%e6%a8%a1%e5%9d%97"></a>
+SIL2 安全模块
+</h4><ul>
+<li><strong>SIL2_code/</strong> - 安全完整性等级2代码
+<ul>
+<li>SIL2_AtsVobcProtocol</li>
+<li>SIL2_traininter</li>
+<li>SIL2_SpeedLimitProtocol</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-模块依赖关系">
+<a class="header-anchor" href="#3-%e6%a8%a1%e5%9d%97%e4%be%9d%e8%b5%96%e5%85%b3%e7%b3%bb"></a>
+3. 模块依赖关系
+</h2><h3 id="31-核心依赖关系图">
+<a class="header-anchor" href="#31-%e6%a0%b8%e5%bf%83%e4%be%9d%e8%b5%96%e5%85%b3%e7%b3%bb%e5%9b%be"></a>
+3.1 核心依赖关系图
+</h3><pre class="mermaid">
+  graph LR
+    subgraph 应用进程["应用进程层"]
+        TDA[TDA 调度]
+        TICM[TICM 列控]
+        TOCM[TOCM 车载]
+        TRCM[TRCM 进路]
+        HMI[HmiTransInfo HMI]
+    end
+  
+    subgraph 中间件["中间件层"]
+        MSG[msg 消息中心]
+        TDSM[tdsm 数据共享]
+        BRDG[brdg 业务网桥]
+        REDIS[RedisMgr]
+    end
+  
+    subgraph 协议["协议层"]
+        PROTOCOL[各类协议库]
+    end
+  
+    subgraph 基础["基础层"]
+        BASE[base 通信基础]
+        TOOLS[tools 工具]
+        XML[xml]
+    end
+  
+    TDA --> MSG
+    TICM --> MSG
+    TOCM --> MSG
+    TRCM --> MSG
+    HMI --> MSG
+  
+    TDA --> TDSM
+    TICM --> TDSM
+    TOCM --> TDSM
+    TRCM --> REDIS
+  
+    MSG --> BRDG
+    BRDG --> BASE
+    TDSM --> REDIS
+  
+    MSG --> PROTOCOL
+    PROTOCOL --> BASE
+    BASE --> TOOLS
+    BASE --> XML
+</pre><h3 id="32-关键模块依赖矩阵">
+<a class="header-anchor" href="#32-%e5%85%b3%e9%94%ae%e6%a8%a1%e5%9d%97%e4%be%9d%e8%b5%96%e7%9f%a9%e9%98%b5"></a>
+3.2 关键模块依赖矩阵
+</h3><table>
+	<thead>
+			<tr>
+					<th>模块</th>
+					<th>msg</th>
+					<th>base</th>
+					<th>tools</th>
+					<th>xml</th>
+					<th>RedisMgr</th>
+					<th>tdsm</th>
+					<th>brdg</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>TDA</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>✓</td>
+					<td>✓</td>
+			</tr>
+			<tr>
+					<td><strong>TICM</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>✓</td>
+					<td>✓</td>
+			</tr>
+			<tr>
+					<td><strong>TOCM</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>✓</td>
+					<td>✓</td>
+			</tr>
+			<tr>
+					<td><strong>TRCM</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>✓</td>
+			</tr>
+			<tr>
+					<td><strong>HmiTransInfo</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>-</td>
+					<td>✓</td>
+			</tr>
+			<tr>
+					<td><strong>msg</strong></td>
+					<td>-</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>-</td>
+					<td>-</td>
+					<td>-</td>
+			</tr>
+			<tr>
+					<td><strong>brdg</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>-</td>
+					<td>-</td>
+					<td>-</td>
+			</tr>
+			<tr>
+					<td><strong>tdsm</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>-</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>✓ 表示有依赖关系</p>
+        
+        <hr><p>本文2024-06-22首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>Aries的研发手记</a>，最后修改于2024-06-22</p>]]>
+      </description>
+      
+        <category>轨道交通</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>后台项目整体说明</title>
+      <link>https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E/</link>
+      <pubDate>Fri, 15 Mar 2024 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E/</guid>
+      <description>
+        <![CDATA[<h1>后台项目整体说明</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h1 id="hfs1-轨道交通控制系统---项目整体说明">
+<a class="header-anchor" href="#hfs1-%e8%bd%a8%e9%81%93%e4%ba%a4%e9%80%9a%e6%8e%a7%e5%88%b6%e7%b3%bb%e7%bb%9f---%e9%a1%b9%e7%9b%ae%e6%95%b4%e4%bd%93%e8%af%b4%e6%98%8e"></a>
+HFS1 轨道交通控制系统 - 项目整体说明
+</h1><h2 id="1-项目概述">
+<a class="header-anchor" href="#1-%e9%a1%b9%e7%9b%ae%e6%a6%82%e8%bf%b0"></a>
+1. 项目概述
+</h2><h3 id="11-项目简介">
+<a class="header-anchor" href="#11-%e9%a1%b9%e7%9b%ae%e7%ae%80%e4%bb%8b"></a>
+1.1 项目简介
+</h3><p>HFS1 是一套轨道交通列车自动监控系统（ATS）及其相关控制系统的完整软件实现，采用 C++ 开发，主要运行于 Linux 平台（部分模块支持 Windows）。系统采用分布式架构，由多个相对独立又紧密协作的模块组成，覆盖列车监控、调度、控制、通信、协议转换、人机界面等核心功能。</p>
+        
+        <hr><p>本文2024-03-15首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>Aries的研发手记</a>，最后修改于2024-03-15</p>]]>
+      </description>
+      
+        <category>轨道交通</category><category>技术分享</category>
+      
+    </item>
     
     
 

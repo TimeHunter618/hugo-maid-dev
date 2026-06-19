@@ -8,9 +8,9 @@
   name="viewport"
   content="width=device-width, initial-scale=1, shrink-to-fit=no"
 /><title>
-   | Aries
+  后台系统模块关系与架构分析 | Aries
 </title>
-<meta name="description" content="愿世界和平 ✨"/><script>
+<meta name="description" content="深入分析模块依赖关系、通信机制与业务架构设计"/><script>
   window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://TimeHunter618.github.io/hugo-maid-dev/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
   
 </script>
@@ -33,20 +33,20 @@
     type="font/woff2"
     crossorigin="anonymous"
   /><link rel="stylesheet" href="/hugo-maid-dev/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
-  <meta property="og:title" content=" | Aries" />
+  <meta property="og:title" content="后台系统模块关系与架构分析 | Aries" />
   <meta
     property="og:description"
-    content="愿世界和平 ✨"
+    content="深入分析模块依赖关系、通信机制与业务架构设计"
   />
-  <meta property="og:url" content="https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/" />
+  <meta property="og:url" content="https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/" />
   <meta
     property="og:site_name"
     content="Aries的研发手记"
   />
   <meta property="og:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
   <meta property="article:author" content="Aries" />
-  <meta property="article:published_time" content="0001-01-01T00:00:00&#43;00:00" />
-  <meta property="article:modified_time" content="0001-01-01T00:00:00&#43;00:00" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
+  <meta property="article:published_time" content="2024-06-22T14:30:00&#43;08:00" />
+  <meta property="article:modified_time" content="2024-06-22T14:30:00&#43;08:00" /><meta property="article:tag" content="ATS, 轨道交通, 模块架构" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
 <link rel="shortcut icon" href="/hugo-maid-dev/favicon.ico"><link rel="stylesheet" href="/hugo-maid-dev/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
     rel="preload"
     as="style"
@@ -175,10 +175,10 @@
     </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
       <div class="icon icon-github triangle-badge-icon"></div>
     </a></div>
-<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="/hugo-maid-dev/images/banner.webp" alt=""><div id="header-outer">
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="/hugo-maid-dev/images/banner.webp" alt="后台系统模块关系与架构分析"><div id="header-outer">
     <div id="header-title"><span id="logo">
-            <h1 data-aos="slide-up">Aries的研发手记</h1>
-          </span><h2 id="subtitle-wrap" data-aos="slide-down"></h2></div>
+            <h1 data-aos="slide-up">后台系统模块关系与架构分析</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">深入分析模块依赖关系、通信机制与业务架构设计</span></h2></div>
   </div>
 </header><div id="content"
           aria-label="Page content"
@@ -252,7 +252,7 @@
 </div>
 <div class="sidebar-state">
   <div class="sidebar-state-article">
-    <div>文章</div><div class="sidebar-state-number">33</div>
+    <div>文章</div><div class="sidebar-state-number">19</div>
   </div>
   <a class="sidebar-state-category" href="/hugo-maid-dev/categories/" aria-label="sidebar-state-category-link">
     <div>分类</div>
@@ -308,23 +308,27 @@
     class="article-date-link icon-calendar"
     data-aos="zoom-in"
   >
-    <time datetime="0001-01-01 00:00:00 &#43;0000 UTC" itemprop="datePublished"
-      >0001-01-01</time
+    <time datetime="2024-06-22 14:30:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2024-06-22</time
     >
     <time style="display: none;" id="post-update-time"
-      >0001-01-01</time
+      >2024-06-22</time
     >
   </span></div>
-</div><div class="hr-line"></div><div class="e-content article-entry" itemprop="articleBody"><h1 id="hfs1-系统模块关系与架构分析">
-<a class="header-anchor" href="#hfs1-%e7%b3%bb%e7%bb%9f%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%88%86%e6%9e%90"></a>
-HFS1 系统模块关系与架构分析
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=software%20module%20dependency%20graph%20network%20diagram%2C%20blue%20and%20cyan%20tech%20style&amp;image_size=landscape_16_9" target="_blank">
+          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=software%20module%20dependency%20graph%20network%20diagram%2C%20blue%20and%20cyan%20tech%20style&amp;image_size=landscape_16_9" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h1 id="后台系统模块关系与架构分析">
+<a class="header-anchor" href="#%e5%90%8e%e5%8f%b0%e7%b3%bb%e7%bb%9f%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%88%86%e6%9e%90"></a>
+后台系统模块关系与架构分析
 </h1><h2 id="1-系统总体架构">
 <a class="header-anchor" href="#1-%e7%b3%bb%e7%bb%9f%e6%80%bb%e4%bd%93%e6%9e%b6%e6%9e%84"></a>
 1. 系统总体架构
 </h2><h3 id="11-系统设计原则">
 <a class="header-anchor" href="#11-%e7%b3%bb%e7%bb%9f%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99"></a>
 1.1 系统设计原则
-</h3><p>HFS1 轨道交通列车自动监控系统遵循以下设计原则：</p>
+</h3><p>轨道交通列车自动监控系统遵循以下设计原则：</p>
 <table>
 	<thead>
 			<tr>
@@ -374,20 +378,20 @@ HFS1 系统模块关系与架构分析
         A5["OsmMonitor (系统监控)"]
         A6["业务应用进程"]
     end
-    
+  
     subgraph 业务层["业务逻辑层"]
         B1["msg (消息中心)"]
         B2["tdsm (列车数据共享)"]
         B3["基础通信 (base/brdg)"]
     end
-    
+  
     subgraph 数据层["数据与中间件层"]
         C1["RedisMgr (Redis管理)"]
         C2["db_wrap (数据库封装)"]
         C3["工具库 (tools/ftplib/xml)"]
         C4["协议库与中间件"]
     end
-    
+  
     A1 -->|业务消息| B1
     A1 -->|数据访问| B2
     A2 -->|业务消息| B1
@@ -396,12 +400,12 @@ HFS1 系统模块关系与架构分析
     A4 -->|数据访问| C1
     A5 -->|监控数据| C1
     A6 -->|通信基础| B3
-    
+  
     B1 -->|消息底层| B3
     B2 -->|数据存储| C1
     B2 -->|数据库| C2
     B3 -->|基础工具| C3
-    
+  
     C1 -->|Redis底层| C3
     C2 -->|XML配置| C3
 </pre><h3 id="13-系统版本演进">
@@ -758,39 +762,39 @@ SIL2 安全模块
         TRCM[TRCM 进路]
         HMI[HmiTransInfo HMI]
     end
-    
+  
     subgraph 中间件["中间件层"]
         MSG[msg 消息中心]
         TDSM[tdsm 数据共享]
         BRDG[brdg 业务网桥]
         REDIS[RedisMgr]
     end
-    
+  
     subgraph 协议["协议层"]
         PROTOCOL[各类协议库]
     end
-    
+  
     subgraph 基础["基础层"]
         BASE[base 通信基础]
         TOOLS[tools 工具]
         XML[xml]
     end
-    
+  
     TDA --> MSG
     TICM --> MSG
     TOCM --> MSG
     TRCM --> MSG
     HMI --> MSG
-    
+  
     TDA --> TDSM
     TICM --> TDSM
     TOCM --> TDSM
     TRCM --> REDIS
-    
+  
     MSG --> BRDG
     BRDG --> BASE
     TDSM --> REDIS
-    
+  
     MSG --> PROTOCOL
     PROTOCOL --> BASE
     BASE --> TOOLS
@@ -909,7 +913,7 @@ SIL2 安全模块
     participant Msg as 消息中心
     participant Brdg as 业务网桥
     participant App2 as 应用进程2
-    
+  
     App1->>Msg: 打包消息(CMsgPack)
     Msg->>Brdg: 转发消息
     Brdg->>App2: 投递消息
@@ -925,7 +929,7 @@ SIL2 安全模块
     B[应用进程B] -->|读取| R
     C[应用进程C] -->|订阅| R
     R -->|通知| C
-    
+  
     style R fill:#f9f,stroke:#333
 </pre><h3 id="43-主备同步机制">
 <a class="header-anchor" href="#43-%e4%b8%bb%e5%a4%87%e5%90%8c%e6%ad%a5%e6%9c%ba%e5%88%b6"></a>
@@ -947,24 +951,24 @@ SIL2 安全模块
         PLAN[运行图计划]
         CMD[调度命令]
     end
-    
+  
     subgraph 进路控制["进路控制层"]
         ROUTE[进路选排]
         PATH[路径搜索]
         INTERLOCK[联锁接口]
     end
-    
+  
     subgraph 列车控制["列车控制层"]
         VOBC[VOBC车载]
         ATO[ATO自动驾驶]
         ATP[ATP列车保护]
     end
-    
+  
     subgraph 监控层["监控显示层"]
         MMI[MMI显示]
         HMI[HMI信息]
     end
-    
+  
     PLAN --> ROUTE
     CMD --> ROUTE
     ROUTE --> PATH
@@ -986,22 +990,22 @@ SIL2 安全模块
         T2[报警信息]
         T3[控制状态]
     end
-    
+  
     subgraph 处理["HmiTransInfo"]
         TASK1[HmiTransTask<br/>完整传输]
         TASK2[HmiTransQuickTask<br/>快速传输]
     end
-    
+  
     subgraph 协议["HmiTransProtocol"]
         PKT1[CHmiIndicationAllPkt<br/>全体包]
         PKT2[CHmiIndTrain<br/>列车信息]
         PKT3[CHmiDrawParam<br/>绘制参数]
     end
-    
+  
     subgraph 终端["终端"]
         MMI[MMI显示]
     end
-    
+  
     T1 --> TASK1
     T2 --> TASK1
     T3 --> TASK2
@@ -1226,14 +1230,14 @@ SIL2 安全模块
 </ol>
 <p>系统经过多年演进，已形成稳定的核心架构，未来可通过容器化、微服务化等手段进一步提升可维护性和可扩展性。</p>
 <hr>
-<p><strong>文档生成时间</strong>：2026-06-19<br>
+<p><strong>文档生成时间</strong>：2026-06-19
 <strong>文档版本</strong>：v2.0（重新生成）</p>
 </div>
-    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/&amp;appkey=&amp;title=&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="">
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/&amp;appkey=&amp;title=%e5%90%8e%e5%8f%b0%e7%b3%bb%e7%bb%9f%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%88%86%e6%9e%90&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="后台系统模块关系与架构分析">
       <div class="share-icon icon icon-weibo"></div>
-    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/&amp;title=&amp;desc=%20HFS1%20%e7%b3%bb%e7%bb%9f%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%88%86%e6%9e%90%201.%20%e7%b3%bb%e7%bb%9f%e6%80%bb%e4%bd%93%e6%9e%b6%e6%9e%84%201.1%20%e7%b3%bb%e7%bb%9f%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99%20HFS1%20%e8%bd%a8%e9%81%93%e4%ba%a4%e9%80%9a%e5%88%97%e8%bd%a6%e8%87%aa%e5%8a%a8%e7%9b%91%e6%8e%a7%e7%b3%bb%e7%bb%9f%e9%81%b5%e5%be%aa%e4%bb%a5%e4%b8%8b%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99%ef%bc%9a%0a%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99%20%e6%8f%8f%e8%bf%b0%20%e5%ae%9e%e7%8e%b0%e6%96%b9%e5%bc%8f%20%e6%a8%a1%e5%9d%97%e5%8c%96%20%e9%ab%98%e5%86%85%e8%81%9a%e3%80%81%e4%bd%8e%e8%80%a6%e5%90%88%e7%9a%84%e6%a8%a1%e5%9d%97%e5%88%92%e5%88%86%20%e6%af%8f%e4%b8%aa%e7%9b%ae%e5%bd%95%e5%af%b9%e5%ba%94%e7%8b%ac%e7%ab%8b%e5%8a%9f%e8%83%bd%e6%a8%a1%e5%9d%97%20%e5%88%86%e5%b1%82%e6%9e%b6%e6%9e%84%20%e6%b8%85%e6%99%b0%e7%9a%84%e5%b1%82%e6%ac%a1%e7%bb%93%e6%9e%84%ef%bc%8c%e8%81%8c%e8%b4%a3%e5%88%86%e6%98%8e%20%e5%9f%ba%e7%a1%80%e5%ba%93%e2%86%92%e9%80%9a%e4%bf%a1%e2%86%92%e5%8d%8f%e8%ae%ae%e2%86%92%e4%b8%9a%e5%8a%a1%e2%86%92%e5%ba%94%e7%94%a8%20%e6%9d%be%e8%80%a6%e5%90%88%20%e6%a8%a1%e5%9d%97%e9%97%b4%e9%80%9a%e8%bf%87%e6%b6%88%e6%81%af%e5%92%8c%e6%8e%a5%e5%8f%a3%e9%80%9a%e4%bf%a1%20%e5%9f%ba%e4%ba%8emsg/brdg%e6%b6%88%e6%81%af%e6%80%bb%e7%ba%bf%20%e9%ab%98%e5%8f%af%e9%9d%a0%e6%80%a7%20%e6%95%85%e9%9a%9c%e6%a3%80%e6%b5%8b%e3%80%81%e5%86%97%e4%bd%99%e5%a4%87%e4%bb%bd%201&#43;N%e4%b8%bb%e5%a4%87%e3%80%81%e5%8f%8c%e7%bd%91%e5%86%97%e4%bd%99%e3%80%81SIL2%20%e5%8f%af%e6%89%a9%e5%b1%95%e6%80%a7%20%e6%98%93%e4%ba%8e%e6%96%b0%e5%a2%9e%e5%8a%9f%e8%83%bd%e5%92%8c%e6%a8%a1%e5%9d%97%20%e6%8f%92%e4%bb%b6%e5%8c%96%e8%ae%be%e8%ae%a1%e3%80%81%e9%85%8d%e7%bd%ae%e9%a9%b1%e5%8a%a8%201.2%20%e7%b3%bb%e7%bb%9f%e5%88%86%e5%b1%82%e6%9e%b6%e6%9e%84%20graph%20TD%20subgraph%20%e5%ba%94%e7%94%a8%e5%b1%82[%22%e5%ba%94%e7%94%a8%e5%b1%82%20%28Application%20Layer%29%22]%20A1[%22TDA%20%e2%80%a6&amp;source=https://TimeHunter618.github.io/hugo-maid-dev/" target="_blank" rel="noopener noreferrer" title="">
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/&amp;title=%e5%90%8e%e5%8f%b0%e7%b3%bb%e7%bb%9f%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%88%86%e6%9e%90&amp;desc=%e6%b7%b1%e5%85%a5%e5%88%86%e6%9e%90%e6%a8%a1%e5%9d%97%e4%be%9d%e8%b5%96%e5%85%b3%e7%b3%bb%e3%80%81%e9%80%9a%e4%bf%a1%e6%9c%ba%e5%88%b6%e4%b8%8e%e4%b8%9a%e5%8a%a1%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1&amp;source=https://TimeHunter618.github.io/hugo-maid-dev/" target="_blank" rel="noopener noreferrer" title="后台系统模块关系与架构分析">
       <div class="share-icon icon icon-qq"></div>
-    </a><a href="javascript:;"  title="">
+    </a><a href="javascript:;"  title="后台系统模块关系与架构分析">
       <div class="share-icon icon icon-weixin"><div id="share-weixin">
             <div class="share-weixin-dom">
               <div class="share-weixin-content">
@@ -1251,12 +1255,47 @@ SIL2 安全模块
             </div>
             <div class="share-weixin-canvas"></div>
           </div></div>
-    </a><a href="https://twitter.com/intent/tweet?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/&amp;text=&amp;via=https://TimeHunter618.github.io/hugo-maid-dev/" target="_blank" rel="noopener noreferrer" title="">
+    </a><a href="https://twitter.com/intent/tweet?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/&amp;text=%e5%90%8e%e5%8f%b0%e7%b3%bb%e7%bb%9f%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%88%86%e6%9e%90&amp;via=https://TimeHunter618.github.io/hugo-maid-dev/" target="_blank" rel="noopener noreferrer" title="后台系统模块关系与架构分析">
       <div class="share-icon icon icon-twitter"></div>
-    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/" target="_blank" rel="noopener noreferrer" title="">
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/" target="_blank" rel="noopener noreferrer" title="后台系统模块关系与架构分析">
       <div class="share-icon icon icon-facebook"></div>
-    </a></div><ul class="article-category-list"></ul>
-<ul class="article-tag-list" itemprop="keywords"></ul>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="/hugo-maid-dev/categories/%e8%bd%a8%e9%81%93%e4%ba%a4%e9%80%9a"
+      data-aos="zoom-in"
+      >轨道交通</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="/hugo-maid-dev/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/hugo-maid-dev/tags/ats"
+        rel="tag"
+        >ATS</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/hugo-maid-dev/tags/%e8%bd%a8%e9%81%93%e4%ba%a4%e9%80%9a"
+        rel="tag"
+        >轨道交通</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/hugo-maid-dev/tags/%e6%a8%a1%e5%9d%97%e6%9e%b6%e6%9e%84"
+        rel="tag"
+        >模块架构</a
+      >
+    </li></ul>
 </footer>
   </div><nav
     id="article-nav"
@@ -1265,27 +1304,27 @@ SIL2 安全模块
   ><div class="article-nav-link-wrap left"><img
               data-src="https://d-sketon.top/img/_backwebp/bg1.webp"
               data-sizes="auto"
-              alt=""
+              alt="后台业务信息流分析"
               class="lazyload"
             /><a
-          href="/hugo-maid-dev/post/ats/frontend/cmctrlcmdprocplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/"
-          aria-label="前一篇:(no title)"
-          title="前一篇:(no title)"
+          href="/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E4%B8%9A%E5%8A%A1%E4%BF%A1%E6%81%AF%E6%B5%81%E5%88%86%E6%9E%90/"
+          aria-label="前一篇:后台业务信息流分析"
+          title="前一篇:后台业务信息流分析"
         ></a>
         <div class="article-nav-caption">前一篇</div>
-        <h3 class="article-nav-title">(no title)</h3>
+        <h3 class="article-nav-title">后台业务信息流分析</h3>
       </div><div class="article-nav-link-wrap right"><img
               data-src="https://d-sketon.top/img/_backwebp/bg1.webp"
               data-sizes="auto"
-              alt=""
+              alt="后台项目整体说明"
               class="lazyload"
             /><a
-          href="/hugo-maid-dev/post/ats/backend/%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E/"
-          aria-label="后一篇:(no title)"
-          title="后一篇:(no title)"
+          href="/hugo-maid-dev/post/ats/backend/%E5%90%8E%E5%8F%B0%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E/"
+          aria-label="后一篇:后台项目整体说明"
+          title="后一篇:后台项目整体说明"
         ></a>
         <div class="article-nav-caption">后一篇</div>
-        <h3 class="article-nav-title">(no title)</h3>
+        <h3 class="article-nav-title">后台项目整体说明</h3>
       </div></nav></article></section>
         </div><footer id="footer" aria-label="Site footer">
   <div style="width: 100%; overflow: hidden">
@@ -1307,10 +1346,10 @@ SIL2 安全模块
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;79.6k</span
+          >&nbsp;48.7k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;02:52</span>
+        <span class="icon-coffee">&nbsp;01:45</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -1423,7 +1462,7 @@ SIL2 安全模块
 </div>
 <div class="sidebar-state">
   <div class="sidebar-state-article">
-    <div>文章</div><div class="sidebar-state-number">33</div>
+    <div>文章</div><div class="sidebar-state-number">19</div>
   </div>
   <a class="sidebar-state-category" href="/hugo-maid-dev/categories/" aria-label="sidebar-state-category-link">
     <div>分类</div>
@@ -1535,11 +1574,110 @@ SIL2 安全模块
   <div><script data-pjax>
         window.REIMU_POST = {
           author: "Aries",
-          title: "",
-          url: "https:\/\/TimeHunter618.github.io\/hugo-maid-dev\/post\/ats\/backend\/%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90\/",
-          description: " HFS1 系统模块关系与架构分析 1. 系统总体架构 1.1 系统设计原则 HFS1 轨道交通列车自动监控系统遵循以下设计原则：\n设计原则 描述 实现方式 模块化 高内聚、低耦合的模块划分 每个目录对应独立功能模块 分层架构 清晰的层次结构，职责分明 基础库→通信→协议→业务→应用 松耦合 模块间通过消息和接口通信 基于msg\/brdg消息总线 高可靠性 故障检测、冗余备份 1\u002bN主备、双网冗余、SIL2 可扩展性 易于新增功能和模块 插件化设计、配置驱动 1.2 系统分层架构 graph TD subgraph 应用层[\u0022应用层 (Application Layer)\u0022] A1[\u0022TDA …",
+          title: "后台系统模块关系与架构分析",
+          url: "https:\/\/TimeHunter618.github.io\/hugo-maid-dev\/post\/ats\/backend\/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90\/",
+          description: "深入分析模块依赖关系、通信机制与业务架构设计",
           cover: "https:\/\/TimeHunter618.github.io\/hugo-maid-dev\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="/hugo-maid-dev/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="/hugo-maid-dev/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({
