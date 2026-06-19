@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Transformer on My New Hugo Site</title>
+    <title>Transformer on Aries的研发手记</title>
     <link>https://TimeHunter618.github.io/hugo-maid-dev/tags/transformer/</link>
-    <description>Recent content from My New Hugo Site</description>
+    <description>Recent content from Aries的研发手记</description>
     <generator>Hugo</generator>
     <language>zh-CN</language>
     
@@ -35,10 +35,10 @@
 引言
 </h2><p>Transformer 架构自 2017 年提出以来，已经成为自然语言处理乃至整个深度学习领域的基石。从 GPT 系列到 BERT，从 ViT 到 Diffusion Model，Transformer 的身影无处不在。本文将从第一性原理出发，深入拆解 Transformer 的每一个核心组件，帮助读者彻底理解这一革命性的架构设计。</p>
         
-        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
+        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
       </description>
       
-        <category>技术分享</category>
+        <category>人工智能</category><category>技术分享</category>
       
     </item>
     

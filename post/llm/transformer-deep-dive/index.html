@@ -41,13 +41,13 @@
   <meta property="og:url" content="https://TimeHunter618.github.io/hugo-maid-dev/post/llm/transformer-deep-dive/" />
   <meta
     property="og:site_name"
-    content="My New Hugo Site"
+    content="Aries的研发手记"
   />
   <meta property="og:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
   <meta property="article:author" content="Aries" />
   <meta property="article:published_time" content="2026-06-19T03:10:00&#43;08:00" />
   <meta property="article:modified_time" content="2026-06-19T03:10:00&#43;08:00" /><meta property="article:tag" content="Transformer, 注意力机制, 深度学习, 神经网络" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
-<link rel="shortcut icon" href="/hugo-maid-dev/favicon.ico"><link rel="stylesheet" href="/hugo-maid-dev/css/main.min.52f90f81d24ae07aa7c621951238c9e4926c0be9ffdda455215cabb471734a1c.css" /><link
+<link rel="shortcut icon" href="/hugo-maid-dev/favicon.ico"><link rel="stylesheet" href="/hugo-maid-dev/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
     rel="preload"
     as="style"
     href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
@@ -80,7 +80,7 @@
             <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
             <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
           M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
-          </svg></div><div class="loading-word">少女祈祷中...</div>
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
     </div>
   </div>
   </div>
@@ -119,7 +119,7 @@
       <div id="wrap"><div id="header-nav">
   <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="/hugo-maid-dev/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
       </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
-      </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">归档</span>
+      </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
       </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
       </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/friend"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">友链</span>
       </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
@@ -173,13 +173,13 @@
           }
         });
       </script>
-    </nav><a href="https://github.com/TimeHunter618/hugo-maid-dev" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
       <div class="icon icon-github triangle-badge-icon"></div>
     </a></div>
 <header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="/hugo-maid-dev/images/banner.webp" alt="Transformer 架构深度解析"><div id="header-outer">
     <div id="header-title"><span id="logo">
             <h1 data-aos="slide-up">Transformer 架构深度解析</h1>
-          </span><h2 id="subtitle-wrap" data-aos="slide-down"></h2></div>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节</span></h2></div>
   </div>
 </header><div id="content"
           aria-label="Page content"
@@ -272,12 +272,12 @@
   <a class="sidebar-state-category" href="/hugo-maid-dev/categories/" aria-label="sidebar-state-category-link">
     <div>分类</div>
     <div class="sidebar-state-number">
-      2
+      3
     </div>
   </a>
   <a class="sidebar-state-tag" href="/hugo-maid-dev/tags/" aria-label="sidebar-state-tag-link">
     <div>标签</div>
-    <div class="sidebar-state-number">17</div>
+    <div class="sidebar-state-number">20</div>
   </a>
 </div>
 <div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
@@ -297,7 +297,7 @@
         class="sidebar-menu-link-dummy"
         href="/hugo-maid-dev/archives"
         aria-label=""
-      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">归档</div>
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
     </div><div class="sidebar-menu-link-wrap">
       <a
         class="sidebar-menu-link-dummy"
@@ -890,6 +890,13 @@ $$<p>时间复杂度从 $O(n^2d)$ 降低到 $O(nd^2)$，当 $n \gg d$ 时优势�
     </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
     <a
       class="article-category-link"
+      href="/hugo-maid-dev/categories/%e4%ba%ba%e5%b7%a5%e6%99%ba%e8%83%bd"
+      data-aos="zoom-in"
+      >人工智能</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
       href="/hugo-maid-dev/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
       data-aos="zoom-in"
       >技术分享</a
@@ -994,6 +1001,32 @@ $$<p>时间复杂度从 $O(n^2d)$ 降低到 $O(nd^2)$，当 $n \gg d$ 时优势�
         ></span>
       </div></div>
 </footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
 <div class="sidebar-top">
             <div class="sidebar-top-taichi rotate"></div>
             <div class="arrow-up"></div>
@@ -1083,12 +1116,12 @@ $$<p>时间复杂度从 $O(n^2d)$ 降低到 $O(nd^2)$，当 $n \gg d$ 时优势�
   <a class="sidebar-state-category" href="/hugo-maid-dev/categories/" aria-label="sidebar-state-category-link">
     <div>分类</div>
     <div class="sidebar-state-number">
-      2
+      3
     </div>
   </a>
   <a class="sidebar-state-tag" href="/hugo-maid-dev/tags/" aria-label="sidebar-state-tag-link">
     <div>标签</div>
-    <div class="sidebar-state-number">17</div>
+    <div class="sidebar-state-number">20</div>
   </a>
 </div>
 <div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
@@ -1108,7 +1141,7 @@ $$<p>时间复杂度从 $O(n^2d)$ 降低到 $O(nd^2)$，当 $n \gg d$ 时优势�
         class="sidebar-menu-link-dummy"
         href="/hugo-maid-dev/archives"
         aria-label=""
-      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">归档</div>
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
     </div><div class="sidebar-menu-link-wrap">
       <a
         class="sidebar-menu-link-dummy"

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>AI on My New Hugo Site</title>
+    <title>AI on Aries的研发手记</title>
     <link>https://TimeHunter618.github.io/hugo-maid-dev/tags/ai/</link>
-    <description>Recent content from My New Hugo Site</description>
+    <description>Recent content from Aries的研发手记</description>
     <generator>Hugo</generator>
     <language>zh-CN</language>
     
@@ -35,7 +35,7 @@
 专栏介绍
 </h2><p>本专栏深入探讨大语言模型（Large Language Model, LLM）的核心技术与前沿进展，涵盖基础原理、架构解析、微调技术、应用开发等多个维度，帮助读者系统掌握大模型时代的技术能力。</p>
         
-        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
+        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
       </description>
       
         <category>人工智能</category>

@@ -34,19 +34,6 @@
     <loc>https://TimeHunter618.github.io/hugo-maid-dev/en/post/new/</loc>
     <lastmod>2026-06-18T15:47:00+08:00</lastmod>
   </url><url>
-    <loc>https://TimeHunter618.github.io/hugo-maid-dev/en/archives/</loc>
-    <lastmod>2022-07-26T21:46:25+08:00</lastmod>
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-CN"
-                href="https://TimeHunter618.github.io/hugo-maid-dev/archives/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en"
-                href="https://TimeHunter618.github.io/hugo-maid-dev/en/archives/"
-                />
-  </url><url>
     <loc>https://TimeHunter618.github.io/hugo-maid-dev/en/post/</loc>
     <lastmod>2022-07-26T21:46:25+08:00</lastmod>
     <xhtml:link
@@ -58,6 +45,19 @@
                 rel="alternate"
                 hreflang="en"
                 href="https://TimeHunter618.github.io/hugo-maid-dev/en/post/"
+                />
+  </url><url>
+    <loc>https://TimeHunter618.github.io/hugo-maid-dev/en/archives/</loc>
+    <lastmod>2022-07-26T21:46:25+08:00</lastmod>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh-CN"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/archives/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://TimeHunter618.github.io/hugo-maid-dev/en/archives/"
                 />
   </url><url>
     <loc>https://TimeHunter618.github.io/hugo-maid-dev/en/about/</loc>

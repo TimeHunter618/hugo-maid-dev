@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>技术分享 on My New Hugo Site</title>
+    <title>技术分享 on Aries的研发手记</title>
     <link>https://TimeHunter618.github.io/hugo-maid-dev/categories/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/</link>
-    <description>Recent content from My New Hugo Site</description>
+    <description>Recent content from Aries的研发手记</description>
     <generator>Hugo</generator>
     <language>zh-CN</language>
     
@@ -42,10 +42,10 @@
 </ol>
 <p>检索增强生成（Retrieval-Augmented Generation, RAG）为这些问题提供了一个优雅的解决方案。通过在生成过程中引入外部知识检索，RAG 让大模型能够&quot;查资料&quot;后再回答问题，从而大幅提升回答的准确性和时效性。</p>
         
-        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
+        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
       </description>
       
-        <category>技术分享</category>
+        <category>人工智能</category><category>技术分享</category>
       
     </item>
     
@@ -65,10 +65,10 @@
 引言
 </h2><p>大语言模型（LLM）在海量数据上预训练后，获得了强大的通用能力。但要将这些通用能力适配到特定领域或特定任务上，微调（Fine-tuning）是不可或缺的关键步骤。</p>
         
-        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
+        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
       </description>
       
-        <category>技术分享</category>
+        <category>人工智能</category><category>技术分享</category>
       
     </item>
     
@@ -88,10 +88,10 @@
 引言
 </h2><p>Transformer 架构自 2017 年提出以来，已经成为自然语言处理乃至整个深度学习领域的基石。从 GPT 系列到 BERT，从 ViT 到 Diffusion Model，Transformer 的身影无处不在。本文将从第一性原理出发，深入拆解 Transformer 的每一个核心组件，帮助读者彻底理解这一革命性的架构设计。</p>
         
-        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
+        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
       </description>
       
-        <category>技术分享</category>
+        <category>人工智能</category><category>技术分享</category>
       
     </item>
     
@@ -111,10 +111,10 @@
 引言
 </h2><p>大语言模型（Large Language Model, LLM）正在深刻改变着人机交互的方式，推动着人工智能技术进入新的时代。从最初的统计语言模型到如今参数规模突破万亿的超大规模预训练模型，语言模型技术经历了数十年的演进与发展。本文将系统梳理大语言模型的发展历程，深入解析其核心技术原理，帮助读者建立对这一前沿技术的全面认知。</p>
         
-        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
+        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
       </description>
       
-        <category>技术分享</category>
+        <category>人工智能</category><category>技术分享</category>
       
     </item>
     

@@ -41,13 +41,13 @@
   <meta property="og:url" content="https://TimeHunter618.github.io/hugo-maid-dev/en/post/success/index2/" />
   <meta
     property="og:site_name"
-    content="My New Hugo Site"
+    content="Aries的研发手记"
   />
   <meta property="og:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
   <meta property="article:author" content="Aries" />
   <meta property="article:published_time" content="2026-06-19T02:37:34&#43;08:00" />
   <meta property="article:modified_time" content="2026-06-19T02:37:34&#43;08:00" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
-<link rel="shortcut icon" href="/hugo-maid-dev/favicon.ico"><link rel="stylesheet" href="/hugo-maid-dev/css/main.min.52f90f81d24ae07aa7c621951238c9e4926c0be9ffdda455215cabb471734a1c.css" /><link
+<link rel="shortcut icon" href="/hugo-maid-dev/favicon.ico"><link rel="stylesheet" href="/hugo-maid-dev/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
     rel="preload"
     as="style"
     href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
@@ -80,7 +80,7 @@
             <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
             <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
           M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
-          </svg></div><div class="loading-word">Loading...</div>
+          </svg></div><div class="loading-word">Weave dreams with code, explore infinity with technology</div>
     </div>
   </div>
   </div>
@@ -119,7 +119,7 @@ This article does not have a corresponding language version
       <div id="wrap"><div id="header-nav">
   <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="/hugo-maid-dev/en/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">Home</span>
       </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/en/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">Projects</span>
-      </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/en/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">Archives</span>
+      </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/en/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">Tech Share</span>
       </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/en/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">About</span>
       </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/en/friend"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">Friend</span>
       </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
@@ -173,7 +173,7 @@ This article does not have a corresponding language version
           }
         });
       </script>
-    </nav><a href="https://github.com/TimeHunter618/hugo-maid-dev" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
       <div class="icon icon-github triangle-badge-icon"></div>
     </a></div>
 <header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="/hugo-maid-dev/images/banner.webp" alt="Index2"><div id="header-outer">
@@ -234,7 +234,7 @@ This article does not have a corresponding language version
         class="sidebar-menu-link-dummy"
         href="/hugo-maid-dev/en/archives"
         aria-label=""
-      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">Archives</div>
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">Tech Share</div>
     </div><div class="sidebar-menu-link-wrap">
       <a
         class="sidebar-menu-link-dummy"
@@ -360,6 +360,32 @@ This article does not have a corresponding language version
         ></span>
       </div></div>
 </footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
 <div class="sidebar-top">
             <div class="sidebar-top-taichi rotate"></div>
             <div class="arrow-up"></div>
@@ -411,7 +437,7 @@ This article does not have a corresponding language version
         class="sidebar-menu-link-dummy"
         href="/hugo-maid-dev/en/archives"
         aria-label=""
-      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">Archives</div>
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">Tech Share</div>
     </div><div class="sidebar-menu-link-wrap">
       <a
         class="sidebar-menu-link-dummy"

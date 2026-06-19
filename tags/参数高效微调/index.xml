@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>参数高效微调 on My New Hugo Site</title>
+    <title>参数高效微调 on Aries的研发手记</title>
     <link>https://TimeHunter618.github.io/hugo-maid-dev/tags/%E5%8F%82%E6%95%B0%E9%AB%98%E6%95%88%E5%BE%AE%E8%B0%83/</link>
-    <description>Recent content from My New Hugo Site</description>
+    <description>Recent content from Aries的研发手记</description>
     <generator>Hugo</generator>
     <language>zh-CN</language>
     
@@ -35,10 +35,10 @@
 引言
 </h2><p>大语言模型（LLM）在海量数据上预训练后，获得了强大的通用能力。但要将这些通用能力适配到特定领域或特定任务上，微调（Fine-tuning）是不可或缺的关键步骤。</p>
         
-        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
+        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
       </description>
       
-        <category>技术分享</category>
+        <category>人工智能</category><category>技术分享</category>
       
     </item>
     

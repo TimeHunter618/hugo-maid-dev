@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>GPT on My New Hugo Site</title>
+    <title>GPT on Aries的研发手记</title>
     <link>https://TimeHunter618.github.io/hugo-maid-dev/tags/gpt/</link>
-    <description>Recent content from My New Hugo Site</description>
+    <description>Recent content from Aries的研发手记</description>
     <generator>Hugo</generator>
     <language>zh-CN</language>
     
@@ -35,10 +35,10 @@
 引言
 </h2><p>大语言模型（Large Language Model, LLM）正在深刻改变着人机交互的方式，推动着人工智能技术进入新的时代。从最初的统计语言模型到如今参数规模突破万亿的超大规模预训练模型，语言模型技术经历了数十年的演进与发展。本文将系统梳理大语言模型的发展历程，深入解析其核心技术原理，帮助读者建立对这一前沿技术的全面认知。</p>
         
-        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
+        <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
       </description>
       
-        <category>技术分享</category>
+        <category>人工智能</category><category>技术分享</category>
       
     </item>
     
