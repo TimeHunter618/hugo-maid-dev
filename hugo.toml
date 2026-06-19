@@ -49,9 +49,6 @@ url = 'archives'
 [[params.menu]]
 name = 'About'
 url = 'about'
-[[params.menu]]
-name = 'Friend'
-url = 'friend'
 
 [params.triangle_badge]
 enable = true
@@ -142,9 +139,6 @@ url = 'archives'
 [[languages."zh-CN".params.menu]]
 name = '关于'
 url = 'about'
-[[languages."zh-CN".params.menu]]
-name = '友链'
-url = 'friend'
 
 [markup.goldmark.extensions.passthrough]
 enable = true

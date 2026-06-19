@@ -1,10 +1,22 @@
 ---
 title: 关于
-description: 关于
+description: 关于Aries的博客
 
 date: 2022-06-09T20:12:52+08:00
 lastmod: 2022-06-09T20:12:52+08:00
 ---
+## 这里是Aries的博客
 
-这是一个基于 Hugo 的博客主题，灵感来源于东方 Project 的博丽灵梦风格。
-主题迁移自 [hexo-theme-reimu](https://github.com/D-Sketon/hexo-theme-reimu)。
+某985硕士研究生
+
+社畜一枚
+
+博客基于 Hugo & Reimu 主题
+
+邮箱：838925706@qq.com
+
+图库均来源网络，侵删
+
+## 小伙伴们
+
+{{< friendsLink >}}
