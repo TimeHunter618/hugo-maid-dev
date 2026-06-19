@@ -10,6 +10,7 @@ tags:
   - Web
 categories:
   - Web开发
+cover: https://d-sketon.top/img/backwebp/bg3.webp
 photos:
   - https://d-sketon.top/img/backwebp/bg3.webp
 ---

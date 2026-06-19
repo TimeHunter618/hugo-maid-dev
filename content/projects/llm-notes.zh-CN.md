@@ -10,6 +10,7 @@ tags:
   - AI
 categories:
   - 人工智能
+cover: https://d-sketon.top/img/backwebp/bg2.webp
 photos:
   - https://d-sketon.top/img/backwebp/bg2.webp
 ---
