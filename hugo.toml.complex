@@ -48,6 +48,27 @@ type = 'playlist'
 [params.pjax]
 enable = true
 
+[params.live2d]
+enable = false
+position = 'left'
+
+[params.live2d_widgets]
+enable = true
+position = 'left'
+
+[params.social]
+github = 'https://github.com/TimeHunter618'
+bilibili = 'https://space.bilibili.com/'
+zhihu = 'https://www.zhihu.com/people/'
+email = 'mailto:xxx@example.com'
+
+[params.home_categories]
+enable = true
+[[params.home_categories.content]]
+categories = "人工智能"
+[[params.home_categories.content]]
+categories = "大语言模型"
+
 [params.quicklink]
 enable = true
 timeout = 3000
