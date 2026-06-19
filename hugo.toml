@@ -6,10 +6,16 @@ theme = 'hugo-theme-reimu'
 defaultContentLanguage = 'zh-CN'
 
 [params]
+author = 'Aries'
+avatar = 'aries.png'
+description = '愿世界和平 ✨'
 share = ["weibo", "qq", "weixin", "twitter", "facebook"]
 [[params.menu]]
 name = 'Home'
 url = ''
+[[params.menu]]
+name = 'Projects'
+url = 'projects'
 [[params.menu]]
 name = 'Archives'
 url = 'archives'
@@ -100,6 +106,9 @@ hasCJKLanguage = true
 [[languages."zh-CN".params.menu]]
 name = '首页'
 url = ''
+[[languages."zh-CN".params.menu]]
+name = '项目介绍'
+url = 'projects'
 [[languages."zh-CN".params.menu]]
 name = '归档'
 url = 'archives'

@@ -10,8 +10,7 @@ tags:
   - 深度学习
   - 神经网络
 categories:
-  - 人工智能
-  - 大语言模型
+  - 技术分享
 math: true
 mermaid: true
 photos:
