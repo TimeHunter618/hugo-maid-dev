@@ -1,0 +1,1803 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  后台系统模块关系与架构分析 | Aries
+</title>
+<meta name="description" content="深入分析模块依赖关系、通信机制与业务架构设计"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://TimeHunter618.github.io/hugo-maid-dev/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="/hugo-maid-dev/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="后台系统模块关系与架构分析 | Aries" />
+  <meta
+    property="og:description"
+    content="深入分析模块依赖关系、通信机制与业务架构设计"
+  />
+  <meta property="og:url" content="https://TimeHunter618.github.io/hugo-maid-dev/post/ats/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2024-06-22T14:30:00&#43;08:00" />
+  <meta property="article:modified_time" content="2024-06-22T14:30:00&#43;08:00" /><meta property="article:tag" content="ATS, 轨道交通, 模块架构" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
+<link rel="shortcut icon" href="/hugo-maid-dev/favicon.ico"><link rel="stylesheet" href="/hugo-maid-dev/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="/hugo-maid-dev/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="/hugo-maid-dev/images/banner.webp" alt="后台系统模块关系与架构分析"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">后台系统模块关系与架构分析</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">深入分析模块依赖关系、通信机制与业务架构设计</span></h2></div>
+  </div>
+</header><div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container sticky"><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-系统总体架构">1. 系统总体架构</a>
+      <ul>
+        <li><a href="#11-系统设计原则">1.1 系统设计原则</a></li>
+        <li><a href="#12-系统分层架构">1.2 系统分层架构</a></li>
+        <li><a href="#13-系统版本演进">1.3 系统版本演进</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-模块功能分类">2. 模块功能分类</a>
+      <ul>
+        <li><a href="#21-模块分类总览">2.1 模块分类总览</a></li>
+        <li><a href="#22-完整模块清单">2.2 完整模块清单</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-模块依赖关系">3. 模块依赖关系</a>
+      <ul>
+        <li><a href="#31-核心依赖关系图">3.1 核心依赖关系图</a></li>
+        <li><a href="#32-关键模块依赖矩阵">3.2 关键模块依赖矩阵</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-通信机制分析">4. 通信机制分析</a>
+      <ul>
+        <li><a href="#41-进程间通信ipc">4.1 进程间通信（IPC）</a></li>
+        <li><a href="#42-数据共享机制">4.2 数据共享机制</a></li>
+        <li><a href="#43-主备同步机制">4.3 主备同步机制</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-关键业务架构">5. 关键业务架构</a>
+      <ul>
+        <li><a href="#51-列车控制业务架构">5.1 列车控制业务架构</a></li>
+        <li><a href="#52-hmi信息传输架构">5.2 HMI信息传输架构</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-框架优势与不足">6. 框架优势与不足</a>
+      <ul>
+        <li><a href="#61-框架优势">6.1 框架优势</a></li>
+        <li><a href="#62-框架不足">6.2 框架不足</a></li>
+        <li><a href="#63-优化建议">6.3 优化建议</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-业务设计与模块关系">7. 业务设计与模块关系</a>
+      <ul>
+        <li><a href="#71-业务功能矩阵">7.1 业务功能矩阵</a></li>
+        <li><a href="#72-模块协作模式">7.2 模块协作模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#8-总结">8. 总结</a></li>
+  </ul>
+</nav>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="/hugo-maid-dev/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">33</div>
+  </div>
+  <a class="sidebar-state-category" href="/hugo-maid-dev/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      4
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="/hugo-maid-dev/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">41</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/hugo-maid-dev/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/hugo-maid-dev/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/hugo-maid-dev/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/hugo-maid-dev/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div><div class="sidebar-widget"></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2024-06-22 14:30:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2024-06-22</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2024-06-22</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=software%20module%20dependency%20graph%20network%20diagram%2C%20blue%20and%20cyan%20tech%20style&amp;image_size=landscape_16_9" target="_blank">
+          <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=software%20module%20dependency%20graph%20network%20diagram%2C%20blue%20and%20cyan%20tech%20style&amp;image_size=landscape_16_9" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h1 id="后台系统模块关系与架构分析">
+<a class="header-anchor" href="#%e5%90%8e%e5%8f%b0%e7%b3%bb%e7%bb%9f%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%88%86%e6%9e%90"></a>
+后台系统模块关系与架构分析
+</h1><h2 id="1-系统总体架构">
+<a class="header-anchor" href="#1-%e7%b3%bb%e7%bb%9f%e6%80%bb%e4%bd%93%e6%9e%b6%e6%9e%84"></a>
+1. 系统总体架构
+</h2><h3 id="11-系统设计原则">
+<a class="header-anchor" href="#11-%e7%b3%bb%e7%bb%9f%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99"></a>
+1.1 系统设计原则
+</h3><p>轨道交通列车自动监控系统遵循以下设计原则：</p>
+<table>
+	<thead>
+			<tr>
+					<th>设计原则</th>
+					<th>描述</th>
+					<th>实现方式</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>模块化</strong></td>
+					<td>高内聚、低耦合的模块划分</td>
+					<td>每个目录对应独立功能模块</td>
+			</tr>
+			<tr>
+					<td><strong>分层架构</strong></td>
+					<td>清晰的层次结构，职责分明</td>
+					<td>基础库→通信→协议→业务→应用</td>
+			</tr>
+			<tr>
+					<td><strong>松耦合</strong></td>
+					<td>模块间通过消息和接口通信</td>
+					<td>基于msg/brdg消息总线</td>
+			</tr>
+			<tr>
+					<td><strong>高可靠性</strong></td>
+					<td>故障检测、冗余备份</td>
+					<td>1+N主备、双网冗余、SIL2</td>
+			</tr>
+			<tr>
+					<td><strong>可扩展性</strong></td>
+					<td>易于新增功能和模块</td>
+					<td>插件化设计、配置驱动</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="12-系统分层架构">
+<a class="header-anchor" href="#12-%e7%b3%bb%e7%bb%9f%e5%88%86%e5%b1%82%e6%9e%b6%e6%9e%84"></a>
+1.2 系统分层架构
+</h3><pre class="mermaid">
+  graph TD
+    subgraph 应用层["应用层 (Application Layer)"]
+        A1["TDA (调度自动化)"]
+        A2["TICM (列车综合控制)"]
+        A3["TOCM (列车车载控制)"]
+        A4["TRCM (列车进路控制)"]
+        A5["OsmMonitor (系统监控)"]
+        A6["业务应用进程"]
+    end
+  
+    subgraph 业务层["业务逻辑层"]
+        B1["msg (消息中心)"]
+        B2["tdsm (列车数据共享)"]
+        B3["基础通信 (base/brdg)"]
+    end
+  
+    subgraph 数据层["数据与中间件层"]
+        C1["RedisMgr (Redis管理)"]
+        C2["db_wrap (数据库封装)"]
+        C3["工具库 (tools/ftplib/xml)"]
+        C4["协议库与中间件"]
+    end
+  
+    A1 -->|业务消息| B1
+    A1 -->|数据访问| B2
+    A2 -->|业务消息| B1
+    A3 -->|业务消息| B1
+    A4 -->|业务消息| B1
+    A4 -->|数据访问| C1
+    A5 -->|监控数据| C1
+    A6 -->|通信基础| B3
+  
+    B1 -->|消息底层| B3
+    B2 -->|数据存储| C1
+    B2 -->|数据库| C2
+    B3 -->|基础工具| C3
+  
+    C1 -->|Redis底层| C3
+    C2 -->|XML配置| C3
+</pre><h3 id="13-系统版本演进">
+<a class="header-anchor" href="#13-%e7%b3%bb%e7%bb%9f%e7%89%88%e6%9c%ac%e6%bc%94%e8%bf%9b"></a>
+1.3 系统版本演进
+</h3><table>
+	<thead>
+			<tr>
+					<th>版本</th>
+					<th>时间</th>
+					<th>主要变化</th>
+					<th>关键改进</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>1.0</td>
+					<td>2018年初</td>
+					<td>系统初始版本</td>
+					<td>基础架构建立</td>
+			</tr>
+			<tr>
+					<td>2.0</td>
+					<td>2018-2020</td>
+					<td>模块化重构完善</td>
+					<td>协议层独立</td>
+			</tr>
+			<tr>
+					<td>3.0</td>
+					<td>2020-2022</td>
+					<td>业务功能扩展</td>
+					<td>新增多项业务</td>
+			</tr>
+			<tr>
+					<td>4.0</td>
+					<td>2022-至今</td>
+					<td>性能优化Redis引入</td>
+					<td>数据共享优化</td>
+			</tr>
+			<tr>
+					<td>5.0</td>
+					<td>持续演进</td>
+					<td>安全性增强SIL2</td>
+					<td>安全完整性提升</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="2-模块功能分类">
+<a class="header-anchor" href="#2-%e6%a8%a1%e5%9d%97%e5%8a%9f%e8%83%bd%e5%88%86%e7%b1%bb"></a>
+2. 模块功能分类
+</h2><h3 id="21-模块分类总览">
+<a class="header-anchor" href="#21-%e6%a8%a1%e5%9d%97%e5%88%86%e7%b1%bb%e6%80%bb%e8%a7%88"></a>
+2.1 模块分类总览
+</h3><table>
+	<thead>
+			<tr>
+					<th>模块类别</th>
+					<th>模块名称</th>
+					<th>功能描述</th>
+					<th>核心文件</th>
+					<th>依赖</th>
+					<th>目录</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>基础通信</strong></td>
+					<td>base</td>
+					<td>基础通信框架，TCP/IP/Unix socket</td>
+					<td>base/client_base.h, base/server_base.h</td>
+					<td>tools</td>
+					<td>base/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>msg</td>
+					<td>消息封装、传输、解析中心</td>
+					<td>msg/CMsgPack.h, msg/CMsgHead.h</td>
+					<td>base, tools</td>
+					<td>msg/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>brdg</td>
+					<td>业务网桥，进程间业务消息桥接</td>
+					<td>brdg/brdg.h, brdg/brdg_client.h</td>
+					<td>msg, base</td>
+					<td>brdg/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>nbrdg</td>
+					<td>网络网桥，跨节点网络消息桥接</td>
+					<td>nbrdg/brdg.h</td>
+					<td>msg, base</td>
+					<td>nbrdg/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>xbrdg</td>
+					<td>扩展网桥，跨平台扩展消息桥接</td>
+					<td>xbrdg/brdg.h</td>
+					<td>msg, base</td>
+					<td>xbrdg/</td>
+			</tr>
+			<tr>
+					<td><strong>数据中间件</strong></td>
+					<td>tdsm</td>
+					<td>列车数据共享与内存数据库管理</td>
+					<td>tdsm/Tds.h, tdsm/Tds.cpp</td>
+					<td>msg, RedisMgr</td>
+					<td>tdsm/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>RedisMgr</td>
+					<td>Redis连接池与数据管理</td>
+					<td>RedisMgr/RedisMgr.h</td>
+					<td>hiredis</td>
+					<td>RedisMgr/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>db_wrap</td>
+					<td>ODBC数据库操作封装</td>
+					<td>db_wrap/db_wrap.h, db_wrap/odbc.cpp</td>
+					<td>xml, tools</td>
+					<td>db_wrap/</td>
+			</tr>
+			<tr>
+					<td><strong>核心应用</strong></td>
+					<td>tda</td>
+					<td>调度自动化，计划生成与分发</td>
+					<td>tda/tda.h, tda/DealPlan.cpp</td>
+					<td>msg, tdsm, TRCM</td>
+					<td>tda/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>ticm</td>
+					<td>列车综合控制，多定时任务</td>
+					<td>ticm/ticm.h, ticm/Task.cpp</td>
+					<td>msg, tdsm</td>
+					<td>ticm/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>tocm</td>
+					<td>列车车载控制（ATO/ATP）</td>
+					<td>tocm/tocm.h, tocm/AtoTask.cpp</td>
+					<td>msg, tdsm, TRCM</td>
+					<td>tocm/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>trcm</td>
+					<td>列车进路控制，路径搜索</td>
+					<td>trcm/trcm.h, trcm/PathSearch.cpp</td>
+					<td>msg, RedisMgr</td>
+					<td>trcm/</td>
+			</tr>
+			<tr>
+					<td><strong>接口适配</strong></td>
+					<td>edci</td>
+					<td>EDC（设备控制）接口</td>
+					<td>edci/edci.h</td>
+					<td>msg, base</td>
+					<td>edci/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>idci</td>
+					<td>IDC（车站标识）接口</td>
+					<td>idci/idci.h</td>
+					<td>msg, base</td>
+					<td>idci/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>idec</td>
+					<td>IDE（集中站）接口</td>
+					<td>idec/idec.h</td>
+					<td>msg, base</td>
+					<td>idec/</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>odci</td>
+					<td>ODC（输出控制）接口</td>
+					<td>odci/odci.h</td>
+					<td>msg, base</td>
+					<td>odci/</td>
+			</tr>
+			<tr>
+					<td><strong>基础工具</strong></td>
+					<td>tools</td>
+					<td>通用工具集（CRC、字符串、文件）</td>
+					<td>tools/utility.h, tools/CRC16.h</td>
+					<td>-</td>
+					<td>tools/</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="22-完整模块清单">
+<a class="header-anchor" href="#22-%e5%ae%8c%e6%95%b4%e6%a8%a1%e5%9d%97%e6%b8%85%e5%8d%95"></a>
+2.2 完整模块清单
+</h3><h4 id="核心业务模块7个">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e4%b8%9a%e5%8a%a1%e6%a8%a1%e5%9d%977%e4%b8%aa"></a>
+核心业务模块（7个）
+</h4><ul>
+<li><strong>TDA</strong> - 调度自动化模块</li>
+<li><strong>TICM</strong> - 列车综合控制模块</li>
+<li><strong>TOCM</strong> - 列车车载控制模块</li>
+<li><strong>TRCM</strong> - 列车进路控制模块</li>
+<li><strong>TACTCM</strong> - 列车实际运行控制模块</li>
+<li><strong>TDSM</strong> - 列车数据共享模块</li>
+<li><strong>CMSM</strong> - 中心管理服务模块</li>
+</ul>
+<h4 id="监控与人机界面12个">
+<a class="header-anchor" href="#%e7%9b%91%e6%8e%a7%e4%b8%8e%e4%ba%ba%e6%9c%ba%e7%95%8c%e9%9d%a212%e4%b8%aa"></a>
+监控与人机界面（12个）
+</h4><ul>
+<li><strong>HmiTransInfo</strong> - HMI信息传输</li>
+<li><strong>HmiTransProtocol</strong> - HMI传输协议</li>
+<li><strong>osm_plot</strong> - OSM绘图</li>
+<li><strong>osm_ind</strong> - OSM表示</li>
+<li><strong>osm_user</strong> - OSM用户</li>
+<li><strong>osm_dict</strong> - OSM字典</li>
+<li><strong>osm_bmp</strong> - OSM位图</li>
+<li><strong>osm_hisinfo</strong> - OSM历史信息</li>
+<li><strong>osm_dispplan</strong> - OSM显示计划</li>
+<li><strong>osm_statisinfo</strong> - OSM统计信息</li>
+<li><strong>osm_maintain</strong> - OSM维护</li>
+<li><strong>OsmMonitor</strong> - OSM系统监控</li>
+</ul>
+<h4 id="通信与消息9个">
+<a class="header-anchor" href="#%e9%80%9a%e4%bf%a1%e4%b8%8e%e6%b6%88%e6%81%af9%e4%b8%aa"></a>
+通信与消息（9个）
+</h4><ul>
+<li><strong>msg</strong> - 消息模块</li>
+<li><strong>base</strong> - 基础通信</li>
+<li><strong>brdg</strong> - 业务网桥</li>
+<li><strong>nbrdg</strong> - 网络网桥</li>
+<li><strong>xbrdg</strong> - 扩展网桥</li>
+<li><strong>cluster</strong> / <strong>cluster_new</strong> - 集群通信</li>
+<li><strong>mssync</strong> - 主备同步</li>
+<li><strong>nicmon</strong> - 网卡监控</li>
+<li><strong>ifstate</strong> - 接口状态</li>
+</ul>
+<h4 id="数据存储与访问5个">
+<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e5%ad%98%e5%82%a8%e4%b8%8e%e8%ae%bf%e9%97%ae5%e4%b8%aa"></a>
+数据存储与访问（5个）
+</h4><ul>
+<li><strong>RedisMgr</strong> - Redis管理</li>
+<li><strong>RedisClient</strong> - Redis客户端</li>
+<li><strong>hiredis</strong> - Redis C客户端基础库</li>
+<li><strong>db_wrap</strong> - 数据库封装</li>
+<li><strong>PublicTd</strong> - 公共数据</li>
+</ul>
+<h4 id="协议模块21个">
+<a class="header-anchor" href="#%e5%8d%8f%e8%ae%ae%e6%a8%a1%e5%9d%9721%e4%b8%aa"></a>
+协议模块（21个）
+</h4><ul>
+<li><strong>AtsVobcProtocol</strong> - ATS-VOBC协议</li>
+<li><strong>CtrlCmdProtocol</strong> - 控制命令协议</li>
+<li><strong>IndicationProtocol</strong> - 表示协议</li>
+<li><strong>HmiTransProtocol</strong> - HMI协议</li>
+<li><strong>DispatchProtocol</strong> - 调度协议</li>
+<li><strong>SyncProtocol</strong> - 同步协议</li>
+<li><strong>AtsZcProtocol</strong> - ATS-ZC协议</li>
+<li><strong>AtsToAtsProtocol</strong> - ATS-ATS协议</li>
+<li><strong>RmProtocol</strong> - 远程监控协议</li>
+<li><strong>DiagramProtocol</strong> - 运行图协议</li>
+<li><strong>InterfaceProtocol</strong> - 接口协议</li>
+<li><strong>InfoProcessProtocol</strong> - 信息处理协议</li>
+<li><strong>PublicProtocol</strong> - 公共协议</li>
+<li><strong>ParamMtnProtocol</strong> - 参数维护协议</li>
+<li><strong>StatAnalProtocol</strong> - 统计分析协议</li>
+<li><strong>DiagramSyncProtocol</strong> - 运行图同步协议</li>
+<li><strong>ExtSysConnProtocol</strong> - 外部系统连接协议</li>
+<li><strong>MatcAtsZcProtocol</strong> - MATC ATS-ZC协议</li>
+<li><strong>DagProtocol</strong> - DAG协议</li>
+<li><strong>BaseProtocol</strong> - 协议基础</li>
+<li><strong>PSDInter</strong> - 屏蔽门接口</li>
+</ul>
+<h4 id="接口适配器8个">
+<a class="header-anchor" href="#%e6%8e%a5%e5%8f%a3%e9%80%82%e9%85%8d%e5%99%a88%e4%b8%aa"></a>
+接口适配器（8个）
+</h4><ul>
+<li><strong>edci</strong> - EDC接口</li>
+<li><strong>idci</strong> - IDC接口</li>
+<li><strong>idec</strong> - IDE接口</li>
+<li><strong>odci</strong> - ODC接口</li>
+<li><strong>PSDInter</strong> - 屏蔽门接口</li>
+<li><strong>dtiinter</strong> - DTI接口</li>
+<li><strong>tcmsinter_A</strong> - TCMS接口</li>
+<li><strong>imcinter_A</strong> - IMC接口</li>
+</ul>
+<h4 id="基础库17个">
+<a class="header-anchor" href="#%e5%9f%ba%e7%a1%80%e5%ba%9317%e4%b8%aa"></a>
+基础库（17个）
+</h4><ul>
+<li><strong>base</strong> - 基础通信库</li>
+<li><strong>tools</strong> / <strong>tools-lock</strong> - 工具集</li>
+<li><strong>xml</strong> - XML库（基于tinyxml）</li>
+<li><strong>ftplib</strong> - FTP库</li>
+<li><strong>Framework</strong> - 框架</li>
+<li><strong>applib</strong> - 应用库</li>
+<li><strong>CheckLib</strong> - 检查库</li>
+<li><strong>packqueue</strong> / <strong>pack_selector</strong> - 包队列</li>
+<li><strong>AppInterface</strong> - 应用接口</li>
+<li><strong>PublicSys</strong> - 公共系统</li>
+<li><strong>PublicConfig</strong> - 公共配置</li>
+<li><strong>ServerConfig</strong> - 服务器配置</li>
+<li><strong>NetworkPlug</strong> - 网络插件</li>
+<li><strong>InterfaceBase</strong> - 接口基础</li>
+<li><strong>BaseProtocol</strong> - 协议基础</li>
+</ul>
+<h4 id="插件模块6个">
+<a class="header-anchor" href="#%e6%8f%92%e4%bb%b6%e6%a8%a1%e5%9d%976%e4%b8%aa"></a>
+插件模块（6个）
+</h4><ul>
+<li><strong>TrainDiagramPlug</strong> - 运行图插件</li>
+<li><strong>LogicTrainTrackPlug</strong> - 逻辑列车轨道插件</li>
+<li><strong>AtoTrainVerifyPlug</strong> - ATO列车校验插件</li>
+<li><strong>ReportTimePlug</strong> - 报表时间插件</li>
+<li><strong>NetworkPlug</strong> - 网络插件</li>
+<li><strong>SyncChannelPlug</strong> - 同步通道插件</li>
+</ul>
+<h4 id="sil2-安全模块">
+<a class="header-anchor" href="#sil2-%e5%ae%89%e5%85%a8%e6%a8%a1%e5%9d%97"></a>
+SIL2 安全模块
+</h4><ul>
+<li><strong>SIL2_code/</strong> - 安全完整性等级2代码
+<ul>
+<li>SIL2_AtsVobcProtocol</li>
+<li>SIL2_traininter</li>
+<li>SIL2_SpeedLimitProtocol</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-模块依赖关系">
+<a class="header-anchor" href="#3-%e6%a8%a1%e5%9d%97%e4%be%9d%e8%b5%96%e5%85%b3%e7%b3%bb"></a>
+3. 模块依赖关系
+</h2><h3 id="31-核心依赖关系图">
+<a class="header-anchor" href="#31-%e6%a0%b8%e5%bf%83%e4%be%9d%e8%b5%96%e5%85%b3%e7%b3%bb%e5%9b%be"></a>
+3.1 核心依赖关系图
+</h3><pre class="mermaid">
+  graph LR
+    subgraph 应用进程["应用进程层"]
+        TDA[TDA 调度]
+        TICM[TICM 列控]
+        TOCM[TOCM 车载]
+        TRCM[TRCM 进路]
+        HMI[HmiTransInfo HMI]
+    end
+  
+    subgraph 中间件["中间件层"]
+        MSG[msg 消息中心]
+        TDSM[tdsm 数据共享]
+        BRDG[brdg 业务网桥]
+        REDIS[RedisMgr]
+    end
+  
+    subgraph 协议["协议层"]
+        PROTOCOL[各类协议库]
+    end
+  
+    subgraph 基础["基础层"]
+        BASE[base 通信基础]
+        TOOLS[tools 工具]
+        XML[xml]
+    end
+  
+    TDA --> MSG
+    TICM --> MSG
+    TOCM --> MSG
+    TRCM --> MSG
+    HMI --> MSG
+  
+    TDA --> TDSM
+    TICM --> TDSM
+    TOCM --> TDSM
+    TRCM --> REDIS
+  
+    MSG --> BRDG
+    BRDG --> BASE
+    TDSM --> REDIS
+  
+    MSG --> PROTOCOL
+    PROTOCOL --> BASE
+    BASE --> TOOLS
+    BASE --> XML
+</pre><h3 id="32-关键模块依赖矩阵">
+<a class="header-anchor" href="#32-%e5%85%b3%e9%94%ae%e6%a8%a1%e5%9d%97%e4%be%9d%e8%b5%96%e7%9f%a9%e9%98%b5"></a>
+3.2 关键模块依赖矩阵
+</h3><table>
+	<thead>
+			<tr>
+					<th>模块</th>
+					<th>msg</th>
+					<th>base</th>
+					<th>tools</th>
+					<th>xml</th>
+					<th>RedisMgr</th>
+					<th>tdsm</th>
+					<th>brdg</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>TDA</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>✓</td>
+					<td>✓</td>
+			</tr>
+			<tr>
+					<td><strong>TICM</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>✓</td>
+					<td>✓</td>
+			</tr>
+			<tr>
+					<td><strong>TOCM</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>✓</td>
+					<td>✓</td>
+			</tr>
+			<tr>
+					<td><strong>TRCM</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>✓</td>
+			</tr>
+			<tr>
+					<td><strong>HmiTransInfo</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>-</td>
+					<td>✓</td>
+			</tr>
+			<tr>
+					<td><strong>msg</strong></td>
+					<td>-</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>-</td>
+					<td>-</td>
+					<td>-</td>
+			</tr>
+			<tr>
+					<td><strong>brdg</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>-</td>
+					<td>-</td>
+					<td>-</td>
+			</tr>
+			<tr>
+					<td><strong>tdsm</strong></td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>✓</td>
+					<td>-</td>
+					<td>-</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>✓ 表示有依赖关系</p>
+</blockquote>
+<h2 id="4-通信机制分析">
+<a class="header-anchor" href="#4-%e9%80%9a%e4%bf%a1%e6%9c%ba%e5%88%b6%e5%88%86%e6%9e%90"></a>
+4. 通信机制分析
+</h2><h3 id="41-进程间通信ipc">
+<a class="header-anchor" href="#41-%e8%bf%9b%e7%a8%8b%e9%97%b4%e9%80%9a%e4%bf%a1ipc"></a>
+4.1 进程间通信（IPC）
+</h3><pre class="mermaid">
+  sequenceDiagram
+    participant App1 as 应用进程1
+    participant Msg as 消息中心
+    participant Brdg as 业务网桥
+    participant App2 as 应用进程2
+  
+    App1->>Msg: 打包消息(CMsgPack)
+    Msg->>Brdg: 转发消息
+    Brdg->>App2: 投递消息
+    App2->>Msg: 应答消息
+    Msg->>Brdg: 转发应答
+    Brdg->>App1: 投递应答
+</pre><h3 id="42-数据共享机制">
+<a class="header-anchor" href="#42-%e6%95%b0%e6%8d%ae%e5%85%b1%e4%ba%ab%e6%9c%ba%e5%88%b6"></a>
+4.2 数据共享机制
+</h3><pre class="mermaid">
+  graph LR
+    A[应用进程A] -->|写入| R[(Redis)]
+    B[应用进程B] -->|读取| R
+    C[应用进程C] -->|订阅| R
+    R -->|通知| C
+  
+    style R fill:#f9f,stroke:#333
+</pre><h3 id="43-主备同步机制">
+<a class="header-anchor" href="#43-%e4%b8%bb%e5%a4%87%e5%90%8c%e6%ad%a5%e6%9c%ba%e5%88%b6"></a>
+4.3 主备同步机制
+</h3><ul>
+<li><strong>mssync</strong> 模块负责主备机数据实时同步</li>
+<li>基于 Redis 的 pub/sub 机制</li>
+<li>主机故障时备机自动接管</li>
+</ul>
+<h2 id="5-关键业务架构">
+<a class="header-anchor" href="#5-%e5%85%b3%e9%94%ae%e4%b8%9a%e5%8a%a1%e6%9e%b6%e6%9e%84"></a>
+5. 关键业务架构
+</h2><h3 id="51-列车控制业务架构">
+<a class="header-anchor" href="#51-%e5%88%97%e8%bd%a6%e6%8e%a7%e5%88%b6%e4%b8%9a%e5%8a%a1%e6%9e%b6%e6%9e%84"></a>
+5.1 列车控制业务架构
+</h3><pre class="mermaid">
+  graph TD
+    subgraph 调度层["调度层"]
+        PLAN[运行图计划]
+        CMD[调度命令]
+    end
+  
+    subgraph 进路控制["进路控制层"]
+        ROUTE[进路选排]
+        PATH[路径搜索]
+        INTERLOCK[联锁接口]
+    end
+  
+    subgraph 列车控制["列车控制层"]
+        VOBC[VOBC车载]
+        ATO[ATO自动驾驶]
+        ATP[ATP列车保护]
+    end
+  
+    subgraph 监控层["监控显示层"]
+        MMI[MMI显示]
+        HMI[HMI信息]
+    end
+  
+    PLAN --> ROUTE
+    CMD --> ROUTE
+    ROUTE --> PATH
+    PATH --> INTERLOCK
+    ROUTE --> VOBC
+    VOBC --> ATO
+    VOBC --> ATP
+    ATO --> MMI
+    ATP --> MMI
+    ATP --> HMI
+    ATO --> HMI
+</pre><h3 id="52-hmi信息传输架构">
+<a class="header-anchor" href="#52-hmi%e4%bf%a1%e6%81%af%e4%bc%a0%e8%be%93%e6%9e%b6%e6%9e%84"></a>
+5.2 HMI信息传输架构
+</h3><pre class="mermaid">
+  graph LR
+    subgraph 数据源["数据源"]
+        T1[列车状态]
+        T2[报警信息]
+        T3[控制状态]
+    end
+  
+    subgraph 处理["HmiTransInfo"]
+        TASK1[HmiTransTask<br/>完整传输]
+        TASK2[HmiTransQuickTask<br/>快速传输]
+    end
+  
+    subgraph 协议["HmiTransProtocol"]
+        PKT1[CHmiIndicationAllPkt<br/>全体包]
+        PKT2[CHmiIndTrain<br/>列车信息]
+        PKT3[CHmiDrawParam<br/>绘制参数]
+    end
+  
+    subgraph 终端["终端"]
+        MMI[MMI显示]
+    end
+  
+    T1 --> TASK1
+    T2 --> TASK1
+    T3 --> TASK2
+    TASK1 --> PKT1
+    TASK2 --> PKT1
+    PKT1 --> PKT2
+    PKT2 --> PKT3
+    PKT1 --> MMI
+</pre><h2 id="6-框架优势与不足">
+<a class="header-anchor" href="#6-%e6%a1%86%e6%9e%b6%e4%bc%98%e5%8a%bf%e4%b8%8e%e4%b8%8d%e8%b6%b3"></a>
+6. 框架优势与不足
+</h2><h3 id="61-框架优势">
+<a class="header-anchor" href="#61-%e6%a1%86%e6%9e%b6%e4%bc%98%e5%8a%bf"></a>
+6.1 框架优势
+</h3><table>
+	<thead>
+			<tr>
+					<th>优势</th>
+					<th>描述</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>模块化清晰</strong></td>
+					<td>每个目录对应一个功能模块，独立编译</td>
+			</tr>
+			<tr>
+					<td><strong>分层合理</strong></td>
+					<td>基础→通信→协议→业务→应用，职责分明</td>
+			</tr>
+			<tr>
+					<td><strong>高可靠性</strong></td>
+					<td>1+N主备、双网冗余、SIL2安全等级</td>
+			</tr>
+			<tr>
+					<td><strong>可扩展性</strong></td>
+					<td>插件化设计，易于新增功能</td>
+			</tr>
+			<tr>
+					<td><strong>跨平台</strong></td>
+					<td>主要支持Linux，部分兼容Windows</td>
+			</tr>
+			<tr>
+					<td><strong>配置驱动</strong></td>
+					<td>XML配置文件管理参数</td>
+			</tr>
+			<tr>
+					<td><strong>消息解耦</strong></td>
+					<td>基于msg/brdg实现进程间松耦合</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="62-框架不足">
+<a class="header-anchor" href="#62-%e6%a1%86%e6%9e%b6%e4%b8%8d%e8%b6%b3"></a>
+6.2 框架不足
+</h3><table>
+	<thead>
+			<tr>
+					<th>不足</th>
+					<th>改进方向</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>代码量大</strong></td>
+					<td>124万行代码，维护成本高</td>
+			</tr>
+			<tr>
+					<td><strong>大型文件多</strong></td>
+					<td>otlv4.h 3.3万行，CmdObj.cpp 1.3万行</td>
+			</tr>
+			<tr>
+					<td><strong>耦合点较多</strong></td>
+					<td>模块间通过Redis共享状态，调试困难</td>
+			</tr>
+			<tr>
+					<td><strong>缺少单元测试</strong></td>
+					<td>未见明显的测试框架</td>
+			</tr>
+			<tr>
+					<td><strong>文档不全</strong></td>
+					<td>部分核心文档损坏，缺少API文档</td>
+			</tr>
+			<tr>
+					<td><strong>构建复杂</strong></td>
+					<td>多个Makefile，依赖管理复杂</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="63-优化建议">
+<a class="header-anchor" href="#63-%e4%bc%98%e5%8c%96%e5%bb%ba%e8%ae%ae"></a>
+6.3 优化建议
+</h3><h4 id="短期优化">
+<a class="header-anchor" href="#%e7%9f%ad%e6%9c%9f%e4%bc%98%e5%8c%96"></a>
+短期优化
+</h4><ol>
+<li><strong>完善文档</strong>：修复损坏文档，补充API说明</li>
+<li><strong>拆分大文件</strong>：CmdObj.cpp等大文件按功能拆分</li>
+<li><strong>统一编码</strong>：所有源文件统一UTF-8编码</li>
+<li><strong>依赖管理</strong>：引入CMake或conan管理依赖</li>
+</ol>
+<h4 id="中期优化">
+<a class="header-anchor" href="#%e4%b8%ad%e6%9c%9f%e4%bc%98%e5%8c%96"></a>
+中期优化
+</h4><ol>
+<li><strong>增加单元测试</strong>：引入GoogleTest框架</li>
+<li><strong>持续集成</strong>：建立CI/CD流水线</li>
+<li><strong>代码静态分析</strong>：引入cppcheck、clang-tidy</li>
+<li><strong>性能监控</strong>：增加性能埋点</li>
+</ol>
+<h4 id="长期优化">
+<a class="header-anchor" href="#%e9%95%bf%e6%9c%9f%e4%bc%98%e5%8c%96"></a>
+长期优化
+</h4><ol>
+<li><strong>微服务化</strong>：核心模块拆分为独立服务</li>
+<li><strong>容器化部署</strong>：Docker容器化</li>
+<li><strong>配置中心</strong>：统一配置管理</li>
+<li><strong>监控告警</strong>：Prometheus + Grafana</li>
+</ol>
+<h2 id="7-业务设计与模块关系">
+<a class="header-anchor" href="#7-%e4%b8%9a%e5%8a%a1%e8%ae%be%e8%ae%a1%e4%b8%8e%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb"></a>
+7. 业务设计与模块关系
+</h2><h3 id="71-业务功能矩阵">
+<a class="header-anchor" href="#71-%e4%b8%9a%e5%8a%a1%e5%8a%9f%e8%83%bd%e7%9f%a9%e9%98%b5"></a>
+7.1 业务功能矩阵
+</h3><table>
+	<thead>
+			<tr>
+					<th>业务功能</th>
+					<th>主要模块</th>
+					<th>辅助模块</th>
+					<th>协议支持</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>跳停</strong></td>
+					<td>TRCM, TOCM</td>
+					<td>TDA, HmiTransInfo</td>
+					<td>CtrlCmdProtocol</td>
+			</tr>
+			<tr>
+					<td><strong>清客</strong></td>
+					<td>TDA, TRCM</td>
+					<td>HmiTransInfo</td>
+					<td>CtrlCmdProtocol</td>
+			</tr>
+			<tr>
+					<td><strong>扣车</strong></td>
+					<td>TRCM</td>
+					<td>TDA, HmiTransInfo</td>
+					<td>CtrlCmdProtocol</td>
+			</tr>
+			<tr>
+					<td><strong>进路选排</strong></td>
+					<td>TRCM</td>
+					<td>TDA, interlock</td>
+					<td>SyncProtocol</td>
+			</tr>
+			<tr>
+					<td><strong>移动授权</strong></td>
+					<td>TOCM, TICM</td>
+					<td>AtsZcProtocol</td>
+					<td>AtsVobcProtocol</td>
+			</tr>
+			<tr>
+					<td><strong>列车监控</strong></td>
+					<td>TICM</td>
+					<td>HmiTransInfo</td>
+					<td>IndicationProtocol</td>
+			</tr>
+			<tr>
+					<td><strong>屏蔽门控制</strong></td>
+					<td>PSDInter</td>
+					<td>TOCM</td>
+					<td>InterfaceProtocol</td>
+			</tr>
+			<tr>
+					<td><strong>运行图管理</strong></td>
+					<td>TDA, TrainDiagramPlug</td>
+					<td>DiagramProtocol</td>
+					<td>DiagramProtocol</td>
+			</tr>
+			<tr>
+					<td><strong>告警处理</strong></td>
+					<td>TICM, TOCM</td>
+					<td>HmiTransInfo</td>
+					<td>IndicationProtocol</td>
+			</tr>
+			<tr>
+					<td><strong>数据同步</strong></td>
+					<td>mssync</td>
+					<td>tdsm</td>
+					<td>SyncProtocol</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="72-模块协作模式">
+<a class="header-anchor" href="#72-%e6%a8%a1%e5%9d%97%e5%8d%8f%e4%bd%9c%e6%a8%a1%e5%bc%8f"></a>
+7.2 模块协作模式
+</h3><h4 id="模式1请求-应答">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f1%e8%af%b7%e6%b1%82-%e5%ba%94%e7%ad%94"></a>
+模式1：请求-应答
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">调度员 → OSM → TDA → TRCM → 联锁 → 状态返回
+</span></span></code></pre></div><h4 id="模式2发布-订阅">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f2%e5%8f%91%e5%b8%83-%e8%ae%a2%e9%98%85"></a>
+模式2：发布-订阅
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">列车状态 → tdsm → Redis → 订阅者（HmiTransInfo、TICM等）
+</span></span></code></pre></div><h4 id="模式3定时巡检">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f3%e5%ae%9a%e6%97%b6%e5%b7%a1%e6%a3%80"></a>
+模式3：定时巡检
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">定时器 → TOCM → 采集列车状态 → 更新Redis → 通知订阅者
+</span></span></code></pre></div><h2 id="8-总结">
+<a class="header-anchor" href="#8-%e6%80%bb%e7%bb%93"></a>
+8. 总结
+</h2><p>HFS1 系统是一个功能完整、架构清晰的轨道交通ATS系统：</p>
+<ol>
+<li><strong>架构成熟</strong>：采用经典的分层架构，模块化设计</li>
+<li><strong>功能完备</strong>：覆盖调度、控制、监控、协议等核心功能</li>
+<li><strong>可靠性高</strong>：通过主备、冗余、SIL2等多重保障</li>
+<li><strong>可维护性</strong>：需要持续优化文档、测试和构建</li>
+</ol>
+<p>系统经过多年演进，已形成稳定的核心架构，未来可通过容器化、微服务化等手段进一步提升可维护性和可扩展性。</p>
+<hr>
+<p><strong>文档生成时间</strong>：2026-06-19
+<strong>文档版本</strong>：v2.0（重新生成）</p>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/&amp;appkey=&amp;title=%e5%90%8e%e5%8f%b0%e7%b3%bb%e7%bb%9f%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%88%86%e6%9e%90&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="后台系统模块关系与架构分析">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/&amp;title=%e5%90%8e%e5%8f%b0%e7%b3%bb%e7%bb%9f%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%88%86%e6%9e%90&amp;desc=%e6%b7%b1%e5%85%a5%e5%88%86%e6%9e%90%e6%a8%a1%e5%9d%97%e4%be%9d%e8%b5%96%e5%85%b3%e7%b3%bb%e3%80%81%e9%80%9a%e4%bf%a1%e6%9c%ba%e5%88%b6%e4%b8%8e%e4%b8%9a%e5%8a%a1%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1&amp;source=https://TimeHunter618.github.io/hugo-maid-dev/" target="_blank" rel="noopener noreferrer" title="后台系统模块关系与架构分析">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="后台系统模块关系与架构分析">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/&amp;text=%e5%90%8e%e5%8f%b0%e7%b3%bb%e7%bb%9f%e6%a8%a1%e5%9d%97%e5%85%b3%e7%b3%bb%e4%b8%8e%e6%9e%b6%e6%9e%84%e5%88%86%e6%9e%90&amp;via=https://TimeHunter618.github.io/hugo-maid-dev/" target="_blank" rel="noopener noreferrer" title="后台系统模块关系与架构分析">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://TimeHunter618.github.io/hugo-maid-dev/post/ats/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/" target="_blank" rel="noopener noreferrer" title="后台系统模块关系与架构分析">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="/hugo-maid-dev/categories/%e8%bd%a8%e9%81%93%e4%ba%a4%e9%80%9a"
+      data-aos="zoom-in"
+      >轨道交通</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="/hugo-maid-dev/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/hugo-maid-dev/tags/ats"
+        rel="tag"
+        >ATS</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/hugo-maid-dev/tags/%e8%bd%a8%e9%81%93%e4%ba%a4%e9%80%9a"
+        rel="tag"
+        >轨道交通</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="/hugo-maid-dev/tags/%e6%a8%a1%e5%9d%97%e6%9e%b6%e6%9e%84"
+        rel="tag"
+        >模块架构</a
+      >
+    </li></ul>
+</footer>
+  </div><nav
+    id="article-nav"
+    aria-label="Article navigation"
+    data-aos="fade-up"
+  ><div class="article-nav-link-wrap left"><img
+              data-src="https://d-sketon.top/img/_backwebp/bg1.webp"
+              data-sizes="auto"
+              alt="后台业务信息流分析"
+              class="lazyload"
+            /><a
+          href="/hugo-maid-dev/post/ats/%E5%90%8E%E5%8F%B0%E4%B8%9A%E5%8A%A1%E4%BF%A1%E6%81%AF%E6%B5%81%E5%88%86%E6%9E%90/"
+          aria-label="前一篇:后台业务信息流分析"
+          title="前一篇:后台业务信息流分析"
+        ></a>
+        <div class="article-nav-caption">前一篇</div>
+        <h3 class="article-nav-title">后台业务信息流分析</h3>
+      </div><div class="article-nav-link-wrap right"><img
+              data-src="https://d-sketon.top/img/_backwebp/bg1.webp"
+              data-sizes="auto"
+              alt="后台项目整体说明"
+              class="lazyload"
+            /><a
+          href="/hugo-maid-dev/post/ats/%E5%90%8E%E5%8F%B0%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E/"
+          aria-label="后一篇:后台项目整体说明"
+          title="后一篇:后台项目整体说明"
+        ></a>
+        <div class="article-nav-caption">后一篇</div>
+        <h3 class="article-nav-title">后台项目整体说明</h3>
+      </div></nav></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;79.6k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;02:52</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-系统总体架构">1. 系统总体架构</a>
+      <ul>
+        <li><a href="#11-系统设计原则">1.1 系统设计原则</a></li>
+        <li><a href="#12-系统分层架构">1.2 系统分层架构</a></li>
+        <li><a href="#13-系统版本演进">1.3 系统版本演进</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-模块功能分类">2. 模块功能分类</a>
+      <ul>
+        <li><a href="#21-模块分类总览">2.1 模块分类总览</a></li>
+        <li><a href="#22-完整模块清单">2.2 完整模块清单</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-模块依赖关系">3. 模块依赖关系</a>
+      <ul>
+        <li><a href="#31-核心依赖关系图">3.1 核心依赖关系图</a></li>
+        <li><a href="#32-关键模块依赖矩阵">3.2 关键模块依赖矩阵</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-通信机制分析">4. 通信机制分析</a>
+      <ul>
+        <li><a href="#41-进程间通信ipc">4.1 进程间通信（IPC）</a></li>
+        <li><a href="#42-数据共享机制">4.2 数据共享机制</a></li>
+        <li><a href="#43-主备同步机制">4.3 主备同步机制</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-关键业务架构">5. 关键业务架构</a>
+      <ul>
+        <li><a href="#51-列车控制业务架构">5.1 列车控制业务架构</a></li>
+        <li><a href="#52-hmi信息传输架构">5.2 HMI信息传输架构</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-框架优势与不足">6. 框架优势与不足</a>
+      <ul>
+        <li><a href="#61-框架优势">6.1 框架优势</a></li>
+        <li><a href="#62-框架不足">6.2 框架不足</a></li>
+        <li><a href="#63-优化建议">6.3 优化建议</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-业务设计与模块关系">7. 业务设计与模块关系</a>
+      <ul>
+        <li><a href="#71-业务功能矩阵">7.1 业务功能矩阵</a></li>
+        <li><a href="#72-模块协作模式">7.2 模块协作模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#8-总结">8. 总结</a></li>
+  </ul>
+</nav>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="/hugo-maid-dev/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">33</div>
+  </div>
+  <a class="sidebar-state-category" href="/hugo-maid-dev/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      4
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="/hugo-maid-dev/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">41</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/hugo-maid-dev/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/hugo-maid-dev/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/hugo-maid-dev/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/hugo-maid-dev/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="/hugo-maid-dev/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="/hugo-maid-dev/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="/hugo-maid-dev/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="/hugo-maid-dev/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "后台系统模块关系与架构分析",
+          url: "https:\/\/TimeHunter618.github.io\/hugo-maid-dev\/post\/ats\/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90\/",
+          description: "深入分析模块依赖关系、通信机制与业务架构设计",
+          cover: "https:\/\/TimeHunter618.github.io\/hugo-maid-dev\/images\/banner.webp",
+        };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
+      </script><script src="/hugo-maid-dev/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="/hugo-maid-dev/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>
