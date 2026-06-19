@@ -8,7 +8,7 @@
   name="viewport"
   content="width=device-width, initial-scale=1, shrink-to-fit=no"
 /><title>
-  Transformer 架构深度解析 | D-Sketon
+  Transformer 架构深度解析 | Aries
 </title>
 <meta name="description" content="从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节"/><script>
   window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://TimeHunter618.github.io/hugo-maid-dev/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
@@ -33,7 +33,7 @@
     type="font/woff2"
     crossorigin="anonymous"
   /><link rel="stylesheet" href="/hugo-maid-dev/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
-  <meta property="og:title" content="Transformer 架构深度解析 | D-Sketon" />
+  <meta property="og:title" content="Transformer 架构深度解析 | Aries" />
   <meta
     property="og:description"
     content="从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节"
@@ -44,7 +44,7 @@
     content="My New Hugo Site"
   />
   <meta property="og:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
-  <meta property="article:author" content="D-Sketon" />
+  <meta property="article:author" content="Aries" />
   <meta property="article:published_time" content="2026-06-19T03:10:00&#43;08:00" />
   <meta property="article:modified_time" content="2026-06-19T03:10:00&#43;08:00" /><meta property="article:tag" content="Transformer, 注意力机制, 深度学习, 神经网络" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://TimeHunter618.github.io/hugo-maid-dev/images/banner.webp" />
 <link rel="shortcut icon" href="/hugo-maid-dev/favicon.ico"><link rel="stylesheet" href="/hugo-maid-dev/css/main.min.52f90f81d24ae07aa7c621951238c9e4926c0be9ffdda455215cabb471734a1c.css" /><link
@@ -118,6 +118,7 @@
 <div id="heatmap-tooltip"></div><div id="container">
       <div id="wrap"><div id="header-nav">
   <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="/hugo-maid-dev/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
       </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">归档</span>
       </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
       </a><a class="main-nav-link-wrap" href="/hugo-maid-dev/friend"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">友链</span>
@@ -256,13 +257,13 @@
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
-    data-src="/hugo-maid-dev/avatar/avatar.webp"
+    data-src="/hugo-maid-dev/avatar/aries.png"
     data-sizes="auto"
-    alt="D-Sketon"
+    alt="Aries"
     class="lazyload"
   />
-  <div class="sidebar-author-name">D-Sketon</div>
-  <div class="sidebar-description">少女祈祷中...</div>
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
 </div>
 <div class="sidebar-state">
   <div class="sidebar-state-article">
@@ -285,6 +286,12 @@
         href="/hugo-maid-dev/"
         aria-label=""
       ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/hugo-maid-dev/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
     </div><div class="sidebar-menu-link-wrap">
       <a
         class="sidebar-menu-link-dummy"
@@ -883,16 +890,9 @@ $$<p>时间复杂度从 $O(n^2d)$ 降低到 $O(nd^2)$，当 $n \gg d$ 时优势�
     </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
     <a
       class="article-category-link"
-      href="/hugo-maid-dev/categories/%e4%ba%ba%e5%b7%a5%e6%99%ba%e8%83%bd"
+      href="/hugo-maid-dev/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
       data-aos="zoom-in"
-      >人工智能</a
-    >
-    </li><li class="article-tag-list-item" data-aos="zoom-in">
-    <a
-      class="article-category-link"
-      href="/hugo-maid-dev/categories/%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b"
-      data-aos="zoom-in"
-      >大语言模型</a
+      >技术分享</a
     >
     </li></ul>
 <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
@@ -959,7 +959,7 @@ $$<p>时间复杂度从 $O(n^2d)$ 降低到 $O(nd^2)$，当 $n \gg d$ 时优势�
     <div class="footer-line"></div>
   </div>
   <div id="footer-info"><div>
-      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>D-Sketon
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
     </div><div>
         基于&nbsp;<a
           href="https://gohugo.io/"
@@ -1068,13 +1068,13 @@ $$<p>时间复杂度从 $O(n^2d)$ 降低到 $O(nd^2)$，当 $n \gg d$ 时优势�
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
-    data-src="/hugo-maid-dev/avatar/avatar.webp"
+    data-src="/hugo-maid-dev/avatar/aries.png"
     data-sizes="auto"
-    alt="D-Sketon"
+    alt="Aries"
     class="lazyload"
   />
-  <div class="sidebar-author-name">D-Sketon</div>
-  <div class="sidebar-description">少女祈祷中...</div>
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
 </div>
 <div class="sidebar-state">
   <div class="sidebar-state-article">
@@ -1097,6 +1097,12 @@ $$<p>时间复杂度从 $O(n^2d)$ 降低到 $O(nd^2)$，当 $n \gg d$ 时优势�
         href="/hugo-maid-dev/"
         aria-label=""
       ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="/hugo-maid-dev/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
     </div><div class="sidebar-menu-link-wrap">
       <a
         class="sidebar-menu-link-dummy"
@@ -1189,7 +1195,7 @@ $$<p>时间复杂度从 $O(n^2d)$ 降低到 $O(nd^2)$，当 $n \gg d$ 时优势�
 <div id="lazy-script">
   <div><script data-pjax>
         window.REIMU_POST = {
-          author: "D-Sketon",
+          author: "Aries",
           title: "Transformer 架构深度解析",
           url: "https:\/\/TimeHunter618.github.io\/hugo-maid-dev\/post\/llm\/transformer-deep-dive\/",
           description: "从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节",

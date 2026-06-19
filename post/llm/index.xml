@@ -7,8 +7,8 @@
     <generator>Hugo</generator>
     <language>zh-CN</language>
     
-    <managingEditor>xxx@example.com (D-Sketon)</managingEditor>
-    <webMaster>xxx@example.com (D-Sketon)</webMaster>
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
     
     <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
     
@@ -25,10 +25,10 @@
       <title>RAG 检索增强生成技术详解</title>
       <link>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/rag-technology/</link>
       <pubDate>Fri, 19 Jun 2026 03:20:00 &#43;0800</pubDate>
-      <author>xxx@example.com (D-Sketon)</author>
+      <author>xxx@example.com (Aries)</author>
       <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/rag-technology/</guid>
       <description>
-        <![CDATA[<h1>RAG 检索增强生成技术详解</h1><p>作者：D-Sketon（xxx@example.com）</p>
+        <![CDATA[<h1>RAG 检索增强生成技术详解</h1><p>作者：Aries（xxx@example.com）</p>
         
           <h2 id="引言">
 <a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
@@ -45,7 +45,7 @@
         <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
       </description>
       
-        <category>人工智能</category><category>大语言模型</category>
+        <category>技术分享</category>
       
     </item>
     
@@ -55,10 +55,10 @@
       <title>大模型微调技术全攻略</title>
       <link>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/fine-tuning-guide/</link>
       <pubDate>Fri, 19 Jun 2026 03:15:00 &#43;0800</pubDate>
-      <author>xxx@example.com (D-Sketon)</author>
+      <author>xxx@example.com (Aries)</author>
       <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/fine-tuning-guide/</guid>
       <description>
-        <![CDATA[<h1>大模型微调技术全攻略</h1><p>作者：D-Sketon（xxx@example.com）</p>
+        <![CDATA[<h1>大模型微调技术全攻略</h1><p>作者：Aries（xxx@example.com）</p>
         
           <h2 id="引言">
 <a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
@@ -68,7 +68,7 @@
         <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
       </description>
       
-        <category>人工智能</category><category>大语言模型</category>
+        <category>技术分享</category>
       
     </item>
     
@@ -78,10 +78,10 @@
       <title>Transformer 架构深度解析</title>
       <link>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/transformer-deep-dive/</link>
       <pubDate>Fri, 19 Jun 2026 03:10:00 &#43;0800</pubDate>
-      <author>xxx@example.com (D-Sketon)</author>
+      <author>xxx@example.com (Aries)</author>
       <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/transformer-deep-dive/</guid>
       <description>
-        <![CDATA[<h1>Transformer 架构深度解析</h1><p>作者：D-Sketon（xxx@example.com）</p>
+        <![CDATA[<h1>Transformer 架构深度解析</h1><p>作者：Aries（xxx@example.com）</p>
         
           <h2 id="引言">
 <a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
@@ -91,7 +91,7 @@
         <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
       </description>
       
-        <category>人工智能</category><category>大语言模型</category>
+        <category>技术分享</category>
       
     </item>
     
@@ -101,10 +101,10 @@
       <title>大语言模型基础原理与发展历程</title>
       <link>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/llm-introduction/</link>
       <pubDate>Fri, 19 Jun 2026 03:05:00 &#43;0800</pubDate>
-      <author>xxx@example.com (D-Sketon)</author>
+      <author>xxx@example.com (Aries)</author>
       <guid>https://TimeHunter618.github.io/hugo-maid-dev/post/llm/llm-introduction/</guid>
       <description>
-        <![CDATA[<h1>大语言模型基础原理与发展历程</h1><p>作者：D-Sketon（xxx@example.com）</p>
+        <![CDATA[<h1>大语言模型基础原理与发展历程</h1><p>作者：Aries（xxx@example.com）</p>
         
           <h2 id="引言">
 <a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
@@ -114,7 +114,7 @@
         <hr><p>本文2026-06-19首发于<a href='https://TimeHunter618.github.io/hugo-maid-dev/'>My New Hugo Site</a>，最后修改于2026-06-19</p>]]>
       </description>
       
-        <category>人工智能</category><category>大语言模型</category>
+        <category>技术分享</category>
       
     </item>
     
