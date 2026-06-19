@@ -1,21 +1,21 @@
 #header {
-  min-height: 400px;
+  min-height: 200px;
   height: $banner-height;
   position: relative;
 
   img {
     position: absolute;
-    top: 0;
+    top: 50px;
     left: 0;
     width: 100%;
-    height: 180%;
+    height: 200%;
     z-index: -2;
     user-select: none;
     display: block;
     object-fit: cover;
-    transition: 0.3s;
-    -webkit-mask: linear-gradient(to top, transparent, #fff 50%);
-    mask: linear-gradient(to top, transparent, #fff 50%);
+    will-change: transform;
+    -webkit-mask: linear-gradient(to top, transparent, #fff 30%);
+    mask: linear-gradient(to top, transparent, #fff 30%);
 
     @media #{$mg-large} {
       height: 120%;

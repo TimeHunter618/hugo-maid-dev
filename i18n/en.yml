@@ -7,8 +7,8 @@ prev: Prev
 next: Next
 comment: Comments
 reading: Readings
-archive_a: Archives
-archive_b: "Archives: {{ . -}}"
+archive_a: Tech Share
+archive_b: "Tech Share: {{ . -}}"
 page: "Page {{ . -}}"
 recent_posts: Recent Posts
 newer: Prev
@@ -24,7 +24,7 @@ more: More
 home: Home
 about: About
 friend: Friend
-archives: Archives
+archives: Tech Share
 
 sidebar:
   post: Posts

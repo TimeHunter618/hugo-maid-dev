@@ -11,6 +11,7 @@ tags:
   - 参数高效微调
   - PEFT
 categories:
+  - 人工智能
   - 技术分享
 math: true
 mermaid: true

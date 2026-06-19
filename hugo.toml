@@ -1,6 +1,6 @@
 baseURL = 'https://TimeHunter618.github.io/hugo-maid-dev'
 locale = 'en'
-title = 'My New Hugo Site'
+title = 'Aries的研发手记'
 theme = 'hugo-theme-reimu'
 
 defaultContentLanguage = 'zh-CN'
@@ -10,6 +10,33 @@ author = 'Aries'
 avatar = 'aries.png'
 description = '愿世界和平 ✨'
 share = ["weibo", "qq", "weixin", "twitter", "facebook"]
+
+[params.subtitle]
+text = '用代码编织理想，以技术探索无限可能'
+[params.subtitle.typing]
+enable = true
+strings = [
+  '用代码编织理想，以技术探索无限可能',
+  '探索人工智能的边界',
+  '记录技术成长的每一步',
+  '分享知识，共同进步'
+]
+typeSpeed = 100
+backSpeed = 50
+backDelay = 2000
+startDelay = 300
+loop = true
+shuffle = true
+showCursor = true
+cursorChar = '|'
+
+[params.preloader]
+enable = true
+[params.preloader.text]
+"zh-CN" = '用代码编织理想，以技术探索无限可能'
+"zh-TW" = '用代碼編織理想，以技術探索無限可能'
+en = 'Weave dreams with code, explore infinity with technology'
+ja = 'コードで理想を紡ぎ、技術で無限を探索する'
 [[params.menu]]
 name = 'Home'
 url = ''
@@ -17,7 +44,7 @@ url = ''
 name = 'Projects'
 url = 'projects'
 [[params.menu]]
-name = 'Archives'
+name = 'Tech Share'
 url = 'archives'
 [[params.menu]]
 name = 'About'
@@ -110,7 +137,7 @@ url = ''
 name = '项目介绍'
 url = 'projects'
 [[languages."zh-CN".params.menu]]
-name = '归档'
+name = '技术分享'
 url = 'archives'
 [[languages."zh-CN".params.menu]]
 name = '关于'

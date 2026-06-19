@@ -1,0 +1,114 @@
+{{- define "main" -}}
+  {{- $mainSections := .Site.Params.mainSections -}}
+  {{- $allPages := where .Site.RegularPages "Section" "in" $mainSections -}}
+
+  <div
+    class="archives-outer-wrap"
+    data-aos="{{ .Site.Params.animation.options.archive.whole }}"
+  >
+    {{- if .Site.Params.only_show_capsule_in_index -}}
+      {{- if eq .Paginator.PageNumber 1 -}}
+        {{- partialCached "archives.html" . -}}
+      {{- end -}}
+    {{- else -}}
+      {{- partialCached "archives.html" . -}}
+    {{- end -}}
+
+    {{- range $name, $taxonomy := .Site.Taxonomies.categories -}}
+      {{- $catName := $name | humanize -}}
+      {{- if and (ne $catName "技术分享") (ne $catName "Tech Share") -}}
+        {{- $catPages := where $taxonomy.Pages "Section" "in" $mainSections -}}
+        {{- if gt (len $catPages) 0 -}}
+          <section class="archives-wrap" data-aos="{{ $.Site.Params.animation.options.archive.section }}" data-category="{{ $taxonomy.Page.Title }}">
+            <div class="archive-year-wrap">
+              <span class="archive-year">{{ $taxonomy.Page.Title }}</span>
+            </div>
+            <ul>
+              {{- range $catPages.ByDate.Reverse -}}
+                <li class="archive-article" data-tags="{{ with .Params.tags }}{{ delimit . "," }}{{ end }}">
+                  <div class="archive-article-date">
+                    <span>
+                      <time
+                        class="dt-published"
+                        datetime="{{ .Date }}"
+                        itemprop="datePublished"
+                        >{{ .Date.Format $.Site.Params.monthFormat }}</time
+                      >
+                    </span>
+                  </div>
+                  {{- if .Params.link -}}
+                    <a
+                      class="archive-article-title"
+                      href="{{ .Params.link }}"
+                      target="_blank"
+                      itemprop="url"
+                      rel="noopener nofollow noreferrer"
+                      >{{ .Title }}</a
+                    >
+                  {{- else if .Title -}}
+                    <a class="archive-article-title" href="{{ .Permalink | relURL }}"
+                      >{{ .Title }}</a
+                    >
+                  {{- end -}}
+                </li>
+              {{- end -}}
+            </ul>
+          </section>
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- $uncategorized := slice -}}
+    {{- range $allPages -}}
+      {{- $hasTechCategory := false -}}
+      {{- with .Params.categories -}}
+        {{- range . -}}
+          {{- if and (ne . "技术分享") (ne . "Tech Share") -}}
+            {{- $hasTechCategory = true -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if not $hasTechCategory -}}
+        {{- $uncategorized = $uncategorized | append . -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- if gt (len $uncategorized) 0 -}}
+      <section class="archives-wrap" data-aos="{{ .Site.Params.animation.options.archive.section }}" data-category="{{ i18n "archives" }}">
+        <div class="archive-year-wrap">
+          <span class="archive-year">{{ i18n "archives" }}</span>
+        </div>
+        <ul>
+          {{- range $uncategorized.ByDate.Reverse -}}
+            <li class="archive-article" data-tags="{{ with .Params.tags }}{{ delimit . "," }}{{ end }}">
+              <div class="archive-article-date">
+                <span>
+                  <time
+                    class="dt-published"
+                    datetime="{{ .Date }}"
+                    itemprop="datePublished"
+                    >{{ .Date.Format $.Site.Params.monthFormat }}</time
+                  >
+                </span>
+              </div>
+              {{- if .Params.link -}}
+                <a
+                  class="archive-article-title"
+                  href="{{ .Params.link }}"
+                  target="_blank"
+                  itemprop="url"
+                  rel="noopener nofollow noreferrer"
+                  >{{ .Title }}</a
+                >
+              {{- else if .Title -}}
+                <a class="archive-article-title" href="{{ .Permalink | relURL }}"
+                  >{{ .Title }}</a
+                >
+              {{- end -}}
+            </li>
+          {{- end -}}
+        </ul>
+      </section>
+    {{- end -}}
+  </div>
+{{- end -}}

@@ -1,10 +1,23 @@
+<style>
+  .archives-category-list-item.active .archives-category-list-link,
+  .archives-tag-list-item.active .archives-tag-list-link {
+    background: var(--emphasis);
+    color: var(--light-text-color);
+    border-color: var(--emphasis);
+  }
+  .archives-wrap.category-hidden {
+    display: none;
+  }
+</style>
+
 <div class="tag-wrap">
   {{- range .Site.Taxonomies.tags -}}
     <div
       class="archives-tag-list-item"
       data-aos="{{ $.Site.Params.animation.options.archive.tag }}"
+      data-tag="{{ .Page.Title }}"
     >
-      <a class="archives-tag-list-link" href="{{ .Page.RelPermalink }}"
+      <a class="archives-tag-list-link" href="javascript:void(0);"
         >{{ .Page.Title }} <span class="tag-count">({{ len .Pages }})</span></a
       >
     </div>
@@ -15,10 +28,111 @@
     <div
       class="archives-category-list-item"
       data-aos="{{ $.Site.Params.animation.options.archive.category }}"
+      data-category="{{ .Page.Title }}"
     >
-      <a class="archives-category-list-link" href="{{ .Page.RelPermalink }}"
+      <a class="archives-category-list-link" href="javascript:void(0);"
         >{{ .Page.Title }} <span class="category-count">({{ len .Pages }})</span></a
       >
     </div>
   {{- end -}}
 </div>
+
+<script data-pjax>
+  (function() {
+    function initArchiveFilter() {
+      const categoryItems = document.querySelectorAll('.archives-category-list-item[data-category]');
+      const tagItems = document.querySelectorAll('.archives-tag-list-item[data-tag]');
+      const archiveSections = document.querySelectorAll('.archives-wrap[data-category]');
+      const archiveArticles = document.querySelectorAll('.archive-article');
+
+      if ((categoryItems.length === 0 && tagItems.length === 0) || archiveSections.length === 0) return;
+
+      let activeCategory = null;
+      let activeTag = null;
+
+      function filterArticles() {
+        let visibleCount = 0;
+
+        archiveSections.forEach(function(section) {
+          const sectionCategory = section.getAttribute('data-category');
+          const articles = section.querySelectorAll('.archive-article');
+          let sectionHasVisible = false;
+
+          articles.forEach(function(article) {
+            let shouldShow = true;
+
+            if (activeCategory && sectionCategory !== activeCategory) {
+              shouldShow = false;
+            }
+
+            if (activeTag && shouldShow) {
+              const articleTags = article.getAttribute('data-tags') || '';
+              const tagList = articleTags.split(',').map(function(t) { return t.trim(); });
+              if (tagList.indexOf(activeTag) === -1) {
+                shouldShow = false;
+              }
+            }
+
+            if (shouldShow) {
+              article.style.display = '';
+              sectionHasVisible = true;
+              visibleCount++;
+            } else {
+              article.style.display = 'none';
+            }
+          });
+
+          if (activeCategory) {
+            if (sectionCategory === activeCategory && sectionHasVisible) {
+              section.classList.remove('category-hidden');
+            } else {
+              section.classList.add('category-hidden');
+            }
+          } else {
+            if (sectionHasVisible) {
+              section.classList.remove('category-hidden');
+            } else {
+              section.classList.add('category-hidden');
+            }
+          }
+        });
+      }
+
+      categoryItems.forEach(function(item) {
+        item.addEventListener('click', function() {
+          const category = item.getAttribute('data-category');
+          if (activeCategory === category) {
+            activeCategory = null;
+            item.classList.remove('active');
+          } else {
+            categoryItems.forEach(function(i) { i.classList.remove('active'); });
+            activeCategory = category;
+            item.classList.add('active');
+          }
+          filterArticles();
+        });
+      });
+
+      tagItems.forEach(function(item) {
+        item.addEventListener('click', function() {
+          const tag = item.getAttribute('data-tag');
+          if (activeTag === tag) {
+            activeTag = null;
+            item.classList.remove('active');
+          } else {
+            tagItems.forEach(function(i) { i.classList.remove('active'); });
+            activeTag = tag;
+            item.classList.add('active');
+          }
+          filterArticles();
+        });
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initArchiveFilter);
+    } else {
+      initArchiveFilter();
+    }
+  })();
+</script>

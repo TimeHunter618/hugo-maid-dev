@@ -11,6 +11,7 @@ tags:
   - 向量数据库
   - 知识库
 categories:
+  - 人工智能
   - 技术分享
 math: true
 mermaid: true

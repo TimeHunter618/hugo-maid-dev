@@ -1,0 +1,65 @@
+{{- define "main" -}}
+  {{- $pageSize := 0 -}}
+  {{- with $.Site.Params.paginate.archive -}}
+    {{- $pageSize = . -}}
+  {{- end -}}
+  {{- $paginator := "" -}}
+  {{- if gt $pageSize 0 -}}
+    {{- $paginator = .Paginate .Pages $pageSize -}}
+  {{- else -}}
+    {{- $paginator = .Paginate .Pages -}}
+  {{- end -}}
+  {{- $sort_config := "weight" -}}
+  {{- $sortedPages := $paginator.Pages -}}
+  {{- if eq $sort_config "weight" -}}
+    {{- $sortedPages = $paginator.Pages.ByWeight -}}
+  {{- else if eq $sort_config "weight-reverse" -}}
+    {{- $sortedPages = $paginator.Pages.ByWeight.Reverse -}}
+  {{- end -}}
+  <div
+    class="archives-outer-wrap"
+    data-aos="{{ .Site.Params.animation.options.archive.whole }}"
+  >
+    {{- with .Content -}}
+    <div class="project-intro">
+      {{- . -}}
+    </div>
+    {{- end -}}
+    <section class="archives-wrap" data-aos="{{ .Site.Params.animation.options.archive.section }}">
+      <ul>
+        {{- range $sortedPages -}}
+          <li class="archive-article">
+            <div class="archive-article-date">
+              <span>
+                <time
+                  class="dt-published"
+                  datetime="{{ .Date }}"
+                  itemprop="datePublished"
+                  >{{ .Date.Format .Site.Params.monthFormat }}</time
+                >
+              </span>
+            </div>
+            {{- if .Params.link -}}
+              <a
+                class="archive-article-title"
+                href="{{ .Params.link }}"
+                target="_blank"
+                itemprop="url"
+                rel="noopener nofollow noreferrer"
+                >{{ .Title }}</a
+              >
+            {{- else if .Title -}}
+              <a class="archive-article-title" href="{{ .Permalink | relURL }}"
+                >{{ .Title }}</a
+              >
+            {{- end -}}
+            {{- with .Params.description -}}
+              <div class="archive-article-description">{{ . }}</div>
+            {{- end -}}
+          </li>
+        {{- end -}}
+      </ul>
+    </section>
+  </div>
+  {{- partial "pagination.html" . -}}
+{{- end -}}

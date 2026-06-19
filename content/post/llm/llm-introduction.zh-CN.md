@@ -10,6 +10,7 @@ tags:
   - 自然语言处理
   - GPT
 categories:
+  - 人工智能
   - 技术分享
 math: true
 mermaid: true
