@@ -1,11 +1,26 @@
 {{- /* 多风格封面图支持 */ -}}
 {{- $coversData := hugo.Data.covers -}}
 {{- $covers := slice -}}
+{{- $activeStyleName := "" -}}
 
 {{- /* 检查是否使用新的多风格配置 */ -}}
 {{- if and $coversData $coversData.styles $coversData.active -}}
-  {{- $activeStyle := $coversData.active -}}
-  {{- $styleData := index $coversData.styles $activeStyle -}}
+  {{- $active := $coversData.active -}}
+  {{- if eq $active "random" -}}
+    {{- /* 随机模式：从所有风格中随机选一个 */ -}}
+    {{- $styleNames := slice -}}
+    {{- range $name, $_ := $coversData.styles -}}
+      {{- $styleNames = $styleNames | append $name -}}
+    {{- end -}}
+    {{- if gt (len $styleNames) 0 -}}
+      {{- $shuffled := shuffle $styleNames -}}
+      {{- $activeStyleName = index $shuffled 0 -}}
+    {{- end -}}
+  {{- else -}}
+    {{- $activeStyleName = $active -}}
+  {{- end -}}
+  
+  {{- $styleData := index $coversData.styles $activeStyleName -}}
   {{- /* 新格式：covers 在 covers 字段中 */ -}}
   {{- if and $styleData $styleData.covers -}}
     {{- $covers = $styleData.covers -}}
@@ -24,7 +39,7 @@
 {{- end -}}
 
 {{- /* Maintain a shuffled queue so covers only repeat after a full cycle. */ -}}
-{{- $scratchKey := printf "helpers/randomCover/queue/%s" (default "default" (index hugo.Data.covers "active")) -}}
+{{- $scratchKey := printf "helpers/randomCover/queue/%s" (default "default" $activeStyleName) -}}
 {{- $queue := .Scratch.Get $scratchKey | default (slice) -}}
 {{- if lt (len $queue) 1 -}}
 	{{- $queue = shuffle $covers -}}

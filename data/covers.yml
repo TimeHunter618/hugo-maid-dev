@@ -1,7 +1,8 @@
 # 封面图风格配置
-# 通过修改 active 的值来切换风格: anime / nature / minimal / tech / cute / city / food / art / space / dark
+# 通过修改 active 的值来切换风格: anime / nature / minimal / tech / cute / city / food / art / space / dark / random
+# random: 每次构建时随机选一种风格
 
-active: city
+active: nature
 
 styles:
   # 二次元风格（默认）

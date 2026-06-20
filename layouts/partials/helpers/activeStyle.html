@@ -1,9 +1,7 @@
-{{- /* 获取当前风格的背景图片 */ -}}
+{{- /* 获取当前激活的风格名，支持 random 随机模式 */ -}}
 {{- $coversData := hugo.Data.covers -}}
-{{- $banner := "" -}}
-{{- $activeStyleName := "" -}}
+{{- $styleName := "" -}}
 
-{{- /* 检查是否使用新的多风格配置 */ -}}
 {{- if and $coversData $coversData.styles $coversData.active -}}
   {{- $active := $coversData.active -}}
   {{- if eq $active "random" -}}
@@ -14,16 +12,11 @@
     {{- end -}}
     {{- if gt (len $styleNames) 0 -}}
       {{- $shuffled := shuffle $styleNames -}}
-      {{- $activeStyleName = index $shuffled 0 -}}
+      {{- $styleName = index $shuffled 0 -}}
     {{- end -}}
   {{- else -}}
-    {{- $activeStyleName = $active -}}
-  {{- end -}}
-  
-  {{- $styleData := index $coversData.styles $activeStyleName -}}
-  {{- if and $styleData $styleData.banner -}}
-    {{- $banner = $styleData.banner -}}
+    {{- $styleName = $active -}}
   {{- end -}}
 {{- end -}}
 
-{{ $banner -}}
+{{ $styleName -}}
