@@ -1,4 +1,5 @@
 baseURL = 'https://TimeHunter618.github.io/hugo-maid-dev'
+canonifyURLs = true
 locale = 'en'
 title = 'Aries的研发手记'
 theme = 'hugo-theme-reimu'
