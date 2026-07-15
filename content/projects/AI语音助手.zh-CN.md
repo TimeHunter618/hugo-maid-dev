@@ -22,11 +22,12 @@ photos:
 
 **语音识别（ASR）** — 对着麦克风说话，实时将语音转换为文字并发送给 AI：
 
-![语音识别](/projects/ai-voice-asr.png)
+<!-- ![语音识别](images/AI语音助手-ASR.png) -->
+![语音识别](images/AI-voice-ASR.png)
 
 **TTS 语音合成配置** — 支持多种语音引擎配置，AI 回复可自动朗读：
 
-![TTS配置](/projects/ai-voice-tts.png)
+<!-- ![TTS配置](/projects/ai-voice-tts.png) -->
 
 ### 1.1 这是什么项目？
 
