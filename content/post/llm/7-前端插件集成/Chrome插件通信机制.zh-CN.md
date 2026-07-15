@@ -1,4 +1,4 @@
-﻿﻿---
+﻿﻿﻿﻿---
 title: Chrome Extension 通信机制详解
 description: content script、background service worker、popup 三方通信架构全解析
 date: 2026-06-01T10:00:00+08:00

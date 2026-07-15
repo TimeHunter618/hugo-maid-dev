@@ -1,4 +1,4 @@
-﻿﻿---
+﻿﻿﻿﻿---
 title: 跨域 CORS 与安全策略
 description: CORS 原理、CSP 策略、XSS/CSRF 防护——AI Web 应用的安全基石
 date: 2026-06-10T10:00:00+08:00
