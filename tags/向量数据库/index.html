@@ -1,0 +1,3158 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  向量数据库 | Aries
+</title>
+<meta name="description" content="愿世界和平 ✨"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="向量数据库 | Aries" />
+  <meta
+    property="og:description"
+    content="愿世界和平 ✨"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/tags/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-06-19T03:20:00&#43;08:00" />
+  <meta property="article:modified_time" content="2026-06-19T03:20:00&#43;08:00" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://dev.infiniteevo.online/images/banner.webp" /><link rel="alternate" type="application/rss+xml" href="https://dev.infiniteevo.online/tags/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" title="Aries的研发手记">
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"><a id="nav-rss-link" class="nav-icon" href="https://dev.infiniteevo.online/tags/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" title="RSS 订阅" aria-label="RSS 订阅" target="_blank"></a></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200" alt="向量数据库"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">标签</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">向量数据库</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container "><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div>
+  </div><div class="sidebar-widget"><div class="widget-wrapper">
+    <div
+      class="widget-wrap"
+      data-aos="fade-up"
+    >
+      <div style="display: flex; justify-content: space-between;">
+        <h3 class="widget-title">分类</h3><a class="widget-link" href="https://dev.infiniteevo.online/categories/">查看更多</a></div>
+      <div class="widget">
+        <ul class="category-list"><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/ai%E9%9D%A2%E8%AF%95/" 
+                  title="AI面试"
+                  >AI面试</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/" 
+                  title="Prompt工程与Agent系统"
+                  >Prompt工程与Agent系统</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/rag%E5%85%A8%E6%B5%81%E7%A8%8B/" 
+                  title="RAG全流程"
+                  >RAG全流程</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/web%E5%BC%80%E5%8F%91/" 
+                  title="Web开发"
+                  >Web开发</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/web%E6%9C%8D%E5%8A%A1/" 
+                  title="Web服务"
+                  >Web服务</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" 
+                  title="人工智能"
+                  >人工智能</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E4%BC%A0%E8%BE%93/" 
+                  title="传输"
+                  >传输</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F/" 
+                  title="分布式协"
+                  >分布式协</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/" 
+                  title="创建型模式"
+                  >创建型模式</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/" 
+                  title="前端开发"
+                  >前端开发</a
+                >
+              </li></ul>
+      </div>
+    </div>
+  </div><div class="widget-wrapper">
+    <div
+      class="widget-wrap"
+      data-aos="fade-up"
+    >
+      <div style="display: flex; justify-content: space-between;">
+        <h3 class="widget-title">标签</h3><a class="widget-link" href="https://dev.infiniteevo.online/tags/">查看更多</a></div>
+      <div class="widget">
+        <ul class="tag-list" itemprop="keywords"><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/429%E9%94%99%E8%AF%AF/"
+                  aria-label="标签: 429错误"
+                  title="429错误"
+                >
+                  429错误
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ab%E6%B5%8B%E8%AF%95/"
+                  aria-label="标签: AB测试"
+                  title="AB测试"
+                >
+                  AB测试
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/agent/"
+                  aria-label="标签: Agent"
+                  title="Agent"
+                >
+                  Agent
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ai/"
+                  aria-label="标签: AI"
+                  title="AI"
+                >
+                  AI
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ai%E5%AE%89%E5%85%A8/"
+                  aria-label="标签: AI安全"
+                  title="AI安全"
+                >
+                  AI安全
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ai%E9%9D%A2%E8%AF%95/"
+                  aria-label="标签: AI面试"
+                  title="AI面试"
+                >
+                  AI面试
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/amqp/"
+                  aria-label="标签: AMQP"
+                  title="AMQP"
+                >
+                  AMQP
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/api/"
+                  aria-label="标签: API"
+                  title="API"
+                >
+                  API
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/api%E7%BD%91%E5%85%B3/"
+                  aria-label="标签: API网关"
+                  title="API网关"
+                >
+                  API网关
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/api%E8%AE%BE%E8%AE%A1/"
+                  aria-label="标签: API设计"
+                  title="API设计"
+                >
+                  API设计
+                </a>
+              </li></ul>
+      </div>
+    </div>
+  </div><div class="widget-wrapper">
+  <div
+    class="widget-wrap"
+    data-aos="fade-up"
+  >
+    <h3 class="widget-title">标签云</h3><div class="widget tagcloud"><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/429%E9%94%99%E8%AF%AF/"
+            aria-label="标签: 429错误"
+            >429错误</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ab%E6%B5%8B%E8%AF%95/"
+            aria-label="标签: AB测试"
+            >AB测试</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/agent/"
+            aria-label="标签: Agent"
+            >Agent</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ai/"
+            aria-label="标签: AI"
+            >AI</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ai%E5%AE%89%E5%85%A8/"
+            aria-label="标签: AI安全"
+            >AI安全</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ai%E9%9D%A2%E8%AF%95/"
+            aria-label="标签: AI面试"
+            >AI面试</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/amqp/"
+            aria-label="标签: AMQP"
+            >AMQP</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/api/"
+            aria-label="标签: API"
+            >API</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/api%E7%BD%91%E5%85%B3/"
+            aria-label="标签: API网关"
+            >API网关</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/api%E8%AE%BE%E8%AE%A1/"
+            aria-label="标签: API设计"
+            >API设计</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/arthas/"
+            aria-label="标签: Arthas"
+            >Arthas</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ats/"
+            aria-label="标签: ATS"
+            >ATS</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/avl%E6%A0%91/"
+            aria-label="标签: AVL树"
+            >AVL树</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/awq/"
+            aria-label="标签: AWQ"
+            >AWQ</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bbr/"
+            aria-label="标签: BBR"
+            >BBR</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bfs/"
+            aria-label="标签: BFS"
+            >BFS</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bitmap/"
+            aria-label="标签: BitMap"
+            >BitMap</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bleu/"
+            aria-label="标签: BLEU"
+            >BLEU</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bst/"
+            aria-label="标签: BST"
+            >BST</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/chrome/"
+            aria-label="标签: Chrome"
+            >Chrome</a
+          ></div>
+  </div>
+</div><div class="widget-wrapper">
+    <div
+      class="widget-wrap"
+      data-aos="fade-up"
+    >
+      <h3 class="widget-title">最新文章</h3>
+      <div class="widget">
+        <ul><li>
+              <a href="https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/" title="大语言模型基础原理与发展历程">大语言模型基础原理与发展历程</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/middleware-ops/rabbitmq%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%A6%E8%A7%A3/" title="RabbitMQ消息队列详解">RabbitMQ消息队列详解</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/ats/backend/%E5%90%8E%E5%8F%B0%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E/" title="后台项目整体说明">后台项目整体说明</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/design-patterns/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/" title="单例模式详解">单例模式详解</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/algorithm/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A3/" title="排序算法详解">排序算法详解</a>
+            </li></ul>
+      </div>
+    </div>
+  </div></div></div></aside>
+<section id="main" aria-label="Main content"><div
+    class="archives-outer-wrap"
+    data-aos="fade-up"
+  ><style>
+  .archives-category-list-item.active .archives-category-list-link,
+  .archives-tag-list-item.active .archives-tag-list-link {
+    background: var(--emphasis);
+    color: var(--light-text-color);
+    border-color: var(--emphasis);
+  }
+  .archives-wrap.category-hidden {
+    display: none;
+  }
+  .archive-subsection.category-hidden {
+    display: none;
+  }
+  .tag-wrap-collapsible {
+    max-height: 2.6em;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    position: relative;
+  }
+  .tag-wrap-collapsible.expanded {
+    max-height: 9999px;
+  }
+  .tag-toggle-btn {
+    display: inline-block;
+    font-size: 0.85em;
+    color: var(--default-text-color);
+    opacity: 0.6;
+    cursor: pointer;
+    user-select: none;
+    margin-bottom: 0.5em;
+    transition: opacity 0.2s;
+  }
+  .tag-toggle-btn:hover {
+    opacity: 1;
+  }
+  .archive-subsection {
+    margin-left: 1.5em;
+    margin-bottom: 1em;
+    padding-left: 0.8em;
+    border-left: 2px solid var(--border-color);
+  }
+  .archive-subsection-title {
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--default-text-color);
+    opacity: 0.8;
+    margin-bottom: 0.5em;
+    display: block;
+  }
+</style>
+
+<div class="tag-toggle-btn" id="tagToggleBtn">展开标签 ▼</div>
+<div class="tag-wrap tag-wrap-collapsible" id="tagWrapCollapsible"><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="429错误"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >429错误 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="AB测试"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >AB测试 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Agent"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Agent <span class="tag-count">(5)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="AI"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >AI <span class="tag-count">(5)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="AI安全"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >AI安全 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="AI面试"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >AI面试 <span class="tag-count">(8)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="AMQP"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >AMQP <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="API"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >API <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="API网关"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >API网关 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="API设计"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >API设计 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Arthas"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Arthas <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="ATS"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >ATS <span class="tag-count">(15)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="AVL树"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >AVL树 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="AWQ"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >AWQ <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="BBR"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >BBR <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="BFS"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >BFS <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="BitMap"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >BitMap <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="BLEU"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >BLEU <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="BST"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >BST <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Chrome"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Chrome <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Chrome插件"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Chrome插件 <span class="tag-count">(3)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Compose"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Compose <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="ConcurrentHashMap"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >ConcurrentHashMap <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Content Script"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Content Script <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="ControlMonitor"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >ControlMonitor <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="CORS"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >CORS <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="CoT"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >CoT <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="CSP"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >CSP <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="DeepSeek"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >DeepSeek <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="DevOps"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >DevOps <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="DFS"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >DFS <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="DNS"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >DNS <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Docker"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Docker <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="DP"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >DP <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="DPO"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >DPO <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Elasticsearch"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Elasticsearch <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="FastAPI"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >FastAPI <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="FinOps"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >FinOps <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="GC"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >GC <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="GLM"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >GLM <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="GPT"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >GPT <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="GPTQ"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >GPTQ <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Grafana"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Grafana <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Hallucination"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Hallucination <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="HashMap"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >HashMap <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="HTTP"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >HTTP <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="HTTPS"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >HTTPS <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Hugo"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Hugo <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="INT4"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >INT4 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Jaeger"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Jaeger <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Java"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Java <span class="tag-count">(10)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="JVM"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >JVM <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Kafka"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Kafka <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Kubernetes"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Kubernetes <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="LangChain"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >LangChain <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="LeetCode"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >LeetCode <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Llama"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Llama <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="LLM"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >LLM <span class="tag-count">(4)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="LoRA"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >LoRA <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Lua"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Lua <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Markdown配置"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Markdown配置 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="MT-Bench"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >MT-Bench <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Nginx"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Nginx <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Ollama"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Ollama <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="OpenAI"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >OpenAI <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="OpenAI兼容"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >OpenAI兼容 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="OpenResty"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >OpenResty <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="OpenTelemetry"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >OpenTelemetry <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="OSI"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >OSI <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="PEFT"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >PEFT <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="PPO"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >PPO <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Prometheus"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Prometheus <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Prompt 工程与 Agent 系统"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Prompt 工程与 Agent 系统 <span class="tag-count">(5)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Python"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Python <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Qt"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Qt <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Qwen"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Qwen <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="RabbitMQ"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >RabbitMQ <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="RAG"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >RAG <span class="tag-count">(3)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="ReAct"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >ReAct <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Redis"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Redis <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="RLHF"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >RLHF <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="ROUGE"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >ROUGE <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="SegmentTree"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >SegmentTree <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Self-Consistency"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Self-Consistency <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="SFT"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >SFT <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Skill蒸馏"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Skill蒸馏 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="SNMP"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >SNMP <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Spring Boot"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Spring Boot <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="SpringAI"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >SpringAI <span class="tag-count">(3)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="SQLite"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >SQLite <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="SSE"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >SSE <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Stream"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Stream <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Streams"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Streams <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="TCP/IP"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >TCP/IP <span class="tag-count">(3)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="TCP/IP"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >TCP/IP <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Teacher-Student"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Teacher-Student <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="TGI"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >TGI <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="TLS"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >TLS <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Token"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Token <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Token优化"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Token优化 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="TorchServe"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >TorchServe <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Transformer"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Transformer <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="TTS"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >TTS <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="VLLM"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >VLLM <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="Web"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >Web <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="WebSocket"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >WebSocket <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="ZooKeeper"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >ZooKeeper <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="三次握手"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >三次握手 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="上下文窗口"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >上下文窗口 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="业务流程"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >业务流程 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="中间"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >中间 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="事件驱动"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >事件驱动 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="二叉树"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >二叉树 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="令牌桶"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >令牌桶 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="位图"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >位图 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="信号处理"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >信号处理 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="信号控制"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >信号控制 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="信号显示"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >信号显示 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="倒排索引"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >倒排索引 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="公共组件"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >公共组件 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="分布式协"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >分布式协 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="分布式锁"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >分布式锁 <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="列车"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >列车 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="列车自动监控"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >列车自动监控 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="列车调度"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >列车调度 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="前端"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >前端 <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="前端架构"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >前端架构 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="前端集成"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >前端集成 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="动态规划"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >动态规划 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="区域管理"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >区域管理 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="区间查询"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >区间查询 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="协作"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >协作 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="博客"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >博客 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="参数高效微调"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >参数高效微调 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="反向代理"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >反向代理 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="发布订阅"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >发布订阅 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="召回率"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >召回率 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="可观测性"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >可观测性 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="后端工程"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >后端工程 <span class="tag-count">(5)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="向量数据库"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >向量数据库 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="向量检索"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >向量检索 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="告警"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >告警 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="哈希"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >哈希 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="四次挥手"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >四次挥手 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="图算法"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >图算法 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="多Agent"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >多Agent <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="多Agent协作"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >多Agent协作 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="多角色"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >多角色 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="大模型"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >大模型 <span class="tag-count">(43)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="安全沙箱"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >安全沙箱 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="安全策略"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >安全策略 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="实时计算"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >实时计算 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="实时通信"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >实时通信 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="容器化"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >容器化 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="容器化部署"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >容器化部署 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="密钥安全"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >密钥安全 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="工具调用"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >工具调用 <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="布隆过滤器"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >布隆过滤器 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="并发控制"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >并发控制 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="幻觉"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >幻觉 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="异步处理"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >异步处理 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="微调"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >微调 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="思维链"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >思维链 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="性能优化"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >性能优化 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="性能调优"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >性能调优 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="成本监控"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >成本监控 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="拥塞控制"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >拥塞控制 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="排序算法详解"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >排序算法详解 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="控制命令"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >控制命令 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="推理优化"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >推理优化 <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="推理增强"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >推理增强 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="搜索引擎"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >搜索引擎 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="故障处理"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >故障处理 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="效果监控"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >效果监控 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="数据工程"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >数据工程 <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="数据标注"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >数据标注 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="数据清洗"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >数据清洗 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="数据结构"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >数据结构 <span class="tag-count">(4)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="数据维护"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >数据维护 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="数据集"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >数据集 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="文件系统"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >文件系统 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="日志"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >日志 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="最短路径"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >最短路径 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="服务化"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >服务化 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="本地化部署"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >本地化部署 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="本地存储"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >本地存储 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="本地部署"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >本地部署 <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="权限控制"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >权限控制 <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="架构"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >架构 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="树遍历"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >树遍历 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="检索增强生成"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >检索增强生成 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="模块架构"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >模块架构 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="模型压缩"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >模型压缩 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="模型微调"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >模型微调 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="模型接入"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >模型接入 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="模型选型"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >模型选型 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="模型部署"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >模型部署 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="模型量化"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >模型量化 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="注意力机制"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >注意力机制 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="流处"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >流处 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="流处理"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >流处理 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="流量控制"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >流量控制 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="浏览"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >浏览 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="浏览器扩展"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >浏览器扩展 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="消息队列"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >消息队列 <span class="tag-count">(4)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="深度学习"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >深度学习 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="渲染"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >渲染 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="熔断"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >熔断 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="状态机"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >状态机 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="状态管理"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >状态管理 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="用户管理"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >用户管理 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="知识库"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >知识库 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="知识蒸馏"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >知识蒸馏 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="神经网络"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >神经网络 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="算法"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >算法 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="算法基础"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >算法基础 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="系统架构"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >系统架构 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="系统设计"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >系统设计 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="线段树"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >线段树 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="缓存"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >缓存 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="网络分层"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >网络分层 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="网络通信"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >网络通信 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="聊天"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >聊天 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="股票买卖"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >股票买卖 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="背包问题"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >背包问题 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="能力萃取"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >能力萃取 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="能力迁移"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >能力迁移 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="自动化"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >自动化 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="自然语言处理"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >自然语言处理 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="计算机网"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >计算机网 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="设计模式"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >设计模式 <span class="tag-count">(11)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="评估"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >评估 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="评估指标"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >评估指标 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="语音识别"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >语音识别 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="负载均衡"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >负载均衡 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="轨道交"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >轨道交 <span class="tag-count">(11)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="轨道交通"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >轨道交通 <span class="tag-count">(5)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="运维"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >运维 <span class="tag-count">(3)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="迭代流程"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >迭代流程 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="通信机制"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >通信机制 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="速率限制"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >速率限制 <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="部署"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >部署 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="配置管理"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >配置管理 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="量化"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >量化 <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="链路追踪"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >链路追踪 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="限流"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >限流 <span class="tag-count">(2)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="面试"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >面试 <span class="tag-count">(3)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="面试必考"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >面试必考 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="面试必问"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >面试必问 <span class="tag-count">(1)</span></a
+      >
+    </div><div
+      class="archives-tag-list-item"
+      data-aos="zoom-in"
+      data-tag="预训练"
+    >
+      <a class="archives-tag-list-link" href="javascript:void(0);"
+        >预训练 <span class="tag-count">(1)</span></a
+      >
+    </div></div>
+<div class="category-wrap"><div
+            class="archives-category-list-item"
+            data-aos="zoom-in"
+            data-category="Prompt 工程与 Agent 系统"
+          >
+            <a class="archives-category-list-link" href="javascript:void(0);"
+              >Prompt 工程与 Agent 系统 <span class="category-count">(5)</span></a
+            >
+          </div><div
+            class="archives-category-list-item"
+            data-aos="zoom-in"
+            data-category="RAG 全流程"
+          >
+            <a class="archives-category-list-link" href="javascript:void(0);"
+              >RAG 全流程 <span class="category-count">(1)</span></a
+            >
+          </div><div
+            class="archives-category-list-item"
+            data-aos="zoom-in"
+            data-category="大模型基础与原理"
+          >
+            <a class="archives-category-list-link" href="javascript:void(0);"
+              >大模型基础与原理 <span class="category-count">(9)</span></a
+            >
+          </div><div
+            class="archives-category-list-item"
+            data-aos="zoom-in"
+            data-category="后端与 AI 工程"
+          >
+            <a class="archives-category-list-link" href="javascript:void(0);"
+              >后端与 AI 工程 <span class="category-count">(4)</span></a
+            >
+          </div><div
+            class="archives-category-list-item"
+            data-aos="zoom-in"
+            data-category="模型部署与推理优化"
+          >
+            <a class="archives-category-list-link" href="javascript:void(0);"
+              >模型部署与推理优化 <span class="category-count">(4)</span></a
+            >
+          </div><div
+            class="archives-category-list-item"
+            data-aos="zoom-in"
+            data-category="前端与插件集成"
+          >
+            <a class="archives-category-list-link" href="javascript:void(0);"
+              >前端与插件集成 <span class="category-count">(3)</span></a
+            >
+          </div><div
+            class="archives-category-list-item"
+            data-aos="zoom-in"
+            data-category="数据与评估"
+          >
+            <a class="archives-category-list-link" href="javascript:void(0);"
+              >数据与评估 <span class="category-count">(3)</span></a
+            >
+          </div><div
+            class="archives-category-list-item"
+            data-aos="zoom-in"
+            data-category="运维与可观测性"
+          >
+            <a class="archives-category-list-link" href="javascript:void(0);"
+              >运维与可观测性 <span class="category-count">(3)</span></a
+            >
+          </div><div
+          class="archives-category-list-item"
+          data-aos="zoom-in"
+          data-category="设计模式专栏"
+        >
+          <a class="archives-category-list-link" href="javascript:void(0);"
+            >设计模式专栏 <span class="category-count">(10)</span></a
+            >
+        </div><div
+          class="archives-category-list-item"
+          data-aos="zoom-in"
+          data-category="AI 面试题集"
+        >
+          <a class="archives-category-list-link" href="javascript:void(0);"
+            >AI 面试题集 <span class="category-count">(8)</span></a
+            >
+        </div><div
+          class="archives-category-list-item"
+          data-aos="zoom-in"
+          data-category="算法与数据结构专栏"
+        >
+          <a class="archives-category-list-link" href="javascript:void(0);"
+            >算法与数据结构专栏 <span class="category-count">(7)</span></a
+            >
+        </div><div
+          class="archives-category-list-item"
+          data-aos="zoom-in"
+          data-category="计算机网络专?"
+        >
+          <a class="archives-category-list-link" href="javascript:void(0);"
+            >计算机网络专? <span class="category-count">(6)</span></a
+            >
+        </div><div
+          class="archives-category-list-item"
+          data-aos="zoom-in"
+          data-category="中间件与运维专栏"
+        >
+          <a class="archives-category-list-link" href="javascript:void(0);"
+            >中间件与运维专栏 <span class="category-count">(11)</span></a
+            >
+        </div><div
+          class="archives-category-list-item"
+          data-aos="zoom-in"
+          data-category="ATS 列车自动监控系统"
+        >
+          <a class="archives-category-list-link" href="javascript:void(0);"
+            >ATS 列车自动监控系统 <span class="category-count">(11)</span></a
+            >
+        </div></div>
+
+<script data-pjax>
+  (function() {
+    function initArchiveFilter() {
+      const categoryItems = document.querySelectorAll('.archives-category-list-item[data-category]');
+      const tagItems = document.querySelectorAll('.archives-tag-list-item[data-tag]');
+      const archiveSubsections = document.querySelectorAll('.archive-subsection[data-category]');
+      const archiveArticles = document.querySelectorAll('.archive-article');
+      const tagToggleBtn = document.getElementById('tagToggleBtn');
+      const tagWrapCollapsible = document.getElementById('tagWrapCollapsible');
+
+      if ((categoryItems.length === 0 && tagItems.length === 0) || archiveArticles.length === 0) return;
+
+      if (tagToggleBtn && tagWrapCollapsible) {
+        tagToggleBtn.addEventListener('click', function() {
+          tagWrapCollapsible.classList.toggle('expanded');
+          tagToggleBtn.textContent = tagWrapCollapsible.classList.contains('expanded') ? '收起标签 ▲' : '展开标签 ▼';
+        });
+      }
+
+      let activeCategory = null;
+      let activeTag = null;
+
+      function filterArticles() {
+        
+        if (activeCategory) {
+          archiveSubsections.forEach(function(subsection) {
+            const subCategory = subsection.getAttribute('data-category');
+            if (subCategory === activeCategory) {
+              subsection.classList.remove('category-hidden');
+            } else {
+              subsection.classList.add('category-hidden');
+            }
+          });
+        } else {
+          archiveSubsections.forEach(function(subsection) {
+            subsection.classList.remove('category-hidden');
+          });
+        }
+
+        
+        let visibleCount = 0;
+        archiveArticles.forEach(function(article) {
+          let shouldShow = true;
+
+          if (activeCategory && shouldShow) {
+            const parentSubsection = article.closest('.archive-subsection');
+            if (parentSubsection) {
+              const subCategory = parentSubsection.getAttribute('data-category');
+              if (subCategory !== activeCategory) {
+                shouldShow = false;
+              }
+            }
+          }
+
+          if (activeTag && shouldShow) {
+            const articleTags = article.getAttribute('data-tags') || '';
+            const tagList = articleTags.split(',').map(function(t) { return t.trim(); });
+            if (tagList.indexOf(activeTag) === -1) {
+              shouldShow = false;
+            }
+          }
+
+          if (shouldShow) {
+            article.style.display = '';
+            visibleCount++;
+          } else {
+            article.style.display = 'none';
+          }
+        });
+
+        
+        if (activeTag) {
+          archiveSubsections.forEach(function(subsection) {
+            const visibleArticles = subsection.querySelectorAll('.archive-article:not([style*="display: none"])');
+            if (visibleArticles.length === 0 && !subsection.classList.contains('category-hidden')) {
+              subsection.classList.add('category-hidden');
+            }
+          });
+        }
+      }
+
+      categoryItems.forEach(function(item) {
+        item.addEventListener('click', function() {
+          const category = item.getAttribute('data-category');
+          if (activeCategory === category) {
+            activeCategory = null;
+            item.classList.remove('active');
+          } else {
+            categoryItems.forEach(function(i) { i.classList.remove('active'); });
+            activeCategory = category;
+            item.classList.add('active');
+          }
+          filterArticles();
+        });
+      });
+
+      tagItems.forEach(function(item) {
+        item.addEventListener('click', function() {
+          const tag = item.getAttribute('data-tag');
+          if (activeTag === tag) {
+            activeTag = null;
+            item.classList.remove('active');
+          } else {
+            tagItems.forEach(function(i) { i.classList.remove('active'); });
+            activeTag = tag;
+            item.classList.add('active');
+          }
+          filterArticles();
+        });
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initArchiveFilter);
+    } else {
+      initArchiveFilter();
+    }
+  })();
+</script>
+<section class="archives-wrap" data-aos="fade-up">
+    <div class="archive-year-wrap">
+      <span class="archive-year">2026</span>
+    </div>
+    <ul><li class="archive-article">
+          <div class="archive-article-date">
+            <span>
+              <time
+                class="dt-published"
+                datetime="2026-06-19 03:20:00 &#43;0800 &#43;0800"
+                itemprop="datePublished"
+                >2026-06</time
+              >
+            </span>
+          </div><a class="archive-article-title" href="https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3/"
+              >RAG 检索增强生成技术详解</a
+            ></li></ul>
+  </section></div><nav id="page-nav" aria-label="Pagination navigation" data-aos="fade-up"><span class="page-number current">1</span></nav>
+</section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "向量数据库",
+          url: "https:\/\/dev.infiniteevo.online\/tags\/%E5%90%91%E9%87%8F%E6%95%B0%E6%8D%AE%E5%BA%93\/",
+          description: "",
+          cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
+        };
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>

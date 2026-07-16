@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>结构型模式 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/categories/%E7%BB%93%E6%9E%84%E5%9E%8B%E6%A8%A1%E5%BC%8F/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Sat, 05 Oct 2024 17:06:26 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/categories/%E7%BB%93%E6%9E%84%E5%9E%8B%E6%A8%A1%E5%BC%8F/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>代理模式详解</title>
+      <link>https://dev.infiniteevo.online/post/design-patterns/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Sat, 05 Oct 2024 17:06:26 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/design-patterns/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>代理模式详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2024-10-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-10-05</p>]]>
+      </description>
+      
+        <category>结构型模式</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>适配器模式详解</title>
+      <link>https://dev.infiniteevo.online/post/design-patterns/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Fri, 04 Mar 2022 20:00:25 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/design-patterns/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>适配器模式详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2022-03-04首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-03-04</p>]]>
+      </description>
+      
+        <category>结构型模式</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>装饰器模式详解</title>
+      <link>https://dev.infiniteevo.online/post/design-patterns/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Wed, 19 May 2021 18:13:55 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/design-patterns/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>装饰器模式详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2021-05-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-05-19</p>]]>
+      </description>
+      
+        <category>结构型模式</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

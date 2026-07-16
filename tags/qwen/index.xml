@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Qwen on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/qwen/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Tue, 10 Feb 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/qwen/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/</link>
+      <pubDate>Tue, 10 Feb 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/</guid>
+      <description>
+        <![CDATA[<h1>大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>2025 年以来，大语言模型领域呈现出前所未有的百花齐放态势。OpenAI 的 GPT 系列持续领跑闭源阵营，Meta 的 Llama、阿里巴巴的 Qwen、深度求索的 DeepSeek 以及智谱 AI 的 GLM 则在开源与商用之间开辟了各自的差异化路线。对于开发者和企业而言，面对如此众多的选择，<strong>模型选型已经成为一项关键的技术决策</strong>——它直接影响产品的能力上限、运营成本、数据合规和技术自主性。</p>
+        
+        <hr><p>本文2026-02-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-02-10</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

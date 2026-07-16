@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>AI on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/ai/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/ai/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>大语言模型技术专栏</title>
+      <link>https://dev.infiniteevo.online/post/llm/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/</guid>
+      <description>
+        <![CDATA[<h1>大语言模型技术专栏</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="专栏介绍">
+<a class="header-anchor" href="#%e4%b8%93%e6%a0%8f%e4%bb%8b%e7%bb%8d"></a>
+专栏介绍
+</h2><p>本专栏深入探讨大语言模型（Large Language Model, LLM）的核心技术与前沿进展，按面试与实战热点分为八大分类，帮助读者系统掌握大模型时代的技术能力。</p>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>AI 面试题集</title>
+      <link>https://dev.infiniteevo.online/post/ai-interview/</link>
+      <pubDate>Tue, 17 Mar 2026 22:32:19 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/ai-interview/</guid>
+      <description>
+        <![CDATA[<h1>AI 面试题集</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2026-03-17首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-03-17</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+  </channel>
+</rss>

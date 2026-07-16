@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ControlMonitor on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/controlmonitor/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Thu, 14 Nov 2024 07:12:21 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/controlmonitor/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>ControlMonitor 主程序模</title>
+      <link>https://dev.infiniteevo.online/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/</link>
+      <pubDate>Thu, 14 Nov 2024 07:12:21 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/</guid>
+      <description>
+        <![CDATA[<h1>ControlMonitor 主程序模</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2024-11-14首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-11-14</p>]]>
+      </description>
+      
+        <category>轨道交</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

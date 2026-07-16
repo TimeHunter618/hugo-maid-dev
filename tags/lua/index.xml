@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Lua on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/lua/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Sat, 13 Mar 2021 04:42:09 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/lua/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>Nginx Lua脚本扩展与API网关实践</title>
+      <link>https://dev.infiniteevo.online/post/middleware-ops/nginxlua%E8%84%9A%E6%9C%AC%E6%89%A9%E5%B1%95%E4%B8%8Eapi%E7%BD%91%E5%85%B3%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Sat, 13 Mar 2021 04:42:09 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/middleware-ops/nginxlua%E8%84%9A%E6%9C%AC%E6%89%A9%E5%B1%95%E4%B8%8Eapi%E7%BD%91%E5%85%B3%E5%AE%9E%E8%B7%B5/</guid>
+      <description>
+        <![CDATA[<h1>Nginx Lua脚本扩展与API网关实践</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2021-03-13首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-03-13</p>]]>
+      </description>
+      
+        <category>Web服务</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

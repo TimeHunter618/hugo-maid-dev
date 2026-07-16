@@ -1,0 +1,1943 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  模型量化技术：INT4/INT8、GPTQ 与 AWQ | Aries
+</title>
+<meta name="description" content="从量化原理到 GPTQ、AWQ 实操，全面掌握大模型量化压缩技术"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="模型量化技术：INT4/INT8、GPTQ 与 AWQ | Aries" />
+  <meta
+    property="og:description"
+    content="从量化原理到 GPTQ、AWQ 实操，全面掌握大模型量化压缩技术"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-05-30T10:00:00&#43;08:00" />
+  <meta property="article:modified_time" content="2026-05-30T10:00:00&#43;08:00" /><meta property="article:tag" content="大模型, 量化, GPTQ, AWQ, INT4" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200" alt="模型量化技术：INT4/INT8、GPTQ 与 AWQ"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">模型量化技术：INT4/INT8、GPTQ 与 AWQ</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">从量化原理到 GPTQ、AWQ 实操，全面掌握大模型量化压缩技术</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container sticky"><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#量化数学原理">量化数学原理</a>
+      <ul>
+        <li><a href="#什么是量化">什么是量化</a></li>
+        <li><a href="#对称量化与非对称量化">对称量化与非对称量化</a></li>
+        <li><a href="#量化误差分析">量化误差分析</a></li>
+        <li><a href="#每通道量化-vs-每张量量化">每通道量化 vs 每张量量化</a></li>
+      </ul>
+    </li>
+    <li><a href="#int8-与-int4-量化方案">INT8 与 INT4 量化方案</a>
+      <ul>
+        <li><a href="#int8-量化">INT8 量化</a></li>
+        <li><a href="#int4-量化">INT4 量化</a></li>
+        <li><a href="#激活值量化的挑战">激活值量化的挑战</a></li>
+      </ul>
+    </li>
+    <li><a href="#gptq-量化">GPTQ 量化</a>
+      <ul>
+        <li><a href="#算法原理">算法原理</a></li>
+        <li><a href="#hessian-矩阵的作用">Hessian 矩阵的作用</a></li>
+        <li><a href="#逐列量化与误差补偿">逐列量化与误差补偿</a></li>
+        <li><a href="#gptq-的特点">GPTQ 的特点</a></li>
+        <li><a href="#autogptq-实操">AutoGPTQ 实操</a></li>
+      </ul>
+    </li>
+    <li><a href="#awq-量化">AWQ 量化</a>
+      <ul>
+        <li><a href="#算法原理-1">算法原理</a></li>
+        <li><a href="#通道缩放策略">通道缩放策略</a></li>
+        <li><a href="#awq-vs-gptq-对比">AWQ vs GPTQ 对比</a></li>
+        <li><a href="#autoawq-实操">AutoAWQ 实操</a></li>
+      </ul>
+    </li>
+    <li><a href="#gguf-格式">GGUF 格式</a>
+      <ul>
+        <li><a href="#gguf-与-llamacpp-生态">GGUF 与 llama.cpp 生态</a></li>
+        <li><a href="#gguf-量化级别">GGUF 量化级别</a></li>
+        <li><a href="#gguf-量化实操">GGUF 量化实操</a></li>
+      </ul>
+    </li>
+    <li><a href="#量化效果全面对比">量化效果全面对比</a>
+      <ul>
+        <li><a href="#精度对比">精度对比</a></li>
+        <li><a href="#显存占用对比">显存占用对比</a></li>
+        <li><a href="#推理速度对比">推理速度对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#选型决策矩阵">选型决策矩阵</a></li>
+    <li><a href="#高级量化技巧">高级量化技巧</a>
+      <ul>
+        <li><a href="#量化感知训练qat">量化感知训练（QAT）</a></li>
+        <li><a href="#混合精度量化">混合精度量化</a></li>
+        <li><a href="#kv-cache-量化">KV Cache 量化</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div><div class="sidebar-widget"></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-05-30 10:00:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2026-05-30</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-05-30</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg2.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg2.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型的参数量从数十亿到数千亿不等，一个 70B 参数的模型仅权重就需要约 140GB 的 FP16 存储空间。庞大的显存需求将大模型限制在了少数拥有顶级 GPU 集群的机构手中。模型量化技术通过将高精度浮点数映射到低精度整数，在不显著损失精度的前提下大幅压缩模型体积，是大模型走向普及的关键技术。</p>
+<p>量化带来的收益是多方面的：显存占用减少 50%-75%，推理吞吐量提升 2-4 倍，能耗降低，部署门槛大幅下降。一个经过 INT4 量化的 70B 模型可以在单张 80GB 的 A100 上运行，而原始 FP16 版本则需要两张。</p>
+<p>本文将从量化的数学原理出发，深入讲解 INT8/INT4 量化方案，重点剖析 GPTQ 和 AWQ 两大主流算法，并涵盖 GGUF 格式和完整的实操流程。</p>
+<h2 id="量化数学原理">
+<a class="header-anchor" href="#%e9%87%8f%e5%8c%96%e6%95%b0%e5%ad%a6%e5%8e%9f%e7%90%86"></a>
+量化数学原理
+</h2><h3 id="什么是量化">
+<a class="header-anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af%e9%87%8f%e5%8c%96"></a>
+什么是量化
+</h3><p>量化本质上是将连续的浮点数值域映射到离散的整数数值域。对于从浮点 $x$ 到整数 $x_q$ 的量化过程，核心公式为：</p>
+$$
+x_q = \text{round}\left(\frac{x}{s}\right) + z
+$$<p>反量化（将整数恢复为浮点的近似值）：</p>
+$$
+\hat{x} = s \cdot (x_q - z)
+$$<p>其中：</p>
+<ul>
+<li>$s$ 是<strong>缩放因子（Scale）</strong>，控制浮点域到整数域的映射比例</li>
+<li>$z$ 是<strong>零点（Zero Point）</strong>，确保浮点的 0 能精确映射到某个整数值</li>
+<li>$\text{round}(\cdot)$ 是四舍五入函数</li>
+</ul>
+<h3 id="对称量化与非对称量化">
+<a class="header-anchor" href="#%e5%af%b9%e7%a7%b0%e9%87%8f%e5%8c%96%e4%b8%8e%e9%9d%9e%e5%af%b9%e7%a7%b0%e9%87%8f%e5%8c%96"></a>
+对称量化与非对称量化
+</h3><p>根据量化范围是否以零为中心，分为对称量化和非对称量化两种模式。</p>
+<p><strong>对称量化</strong>：量化范围以 0 为中心，零点 $z = 0$。</p>
+$$
+s = \frac{\max(|x|)}{2^{b-1} - 1}, \quad z = 0
+$$<p>对于 INT8 对称量化，整数范围为 $[-127, 127]$。对称量化计算简单，适合近似对称分布的权重。</p>
+<p><strong>非对称量化</strong>：量化范围不对称，零点 $z \neq 0$。</p>
+$$
+s = \frac{x_{\max} - x_{\min}}{2^b - 1}, \quad z = \text{round}\left(\frac{-x_{\min}}{s}\right)
+$$<p>非对称量化适合分布不对称的数据，如经过 ReLU 激活后的值（全部为非负）。</p>
+<pre class="mermaid">
+  graph LR
+    subgraph 对称量化
+        S1["浮点范围: [-a, a]"] --> S2["整数范围: [-127, 127]"]
+        S2 --> S3["z = 0"]
+    end
+
+    subgraph 非对称量化
+        A1["浮点范围: [xmin, xmax]"] --> A2["整数范围: [0, 255]"]
+        A2 --> A3["z ≠ 0"]
+    end
+</pre><h3 id="量化误差分析">
+<a class="header-anchor" href="#%e9%87%8f%e5%8c%96%e8%af%af%e5%b7%ae%e5%88%86%e6%9e%90"></a>
+量化误差分析
+</h3><p>量化不可避免地引入误差。对于单个值，量化误差为：</p>
+$$
+e = x - \hat{x} = x - s \cdot (x_q - z)
+$$<p>量化误差的来源包括：</p>
+<ol>
+<li><strong>截断误差</strong>：round 函数引入的舍入误差，最大为 $s/2$</li>
+<li><strong>截断溢出</strong>：超出量化范围的值被截断（clamp）</li>
+<li><strong>分布失配</strong>：缩放因子选择不当导致大量值被压缩到很小的范围</li>
+</ol>
+<p>降低量化误差的关键策略是选择合适的缩放因子，使量化范围尽可能覆盖数据的实际分布。</p>
+<h3 id="每通道量化-vs-每张量量化">
+<a class="header-anchor" href="#%e6%af%8f%e9%80%9a%e9%81%93%e9%87%8f%e5%8c%96-vs-%e6%af%8f%e5%bc%a0%e9%87%8f%e9%87%8f%e5%8c%96"></a>
+每通道量化 vs 每张量量化
+</h3><p>根据缩放因子的粒度，量化可分为：</p>
+<table>
+	<thead>
+			<tr>
+					<th>方式</th>
+					<th>缩放因子数量</th>
+					<th>精度</th>
+					<th>额外存储</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>每张量量化</td>
+					<td>1 个</td>
+					<td>最低</td>
+					<td>无</td>
+					<td>简单部署</td>
+			</tr>
+			<tr>
+					<td>每通道量化</td>
+					<td>每行/列 1 个</td>
+					<td>高</td>
+					<td>少量</td>
+					<td>大多数场景</td>
+			</tr>
+			<tr>
+					<td>每组量化</td>
+					<td>每 N 个元素 1 个</td>
+					<td>最高</td>
+					<td>较多</td>
+					<td>极低比特量化</td>
+			</tr>
+	</tbody>
+</table>
+<p>大模型量化通常采用每通道（per-channel）或每分组（per-group）量化，以获得更好的精度。</p>
+<h2 id="int8-与-int4-量化方案">
+<a class="header-anchor" href="#int8-%e4%b8%8e-int4-%e9%87%8f%e5%8c%96%e6%96%b9%e6%a1%88"></a>
+INT8 与 INT4 量化方案
+</h2><h3 id="int8-量化">
+<a class="header-anchor" href="#int8-%e9%87%8f%e5%8c%96"></a>
+INT8 量化
+</h3><p>INT8 量化将 FP16 权重压缩到 8 位整数，显存占用减半。由于现代 GPU（如 A100、H100）拥有高效的 INT8 Tensor Core，INT8 量化不仅能减少显存，还能获得实际的推理加速。</p>
+<p><strong>仅权重量化（Weight-Only）</strong>：只量化权重，激活值保持 FP16（W8A16 方案）。实现简单，精度损失小，但无法利用 INT8 算力加速。</p>
+<p><strong>权重激活联合量化（W8A8）</strong>：同时量化权重和激活值。需要处理激活值的动态范围问题（激活值分布随输入变化），通常需要校准数据来确定激活值的量化范围。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># INT8 对称量化示例</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">quantize_int8_symmetric</span><span class="p">(</span><span class="n">tensor</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;对称 INT8 量化&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">max_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">tensor</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scale</span> <span class="o">=</span> <span class="n">max_val</span> <span class="o">/</span> <span class="mf">127.0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">quantized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">tensor</span> <span class="o">/</span> <span class="n">scale</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="o">-</span><span class="mi">127</span><span class="p">,</span> <span class="mi">127</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">quantized</span><span class="p">,</span> <span class="n">scale</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">dequantize_int8</span><span class="p">(</span><span class="n">quantized</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;反量化&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">quantized</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 示例</span>
+</span></span><span class="line"><span class="cl"><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">q_weights</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="n">quantize_int8_symmetric</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">reconstructed</span> <span class="o">=</span> <span class="n">dequantize_int8</span><span class="p">(</span><span class="n">q_weights</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 计算量化误差</span>
+</span></span><span class="line"><span class="cl"><span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">weights</span> <span class="o">-</span> <span class="n">reconstructed</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;原始大小: </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">nbytes</span><span class="si">}</span><span class="s2"> bytes&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;量化后大小: </span><span class="si">{</span><span class="n">q_weights</span><span class="o">.</span><span class="n">nbytes</span><span class="si">}</span><span class="s2"> bytes&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;压缩比: </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">/</span> <span class="n">q_weights</span><span class="o">.</span><span class="n">nbytes</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">x&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;均方误差: </span><span class="si">{</span><span class="n">error</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="int4-量化">
+<a class="header-anchor" href="#int4-%e9%87%8f%e5%8c%96"></a>
+INT4 量化
+</h3><p>INT4 量化将权重压缩到 4 位整数，显存占用仅为 FP16 的 1/4。然而，INT4 只有 16 个离散值（$[-8, 7]$），量化粒度极粗，需要更精细的算法来控制精度损失。</p>
+<p>INT4 量化的核心挑战：</p>
+<ol>
+<li><strong>表达力极低</strong>：仅 16 个离散值，对于分布范围大的权重，精度损失严重</li>
+<li><strong>离群值问题</strong>：少数极端值会拉伸量化范围，压缩正常值的精度</li>
+<li><strong>硬件支持有限</strong>：并非所有 GPU 都有 INT4 算力支持</li>
+</ol>
+<p>解决这些挑战的方案就是 GPTQ 和 AWQ 等高级量化算法。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># INT4 对称量化示例</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">quantize_int4_symmetric</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">group_size</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;分组对称 INT4 量化&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">original_shape</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">shape</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 重塑为分组形式</span>
+</span></span><span class="line"><span class="cl">    <span class="n">flat</span> <span class="o">=</span> <span class="n">tensor</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">group_size</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">scales</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">flat</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">/</span> <span class="mf">7.0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">quantized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">flat</span> <span class="o">/</span> <span class="n">scales</span><span class="p">)</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="o">-</span><span class="mi">8</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">quantized</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">original_shape</span><span class="p">),</span> <span class="n">scales</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># INT4 每组量化</span>
+</span></span><span class="line"><span class="cl"><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">q_weights</span><span class="p">,</span> <span class="n">scales</span> <span class="o">=</span> <span class="n">quantize_int4_symmetric</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">group_size</span><span class="o">=</span><span class="mi">128</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;原始大小: </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">nbytes</span><span class="si">}</span><span class="s2"> bytes (FP32)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;INT4 等效大小: </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">/</span> <span class="mi">8</span><span class="si">}</span><span class="s2"> bytes&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;压缩比: </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">nbytes</span> <span class="o">/</span> <span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">/</span> <span class="mi">8</span><span class="p">)</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">x&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="激活值量化的挑战">
+<a class="header-anchor" href="#%e6%bf%80%e6%b4%bb%e5%80%bc%e9%87%8f%e5%8c%96%e7%9a%84%e6%8c%91%e6%88%98"></a>
+激活值量化的挑战
+</h3><p>权重是静态的，量化范围在部署前就能确定。但激活值随输入动态变化，且存在<strong>离群值</strong>问题——少数通道的激活值远大于其他通道，导致量化范围被拉大，正常通道的精度严重下降。</p>
+<pre class="mermaid">
+  graph TD
+    A[激活值分布] --> B{是否存在离群值?}
+    B -->|否| C[标准量化: 精度好]
+    B -->|是| D[量化范围被拉大]
+    D --> E[正常值精度严重下降]
+    E --> F[整体精度损失大]
+    
+    G[解决方案] --> H[SmoothQuant: 平滑激活值]
+    G --> I[AWQ: 缩放重要通道]
+    G --> J[FP8: 更高动态范围]
+</pre><p>SmoothQuant 通过数学等价变换，将激活值的离群值&quot;迁移&quot;到权重上，使得激活值分布更均匀，从而实现高质量的 W8A8 量化：</p>
+$$
+y = (x \cdot s) \cdot \left(\frac{W}{s}\right) = x', W'
+$$<p>选择缩放因子 $s$ 使得 $x' = x \cdot s$ 的离群值被抑制，$W' = W / s$ 的分布仍然可控。</p>
+<h2 id="gptq-量化">
+<a class="header-anchor" href="#gptq-%e9%87%8f%e5%8c%96"></a>
+GPTQ 量化
+</h2><h3 id="算法原理">
+<a class="header-anchor" href="#%e7%ae%97%e6%b3%95%e5%8e%9f%e7%90%86"></a>
+算法原理
+</h3><p>GPTQ（Generalized Post-Training Quantization）是一种基于二阶信息的训练后权重量化方法。其核心思想是逐列量化权重矩阵，利用 Hessian 矩阵的信息来补偿量化误差。</p>
+<p>GPTQ 要解决的优化问题是最小化量化前后的输出差异：</p>
+$$
+\arg\min_{\hat{W}} \| XW - X\hat{W} \|_F^2
+$$<p>其中 $X$ 是校准数据（calibration data）通过该层的输入，$W$ 是原始权重，$\hat{W}$ 是量化后的权重。</p>
+<h3 id="hessian-矩阵的作用">
+<a class="header-anchor" href="#hessian-%e7%9f%a9%e9%98%b5%e7%9a%84%e4%bd%9c%e7%94%a8"></a>
+Hessian 矩阵的作用
+</h3><p>将目标函数展开，量化误差可以表示为：</p>
+$$
+E = \| X(W - \hat{W}) \|_F^2 = \sum_i (W_{:,i} - \hat{W}_{:,i})^T H (W_{:,i} - \hat{W}_{:,i})
+$$<p>其中 $H = X^T X$ 是 Hessian 矩阵（实际上是输入的 Gram 矩阵）。Hessian 矩阵编码了每个权重对输出的重要性——Hessian 对角线元素越大，说明该权重对输出影响越大，量化时越需要小心。</p>
+<h3 id="逐列量化与误差补偿">
+<a class="header-anchor" href="#%e9%80%90%e5%88%97%e9%87%8f%e5%8c%96%e4%b8%8e%e8%af%af%e5%b7%ae%e8%a1%a5%e5%81%bf"></a>
+逐列量化与误差补偿
+</h3><p>GPTQ 的量化过程：</p>
+<ol>
+<li>计算 Hessian 矩阵 $H = X^T X$</li>
+<li>对 $H$ 进行 Cholesky 分解，提高数值稳定性</li>
+<li>逐列量化权重：
+<ul>
+<li>量化第 $i$ 列权重 $W_{:,i}$</li>
+<li>计算量化误差 $\delta_i = W_{:,i} - \hat{W}_{:,i}$</li>
+<li>将误差的&quot;影响&quot;补偿到尚未量化的列上：</li>
+</ul>
+</li>
+</ol>
+$$
+W_{:,j} \leftarrow W_{:,j} - \frac{\delta_i \cdot H_{i,j}}{H_{i,i}}, \quad j > i
+$$<p>这一步是 GPTQ 的精髓——通过更新未量化的权重来补偿当前列的量化误差，使得总体输出误差最小化。</p>
+<pre class="mermaid">
+  graph TD
+    A["输入: 权重 W, 校准数据 X"] --> B["计算 Hessian H = X^T X"]
+    B --> C["Cholesky 分解 H"]
+    C --> D["逐列量化 (i = 0, 1, ..., n)"]
+    D --> E["量化第 i 列: W_q[:,i] = Quantize(W[:,i])"]
+    E --> F["计算误差: delta = W[:,i] - W_q[:,i]"]
+    F --> G["补偿未量化列: W[:,j] -= delta * H[i,j] / H[i,i]"]
+    G --> H{所有列完成?}
+    H -->|否| D
+    H -->|是| I["输出: 量化权重 W_q"]
+</pre><h3 id="gptq-的特点">
+<a class="header-anchor" href="#gptq-%e7%9a%84%e7%89%b9%e7%82%b9"></a>
+GPTQ 的特点
+</h3><table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>量化方案</td>
+					<td>W4A16（仅权重量化，激活保持 FP16）</td>
+			</tr>
+			<tr>
+					<td>最低位宽</td>
+					<td>INT4，甚至 INT3</td>
+			</tr>
+			<tr>
+					<td>校准数据需求</td>
+					<td>约 128 条样本</td>
+			</tr>
+			<tr>
+					<td>量化速度</td>
+					<td>较快（70B 模型约 4 小时）</td>
+			</tr>
+			<tr>
+					<td>精度保持</td>
+					<td>INT4 下良好</td>
+			</tr>
+			<tr>
+					<td>硬件要求</td>
+					<td>GPU（量化过程）</td>
+			</tr>
+			<tr>
+					<td>主要工具</td>
+					<td>AutoGPTQ</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="autogptq-实操">
+<a class="header-anchor" href="#autogptq-%e5%ae%9e%e6%93%8d"></a>
+AutoGPTQ 实操
+</h3><p>AutoGPTQ 是 GPTQ 量化的主流工具库，支持自动化的量化流程：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 安装 AutoGPTQ</span>
+</span></span><span class="line"><span class="cl">pip install auto-gptq
+</span></span><span class="line"><span class="cl"><span class="c1"># 如需 CUDA 加速</span>
+</span></span><span class="line"><span class="cl">pip install auto-gptq --extra-index-url https://huggingface.github.io/autogptq-index/whl/cu121/
+</span></span></code></pre></div><p><strong>量化脚本</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">auto_gptq</span> <span class="kn">import</span> <span class="n">AutoGPTQForCausalLM</span><span class="p">,</span> <span class="n">BaseQuantizeConfig</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 1. 配置量化参数</span>
+</span></span><span class="line"><span class="cl"><span class="n">quantize_config</span> <span class="o">=</span> <span class="n">BaseQuantizeConfig</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">bits</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>                <span class="c1"># 量化位宽: 4</span>
+</span></span><span class="line"><span class="cl">    <span class="n">group_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>        <span class="c1"># 分组大小: 每 128 个权重共享一个缩放因子</span>
+</span></span><span class="line"><span class="cl">    <span class="n">desc_act</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>        <span class="c1"># 是否按激活值降序排列列（True 精度更高但更慢）</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sym</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>              <span class="c1"># 对称量化</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">model_id</span> <span class="o">=</span> <span class="s2">&#34;meta-llama/Meta-Llama-3.1-8B-Instruct&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. 准备校准数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 使用通用文本作为校准数据</span>
+</span></span><span class="line"><span class="cl"><span class="n">calibration_texts</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;人工智能是计算机科学的一个分支，它致力于研究、开发用于模拟、延伸和扩展人的智能的理论、方法、技术及应用系统。&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;机器学习是人工智能的核心，是使计算机具有智能的根本途径。&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;深度学习是机器学习中一种基于对数据进行表征学习的方法。&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;自然语言处理是人工智能和语言学领域的分支学科，探讨如何处理和运用自然语言。&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># ... 需要约 128-1024 条多样化的文本</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 转换为模型输入格式</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">encode_texts</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">2048</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">examples</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">texts</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tokenized</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">text</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&#34;pt&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">max_length</span><span class="o">=</span><span class="n">max_length</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">padding</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">examples</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&#34;input_ids&#34;</span><span class="p">:</span> <span class="n">tokenized</span><span class="p">[</span><span class="s2">&#34;input_ids&#34;</span><span class="p">]})</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">examples</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calibration_data</span> <span class="o">=</span> <span class="n">encode_texts</span><span class="p">(</span><span class="n">calibration_texts</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 3. 加载模型并量化</span>
+</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">AutoGPTQForCausalLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model_id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">quantize_config</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">model</span><span class="o">.</span><span class="n">quantify</span><span class="p">(</span><span class="n">calibration_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 4. 保存量化模型</span>
+</span></span><span class="line"><span class="cl"><span class="n">output_dir</span> <span class="o">=</span> <span class="s2">&#34;./models/llama-3.1-8b-gptq-int4&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">model</span><span class="o">.</span><span class="n">save_quantized</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">use_safetensors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tokenizer</span><span class="o">.</span><span class="n">save_pretrained</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;量化模型已保存到 </span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>加载和使用量化模型</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">auto_gptq</span> <span class="kn">import</span> <span class="n">AutoGPTQForCausalLM</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 加载量化模型</span>
+</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">AutoGPTQForCausalLM</span><span class="o">.</span><span class="n">from_quantized</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;./models/llama-3.1-8b-gptq-int4&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">device</span><span class="o">=</span><span class="s2">&#34;cuda:0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">use_safetensors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&#34;./models/llama-3.1-8b-gptq-int4&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 推理</span>
+</span></span><span class="line"><span class="cl"><span class="n">inputs</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="s2">&#34;解释什么是大模型量化&#34;</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&#34;pt&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&#34;cuda:0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">256</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</span></span></code></pre></div><p><strong>使用 vLLM 加载 GPTQ 模型</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># vLLM 直接加载 GPTQ 量化模型</span>
+</span></span><span class="line"><span class="cl">python -m vllm.entrypoints.openai.api_server <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --model ./models/llama-3.1-8b-gptq-int4 <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --quantization gptq <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --port <span class="m">8000</span>
+</span></span></code></pre></div><h2 id="awq-量化">
+<a class="header-anchor" href="#awq-%e9%87%8f%e5%8c%96"></a>
+AWQ 量化
+</h2><h3 id="算法原理-1">
+<a class="header-anchor" href="#%e7%ae%97%e6%b3%95%e5%8e%9f%e7%90%86-1"></a>
+算法原理
+</h3><p>AWQ（Activation-aware Weight Quantization）是一种激活感知的权重量化方法。其核心洞察是：<strong>并非所有权重都同等重要，与显著激活值（大激活值）对应的权重对量化误差更敏感。</strong></p>
+<p>AWQ 不依赖反向传播或梯度计算，而是通过分析激活值的统计特性来识别&quot;重要&quot;权重，并引入每通道缩放因子来保护这些权重。</p>
+<h3 id="通道缩放策略">
+<a class="header-anchor" href="#%e9%80%9a%e9%81%93%e7%bc%a9%e6%94%be%e7%ad%96%e7%95%a5"></a>
+通道缩放策略
+</h3><p>AWQ 的核心操作是对每通道引入一个缩放因子 $s$：</p>
+$$
+W' = W \cdot s, \quad \hat{W} = \text{Quantize}(W') / s
+$$<p>通过将重要通道的权重放大（$s > 1$），再量化后再缩小，可以减少这些通道的相对量化误差。直觉是：量化误差与值的绝对大小成正比，放大后的权重在量化后相对误差更小。</p>
+<p>选择缩放因子 $s$ 的目标是使量化前后的输出差异最小：</p>
+$$
+s^* = \arg\min_s \| (XW) - (X \cdot (Q(W \cdot s) / s)) \|_F^2
+$$<p>AWQ 通过网格搜索（grid search）在候选缩放因子中选择最优值，候选值基于激活值的统计分布生成：</p>
+$$
+s_j = \left(\frac{\max(|X_j|)^\alpha}{\max(|W_j|)}\right)^{1/2}
+$$<p>其中 $\alpha \in [0, 1]$ 是搜索参数，$j$ 是通道索引。</p>
+<pre class="mermaid">
+  graph TD
+    A["输入: 权重 W, 激活值 X"] --> B["分析激活值统计"]
+    B --> C["识别显著通道（大激活值通道）"]
+    C --> D["网格搜索最优缩放因子 s"]
+    D --> E["缩放权重: W' = W * s"]
+    E --> F["量化: Q(W')"]
+    F --> G["反缩放: W_hat = Q(W') / s"]
+    G --> H["输出: 量化权重 W_hat + 缩放因子 s"]
+</pre><h3 id="awq-vs-gptq-对比">
+<a class="header-anchor" href="#awq-vs-gptq-%e5%af%b9%e6%af%94"></a>
+AWQ vs GPTQ 对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>GPTQ</th>
+					<th>AWQ</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>核心思想</td>
+					<td>二阶误差补偿</td>
+					<td>激活感知通道缩放</td>
+			</tr>
+			<tr>
+					<td>量化方案</td>
+					<td>W4A16</td>
+					<td>W4A16</td>
+			</tr>
+			<tr>
+					<td>是否需要反向传播</td>
+					<td>否</td>
+					<td>否</td>
+			</tr>
+			<tr>
+					<td>校准数据需求</td>
+					<td>128+ 条</td>
+					<td>128+ 条</td>
+			</tr>
+			<tr>
+					<td>量化速度</td>
+					<td>中等</td>
+					<td>快</td>
+			</tr>
+			<tr>
+					<td>INT4 精度</td>
+					<td>良好</td>
+					<td>优秀</td>
+			</tr>
+			<tr>
+					<td>泛化能力</td>
+					<td>好</td>
+					<td>优秀</td>
+			</tr>
+			<tr>
+					<td>量化一致性</td>
+					<td>可能不一致</td>
+					<td>一致性好</td>
+			</tr>
+			<tr>
+					<td>推理速度</td>
+					<td>依赖实现</td>
+					<td>依赖实现</td>
+			</tr>
+	</tbody>
+</table>
+<p>AWQ 在 INT4 量化下通常比 GPTQ 精度更高，且量化结果的一致性更好（不同批次的量化结果稳定）。此外，AWQ 的量化速度通常比 GPTQ 更快，因为它不需要逐列的误差补偿计算。</p>
+<h3 id="autoawq-实操">
+<a class="header-anchor" href="#autoawq-%e5%ae%9e%e6%93%8d"></a>
+AutoAWQ 实操
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 安装 AutoAWQ</span>
+</span></span><span class="line"><span class="cl">pip install autoawq
+</span></span></code></pre></div><p><strong>量化脚本</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">awq</span> <span class="kn">import</span> <span class="n">AutoAWQForCausalLM</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">model_id</span> <span class="o">=</span> <span class="s2">&#34;meta-llama/Meta-Llama-3.1-8B-Instruct&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">output_dir</span> <span class="o">=</span> <span class="s2">&#34;./models/llama-3.1-8b-awq-int4&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 1. 加载模型和 tokenizer</span>
+</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">AutoAWQForCausalLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model_id</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">device_map</span><span class="o">=</span><span class="s2">&#34;auto&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span> <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. 配置量化参数</span>
+</span></span><span class="line"><span class="cl"><span class="n">quant_config</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;zero_point&#34;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>       <span class="c1"># 使用零点（非对称量化）</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;q_group_size&#34;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span>      <span class="c1"># 分组大小</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;w_bit&#34;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>               <span class="c1"># 权重量化位宽</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;GEMM&#34;</span><span class="p">,</span>        <span class="c1"># 量化版本: GEMM 或 GEMV</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 3. 准备校准数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># AWQ 自带了一些常用数据集的校准数据</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">awq.utils.calib_data</span> <span class="kn">import</span> <span class="n">get_calib_dataset</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">calib_data</span> <span class="o">=</span> <span class="n">get_calib_dataset</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;pileval&#34;</span><span class="p">,</span>               <span class="c1"># 校准数据集</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tokenizer</span><span class="o">=</span><span class="n">tokenizer</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n_samples</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span>           <span class="c1"># 校准样本数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">block_size</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>          <span class="c1"># 每个样本的 token 数</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 也可以使用自定义数据</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># custom_texts = [&#34;你的自定义校准文本...&#34;]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># calib_data = [tokenizer(text, return_tensors=&#34;pt&#34;) for text in custom_texts]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 4. 执行量化</span>
+</span></span><span class="line"><span class="cl"><span class="n">model</span><span class="o">.</span><span class="n">quantize</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tokenizer</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">quant_config</span><span class="o">=</span><span class="n">quant_config</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">calib_data</span><span class="o">=</span><span class="n">calib_data</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 5. 保存量化模型</span>
+</span></span><span class="line"><span class="cl"><span class="n">model</span><span class="o">.</span><span class="n">save_quantized</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tokenizer</span><span class="o">.</span><span class="n">save_pretrained</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;AWQ 量化模型已保存到 </span><span class="si">{</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;量化配置: </span><span class="si">{</span><span class="n">quant_config</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>加载和使用 AWQ 量化模型</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">awq</span> <span class="kn">import</span> <span class="n">AutoAWQForCausalLM</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 加载 AWQ 量化模型</span>
+</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">AutoAWQForCausalLM</span><span class="o">.</span><span class="n">from_quantized</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;./models/llama-3.1-8b-awq-int4&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">device_map</span><span class="o">=</span><span class="s2">&#34;auto&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">fuse_layers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># 融合算子加速推理</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="s2">&#34;./models/llama-3.1-8b-awq-int4&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 推理</span>
+</span></span><span class="line"><span class="cl"><span class="n">messages</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="s2">&#34;解释 AWQ 量化的原理&#34;</span><span class="p">}]</span>
+</span></span><span class="line"><span class="cl"><span class="n">text</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">apply_chat_template</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">tokenize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">add_generation_prompt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">inputs</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&#34;pt&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">&#34;cuda:0&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="o">**</span><span class="n">inputs</span><span class="p">,</span> <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">do_sample</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</span></span></code></pre></div><p><strong>使用 vLLM 加载 AWQ 模型</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">python -m vllm.entrypoints.openai.api_server <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --model ./models/llama-3.1-8b-awq-int4 <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --quantization awq <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --port <span class="m">8000</span>
+</span></span></code></pre></div><h2 id="gguf-格式">
+<a class="header-anchor" href="#gguf-%e6%a0%bc%e5%bc%8f"></a>
+GGUF 格式
+</h2><h3 id="gguf-与-llamacpp-生态">
+<a class="header-anchor" href="#gguf-%e4%b8%8e-llamacpp-%e7%94%9f%e6%80%81"></a>
+GGUF 与 llama.cpp 生态
+</h3><p>GGUF（GPT-Generated Unified Format）是 llama.cpp 生态使用的模型格式，其前身是 GGML 格式。GGUF 的最大特点是支持在 CPU 上运行量化模型，并支持 GPU/CPU 混合推理，非常适合消费级硬件和边缘设备。</p>
+<p>GGUF 的关键优势：</p>
+<ul>
+<li><strong>跨平台</strong>：支持 Windows、Linux、macOS（包括 Apple Silicon）</li>
+<li><strong>零依赖</strong>：llama.cpp 是纯 C/C++ 实现，无 Python 依赖</li>
+<li><strong>灵活的量化级别</strong>：从 Q2 到 Q8 多种选择</li>
+<li><strong>混合推理</strong>：支持将部分层卸载到 GPU，其余在 CPU 计算</li>
+</ul>
+<h3 id="gguf-量化级别">
+<a class="header-anchor" href="#gguf-%e9%87%8f%e5%8c%96%e7%ba%a7%e5%88%ab"></a>
+GGUF 量化级别
+</h3><table>
+	<thead>
+			<tr>
+					<th>量化级别</th>
+					<th>位宽</th>
+					<th>相对大小</th>
+					<th>质量评估</th>
+					<th>推荐场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Q8_0</td>
+					<td>8-bit</td>
+					<td>~53%</td>
+					<td>几乎无损</td>
+					<td>高质量推理</td>
+			</tr>
+			<tr>
+					<td>Q6_K</td>
+					<td>6-bit</td>
+					<td>~40%</td>
+					<td>高质量</td>
+					<td>质量优先</td>
+			</tr>
+			<tr>
+					<td>Q5_K_M</td>
+					<td>5-bit</td>
+					<td>~34%</td>
+					<td>优秀</td>
+					<td>质量与体积平衡</td>
+			</tr>
+			<tr>
+					<td>Q5_1</td>
+					<td>5-bit</td>
+					<td>~35%</td>
+					<td>良好</td>
+					<td>通用</td>
+			</tr>
+			<tr>
+					<td>Q4_K_M</td>
+					<td>4-bit</td>
+					<td>~28%</td>
+					<td>良好</td>
+					<td><strong>最常用</strong></td>
+			</tr>
+			<tr>
+					<td>Q4_0</td>
+					<td>4-bit</td>
+					<td>~27%</td>
+					<td>可接受</td>
+					<td>速度优先</td>
+			</tr>
+			<tr>
+					<td>Q3_K_M</td>
+					<td>3-bit</td>
+					<td>~21%</td>
+					<td>有损失</td>
+					<td>显存紧张</td>
+			</tr>
+			<tr>
+					<td>Q2_K</td>
+					<td>2-bit</td>
+					<td>~16%</td>
+					<td>损失较大</td>
+					<td>极限压缩</td>
+			</tr>
+	</tbody>
+</table>
+<p>GGUF 采用**块量化（Block Quantization）**策略，将权重分成小块（如 32 个元素一组），每块保存自己的缩放因子和可选的零点，从而更好地适应权重的局部分布差异。</p>
+<h3 id="gguf-量化实操">
+<a class="header-anchor" href="#gguf-%e9%87%8f%e5%8c%96%e5%ae%9e%e6%93%8d"></a>
+GGUF 量化实操
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 1. 克隆 llama.cpp</span>
+</span></span><span class="line"><span class="cl">git clone https://github.com/ggerganov/llama.cpp
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> llama.cpp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. 将 HuggingFace 模型转换为 GGUF 格式</span>
+</span></span><span class="line"><span class="cl">python convert_hf_to_gguf.py <span class="se">\
+</span></span></span><span class="line"><span class="cl">    ./models/llama-3.1-8b-hf <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --outfile ./models/llama-3.1-8b.gguf <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --outtype f16  <span class="c1"># 先转换为 FP16 的 GGUF</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 3. 量化为不同级别</span>
+</span></span><span class="line"><span class="cl">./llama-quantize <span class="se">\
+</span></span></span><span class="line"><span class="cl">    ./models/llama-3.1-8b.gguf <span class="se">\
+</span></span></span><span class="line"><span class="cl">    ./models/llama-3.1-8b-Q4_K_M.gguf <span class="se">\
+</span></span></span><span class="line"><span class="cl">    Q4_K_M
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./llama-quantize <span class="se">\
+</span></span></span><span class="line"><span class="cl">    ./models/llama-3.1-8b.gguf <span class="se">\
+</span></span></span><span class="line"><span class="cl">    ./models/llama-3.1-8b-Q5_K_M.gguf <span class="se">\
+</span></span></span><span class="line"><span class="cl">    Q5_K_M
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./llama-quantize <span class="se">\
+</span></span></span><span class="line"><span class="cl">    ./models/llama-3.1-8b.gguf <span class="se">\
+</span></span></span><span class="line"><span class="cl">    ./models/llama-3.1-8b-Q8_0.gguf <span class="se">\
+</span></span></span><span class="line"><span class="cl">    Q8_0
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 4. 查看量化后文件大小</span>
+</span></span><span class="line"><span class="cl">ls -lh ./models/llama-3.1-8b-Q*.gguf
+</span></span></code></pre></div><p><strong>使用 Ollama 导入 GGUF</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># 创建 Modelfile</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="s">./models/llama-3.1-8b-Q4_K_M.gguf</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl">TEMPLATE <span class="s2">&#34;&#34;&#34;{{ if .System }}&lt;|im_start|&gt;system</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="o">{{</span> .System <span class="o">}}</span>&lt;<span class="p">|</span>im_end<span class="p">|</span>&gt;<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="o">{{</span> end <span class="o">}}</span>&lt;<span class="p">|</span>im_start<span class="p">|</span>&gt;user<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="o">{{</span> .Prompt <span class="o">}}</span>&lt;<span class="p">|</span>im_end<span class="p">|</span>&gt;<span class="err">
+</span></span></span><span class="line"><span class="cl">&lt;<span class="p">|</span>im_start<span class="p">|</span>&gt;assistant<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl">PARAMETER stop <span class="s2">&#34;&lt;|im_end|&gt;&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl">PARAMETER stop <span class="s2">&#34;&lt;|endoftext|&gt;&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl">PARAMETER num_ctx <span class="m">8192</span><span class="err">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ollama create my-llama -f Modelfile
+</span></span><span class="line"><span class="cl">ollama run my-llama
+</span></span></code></pre></div><h2 id="量化效果全面对比">
+<a class="header-anchor" href="#%e9%87%8f%e5%8c%96%e6%95%88%e6%9e%9c%e5%85%a8%e9%9d%a2%e5%af%b9%e6%af%94"></a>
+量化效果全面对比
+</h2><h3 id="精度对比">
+<a class="header-anchor" href="#%e7%b2%be%e5%ba%a6%e5%af%b9%e6%af%94"></a>
+精度对比
+</h3><p>在多个基准测试上（MMLU、HumanEval、GSM8K 等），不同量化方法的表现：</p>
+<table>
+	<thead>
+			<tr>
+					<th>量化方法</th>
+					<th>位宽</th>
+					<th>MMLU</th>
+					<th>HumanEval</th>
+					<th>GSM8K</th>
+					<th>平均保持率</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>FP16（基准）</td>
+					<td>16</td>
+					<td>73.0</td>
+					<td>72.5</td>
+					<td>82.0</td>
+					<td>100%</td>
+			</tr>
+			<tr>
+					<td>INT8 对称</td>
+					<td>8</td>
+					<td>72.8</td>
+					<td>72.0</td>
+					<td>81.5</td>
+					<td>99.5%</td>
+			</tr>
+			<tr>
+					<td>GPTQ</td>
+					<td>4</td>
+					<td>70.5</td>
+					<td>68.0</td>
+					<td>77.0</td>
+					<td>95.5%</td>
+			</tr>
+			<tr>
+					<td>AWQ</td>
+					<td>4</td>
+					<td>71.2</td>
+					<td>70.0</td>
+					<td>78.5</td>
+					<td>96.5%</td>
+			</tr>
+			<tr>
+					<td>GGUF Q8_0</td>
+					<td>8</td>
+					<td>72.9</td>
+					<td>72.0</td>
+					<td>81.8</td>
+					<td>99.6%</td>
+			</tr>
+			<tr>
+					<td>GGUF Q4_K_M</td>
+					<td>4</td>
+					<td>70.0</td>
+					<td>67.5</td>
+					<td>75.5</td>
+					<td>94.8%</td>
+			</tr>
+			<tr>
+					<td>GGUF Q3_K_M</td>
+					<td>3</td>
+					<td>66.5</td>
+					<td>62.0</td>
+					<td>70.0</td>
+					<td>89.5%</td>
+			</tr>
+			<tr>
+					<td>GPTQ</td>
+					<td>3</td>
+					<td>65.0</td>
+					<td>60.0</td>
+					<td>67.5</td>
+					<td>87.0%</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="显存占用对比">
+<a class="header-anchor" href="#%e6%98%be%e5%ad%98%e5%8d%a0%e7%94%a8%e5%af%b9%e6%af%94"></a>
+显存占用对比
+</h3><p>以 Llama-3.1-8B 为例：</p>
+<table>
+	<thead>
+			<tr>
+					<th>量化方法</th>
+					<th>模型大小</th>
+					<th>显存占用</th>
+					<th>可运行硬件</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>FP16</td>
+					<td>16.0 GB</td>
+					<td>~18 GB</td>
+					<td>A100 40GB+</td>
+			</tr>
+			<tr>
+					<td>INT8</td>
+					<td>8.0 GB</td>
+					<td>~10 GB</td>
+					<td>RTX 3090/4090</td>
+			</tr>
+			<tr>
+					<td>GPTQ INT4</td>
+					<td>4.5 GB</td>
+					<td>~6.5 GB</td>
+					<td>RTX 3060 12GB+</td>
+			</tr>
+			<tr>
+					<td>AWQ INT4</td>
+					<td>4.5 GB</td>
+					<td>~6.5 GB</td>
+					<td>RTX 3060 12GB+</td>
+			</tr>
+			<tr>
+					<td>GGUF Q4_K_M</td>
+					<td>4.4 GB</td>
+					<td>~6 GB</td>
+					<td>RTX 3060 / CPU 16GB</td>
+			</tr>
+			<tr>
+					<td>GGUF Q3_K_M</td>
+					<td>3.3 GB</td>
+					<td>~5 GB</td>
+					<td>RTX 2060 / CPU 8GB</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="推理速度对比">
+<a class="header-anchor" href="#%e6%8e%a8%e7%90%86%e9%80%9f%e5%ba%a6%e5%af%b9%e6%af%94"></a>
+推理速度对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>量化方法</th>
+					<th>生成速度 (tokens/s)</th>
+					<th>相对加速比</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>FP16（基准）</td>
+					<td>45</td>
+					<td>1.0x</td>
+			</tr>
+			<tr>
+					<td>INT8 W8A8</td>
+					<td>72</td>
+					<td>1.6x</td>
+			</tr>
+			<tr>
+					<td>GPTQ INT4</td>
+					<td>65</td>
+					<td>1.4x</td>
+			</tr>
+			<tr>
+					<td>AWQ INT4</td>
+					<td>68</td>
+					<td>1.5x</td>
+			</tr>
+			<tr>
+					<td>GGUF Q4_K_M (GPU)</td>
+					<td>55</td>
+					<td>1.2x</td>
+			</tr>
+			<tr>
+					<td>GGUF Q4_K_M (CPU)</td>
+					<td>12</td>
+					<td>0.27x</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>注：推理速度受多种因素影响（GPU 型号、推理框架、batch size 等），上表为单卡 A100 上的参考数据。</p>
+</blockquote>
+<h2 id="选型决策矩阵">
+<a class="header-anchor" href="#%e9%80%89%e5%9e%8b%e5%86%b3%e7%ad%96%e7%9f%a9%e9%98%b5"></a>
+选型决策矩阵
+</h2><pre class="mermaid">
+  graph TD
+    A[量化选型] --> B{部署环境?}
+    B -->|GPU 服务器| C{精度要求?}
+    C -->|高精度| D[AWQ INT4]
+    C -->|可接受损失| E[GPTQ INT4]
+    B -->|消费级 GPU| F{是否需要 CPU 推理?}
+    F -->|是| G[GGUF Q4_K_M]
+    F -->|否| D
+    B -->|纯 CPU| H[GGUF Q4_K_M / Q3_K_M]
+    B -->|移动设备| I[GGUF Q3_K_M / Q2_K]
+</pre><table>
+	<thead>
+			<tr>
+					<th>使用场景</th>
+					<th>推荐方案</th>
+					<th>理由</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>生产 GPU 服务</td>
+					<td>AWQ INT4 + vLLM</td>
+					<td>精度最佳，推理框架支持好</td>
+			</tr>
+			<tr>
+					<td>追求极致推理速度</td>
+					<td>INT8 W8A8 + TensorRT-LLM</td>
+					<td>可利用 INT8 Tensor Core</td>
+			</tr>
+			<tr>
+					<td>消费级 GPU 本地使用</td>
+					<td>GGUF Q4_K_M + llama.cpp/Ollama</td>
+					<td>灵活的 GPU/CPU 混合推理</td>
+			</tr>
+			<tr>
+					<td>CPU 推理</td>
+					<td>GGUF Q4_K_M / Q3_K_M</td>
+					<td>llama.cpp 的 CPU 优化最好</td>
+			</tr>
+			<tr>
+					<td>边缘/移动设备</td>
+					<td>GGUF Q3_K_M / Q2_K</td>
+					<td>体积最小，资源占用低</td>
+			</tr>
+			<tr>
+					<td>需要最高精度</td>
+					<td>INT8 或 GGUF Q8_0</td>
+					<td>几乎无损</td>
+			</tr>
+			<tr>
+					<td>快速实验</td>
+					<td>BitsAndBytes INT4</td>
+					<td>一行代码加载，无需校准</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="高级量化技巧">
+<a class="header-anchor" href="#%e9%ab%98%e7%ba%a7%e9%87%8f%e5%8c%96%e6%8a%80%e5%b7%a7"></a>
+高级量化技巧
+</h2><h3 id="量化感知训练qat">
+<a class="header-anchor" href="#%e9%87%8f%e5%8c%96%e6%84%9f%e7%9f%a5%e8%ae%ad%e7%bb%83qat"></a>
+量化感知训练（QAT）
+</h3><p>训练后量化（PTQ）在极低比特（INT2/INT3）下精度损失明显。量化感知训练（QAT）在训练过程中模拟量化效果，让模型适应量化误差：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 伪代码：QAT 训练流程</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">QuantAwareLinear</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_features</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">bits</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">out_features</span><span class="p">,</span> <span class="n">in_features</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">=</span> <span class="n">bits</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 可学习的缩放因子</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">weight_scale</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">out_features</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 训练时模拟量化（伪量化）</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_scale</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 前向传播使用量化-反量化后的权重</span>
+</span></span><span class="line"><span class="cl">            <span class="n">w_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fake_quantize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 推理时使用真实量化</span>
+</span></span><span class="line"><span class="cl">            <span class="n">w_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_real_quantize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">x</span> <span class="o">@</span> <span class="n">w_q</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">_fake_quantize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">scale</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">qmax</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bits</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">w_scaled</span> <span class="o">=</span> <span class="n">w</span> <span class="o">/</span> <span class="n">scale</span>
+</span></span><span class="line"><span class="cl">        <span class="n">w_clipped</span> <span class="o">=</span> <span class="n">w_scaled</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="o">-</span><span class="n">qmax</span><span class="p">,</span> <span class="n">qmax</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">w_rounded</span> <span class="o">=</span> <span class="n">w_clipped</span><span class="o">.</span><span class="n">round</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">w_rounded</span> <span class="o">*</span> <span class="n">scale</span>  <span class="c1"># 反量化回浮点</span>
+</span></span></code></pre></div><h3 id="混合精度量化">
+<a class="header-anchor" href="#%e6%b7%b7%e5%90%88%e7%b2%be%e5%ba%a6%e9%87%8f%e5%8c%96"></a>
+混合精度量化
+</h3><p>并非所有层对量化都同样敏感。注意力层和 MLP 层的最后一层投影通常更敏感。混合精度策略对不同层使用不同的量化精度：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 混合精度量化配置示例</span>
+</span></span><span class="line"><span class="cl"><span class="n">mixed_precision_config</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;model.layers.0.self_attn.q_proj&#34;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&#34;bits&#34;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>  <span class="c1"># 敏感层用 INT8</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;model.layers.0.self_attn.k_proj&#34;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&#34;bits&#34;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;model.layers.0.self_attn.v_proj&#34;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&#34;bits&#34;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;model.layers.0.self_attn.o_proj&#34;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&#34;bits&#34;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;model.layers.0.mlp.gate_proj&#34;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&#34;bits&#34;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>     <span class="c1"># 非敏感层用 INT4</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;model.layers.0.mlp.down_proj&#34;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&#34;bits&#34;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;model.layers.0.mlp.up_proj&#34;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&#34;bits&#34;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># ... 其他层类似</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="kv-cache-量化">
+<a class="header-anchor" href="#kv-cache-%e9%87%8f%e5%8c%96"></a>
+KV Cache 量化
+</h3><p>除了权重量化，KV Cache 的量化也能显著减少推理时的显存占用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># vLLM 中启用 KV Cache 量化</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">vllm</span> <span class="kn">import</span> <span class="n">LLM</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">llm</span> <span class="o">=</span> <span class="n">LLM</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model</span><span class="o">=</span><span class="s2">&#34;meta-llama/Meta-Llama-3.1-8B-Instruct&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">quantization</span><span class="o">=</span><span class="s2">&#34;awq&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">kv_cache_dtype</span><span class="o">=</span><span class="s2">&#34;int8&#34;</span><span class="p">,</span>  <span class="c1"># 或 &#34;fp8&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gpu_memory_utilization</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></div><p>KV Cache INT8 量化几乎无损，可将 KV Cache 显存占用减半，显著提升长上下文场景的并发能力。</p>
+<h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>模型量化是大模型落地不可或缺的技术。从数学原理上理解量化的本质——浮点到整数的映射及其误差控制——是掌握各种量化方法的基础。</p>
+<p>回顾本文的核心内容：INT8 量化成熟稳定，是精度优先场景的首选；GPTQ 利用 Hessian 矩阵的二阶信息进行误差补偿，在 INT4 下取得了良好的精度；AWQ 通过激活感知的通道缩放，在 INT4 下实现了更优的精度和更好的泛化；GGUF 格式凭借灵活的量化级别和跨平台能力，成为消费级硬件部署的标准选择。</p>
+<p>在实际项目中，量化的选择不是非此即彼的。理解每种方法的原理、优势和局限，根据模型规模、硬件条件、精度要求和部署场景综合决策，才能获得最佳的工程效果。随着 FP8 量化、更先进的 QAT 技术以及专用硬件（如 NPU、TPU）的发展，量化的精度和效率将持续提升，让大模型在更多场景中发挥价值。</p>
+<hr>
+<p><strong>参考文献</strong>：</p>
+<ol>
+<li>Frantar E, et al. GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers. ICLR 2023.</li>
+<li>Lin J, et al. AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration. MLSys 2024.</li>
+<li>Xiao G, et al. SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models. ICML 2023.</li>
+<li>Dettmers T, et al. LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale. NeurIPS 2022.</li>
+<li>Gerganov G. llama.cpp: Port of Facebook&rsquo;s LLaMA model in C/C++. <a href="https://github.com/ggerganov/llama.cpp">https://github.com/ggerganov/llama.cpp</a></li>
+<li>AutoGPTQ Documentation. <a href="https://github.com/PanQiWei/AutoGPTQ">https://github.com/PanQiWei/AutoGPTQ</a></li>
+<li>AutoAWQ Documentation. <a href="https://github.com/casper-hansen/AutoAWQ">https://github.com/casper-hansen/AutoAWQ</a></li>
+<li>Jacob B, et al. Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference. CVPR 2018.</li>
+</ol>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/&amp;appkey=&amp;title=%e6%a8%a1%e5%9e%8b%e9%87%8f%e5%8c%96%e6%8a%80%e6%9c%af%ef%bc%9aINT4/INT8%e3%80%81GPTQ%20%e4%b8%8e%20AWQ&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="模型量化技术：INT4/INT8、GPTQ 与 AWQ">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/&amp;title=%e6%a8%a1%e5%9e%8b%e9%87%8f%e5%8c%96%e6%8a%80%e6%9c%af%ef%bc%9aINT4/INT8%e3%80%81GPTQ%20%e4%b8%8e%20AWQ&amp;desc=%e4%bb%8e%e9%87%8f%e5%8c%96%e5%8e%9f%e7%90%86%e5%88%b0%20GPTQ%e3%80%81AWQ%20%e5%ae%9e%e6%93%8d%ef%bc%8c%e5%85%a8%e9%9d%a2%e6%8e%8c%e6%8f%a1%e5%a4%a7%e6%a8%a1%e5%9e%8b%e9%87%8f%e5%8c%96%e5%8e%8b%e7%bc%a9%e6%8a%80%e6%9c%af&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="模型量化技术：INT4/INT8、GPTQ 与 AWQ">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="模型量化技术：INT4/INT8、GPTQ 与 AWQ">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/&amp;text=%e6%a8%a1%e5%9e%8b%e9%87%8f%e5%8c%96%e6%8a%80%e6%9c%af%ef%bc%9aINT4/INT8%e3%80%81GPTQ%20%e4%b8%8e%20AWQ&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="模型量化技术：INT4/INT8、GPTQ 与 AWQ">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/" target="_blank" rel="noopener noreferrer" title="模型量化技术：INT4/INT8、GPTQ 与 AWQ">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%a8%a1%e5%9e%8b%e9%83%a8%e7%bd%b2%e4%b8%8e%e6%8e%a8%e7%90%86%e4%bc%98%e5%8c%96"
+      data-aos="zoom-in"
+      >模型部署与推理优化</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%a4%a7%e6%a8%a1%e5%9e%8b"
+        rel="tag"
+        >大模型</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e9%87%8f%e5%8c%96"
+        rel="tag"
+        >量化</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/gptq"
+        rel="tag"
+        >GPTQ</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/awq"
+        rel="tag"
+        >AWQ</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/int4"
+        rel="tag"
+        >INT4</a
+      >
+    </li></ul>
+</footer>
+  </div><nav
+    id="article-nav"
+    aria-label="Article navigation"
+    data-aos="fade-up"
+  ><div class="article-nav-link-wrap left"><img
+              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
+              data-sizes="auto"
+              alt="模型服务化封装：FastAPI、TorchServe 与 OpenAI 兼容接口"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%8D%E5%8A%A1%E5%8C%96%E5%B0%81%E8%A3%85/"
+          aria-label="前一篇:模型服务化封装：FastAPI、TorchServe 与 OpenAI 兼容接口"
+          title="前一篇:模型服务化封装：FastAPI、TorchServe 与 OpenAI 兼容接口"
+        ></a>
+        <div class="article-nav-caption">前一篇</div>
+        <h3 class="article-nav-title">模型服务化封装：FastAPI、TorchServe 与 OpenAI 兼容接口</h3>
+      </div><div class="article-nav-link-wrap right"><img
+              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
+              data-sizes="auto"
+              alt="模型本地化部署：Ollama、vLLM 与 TGI"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/"
+          aria-label="后一篇:模型本地化部署：Ollama、vLLM 与 TGI"
+          title="后一篇:模型本地化部署：Ollama、vLLM 与 TGI"
+        ></a>
+        <div class="article-nav-caption">后一篇</div>
+        <h3 class="article-nav-title">模型本地化部署：Ollama、vLLM 与 TGI</h3>
+      </div></nav></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#量化数学原理">量化数学原理</a>
+      <ul>
+        <li><a href="#什么是量化">什么是量化</a></li>
+        <li><a href="#对称量化与非对称量化">对称量化与非对称量化</a></li>
+        <li><a href="#量化误差分析">量化误差分析</a></li>
+        <li><a href="#每通道量化-vs-每张量量化">每通道量化 vs 每张量量化</a></li>
+      </ul>
+    </li>
+    <li><a href="#int8-与-int4-量化方案">INT8 与 INT4 量化方案</a>
+      <ul>
+        <li><a href="#int8-量化">INT8 量化</a></li>
+        <li><a href="#int4-量化">INT4 量化</a></li>
+        <li><a href="#激活值量化的挑战">激活值量化的挑战</a></li>
+      </ul>
+    </li>
+    <li><a href="#gptq-量化">GPTQ 量化</a>
+      <ul>
+        <li><a href="#算法原理">算法原理</a></li>
+        <li><a href="#hessian-矩阵的作用">Hessian 矩阵的作用</a></li>
+        <li><a href="#逐列量化与误差补偿">逐列量化与误差补偿</a></li>
+        <li><a href="#gptq-的特点">GPTQ 的特点</a></li>
+        <li><a href="#autogptq-实操">AutoGPTQ 实操</a></li>
+      </ul>
+    </li>
+    <li><a href="#awq-量化">AWQ 量化</a>
+      <ul>
+        <li><a href="#算法原理-1">算法原理</a></li>
+        <li><a href="#通道缩放策略">通道缩放策略</a></li>
+        <li><a href="#awq-vs-gptq-对比">AWQ vs GPTQ 对比</a></li>
+        <li><a href="#autoawq-实操">AutoAWQ 实操</a></li>
+      </ul>
+    </li>
+    <li><a href="#gguf-格式">GGUF 格式</a>
+      <ul>
+        <li><a href="#gguf-与-llamacpp-生态">GGUF 与 llama.cpp 生态</a></li>
+        <li><a href="#gguf-量化级别">GGUF 量化级别</a></li>
+        <li><a href="#gguf-量化实操">GGUF 量化实操</a></li>
+      </ul>
+    </li>
+    <li><a href="#量化效果全面对比">量化效果全面对比</a>
+      <ul>
+        <li><a href="#精度对比">精度对比</a></li>
+        <li><a href="#显存占用对比">显存占用对比</a></li>
+        <li><a href="#推理速度对比">推理速度对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#选型决策矩阵">选型决策矩阵</a></li>
+    <li><a href="#高级量化技巧">高级量化技巧</a>
+      <ul>
+        <li><a href="#量化感知训练qat">量化感知训练（QAT）</a></li>
+        <li><a href="#混合精度量化">混合精度量化</a></li>
+        <li><a href="#kv-cache-量化">KV Cache 量化</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "模型量化技术：INT4\/INT8、GPTQ 与 AWQ",
+          url: "https:\/\/dev.infiniteevo.online\/post\/llm\/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96\/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF\/",
+          description: "从量化原理到 GPTQ、AWQ 实操，全面掌握大模型量化压缩技术",
+          cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
+        };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-MWNUH0WmtsYGhn2cbH6ELRCbf9LG3QDqCC&#43;gqPB3IBNO35xjZK3Ejb6oONRpDbPg" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/contrib/auto-render.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv&#43;fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script><script data-pjax>
+          var renderMath = () => {
+            if (!window.renderMathInElement) return;
+            window.renderMathInElement(_$("article"), {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+              ],
+            });
+          };
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderMath, { once: true });
+          } else {
+            renderMath();
+          }
+        </script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>

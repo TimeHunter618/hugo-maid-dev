@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>召回率 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E5%8F%AC%E5%9B%9E%E7%8E%87/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Wed, 25 Jan 2023 16:45:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E5%8F%AC%E5%9B%9E%E7%8E%87/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>RAG召回率低怎么优化</title>
+      <link>https://dev.infiniteevo.online/post/ai-interview/rag%E5%8F%AC%E5%9B%9E%E7%8E%87%E4%BD%8E%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Wed, 25 Jan 2023 16:45:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/ai-interview/rag%E5%8F%AC%E5%9B%9E%E7%8E%87%E4%BD%8E%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96/</guid>
+      <description>
+        <![CDATA[<h1>RAG召回率低怎么优化</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="问题诊断">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98%e8%af%8a%e6%96%ad"></a>
+问题诊断
+</h2><blockquote>
+<p><strong>面试场景</strong>：RAG系统召回率低可能有哪些原因？如何优化？</p>
+</blockquote>
+<h2 id="优化策略">
+<a class="header-anchor" href="#%e4%bc%98%e5%8c%96%e7%ad%96%e7%95%a5"></a>
+优化策略
+</h2><h3 id="1-查询改写">
+<a class="header-anchor" href="#1-%e6%9f%a5%e8%af%a2%e6%94%b9%e5%86%99"></a>
+1. 查询改写
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">rewrite_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">history</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">history</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">context</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;question&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]])</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">. Now answer: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">query</span>
+</span></span></code></pre></div><h3 id="2-多路召回">
+<a class="header-anchor" href="#2-%e5%a4%9a%e8%b7%af%e5%8f%ac%e5%9b%9e"></a>
+2. 多路召回
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">multi_retrieval</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">vector_results</span> <span class="o">=</span> <span class="n">vector_db</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">keyword_results</span> <span class="o">=</span> <span class="n">keyword_search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">semantic_results</span> <span class="o">=</span> <span class="n">semantic_search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">vector_results</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">keyword_results</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">semantic_results</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">deduplicate_and_rerank</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="3-重排序">
+<a class="header-anchor" href="#3-%e9%87%8d%e6%8e%92%e5%ba%8f"></a>
+3. 重排序
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sentence_transformers</span> <span class="kn">import</span> <span class="n">CrossEncoder</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">cross_encoder</span> <span class="o">=</span> <span class="n">CrossEncoder</span><span class="p">(</span><span class="s1">&#39;cross-encoder/ms-marco-MiniLM-L-6-v2&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">rerank</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">documents</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pairs</span> <span class="o">=</span> <span class="p">[[</span><span class="n">query</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">]]</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_encoder</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">scored_docs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="n">scores</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="n">scored_docs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">[</span><span class="n">doc</span> <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">scored_docs</span><span class="p">[:</span><span class="mi">5</span><span class="p">]]</span>
+</span></span></code></pre></div><h2 id="总结">
+<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
+总结
+</h2><p>RAG召回率优化需要综合运用查询改写、多路召回和重排序等技术。</p>
+        
+        <hr><p>本文2023-01-25首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-01-25</p>]]>
+      </description>
+      
+        <category>AI面试</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

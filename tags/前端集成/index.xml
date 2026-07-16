@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>前端集成 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E5%89%8D%E7%AB%AF%E9%9B%86%E6%88%90/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E5%89%8D%E7%AB%AF%E9%9B%86%E6%88%90/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>前端与插件集成</title>
+      <link>https://dev.infiniteevo.online/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/</guid>
+      <description>
+        <![CDATA[<h1>前端与插件集成</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="分类介绍">
+<a class="header-anchor" href="#%e5%88%86%e7%b1%bb%e4%bb%8b%e7%bb%8d"></a>
+分类介绍
+</h2><p>AI 应用的前端集成是连接模型能力与用户体验的桥梁。本分类聚焦 Chrome Extension 开发、本地文件系统交互、跨域安全策略。</p>
+<h3 id="文章列表">
+<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
+文章列表
+</h3><table>
+	<thead>
+			<tr>
+					<th>文章</th>
+					<th>简介</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/chrome%E6%8F%92%E4%BB%B6%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/">Chrome Extension 通信机制</a></td>
+					<td>content script、background、popup 三方通信架构详解</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E4%B8%8E%E6%9D%83%E9%99%90/">本地文件读写与权限控制</a></td>
+					<td>File System API、权限申请、安全沙箱实践</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/%E8%B7%A8%E5%9F%9Fcors%E4%B8%8E%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5/">跨域 CORS 与安全策略</a></td>
+					<td>CORS 原理、CSP 策略、XSS/CSRF 防护</td>
+			</tr>
+	</tbody>
+</table>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+  </channel>
+</rss>

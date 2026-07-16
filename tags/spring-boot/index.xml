@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Spring Boot on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/spring-boot/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Mon, 01 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/spring-boot/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>Spring Boot &#43; SpringAI 完整集成</title>
+      <link>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/springai%E5%AE%8C%E6%95%B4%E9%9B%86%E6%88%90/</link>
+      <pubDate>Mon, 01 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/springai%E5%AE%8C%E6%95%B4%E9%9B%86%E6%88%90/</guid>
+      <description>
+        <![CDATA[<h1>Spring Boot + SpringAI 完整集成</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>当 Java 开发者面对大模型应用开发时，往往会遇到一个尴尬的局面：几乎所有前沿的 AI SDK、示例和教程都围绕 Python 生态（LangChain、LlamaIndex、OpenAI SDK），而企业级生产系统却大量运行在 Spring Boot 上。开发者不得不在 Python 微服务和 Java 主业务系统之间架设一层胶水代码，徒增运维复杂度。</p>
+        
+        <hr><p>本文2026-06-01首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-01</p>]]>
+      </description>
+      
+        <category>后端与AI工程</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

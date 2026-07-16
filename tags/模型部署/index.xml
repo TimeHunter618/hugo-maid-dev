@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>模型部署 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>模型部署与推理优化</title>
+      <link>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/</guid>
+      <description>
+        <![CDATA[<h1>模型部署与推理优化</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="分类介绍">
+<a class="header-anchor" href="#%e5%88%86%e7%b1%bb%e4%bb%8b%e7%bb%8d"></a>
+分类介绍
+</h2><p>本分类聚焦大语言模型的部署与推理优化，涵盖本地化部署方案、模型量化技术、服务化 API 封装、Docker/K8s 容器化部署。</p>
+<h3 id="文章列表">
+<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
+文章列表
+</h3><table>
+	<thead>
+			<tr>
+					<th>文章</th>
+					<th>简介</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/">模型本地化部署</a></td>
+					<td>Ollama、vLLM、TGI 三大部署方案对比与实践</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/">模型量化技术</a></td>
+					<td>INT4/INT8、GPTQ、AWQ 量化方案原理与实操</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%8D%E5%8A%A1%E5%8C%96%E5%B0%81%E8%A3%85/">模型服务化封装</a></td>
+					<td>FastAPI、TorchServe、OpenAI 兼容接口的服务化实践</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/docker%E4%B8%8Ek8s%E9%83%A8%E7%BD%B2/">Docker 与 K8s 部署</a></td>
+					<td>从 Docker 单机到 Kubernetes 集群的模型部署实践</td>
+			</tr>
+	</tbody>
+</table>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+  </channel>
+</rss>

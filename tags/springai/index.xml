@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SpringAI on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/springai/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/springai/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>后端与 AI 工程</title>
+      <link>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/</guid>
+      <description>
+        <![CDATA[<h1>后端与 AI 工程</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="分类介绍">
+<a class="header-anchor" href="#%e5%88%86%e7%b1%bb%e4%bb%8b%e7%bb%8d"></a>
+分类介绍
+</h2><p>本分类聚焦 AI 应用的后端工程化实践，涵盖 Spring Boot + SpringAI 集成、API 健壮性设计、异步与事件驱动架构、配置与密钥安全管理。</p>
+<h3 id="文章列表">
+<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
+文章列表
+</h3><table>
+	<thead>
+			<tr>
+					<th>文章</th>
+					<th>简介</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/springai%E5%AE%8C%E6%95%B4%E9%9B%86%E6%88%90/">Spring Boot + SpringAI 完整集成</a></td>
+					<td>从项目搭建到模型调用、流式响应、Function Calling，完整实践 SpringAI 集成</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/api%E8%AE%BE%E8%AE%A1%E4%B8%8E%E9%99%90%E6%B5%81%E7%86%94%E6%96%AD/">API 设计与限流熔断</a></td>
+					<td>RESTful API 设计规范、限流策略、熔断降级、重试机制</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86%E4%B8%8E%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">异步处理与消息队列</a></td>
+					<td>事件驱动架构、消息队列集成、异步任务编排</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E4%B8%8E%E5%AF%86%E9%92%A5%E5%AE%89%E5%85%A8/">配置管理与密钥安全</a></td>
+					<td>多环境配置隔离、密钥安全管理、配置中心实践</td>
+			</tr>
+	</tbody>
+</table>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>Spring Boot &#43; SpringAI 完整集成</title>
+      <link>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/springai%E5%AE%8C%E6%95%B4%E9%9B%86%E6%88%90/</link>
+      <pubDate>Mon, 01 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/springai%E5%AE%8C%E6%95%B4%E9%9B%86%E6%88%90/</guid>
+      <description>
+        <![CDATA[<h1>Spring Boot + SpringAI 完整集成</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>当 Java 开发者面对大模型应用开发时，往往会遇到一个尴尬的局面：几乎所有前沿的 AI SDK、示例和教程都围绕 Python 生态（LangChain、LlamaIndex、OpenAI SDK），而企业级生产系统却大量运行在 Spring Boot 上。开发者不得不在 Python 微服务和 Java 主业务系统之间架设一层胶水代码，徒增运维复杂度。</p>
+        
+        <hr><p>本文2026-06-01首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-01</p>]]>
+      </description>
+      
+        <category>后端与AI工程</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>SpringAI如何接入多种模型</title>
+      <link>https://dev.infiniteevo.online/post/ai-interview/springai%E5%A6%82%E4%BD%95%E6%8E%A5%E5%85%A5%E5%A4%9A%E7%A7%8D%E6%A8%A1%E5%9E%8B/</link>
+      <pubDate>Sun, 20 Aug 2023 14:30:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/ai-interview/springai%E5%A6%82%E4%BD%95%E6%8E%A5%E5%85%A5%E5%A4%9A%E7%A7%8D%E6%A8%A1%E5%9E%8B/</guid>
+      <description>
+        <![CDATA[<h1>SpringAI如何接入多种模型</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="多模型接入">
+<a class="header-anchor" href="#%e5%a4%9a%e6%a8%a1%e5%9e%8b%e6%8e%a5%e5%85%a5"></a>
+多模型接入
+</h2><blockquote>
+<p><strong>面试场景</strong>：如何使用SpringAI同时接入OpenAI、DeepSeek和GLM等多种模型？</p>
+</blockquote>
+<h2 id="配置方式">
+<a class="header-anchor" href="#%e9%85%8d%e7%bd%ae%e6%96%b9%e5%bc%8f"></a>
+配置方式
+</h2><h3 id="1-maven依赖">
+<a class="header-anchor" href="#1-maven%e4%be%9d%e8%b5%96"></a>
+1. Maven依赖
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.springframework.ai<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>spring-ai-openai-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.springframework.ai<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>spring-ai-ollama-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></div><h3 id="2-配置文件">
+<a class="header-anchor" href="#2-%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6"></a>
+2. 配置文件
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">openai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">api-key</span><span class="p">:</span><span class="w"> </span><span class="l">${OPENAI_API_KEY}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ollama</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">base-url</span><span class="p">:</span><span class="w"> </span><span class="l">http://localhost:11434</span><span class="w">
+</span></span></span></code></pre></div><h3 id="3-模型切换">
+<a class="header-anchor" href="#3-%e6%a8%a1%e5%9e%8b%e5%88%87%e6%8d%a2"></a>
+3. 模型切换
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="n">ChatClient</span><span class="w"> </span><span class="n">chatClient</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="n">ModelRegistry</span><span class="w"> </span><span class="n">modelRegistry</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">chatWithModel</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">modelName</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">prompt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Model</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">modelRegistry</span><span class="p">.</span><span class="na">getModel</span><span class="p">(</span><span class="n">modelName</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">chatClient</span><span class="p">.</span><span class="na">withModel</span><span class="p">(</span><span class="n">model</span><span class="p">).</span><span class="na">prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">).</span><span class="na">call</span><span class="p">().</span><span class="na">getContent</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="总结">
+<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
+总结
+</h2><p>SpringAI通过统一的API抽象，使得接入多种AI模型变得简单高效。</p>
+        
+        <hr><p>本文2023-08-20首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-08-20</p>]]>
+      </description>
+      
+        <category>AI面试</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

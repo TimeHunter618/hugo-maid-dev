@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TorchServe on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/torchserve/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Mon, 01 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/torchserve/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>模型服务化封装：FastAPI、TorchServe 与 OpenAI 兼容接口</title>
+      <link>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%8D%E5%8A%A1%E5%8C%96%E5%B0%81%E8%A3%85/</link>
+      <pubDate>Mon, 01 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%8D%E5%8A%A1%E5%8C%96%E5%B0%81%E8%A3%85/</guid>
+      <description>
+        <![CDATA[<h1>模型服务化封装：FastAPI、TorchServe 与 OpenAI 兼容接口</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大模型在本地跑通只是第一步，要让它真正服务于业务，需要将模型封装为标准化的 API 服务。模型服务化涉及一系列工程问题：如何处理高并发请求？如何实现流式输出？如何保证服务的可用性和可观测性？如何设计与主流生态兼容的 API 接口？</p>
+        
+        <hr><p>本文2026-06-01首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-01</p>]]>
+      </description>
+      
+        <category>模型部署与推理优化</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

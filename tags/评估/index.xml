@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>评估 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E8%AF%84%E4%BC%B0/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E8%AF%84%E4%BC%B0/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>数据与评估</title>
+      <link>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/</guid>
+      <description>
+        <![CDATA[<h1>数据与评估</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="分类介绍">
+<a class="header-anchor" href="#%e5%88%86%e7%b1%bb%e4%bb%8b%e7%bb%8d"></a>
+分类介绍
+</h2><p>数据是 AI 系统的基石，评估是迭代的指南针。本分类涵盖数据集构建全流程、主流评估指标体系，以及 A/B 测试与持续迭代方法论。</p>
+<h3 id="文章列表">
+<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
+文章列表
+</h3><table>
+	<thead>
+			<tr>
+					<th>文章</th>
+					<th>简介</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E6%95%B0%E6%8D%AE%E9%9B%86%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%B8%85%E6%B4%97%E6%A0%87%E6%B3%A8/">数据集构建与清洗标注</a></td>
+					<td>数据采集、清洗去重、标注规范、质量控制全流程</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E8%AF%84%E4%BC%B0%E4%BD%93%E7%B3%BB%E4%B8%8E%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/">评估体系与基准测试</a></td>
+					<td>ROUGE、BLEU、MT-Bench 等主流评估指标原理与实践</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/ab%E6%B5%8B%E8%AF%95%E4%B8%8E%E8%BF%AD%E4%BB%A3%E6%B5%81%E7%A8%8B/">A/B 测试与迭代流程</a></td>
+					<td>在线 A/B 测试设计、效果监控、持续迭代闭环</td>
+			</tr>
+	</tbody>
+</table>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+  </channel>
+</rss>

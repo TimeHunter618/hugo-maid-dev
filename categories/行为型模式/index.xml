@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>行为型模式 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/categories/%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 12 Sep 2025 05:44:14 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/categories/%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>模板方法模式详解</title>
+      <link>https://dev.infiniteevo.online/post/design-patterns/%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Fri, 12 Sep 2025 05:44:14 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/design-patterns/%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>模板方法模式详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2025-09-12首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-09-12</p>]]>
+      </description>
+      
+        <category>行为型模式</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>观察者模式详解</title>
+      <link>https://dev.infiniteevo.online/post/design-patterns/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Thu, 08 Aug 2024 07:17:47 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/design-patterns/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>观察者模式详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2024-08-08首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-08-08</p>]]>
+      </description>
+      
+        <category>行为型模式</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>责任链模式详解</title>
+      <link>https://dev.infiniteevo.online/post/design-patterns/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Thu, 09 Nov 2023 22:53:20 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/design-patterns/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>责任链模式详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2023-11-09首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-11-09</p>]]>
+      </description>
+      
+        <category>行为型模式</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>策略模式详解</title>
+      <link>https://dev.infiniteevo.online/post/design-patterns/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Sat, 26 Aug 2023 12:18:06 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/design-patterns/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>策略模式详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2023-08-26首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-08-26</p>]]>
+      </description>
+      
+        <category>行为型模式</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

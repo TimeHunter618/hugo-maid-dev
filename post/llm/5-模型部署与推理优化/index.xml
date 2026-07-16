@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>模型部署与推理优化 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 05 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>Docker 与 Kubernetes 部署</title>
+      <link>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/docker%E4%B8%8Ek8s%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Fri, 05 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/docker%E4%B8%8Ek8s%E9%83%A8%E7%BD%B2/</guid>
+      <description>
+        <![CDATA[<h1>Docker 与 Kubernetes 部署</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>容器化部署是大模型从开发环境走向生产环境的必经之路。大模型的部署面临独特的挑战：动辄数十 GB 的模型文件、对 GPU 硬件的强依赖、不均匀的计算负载、漫长的模型加载时间。传统的应用部署方式难以高效应对这些问题。</p>
+        
+        <hr><p>本文2026-06-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-05</p>]]>
+      </description>
+      
+        <category>模型部署与推理优化</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>模型服务化封装：FastAPI、TorchServe 与 OpenAI 兼容接口</title>
+      <link>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%8D%E5%8A%A1%E5%8C%96%E5%B0%81%E8%A3%85/</link>
+      <pubDate>Mon, 01 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%8D%E5%8A%A1%E5%8C%96%E5%B0%81%E8%A3%85/</guid>
+      <description>
+        <![CDATA[<h1>模型服务化封装：FastAPI、TorchServe 与 OpenAI 兼容接口</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大模型在本地跑通只是第一步，要让它真正服务于业务，需要将模型封装为标准化的 API 服务。模型服务化涉及一系列工程问题：如何处理高并发请求？如何实现流式输出？如何保证服务的可用性和可观测性？如何设计与主流生态兼容的 API 接口？</p>
+        
+        <hr><p>本文2026-06-01首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-01</p>]]>
+      </description>
+      
+        <category>模型部署与推理优化</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>模型量化技术：INT4/INT8、GPTQ 与 AWQ</title>
+      <link>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/</link>
+      <pubDate>Sat, 30 May 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/</guid>
+      <description>
+        <![CDATA[<h1>模型量化技术：INT4/INT8、GPTQ 与 AWQ</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型的参数量从数十亿到数千亿不等，一个 70B 参数的模型仅权重就需要约 140GB 的 FP16 存储空间。庞大的显存需求将大模型限制在了少数拥有顶级 GPU 集群的机构手中。模型量化技术通过将高精度浮点数映射到低精度整数，在不显著损失精度的前提下大幅压缩模型体积，是大模型走向普及的关键技术。</p>
+        
+        <hr><p>本文2026-05-30首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-05-30</p>]]>
+      </description>
+      
+        <category>模型部署与推理优化</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>模型本地化部署：Ollama、vLLM 与 TGI</title>
+      <link>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Mon, 25 May 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/</guid>
+      <description>
+        <![CDATA[<h1>模型本地化部署：Ollama、vLLM 与 TGI</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>随着开源大语言模型的快速发展，越来越多的团队和个人希望在本地环境中部署大模型。本地化部署不仅可以降低 API 调用成本，还能保障数据隐私、减少网络延迟，并为定制化微调提供基础。然而，面对众多的部署工具和框架，如何选择合适的方案成为了一个关键问题。</p>
+        
+        <hr><p>本文2026-05-25首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-05-25</p>]]>
+      </description>
+      
+        <category>模型部署与推理优化</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

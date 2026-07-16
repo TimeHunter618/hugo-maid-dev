@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>后端与 AI 工程 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Mon, 15 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>配置管理与密钥安全</title>
+      <link>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E4%B8%8E%E5%AF%86%E9%92%A5%E5%AE%89%E5%85%A8/</link>
+      <pubDate>Mon, 15 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E4%B8%8E%E5%AF%86%E9%92%A5%E5%AE%89%E5%85%A8/</guid>
+      <description>
+        <![CDATA[<h1>配置管理与密钥安全</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在 AI 应用的所有工程实践中，配置管理与密钥安全往往是&quot;最容易被忽视、却最容易引发灾难&quot;的环节。一个泄露到 GitHub 的 OpenAI API Key，可能在几分钟内被脚本自动扫描到，并在数小时内消耗掉数千美元的配额。一个写死在代码里的数据库密码，会让一次代码泄露演变成全量数据泄露。</p>
+        
+        <hr><p>本文2026-06-15首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-15</p>]]>
+      </description>
+      
+        <category>后端与AI工程</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>异步处理与消息队列</title>
+      <link>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86%E4%B8%8E%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/</link>
+      <pubDate>Wed, 10 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86%E4%B8%8E%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/</guid>
+      <description>
+        <![CDATA[<h1>异步处理与消息队列</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大模型应用中，&ldquo;慢&quot;是常态。一次文本生成可能耗时 5-30 秒，一次文档摘要可能需要 1 分钟，一次批量向量化可能持续数分钟。如果所有这些操作都在 HTTP 请求线程中同步执行，服务器线程池将在几秒内被耗尽，系统陷入瘫痪。</p>
+        
+        <hr><p>本文2026-06-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-10</p>]]>
+      </description>
+      
+        <category>后端与AI工程</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>API 设计与限流熔断</title>
+      <link>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/api%E8%AE%BE%E8%AE%A1%E4%B8%8E%E9%99%90%E6%B5%81%E7%86%94%E6%96%AD/</link>
+      <pubDate>Fri, 05 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/api%E8%AE%BE%E8%AE%A1%E4%B8%8E%E9%99%90%E6%B5%81%E7%86%94%E6%96%AD/</guid>
+      <description>
+        <![CDATA[<h1>API 设计与限流熔断</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>一个能跑通 Demo 的 AI 服务，和一个能在生产环境中稳定运行的 AI 服务之间，隔着 API 设计、流量控制、容错降级三道关卡。大模型服务与传统 Web 服务有本质差异：单次请求耗时动辄数秒到数十秒、成本与 Token 消耗直接挂钩、上游模型服务自身的稳定性不可控。这些特性使得<strong>限流、熔断、重试</strong>不再是可选项，而是 AI 服务后端的&quot;生命支持系统&quot;。</p>
+        
+        <hr><p>本文2026-06-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-05</p>]]>
+      </description>
+      
+        <category>后端与AI工程</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>Spring Boot &#43; SpringAI 完整集成</title>
+      <link>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/springai%E5%AE%8C%E6%95%B4%E9%9B%86%E6%88%90/</link>
+      <pubDate>Mon, 01 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/springai%E5%AE%8C%E6%95%B4%E9%9B%86%E6%88%90/</guid>
+      <description>
+        <![CDATA[<h1>Spring Boot + SpringAI 完整集成</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>当 Java 开发者面对大模型应用开发时，往往会遇到一个尴尬的局面：几乎所有前沿的 AI SDK、示例和教程都围绕 Python 生态（LangChain、LlamaIndex、OpenAI SDK），而企业级生产系统却大量运行在 Spring Boot 上。开发者不得不在 Python 微服务和 Java 主业务系统之间架设一层胶水代码，徒增运维复杂度。</p>
+        
+        <hr><p>本文2026-06-01首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-01</p>]]>
+      </description>
+      
+        <category>后端与AI工程</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

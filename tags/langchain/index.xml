@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>LangChain on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/langchain/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Mon, 01 Dec 2025 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/langchain/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>Agent 开发与多 Agent 协作</title>
+      <link>https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/agent%E5%BC%80%E5%8F%91%E4%B8%8E%E5%A4%9Aagent%E5%8D%8F%E4%BD%9C/</link>
+      <pubDate>Mon, 01 Dec 2025 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/agent%E5%BC%80%E5%8F%91%E4%B8%8E%E5%A4%9Aagent%E5%8D%8F%E4%BD%9C/</guid>
+      <description>
+        <![CDATA[<h1>Agent 开发与多 Agent 协作</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>如果说大语言模型（LLM）是一颗强大的&quot;大脑&quot;，那么 <strong>Agent（智能体）</strong> 就是赋予这颗大脑以&quot;手脚&quot;与&quot;自主意志&quot;的完整系统。过去两年，AI 应用的形态正在经历一次深刻的范式迁移：从被动应答的 <strong>Chatbot</strong>，走向能够自主感知环境、规划任务、调用工具、反思修正的 <strong>Agent</strong>。</p>
+        
+        <hr><p>本文2025-12-01首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-12-01</p>]]>
+      </description>
+      
+        <category>Prompt工程与Agent系统</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>面试必问 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E9%9D%A2%E8%AF%95%E5%BF%85%E9%97%AE/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E9%9D%A2%E8%AF%95%E5%BF%85%E9%97%AE/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>大模型基础与原理</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/</guid>
+      <description>
+        <![CDATA[<h1>大模型基础与原理</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="分类介绍">
+<a class="header-anchor" href="#%e5%88%86%e7%b1%bb%e4%bb%8b%e7%bb%8d"></a>
+分类介绍
+</h2><p>本分类涵盖大语言模型的核心基础与原理，是面试和实际工作中的必备知识。</p>
+<h3 id="文章列表">
+<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
+文章列表
+</h3><table>
+	<thead>
+			<tr>
+					<th>文章</th>
+					<th>简介</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/">大语言模型基础原理</a></td>
+					<td>从统计语言模型到 GPT 时代，全面梳理大语言模型的发展脉络与核心原理</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/">Transformer 架构深度解析</a></td>
+					<td>从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%85%A8%E6%B5%81%E7%A8%8B/">大模型训练全流程</a></td>
+					<td>从预训练到 SFT、DPO、RLHF、PPO，系统掌握大语言模型训练链路</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E6%8A%80%E6%9C%AF%E5%85%A8%E6%94%BB%E7%95%A5/">大模型微调技术全攻略</a></td>
+					<td>从全量微调到 LoRA、QLoRA，系统掌握大语言模型高效微调的核心技术</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F/">大模型知识蒸馏</a></td>
+					<td>从 logit 蒸馏到序列级蒸馏，系统掌握大语言模型知识蒸馏的核心方法</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/skill%E8%92%B8%E9%A6%8F%E4%B8%8E%E8%83%BD%E5%8A%9B%E8%90%83%E5%8F%96/">Skill 蒸馏与能力萃取</a></td>
+					<td>从能力识别到精准迁移，探索大语言模型特定能力的萃取与蒸馏方法</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/">大模型选型与对比</a></td>
+					<td>GPT、Qwen、Llama、DeepSeek、GLM 等主流模型的差异与选型指南</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AA%97%E5%8F%A3%E4%B8%8E%E5%B9%BB%E8%A7%89%E7%BC%93%E8%A7%A3/">上下文窗口与幻觉缓解</a></td>
+					<td>Token 计算原理、上下文窗口优化与幻觉（Hallucination）缓解策略</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96%E4%B8%8E%E9%83%A8%E7%BD%B2/">大模型推理优化与部署</a></td>
+					<td>从量化压缩到推理引擎选型，全面掌握大语言模型推理加速与部署优化</td>
+			</tr>
+	</tbody>
+</table>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+  </channel>
+</rss>

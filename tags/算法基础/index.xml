@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>算法基础 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Thu, 29 Sep 2022 09:21:31 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E7%AE%97%E6%B3%95%E5%9F%BA%E7%A1%80/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>排序算法详解</title>
+      <link>https://dev.infiniteevo.online/post/algorithm/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Thu, 29 Sep 2022 09:21:31 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/algorithm/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>排序算法详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2022-09-29首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-09-29</p>]]>
+      </description>
+      
+        <category>排序算法详解</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>迭代流程 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E8%BF%AD%E4%BB%A3%E6%B5%81%E7%A8%8B/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Wed, 10 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E8%BF%AD%E4%BB%A3%E6%B5%81%E7%A8%8B/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>A/B 测试与持续迭代流程</title>
+      <link>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/ab%E6%B5%8B%E8%AF%95%E4%B8%8E%E8%BF%AD%E4%BB%A3%E6%B5%81%E7%A8%8B/</link>
+      <pubDate>Wed, 10 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/ab%E6%B5%8B%E8%AF%95%E4%B8%8E%E8%BF%AD%E4%BB%A3%E6%B5%81%E7%A8%8B/</guid>
+      <description>
+        <![CDATA[<h1>A/B 测试与持续迭代流程</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在 AI 产品开发中，一个永恒的难题是：<strong>我们怎么知道新版本真的更好了？</strong> 离线评估指标（如准确率、ROUGE 分数）的提升，并不总是能转化为线上用户体验的改善。一个在 MMLU 上得分更高的模型，可能因为回答过于冗长而让用户感到厌烦；一个在基准测试上表现平平的模型，可能因为回答更贴近用户直觉而获得更高的满意度。</p>
+        
+        <hr><p>本文2026-06-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-10</p>]]>
+      </description>
+      
+        <category>数据与评估</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

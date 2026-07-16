@@ -1,0 +1,1944 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  模型本地化部署：Ollama、vLLM 与 TGI | Aries
+</title>
+<meta name="description" content="三大本地化部署方案对比与实践，从消费级 GPU 到生产级服务"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="模型本地化部署：Ollama、vLLM 与 TGI | Aries" />
+  <meta
+    property="og:description"
+    content="三大本地化部署方案对比与实践，从消费级 GPU 到生产级服务"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-05-25T10:00:00&#43;08:00" />
+  <meta property="article:modified_time" content="2026-05-25T10:00:00&#43;08:00" /><meta property="article:tag" content="大模型, 本地部署, Ollama, vLLM, TGI" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200" alt="模型本地化部署：Ollama、vLLM 与 TGI"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">模型本地化部署：Ollama、vLLM 与 TGI</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">三大本地化部署方案对比与实践，从消费级 GPU 到生产级服务</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container sticky"><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#三大方案全景对比">三大方案全景对比</a>
+      <ul>
+        <li><a href="#核心特性对比表">核心特性对比表</a></li>
+        <li><a href="#硬件需求对比">硬件需求对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#ollama-实践">Ollama 实践</a>
+      <ul>
+        <li><a href="#架构设计">架构设计</a></li>
+        <li><a href="#安装与快速开始">安装与快速开始</a></li>
+        <li><a href="#模型拉取与运行">模型拉取与运行</a></li>
+        <li><a href="#rest-api-调用">REST API 调用</a></li>
+        <li><a href="#modelfile-自定义模型">Modelfile 自定义模型</a></li>
+        <li><a href="#导入-gguf-模型">导入 GGUF 模型</a></li>
+      </ul>
+    </li>
+    <li><a href="#vllm-实践">vLLM 实践</a>
+      <ul>
+        <li><a href="#pagedattention-原理回顾">PagedAttention 原理回顾</a></li>
+        <li><a href="#安装">安装</a></li>
+        <li><a href="#离线批量推理">离线批量推理</a></li>
+        <li><a href="#启动-openai-兼容-api-服务">启动 OpenAI 兼容 API 服务</a></li>
+        <li><a href="#批量推理与嵌入服务">批量推理与嵌入服务</a></li>
+        <li><a href="#性能调优参数">性能调优参数</a></li>
+      </ul>
+    </li>
+    <li><a href="#tgi-实践">TGI 实践</a>
+      <ul>
+        <li><a href="#架构概览">架构概览</a></li>
+        <li><a href="#docker-部署">Docker 部署</a></li>
+        <li><a href="#流式响应调用">流式响应调用</a></li>
+        <li><a href="#docker-compose-部署">docker-compose 部署</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能基准对比">性能基准对比</a>
+      <ul>
+        <li><a href="#吞吐量对比">吞吐量对比</a></li>
+        <li><a href="#延迟对比">延迟对比</a></li>
+        <li><a href="#显存利用率">显存利用率</a></li>
+      </ul>
+    </li>
+    <li><a href="#选型决策指南">选型决策指南</a>
+      <ul>
+        <li><a href="#决策流程图">决策流程图</a></li>
+        <li><a href="#分场景推荐">分场景推荐</a></li>
+        <li><a href="#综合建议">综合建议</a></li>
+      </ul>
+    </li>
+    <li><a href="#高级部署技巧">高级部署技巧</a>
+      <ul>
+        <li><a href="#模型预加载与缓存">模型预加载与缓存</a></li>
+        <li><a href="#多-gpu-张量并行">多 GPU 张量并行</a></li>
+        <li><a href="#健康检查与监控">健康检查与监控</a></li>
+        <li><a href="#ollama-服务化管理">Ollama 服务化管理</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div><div class="sidebar-widget"></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-05-25 10:00:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2026-05-25</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-05-25</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg1.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg1.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>随着开源大语言模型的快速发展，越来越多的团队和个人希望在本地环境中部署大模型。本地化部署不仅可以降低 API 调用成本，还能保障数据隐私、减少网络延迟，并为定制化微调提供基础。然而，面对众多的部署工具和框架，如何选择合适的方案成为了一个关键问题。</p>
+<p>目前，大模型本地化部署领域形成了三大主流方案，各自面向不同的使用场景和用户群体：</p>
+<ol>
+<li><strong>Ollama</strong>——面向个人开发者和轻量级场景，一键运行、开箱即用</li>
+<li><strong>vLLM</strong>——面向高吞吐量生产服务，PagedAttention 加持、性能卓越</li>
+<li><strong>TGI（Text Generation Inference）</strong>——HuggingFace 官方出品，与 HF 生态深度集成</li>
+</ol>
+<p>本文将从架构原理、安装部署、API 调用到性能基准，全面对比这三大方案，并提供详细的选型决策指南。</p>
+<h2 id="三大方案全景对比">
+<a class="header-anchor" href="#%e4%b8%89%e5%a4%a7%e6%96%b9%e6%a1%88%e5%85%a8%e6%99%af%e5%af%b9%e6%af%94"></a>
+三大方案全景对比
+</h2><p>在深入每个方案之前，先通过一张架构图了解它们各自的定位：</p>
+<pre class="mermaid">
+  graph TD
+    A[大模型本地化部署] --> B[Ollama]
+    A --> C[vLLM]
+    A --> D[TGI]
+
+    B --> B1[定位: 个人/轻量级]
+    B --> B2[核心: GGUF + llama.cpp]
+    B --> B3[优势: 一键运行, 跨平台]
+
+    C --> C1[定位: 生产级高吞吐]
+    C --> C2[核心: PagedAttention]
+    C --> C3[优势: 极致吞吐, OpenAI 兼容]
+
+    D --> D1[定位: HF 生态集成]
+    D --> D2[核心: Continuous Batching]
+    D --> D3[优势: 模型兼容性, Docker 友好]
+</pre><h3 id="核心特性对比表">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e7%89%b9%e6%80%a7%e5%af%b9%e6%af%94%e8%a1%a8"></a>
+核心特性对比表
+</h3><table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>Ollama</th>
+					<th>vLLM</th>
+					<th>TGI</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>开发方</strong></td>
+					<td>Ollama Inc.</td>
+					<td>UC Berkeley</td>
+					<td>HuggingFace</td>
+			</tr>
+			<tr>
+					<td><strong>底层引擎</strong></td>
+					<td>llama.cpp</td>
+					<td>自研（PyTorch）</td>
+					<td>自研（Rust + PyTorch）</td>
+			</tr>
+			<tr>
+					<td><strong>量化格式</strong></td>
+					<td>GGUF</td>
+					<td>AWQ / GPTQ / FP8</td>
+					<td>GPTQ / AWQ / BitsAndBytes</td>
+			</tr>
+			<tr>
+					<td><strong>GPU 支持</strong></td>
+					<td>部分（层卸载）</td>
+					<td>完整（CUDA）</td>
+					<td>完整（CUDA）</td>
+			</tr>
+			<tr>
+					<td><strong>CPU 推理</strong></td>
+					<td>原生支持</td>
+					<td>不支持</td>
+					<td>不支持</td>
+			</tr>
+			<tr>
+					<td><strong>OpenAI 兼容</strong></td>
+					<td>是</td>
+					<td>是</td>
+					<td>是</td>
+			</tr>
+			<tr>
+					<td><strong>PagedAttention</strong></td>
+					<td>否</td>
+					<td>是</td>
+					<td>是</td>
+			</tr>
+			<tr>
+					<td><strong>Continuous Batching</strong></td>
+					<td>否</td>
+					<td>是</td>
+					<td>是</td>
+			</tr>
+			<tr>
+					<td><strong>张量并行</strong></td>
+					<td>否</td>
+					<td>是</td>
+					<td>是</td>
+			</tr>
+			<tr>
+					<td><strong>部署复杂度</strong></td>
+					<td>极低</td>
+					<td>中</td>
+					<td>中</td>
+			</tr>
+			<tr>
+					<td><strong>最大吞吐量</strong></td>
+					<td>低</td>
+					<td>极高</td>
+					<td>高</td>
+			</tr>
+			<tr>
+					<td><strong>典型场景</strong></td>
+					<td>本地体验、开发调试</td>
+					<td>生产 API 服务</td>
+					<td>HF 生态生产服务</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="硬件需求对比">
+<a class="header-anchor" href="#%e7%a1%ac%e4%bb%b6%e9%9c%80%e6%b1%82%e5%af%b9%e6%af%94"></a>
+硬件需求对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>部署方案</th>
+					<th>7B 模型最低要求</th>
+					<th>13B 模型推荐</th>
+					<th>70B 模型推荐</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Ollama（CPU）</td>
+					<td>16GB 内存</td>
+					<td>32GB 内存</td>
+					<td>不推荐</td>
+			</tr>
+			<tr>
+					<td>Ollama（GPU）</td>
+					<td>6GB 显存</td>
+					<td>12GB 显存</td>
+					<td>2×48GB 显存</td>
+			</tr>
+			<tr>
+					<td>vLLM</td>
+					<td>8GB 显存</td>
+					<td>16GB 显存</td>
+					<td>2×80GB 显存</td>
+			</tr>
+			<tr>
+					<td>TGI</td>
+					<td>8GB 显存</td>
+					<td>16GB 显存</td>
+					<td>2×80GB 显存</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="ollama-实践">
+<a class="header-anchor" href="#ollama-%e5%ae%9e%e8%b7%b5"></a>
+Ollama 实践
+</h2><p>Ollama 是目前最简单的本地大模型运行方案。它将模型权重、参数配置和提示词模板打包成一个统一的&quot;模型&quot;概念，用户只需一条命令即可下载并运行。</p>
+<h3 id="架构设计">
+<a class="header-anchor" href="#%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1"></a>
+架构设计
+</h3><pre class="mermaid">
+  graph LR
+    A[用户 CLI/API] --> B[Ollama Server]
+    B --> C[Model Registry]
+    C --> D[GGUF 模型文件]
+    B --> E[llama.cpp 推理引擎]
+    E --> F[CPU / GPU 计算]
+    B --> G[REST API :11434]
+</pre><p>Ollama 的核心设计理念是<strong>极简</strong>：它隐藏了模型格式、量化级别、上下文长度等技术细节，让用户像安装软件一样安装模型。</p>
+<h3 id="安装与快速开始">
+<a class="header-anchor" href="#%e5%ae%89%e8%a3%85%e4%b8%8e%e5%bf%ab%e9%80%9f%e5%bc%80%e5%a7%8b"></a>
+安装与快速开始
+</h3><p><strong>macOS / Linux 安装</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 一键安装脚本</span>
+</span></span><span class="line"><span class="cl">curl -fsSL https://ollama.com/install.sh <span class="p">|</span> sh
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 验证安装</span>
+</span></span><span class="line"><span class="cl">ollama --version
+</span></span></code></pre></div><p><strong>Windows 安装</strong>：</p>
+<p>从 <a href="https://ollama.com/download">ollama.com/download</a> 下载安装包，双击运行即可。</p>
+<p><strong>Docker 安装</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># CPU 版本</span>
+</span></span><span class="line"><span class="cl">docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># GPU 版本（需要 NVIDIA Container Toolkit）</span>
+</span></span><span class="line"><span class="cl">docker run -d --gpus<span class="o">=</span>all -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+</span></span></code></pre></div><h3 id="模型拉取与运行">
+<a class="header-anchor" href="#%e6%a8%a1%e5%9e%8b%e6%8b%89%e5%8f%96%e4%b8%8e%e8%bf%90%e8%a1%8c"></a>
+模型拉取与运行
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 拉取并运行模型（首次会自动下载）</span>
+</span></span><span class="line"><span class="cl">ollama run llama3.1:8b
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 仅下载不运行</span>
+</span></span><span class="line"><span class="cl">ollama pull qwen2.5:7b
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看已安装的模型</span>
+</span></span><span class="line"><span class="cl">ollama list
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看运行中的模型</span>
+</span></span><span class="line"><span class="cl">ollama ps
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 删除模型</span>
+</span></span><span class="line"><span class="cl">ollama rm llama3.1:8b
+</span></span></code></pre></div><p>Ollama 内置了常用模型的模型库（Registry），支持自动选择适合当前硬件的量化级别：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 不同参数量的模型</span>
+</span></span><span class="line"><span class="cl">ollama run llama3.1:8b       <span class="c1"># Meta Llama 3.1 8B</span>
+</span></span><span class="line"><span class="cl">ollama run qwen2.5:14b       <span class="c1"># 通义千问 2.5 14B</span>
+</span></span><span class="line"><span class="cl">ollama run mistral:7b        <span class="c1"># Mistral 7B</span>
+</span></span><span class="line"><span class="cl">ollama run phi3:14b          <span class="c1"># Microsoft Phi-3 14B</span>
+</span></span><span class="line"><span class="cl">ollama run gemma2:9b         <span class="c1"># Google Gemma 2 9B</span>
+</span></span><span class="line"><span class="cl">ollama run deepseek-r1:7b    <span class="c1"># DeepSeek-R1 7B</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 嵌入模型</span>
+</span></span><span class="line"><span class="cl">ollama pull nomic-embed-text
+</span></span></code></pre></div><h3 id="rest-api-调用">
+<a class="header-anchor" href="#rest-api-%e8%b0%83%e7%94%a8"></a>
+REST API 调用
+</h3><p>Ollama 在后台启动了一个 HTTP 服务（默认端口 11434），提供完整的 REST API：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 生成补全</span>
+</span></span><span class="line"><span class="cl">curl http://localhost:11434/api/generate -d <span class="s1">&#39;{
+</span></span></span><span class="line"><span class="cl"><span class="s1">  &#34;model&#34;: &#34;llama3.1:8b&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s1">  &#34;prompt&#34;: &#34;为什么天空是蓝色的？&#34;,
+</span></span></span><span class="line"><span class="cl"><span class="s1">  &#34;stream&#34;: false
+</span></span></span><span class="line"><span class="cl"><span class="s1">}&#39;</span>
+</span></span></code></pre></div><p><strong>Python 客户端调用</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 非流式生成</span>
+</span></span><span class="line"><span class="cl"><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://localhost:11434/api/generate&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;llama3.1:8b&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;prompt&#34;</span><span class="p">:</span> <span class="s2">&#34;用 Python 实现一个二分查找&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;stream&#34;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">result</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&#34;response&#34;</span><span class="p">])</span>
+</span></span></code></pre></div><p><strong>聊天接口（多轮对话）</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://localhost:11434/api/chat&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;llama3.1:8b&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;messages&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;system&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="s2">&#34;你是一个专业的 Python 开发者&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="s2">&#34;解释装饰器的原理&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;stream&#34;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># 流式响应</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl">        <span class="n">chunk</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="s2">&#34;message&#34;</span> <span class="ow">in</span> <span class="n">chunk</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="s2">&#34;message&#34;</span><span class="p">][</span><span class="s2">&#34;content&#34;</span><span class="p">],</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>使用 OpenAI SDK 调用</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">base_url</span><span class="o">=</span><span class="s2">&#34;http://localhost:11434/v1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">api_key</span><span class="o">=</span><span class="s2">&#34;ollama&#34;</span><span class="p">,</span>  <span class="c1"># Ollama 不校验 key，任意值即可</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model</span><span class="o">=</span><span class="s2">&#34;llama3.1:8b&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="s2">&#34;解释什么是 RAG&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="modelfile-自定义模型">
+<a class="header-anchor" href="#modelfile-%e8%87%aa%e5%ae%9a%e4%b9%89%e6%a8%a1%e5%9e%8b"></a>
+Modelfile 自定义模型
+</h3><p>Ollama 支持通过 <code>Modelfile</code>（类似 Dockerfile）自定义模型，可以调整系统提示词、参数、温度等：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># Modelfile 示例：创建一个中文编程助手</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="s">llama3.1:8b</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 设置系统提示词</span><span class="err">
+</span></span></span><span class="line"><span class="cl">SYSTEM <span class="s2">&#34;&#34;&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl">你是一个专业的中文编程助手。请遵循以下规则：<span class="err">
+</span></span></span><span class="line"><span class="cl">1. 始终使用中文回答<span class="err">
+</span></span></span><span class="line"><span class="cl">2. 代码示例需要添加详细注释<span class="err">
+</span></span></span><span class="line"><span class="cl">3. 解释要通俗易懂<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 调整生成参数</span><span class="err">
+</span></span></span><span class="line"><span class="cl">PARAMETER temperature 0.3<span class="err">
+</span></span></span><span class="line"><span class="cl">PARAMETER top_p 0.9<span class="err">
+</span></span></span><span class="line"><span class="cl">PARAMETER num_ctx <span class="m">8192</span><span class="err">
+</span></span></span><span class="line"><span class="cl">PARAMETER stop <span class="s2">&#34;&lt;|im_end|&gt;&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 设置聊天模板</span><span class="err">
+</span></span></span><span class="line"><span class="cl">TEMPLATE <span class="s2">&#34;&#34;&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="o">{{</span> <span class="k">if</span> .System <span class="o">}}</span>&lt;<span class="p">|</span>im_start<span class="p">|</span>&gt;system<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="o">{{</span> .System <span class="o">}}</span>&lt;<span class="p">|</span>im_end<span class="p">|</span>&gt;<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="o">{{</span> end <span class="o">}}</span>&lt;<span class="p">|</span>im_start<span class="p">|</span>&gt;user<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="o">{{</span> .Prompt <span class="o">}}</span>&lt;<span class="p">|</span>im_end<span class="p">|</span>&gt;<span class="err">
+</span></span></span><span class="line"><span class="cl">&lt;<span class="p">|</span>im_start<span class="p">|</span>&gt;assistant<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="err">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 从 Modelfile 创建自定义模型</span>
+</span></span><span class="line"><span class="cl">ollama create my-coder -f Modelfile
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 运行自定义模型</span>
+</span></span><span class="line"><span class="cl">ollama run my-coder
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看模型信息</span>
+</span></span><span class="line"><span class="cl">ollama show my-coder
+</span></span></code></pre></div><h3 id="导入-gguf-模型">
+<a class="header-anchor" href="#%e5%af%bc%e5%85%a5-gguf-%e6%a8%a1%e5%9e%8b"></a>
+导入 GGUF 模型
+</h3><p>如果模型不在 Ollama 官方库中，可以导入本地的 GGUF 文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># Modelfile for custom GGUF</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="s">./models/my-model-q4_k_m.gguf</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl">PARAMETER temperature 0.7<span class="err">
+</span></span></span><span class="line"><span class="cl">PARAMETER num_ctx <span class="m">4096</span><span class="err">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ollama create my-custom-model -f Modelfile
+</span></span><span class="line"><span class="cl">ollama run my-custom-model
+</span></span></code></pre></div><h2 id="vllm-实践">
+<a class="header-anchor" href="#vllm-%e5%ae%9e%e8%b7%b5"></a>
+vLLM 实践
+</h2><p>vLLM 是由加州大学伯克利分校开发的高性能推理引擎，其核心创新 PagedAttention 实现了接近理论极限的显存利用率和吞吐量。vLLM 是目前生产环境中最流行的大模型服务方案。</p>
+<h3 id="pagedattention-原理回顾">
+<a class="header-anchor" href="#pagedattention-%e5%8e%9f%e7%90%86%e5%9b%9e%e9%a1%be"></a>
+PagedAttention 原理回顾
+</h3><p>传统推理引擎为每个请求预分配一段连续的 KV Cache 空间，导致大量显存浪费（内部碎片和外部碎片可达 60%-80%）。vLLM 的 PagedAttention 借鉴操作系统的虚拟内存管理，将 KV Cache 分成固定大小的块（block），按需分配：</p>
+<pre class="mermaid">
+  graph TD
+    subgraph 传统连续分配
+        A1["请求1: 预分配 2048 (实际用 512)"]
+        A2["请求2: 预分配 2048 (实际用 1024)"]
+        A3["浪费: ~60%"]
+    end
+
+    subgraph PagedAttention
+        B1["逻辑序列 → 块表映射"]
+        B2["Block 0,1,2 → 请求1"]
+        B3["Block 3,4 → 请求2"]
+        B4["Block 5,6 → 空闲"]
+        B5["显存利用率 ~100%"]
+    end
+</pre><p>PagedAttention 带来的优势不仅是显存利用率的提升，还使得 Continuous Batching（连续批处理）和 Prefix Caching（前缀缓存）等高级特性成为可能。</p>
+<h3 id="安装">
+<a class="header-anchor" href="#%e5%ae%89%e8%a3%85"></a>
+安装
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># pip 安装（推荐）</span>
+</span></span><span class="line"><span class="cl">pip install vllm
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 从源码安装（获取最新特性）</span>
+</span></span><span class="line"><span class="cl">pip install vllm --pre --extra-index-url https://wheels.vllm.ai/nightly
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 验证安装</span>
+</span></span><span class="line"><span class="cl">python -c <span class="s2">&#34;import vllm; print(vllm.__version__)&#34;</span>
+</span></span></code></pre></div><h3 id="离线批量推理">
+<a class="header-anchor" href="#%e7%a6%bb%e7%ba%bf%e6%89%b9%e9%87%8f%e6%8e%a8%e7%90%86"></a>
+离线批量推理
+</h3><p>vLLM 提供了 Python API 用于离线批量推理场景：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">vllm</span> <span class="kn">import</span> <span class="n">LLM</span><span class="p">,</span> <span class="n">SamplingParams</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 初始化模型</span>
+</span></span><span class="line"><span class="cl"><span class="n">llm</span> <span class="o">=</span> <span class="n">LLM</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model</span><span class="o">=</span><span class="s2">&#34;meta-llama/Meta-Llama-3.1-8B-Instruct&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tensor_parallel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>       <span class="c1"># 张量并行数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gpu_memory_utilization</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>   <span class="c1"># GPU 显存利用率</span>
+</span></span><span class="line"><span class="cl">    <span class="n">max_model_len</span><span class="o">=</span><span class="mi">8192</span><span class="p">,</span>           <span class="c1"># 最大上下文长度</span>
+</span></span><span class="line"><span class="cl">    <span class="n">enable_prefix_caching</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>   <span class="c1"># 启用前缀缓存</span>
+</span></span><span class="line"><span class="cl">    <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 设置采样参数</span>
+</span></span><span class="line"><span class="cl"><span class="n">sampling_params</span> <span class="o">=</span> <span class="n">SamplingParams</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">top_p</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">max_tokens</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stop</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;&lt;|eot_id|&gt;&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 批量推理</span>
+</span></span><span class="line"><span class="cl"><span class="n">prompts</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;请解释什么是 PagedAttention&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;写一个 Python 实现的快速排序算法&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;总结《三体》的核心思想&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 使用聊天模板</span>
+</span></span><span class="line"><span class="cl"><span class="n">messages_list</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">p</span><span class="p">}]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">prompts</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">outputs</span> <span class="o">=</span> <span class="n">llm</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">messages_list</span><span class="p">,</span> <span class="n">sampling_params</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Response: </span><span class="si">{</span><span class="n">output</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="启动-openai-兼容-api-服务">
+<a class="header-anchor" href="#%e5%90%af%e5%8a%a8-openai-%e5%85%bc%e5%ae%b9-api-%e6%9c%8d%e5%8a%a1"></a>
+启动 OpenAI 兼容 API 服务
+</h3><p>vLLM 内置了 OpenAI 兼容的 API 服务器，可以直接替代 OpenAI API：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 基本启动</span>
+</span></span><span class="line"><span class="cl">python -m vllm.entrypoints.openai.api_server <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --model meta-llama/Meta-Llama-3.1-8B-Instruct <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --port <span class="m">8000</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --tensor-parallel-size <span class="m">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 高级配置启动</span>
+</span></span><span class="line"><span class="cl">python -m vllm.entrypoints.openai.api_server <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --model meta-llama/Meta-Llama-3.1-8B-Instruct <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --port <span class="m">8000</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --tensor-parallel-size <span class="m">2</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --gpu-memory-utilization 0.92 <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --max-model-len <span class="m">8192</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --enable-prefix-caching <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --quantization awq <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --served-model-name llama-3.1-8b <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --api-key sk-your-secret-key <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --allow-credentials
+</span></span></code></pre></div><p><strong>客户端调用</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">base_url</span><span class="o">=</span><span class="s2">&#34;http://localhost:8000/v1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">api_key</span><span class="o">=</span><span class="s2">&#34;sk-your-secret-key&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 聊天补全</span>
+</span></span><span class="line"><span class="cl"><span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model</span><span class="o">=</span><span class="s2">&#34;llama-3.1-8b&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;system&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="s2">&#34;你是一个专业的技术写作助手&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="s2">&#34;写一篇关于容器化的技术博客大纲&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">max_tokens</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># 流式输出</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">chunk</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delta</span><span class="o">.</span><span class="n">content</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delta</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="批量推理与嵌入服务">
+<a class="header-anchor" href="#%e6%89%b9%e9%87%8f%e6%8e%a8%e7%90%86%e4%b8%8e%e5%b5%8c%e5%85%a5%e6%9c%8d%e5%8a%a1"></a>
+批量推理与嵌入服务
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 批量嵌入推理</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">vllm</span> <span class="kn">import</span> <span class="n">LLM</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">embed_model</span> <span class="o">=</span> <span class="n">LLM</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model</span><span class="o">=</span><span class="s2">&#34;BAAI/bge-large-zh-v1.5&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">task</span><span class="o">=</span><span class="s2">&#34;embed&#34;</span><span class="p">,</span>  <span class="c1"># 指定任务为嵌入</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">texts</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;大模型推理优化技术&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;PagedAttention 的原理与应用&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;Kubernetes 集群管理最佳实践&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">embeddings</span> <span class="o">=</span> <span class="n">embed_model</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">text</span><span class="p">,</span> <span class="n">emb</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Text: </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">, Embedding dim: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">embedding</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="性能调优参数">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e8%b0%83%e4%bc%98%e5%8f%82%e6%95%b0"></a>
+性能调优参数
+</h3><p>vLLM 提供了丰富的参数用于性能调优：</p>
+<table>
+	<thead>
+			<tr>
+					<th>参数</th>
+					<th>说明</th>
+					<th>推荐值</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>gpu_memory_utilization</code></td>
+					<td>GPU 显存利用率上限</td>
+					<td>0.85-0.92</td>
+			</tr>
+			<tr>
+					<td><code>max_model_len</code></td>
+					<td>最大上下文长度</td>
+					<td>根据业务需求</td>
+			</tr>
+			<tr>
+					<td><code>tensor_parallel_size</code></td>
+					<td>张量并行数</td>
+					<td>GPU 数量</td>
+			</tr>
+			<tr>
+					<td><code>enable_prefix_caching</code></td>
+					<td>前缀缓存</td>
+					<td>True（多轮对话）</td>
+			</tr>
+			<tr>
+					<td><code>enable_chunked_prefill</code></td>
+					<td>分块预填充</td>
+					<td>True（长 prompt）</td>
+			</tr>
+			<tr>
+					<td><code>max_num_seqs</code></td>
+					<td>最大并发序列数</td>
+					<td>128-256</td>
+			</tr>
+			<tr>
+					<td><code>swap_space</code></td>
+					<td>CPU 交换空间（GB）</td>
+					<td>4-16</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="tgi-实践">
+<a class="header-anchor" href="#tgi-%e5%ae%9e%e8%b7%b5"></a>
+TGI 实践
+</h2><p>TGI（Text Generation Inference）是 HuggingFace 推出的推理服务框架，最大的优势是与 HuggingFace 生态的深度集成，支持几乎所有的 Transformers 模型。</p>
+<h3 id="架构概览">
+<a class="header-anchor" href="#%e6%9e%b6%e6%9e%84%e6%a6%82%e8%a7%88"></a>
+架构概览
+</h3><pre class="mermaid">
+  graph TD
+    A[Client] --> B[Router - Rust]
+    B --> C[Dispatcher]
+    C --> D[Worker 0 - GPU 0]
+    C --> E[Worker 1 - GPU 1]
+    C --> F[Worker N - GPU N]
+    D --> G[Continuous Batching]
+    E --> G
+    F --> G
+    G --> H[FlashAttention]
+    G --> I[PagedAttention]
+</pre><p>TGI 的 Router 层使用 Rust 编写，负责请求调度和负载均衡；Worker 层使用 PyTorch，负责实际的模型推理。</p>
+<h3 id="docker-部署">
+<a class="header-anchor" href="#docker-%e9%83%a8%e7%bd%b2"></a>
+Docker 部署
+</h3><p>TGI 推荐使用 Docker 部署，这是最简单可靠的方式：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 拉取 TGI 镜像</span>
+</span></span><span class="line"><span class="cl">docker pull ghcr.io/huggingface/text-generation-inference:latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动 TGI 服务</span>
+</span></span><span class="line"><span class="cl">docker run --gpus all <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -v /data/models:/data <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -p 8080:80 <span class="se">\
+</span></span></span><span class="line"><span class="cl">    ghcr.io/huggingface/text-generation-inference:latest <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --model-id meta-llama/Meta-Llama-3.1-8B-Instruct <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --num-shard <span class="m">1</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --max-input-length <span class="m">4096</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --max-total-tokens <span class="m">8192</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --quantize awq <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --port <span class="m">80</span>
+</span></span></code></pre></div><p><strong>关键启动参数</strong>：</p>
+<table>
+	<thead>
+			<tr>
+					<th>参数</th>
+					<th>说明</th>
+					<th>示例</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>--model-id</code></td>
+					<td>模型 ID 或本地路径</td>
+					<td><code>meta-llama/Meta-Llama-3.1-8B-Instruct</code></td>
+			</tr>
+			<tr>
+					<td><code>--num-shard</code></td>
+					<td>张量并行数（GPU 数）</td>
+					<td><code>1</code>, <code>2</code>, <code>4</code></td>
+			</tr>
+			<tr>
+					<td><code>--max-input-length</code></td>
+					<td>最大输入长度</td>
+					<td><code>4096</code></td>
+			</tr>
+			<tr>
+					<td><code>--max-total-tokens</code></td>
+					<td>最大总 token 数</td>
+					<td><code>8192</code></td>
+			</tr>
+			<tr>
+					<td><code>--quantize</code></td>
+					<td>量化方式</td>
+					<td><code>awq</code>, <code>gptq</code>, <code>bitsandbytes</code></td>
+			</tr>
+			<tr>
+					<td><code>--max-batch-size</code></td>
+					<td>最大批大小</td>
+					<td><code>128</code></td>
+			</tr>
+			<tr>
+					<td><code>--revision</code></td>
+					<td>模型版本</td>
+					<td><code>main</code></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="流式响应调用">
+<a class="header-anchor" href="#%e6%b5%81%e5%bc%8f%e5%93%8d%e5%ba%94%e8%b0%83%e7%94%a8"></a>
+流式响应调用
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 流式生成</span>
+</span></span><span class="line"><span class="cl"><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://localhost:8080/v1/chat/completions&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;meta-llama/Meta-Llama-3.1-8B-Instruct&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;messages&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="s2">&#34;解释 Kubernetes 的核心概念&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;max_tokens&#34;</span><span class="p">:</span> <span class="mi">512</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;stream&#34;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">line_str</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&#34;utf-8&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">line_str</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&#34;data: &#34;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">line_str</span><span class="p">[</span><span class="mi">6</span><span class="p">:],</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;&#34;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></span></code></pre></div><p><strong>使用 TGI 原生 API</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># TGI 原生 /generate 接口</span>
+</span></span><span class="line"><span class="cl"><span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;http://localhost:8080/generate&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;inputs&#34;</span><span class="p">:</span> <span class="s2">&#34;请用中文解释什么是 Docker&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;parameters&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;max_new_tokens&#34;</span><span class="p">:</span> <span class="mi">512</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;temperature&#34;</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;top_p&#34;</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;do_sample&#34;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;repetition_penalty&#34;</span><span class="p">:</span> <span class="mf">1.1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&#34;generated_text&#34;</span><span class="p">])</span>
+</span></span></code></pre></div><h3 id="docker-compose-部署">
+<a class="header-anchor" href="#docker-compose-%e9%83%a8%e7%bd%b2"></a>
+docker-compose 部署
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># docker-compose.yml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;3.8&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">tgi</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">ghcr.io/huggingface/text-generation-inference:latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">tgi-server</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">unless-stopped</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s2">&#34;8080:80&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">model_data:/data</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">HUGGING_FACE_HUB_TOKEN=hf_your_token_here</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p">&gt;</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">      --model-id meta-llama/Meta-Llama-3.1-8B-Instruct
+</span></span></span><span class="line"><span class="cl"><span class="sd">      --num-shard 1
+</span></span></span><span class="line"><span class="cl"><span class="sd">      --max-input-length 4096
+</span></span></span><span class="line"><span class="cl"><span class="sd">      --max-total-tokens 8192
+</span></span></span><span class="line"><span class="cl"><span class="sd">      --quantize awq</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">deploy</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">resources</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">reservations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">devices</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span>- <span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l">nvidia</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">              </span><span class="nt">capabilities</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">gpu]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">model_data</span><span class="p">:</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">docker-compose up -d
+</span></span></code></pre></div><h2 id="性能基准对比">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e5%9f%ba%e5%87%86%e5%af%b9%e6%af%94"></a>
+性能基准对比
+</h2><p>在相同硬件条件下（单张 A100 80GB），对三大方案进行性能基准测试。测试模型为 Llama-3.1-8B-Instruct，输入 512 token，输出 256 token。</p>
+<h3 id="吞吐量对比">
+<a class="header-anchor" href="#%e5%90%9e%e5%90%90%e9%87%8f%e5%af%b9%e6%af%94"></a>
+吞吐量对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>方案</th>
+					<th>量化</th>
+					<th>并发=1 (tokens/s)</th>
+					<th>并发=8 (tokens/s)</th>
+					<th>并发=32 (tokens/s)</th>
+					<th>并发=64 (tokens/s)</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Ollama</td>
+					<td>Q4_K_M</td>
+					<td>45</td>
+					<td>120</td>
+					<td>180</td>
+					<td>—</td>
+			</tr>
+			<tr>
+					<td>vLLM</td>
+					<td>AWQ INT4</td>
+					<td>85</td>
+					<td>950</td>
+					<td>2800</td>
+					<td>3800</td>
+			</tr>
+			<tr>
+					<td>vLLM</td>
+					<td>FP16</td>
+					<td>70</td>
+					<td>720</td>
+					<td>2100</td>
+					<td>3100</td>
+			</tr>
+			<tr>
+					<td>TGI</td>
+					<td>AWQ</td>
+					<td>80</td>
+					<td>880</td>
+					<td>2500</td>
+					<td>3400</td>
+			</tr>
+			<tr>
+					<td>TGI</td>
+					<td>FP16</td>
+					<td>65</td>
+					<td>680</td>
+					<td>2000</td>
+					<td>2900</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="延迟对比">
+<a class="header-anchor" href="#%e5%bb%b6%e8%bf%9f%e5%af%b9%e6%af%94"></a>
+延迟对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>方案</th>
+					<th>TTFT @ 并发=1 (ms)</th>
+					<th>TTFT @ 并发=32 (ms)</th>
+					<th>TPOT @ 并发=1 (ms)</th>
+					<th>TPOT @ 并发=32 (ms)</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Ollama</td>
+					<td>280</td>
+					<td>1200</td>
+					<td>22</td>
+					<td>178</td>
+			</tr>
+			<tr>
+					<td>vLLM</td>
+					<td>45</td>
+					<td>180</td>
+					<td>12</td>
+					<td>11</td>
+			</tr>
+			<tr>
+					<td>TGI</td>
+					<td>55</td>
+					<td>220</td>
+					<td>13</td>
+					<td>13</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="显存利用率">
+<a class="header-anchor" href="#%e6%98%be%e5%ad%98%e5%88%a9%e7%94%a8%e7%8e%87"></a>
+显存利用率
+</h3><table>
+	<thead>
+			<tr>
+					<th>方案</th>
+					<th>模型显存</th>
+					<th>KV Cache 显存</th>
+					<th>总显存占用</th>
+					<th>利用率</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Ollama</td>
+					<td>5.2 GB</td>
+					<td>动态分配</td>
+					<td>~8 GB</td>
+					<td>~55%</td>
+			</tr>
+			<tr>
+					<td>vLLM</td>
+					<td>4.8 GB</td>
+					<td>65 GB（PagedAttention）</td>
+					<td>~72 GB</td>
+					<td>~92%</td>
+			</tr>
+			<tr>
+					<td>TGI</td>
+					<td>4.8 GB</td>
+					<td>60 GB</td>
+					<td>~68 GB</td>
+					<td>~87%</td>
+			</tr>
+	</tbody>
+</table>
+<pre class="mermaid">
+  graph LR
+    subgraph 显存利用率对比
+        O["Ollama<br/>~55%"]
+        V["vLLM<br/>~92%"]
+        T["TGI<br/>~87%"]
+    end
+</pre><p><strong>结论分析</strong>：</p>
+<ul>
+<li><strong>vLLM 在吞吐量上遥遥领先</strong>，高并发场景下吞吐量是 Ollama 的 20 倍以上，这得益于 PagedAttention 和 Continuous Batching 的组合优化</li>
+<li><strong>Ollama 在单请求延迟上表现尚可</strong>，但高并发下性能急剧下降，不适合生产服务</li>
+<li><strong>TGI 的性能介于两者之间</strong>，与 HF 生态的兼容性是其最大优势</li>
+<li><strong>显存利用率方面 vLLM 最优</strong>，PagedAttention 几乎消除了显存浪费</li>
+</ul>
+<h2 id="选型决策指南">
+<a class="header-anchor" href="#%e9%80%89%e5%9e%8b%e5%86%b3%e7%ad%96%e6%8c%87%e5%8d%97"></a>
+选型决策指南
+</h2><h3 id="决策流程图">
+<a class="header-anchor" href="#%e5%86%b3%e7%ad%96%e6%b5%81%e7%a8%8b%e5%9b%be"></a>
+决策流程图
+</h3><pre class="mermaid">
+  graph TD
+    A[开始选型] --> B{部署场景?}
+    B -->|个人本地使用| C{是否需要 GPU?}
+    C -->|仅 CPU| D[Ollama]
+    C -->|有 GPU 但配置低| E[Ollama]
+    B -->|开发/原型验证| F{是否需要 HF 生态?}
+    F -->|是| G[TGI]
+    F -->|否| H[Ollama / vLLM]
+    B -->|生产服务| I{并发需求?}
+    I -->|高并发| J[vLLM]
+    I -->|中低并发| K{模型兼容性要求?}
+    K -->|需兼容多种模型| L[TGI]
+    K -->|标准模型| J
+    B -->|边缘设备| M[Ollama]
+</pre><h3 id="分场景推荐">
+<a class="header-anchor" href="#%e5%88%86%e5%9c%ba%e6%99%af%e6%8e%a8%e8%8d%90"></a>
+分场景推荐
+</h3><table>
+	<thead>
+			<tr>
+					<th>场景</th>
+					<th>推荐方案</th>
+					<th>理由</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>个人电脑本地体验</td>
+					<td>Ollama</td>
+					<td>一键安装、CPU 友好、模型库丰富</td>
+			</tr>
+			<tr>
+					<td>开发调试/快速原型</td>
+					<td>Ollama 或 vLLM</td>
+					<td>Ollama 更简单，vLLM 更接近生产</td>
+			</tr>
+			<tr>
+					<td>生产 API 服务（高并发）</td>
+					<td>vLLM</td>
+					<td>吞吐量最高、OpenAI 兼容</td>
+			</tr>
+			<tr>
+					<td>生产 API 服务（HF 生态）</td>
+					<td>TGI</td>
+					<td>模型兼容性好、Docker 友好</td>
+			</tr>
+			<tr>
+					<td>RAG 应用</td>
+					<td>vLLM</td>
+					<td>Prefix Caching 加速共享前缀</td>
+			</tr>
+			<tr>
+					<td>多模型服务</td>
+					<td>TGI</td>
+					<td>Router 支持多模型路由</td>
+			</tr>
+			<tr>
+					<td>离线批量推理</td>
+					<td>vLLM</td>
+					<td>批量推理性能最优</td>
+			</tr>
+			<tr>
+					<td>CPU/边缘设备</td>
+					<td>Ollama</td>
+					<td>原生 CPU 支持、资源占用低</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="综合建议">
+<a class="header-anchor" href="#%e7%bb%bc%e5%90%88%e5%bb%ba%e8%ae%ae"></a>
+综合建议
+</h3><ol>
+<li>
+<p><strong>如果你是个人开发者</strong>：从 Ollama 开始，它是最简单的入门方案。一条命令就能在笔记本上运行大模型。</p>
+</li>
+<li>
+<p><strong>如果你要构建生产服务</strong>：vLLM 是首选。它的 PagedAttention 和 Continuous Batching 技术在高并发场景下优势巨大，且 OpenAI 兼容 API 让迁移成本极低。</p>
+</li>
+<li>
+<p><strong>如果你的团队深度使用 HuggingFace 生态</strong>：TGI 是自然的选择。它支持几乎所有 Transformers 模型，与 HF Hub 无缝集成。</p>
+</li>
+<li>
+<p><strong>混合方案</strong>：在实际项目中，可以使用 Ollama 做本地开发，vLLM 做生产部署。两者都兼容 OpenAI API 格式，代码几乎无需修改。</p>
+</li>
+</ol>
+<h2 id="高级部署技巧">
+<a class="header-anchor" href="#%e9%ab%98%e7%ba%a7%e9%83%a8%e7%bd%b2%e6%8a%80%e5%b7%a7"></a>
+高级部署技巧
+</h2><h3 id="模型预加载与缓存">
+<a class="header-anchor" href="#%e6%a8%a1%e5%9e%8b%e9%a2%84%e5%8a%a0%e8%bd%bd%e4%b8%8e%e7%bc%93%e5%ad%98"></a>
+模型预加载与缓存
+</h3><p>在生产环境中，避免每次启动都从远端下载模型：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 预先下载模型到本地</span>
+</span></span><span class="line"><span class="cl">huggingface-cli download meta-llama/Meta-Llama-3.1-8B-Instruct <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --local-dir /data/models/llama-3.1-8b
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># vLLM 使用本地模型路径</span>
+</span></span><span class="line"><span class="cl">python -m vllm.entrypoints.openai.api_server <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --model /data/models/llama-3.1-8b <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --port <span class="m">8000</span>
+</span></span></code></pre></div><h3 id="多-gpu-张量并行">
+<a class="header-anchor" href="#%e5%a4%9a-gpu-%e5%bc%a0%e9%87%8f%e5%b9%b6%e8%a1%8c"></a>
+多 GPU 张量并行
+</h3><p>当单卡显存不足以容纳整个模型时，使用张量并行：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># vLLM 双卡张量并行</span>
+</span></span><span class="line"><span class="cl">python -m vllm.entrypoints.openai.api_server <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --model meta-llama/Meta-Llama-3.1-70B-Instruct <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --tensor-parallel-size <span class="m">2</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --gpu-memory-utilization 0.92
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># TGI 双卡</span>
+</span></span><span class="line"><span class="cl">docker run --gpus all <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -v /data/models:/data <span class="se">\
+</span></span></span><span class="line"><span class="cl">    -p 8080:80 <span class="se">\
+</span></span></span><span class="line"><span class="cl">    ghcr.io/huggingface/text-generation-inference:latest <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --model-id meta-llama/Meta-Llama-3.1-70B-Instruct <span class="se">\
+</span></span></span><span class="line"><span class="cl">    --num-shard <span class="m">2</span>
+</span></span></code></pre></div><h3 id="健康检查与监控">
+<a class="header-anchor" href="#%e5%81%a5%e5%ba%b7%e6%a3%80%e6%9f%a5%e4%b8%8e%e7%9b%91%e6%8e%a7"></a>
+健康检查与监控
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># vLLM 健康检查</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 健康检查端点</span>
+</span></span><span class="line"><span class="cl"><span class="n">health</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&#34;http://localhost:8000/health&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">health</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;vLLM 服务正常&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 获取模型信息</span>
+</span></span><span class="line"><span class="cl"><span class="n">models</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&#34;http://localhost:8000/v1/models&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&#34;data&#34;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Model: </span><span class="si">{</span><span class="n">model</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="ollama-服务化管理">
+<a class="header-anchor" href="#ollama-%e6%9c%8d%e5%8a%a1%e5%8c%96%e7%ae%a1%e7%90%86"></a>
+Ollama 服务化管理
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 创建 systemd 服务（Linux）</span>
+</span></span><span class="line"><span class="cl">sudo systemctl edit ollama.service
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 设置环境变量</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>Service<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nv">Environment</span><span class="o">=</span><span class="s2">&#34;OLLAMA_HOST=0.0.0.0:11434&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">Environment</span><span class="o">=</span><span class="s2">&#34;OLLAMA_MAX_LOADED_MODELS=4&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">Environment</span><span class="o">=</span><span class="s2">&#34;OLLAMA_NUM_PARALLEL=4&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 重启生效</span>
+</span></span><span class="line"><span class="cl">sudo systemctl restart ollama
+</span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>大模型本地化部署已经从复杂的工程问题发展为成熟的技术方案。Ollama、vLLM 和 TGI 三大方案各有定位，覆盖了从个人体验到生产服务的完整场景。</p>
+<p>回顾三个方案的核心特点：Ollama 胜在极简易用，让任何人都能在本地运行大模型；vLLM 胜在极致性能，PagedAttention 技术带来了数量级的吞吐量提升；TGI 胜在生态兼容，是 HuggingFace 用户的首选。</p>
+<p>在实际项目中，不必拘泥于单一方案。理解每种工具的优势和局限，根据场景灵活选择甚至组合使用，才是工程实践的智慧。随着推理技术的持续进步（如投机解码、FP8 量化、更高效的注意力机制），本地化部署的性能和体验将持续提升，让大模型真正普惠每一个应用场景。</p>
+<hr>
+<p><strong>参考文献</strong>：</p>
+<ol>
+<li>Kwon W, et al. Efficient Memory Management for Large Language Model Serving with PagedAttention. SOSP 2023.</li>
+<li>Ollama Documentation. <a href="https://github.com/ollama/ollama">https://github.com/ollama/ollama</a></li>
+<li>vLLM Documentation. <a href="https://docs.vllm.ai">https://docs.vllm.ai</a></li>
+<li>HuggingFace TGI Documentation. <a href="https://huggingface.co/docs/text-generation-inference">https://huggingface.co/docs/text-generation-inference</a></li>
+<li>Gerganov G. llama.cpp: Port of Facebook&rsquo;s LLaMA model in C/C++. <a href="https://github.com/ggerganov/llama.cpp">https://github.com/ggerganov/llama.cpp</a></li>
+<li>Lin J, et al. AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration. MLSys 2024.</li>
+</ol>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/&amp;appkey=&amp;title=%e6%a8%a1%e5%9e%8b%e6%9c%ac%e5%9c%b0%e5%8c%96%e9%83%a8%e7%bd%b2%ef%bc%9aOllama%e3%80%81vLLM%20%e4%b8%8e%20TGI&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="模型本地化部署：Ollama、vLLM 与 TGI">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/&amp;title=%e6%a8%a1%e5%9e%8b%e6%9c%ac%e5%9c%b0%e5%8c%96%e9%83%a8%e7%bd%b2%ef%bc%9aOllama%e3%80%81vLLM%20%e4%b8%8e%20TGI&amp;desc=%e4%b8%89%e5%a4%a7%e6%9c%ac%e5%9c%b0%e5%8c%96%e9%83%a8%e7%bd%b2%e6%96%b9%e6%a1%88%e5%af%b9%e6%af%94%e4%b8%8e%e5%ae%9e%e8%b7%b5%ef%bc%8c%e4%bb%8e%e6%b6%88%e8%b4%b9%e7%ba%a7%20GPU%20%e5%88%b0%e7%94%9f%e4%ba%a7%e7%ba%a7%e6%9c%8d%e5%8a%a1&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="模型本地化部署：Ollama、vLLM 与 TGI">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="模型本地化部署：Ollama、vLLM 与 TGI">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/&amp;text=%e6%a8%a1%e5%9e%8b%e6%9c%ac%e5%9c%b0%e5%8c%96%e9%83%a8%e7%bd%b2%ef%bc%9aOllama%e3%80%81vLLM%20%e4%b8%8e%20TGI&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="模型本地化部署：Ollama、vLLM 与 TGI">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/" target="_blank" rel="noopener noreferrer" title="模型本地化部署：Ollama、vLLM 与 TGI">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%a8%a1%e5%9e%8b%e9%83%a8%e7%bd%b2%e4%b8%8e%e6%8e%a8%e7%90%86%e4%bc%98%e5%8c%96"
+      data-aos="zoom-in"
+      >模型部署与推理优化</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%a4%a7%e6%a8%a1%e5%9e%8b"
+        rel="tag"
+        >大模型</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e6%9c%ac%e5%9c%b0%e9%83%a8%e7%bd%b2"
+        rel="tag"
+        >本地部署</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/ollama"
+        rel="tag"
+        >Ollama</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/vllm"
+        rel="tag"
+        >vLLM</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/tgi"
+        rel="tag"
+        >TGI</a
+      >
+    </li></ul>
+</footer>
+  </div><nav
+    id="article-nav"
+    aria-label="Article navigation"
+    data-aos="fade-up"
+  ><div class="article-nav-link-wrap left"><img
+              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
+              data-sizes="auto"
+              alt="模型量化技术：INT4/INT8、GPTQ 与 AWQ"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/"
+          aria-label="前一篇:模型量化技术：INT4/INT8、GPTQ 与 AWQ"
+          title="前一篇:模型量化技术：INT4/INT8、GPTQ 与 AWQ"
+        ></a>
+        <div class="article-nav-caption">前一篇</div>
+        <h3 class="article-nav-title">模型量化技术：INT4/INT8、GPTQ 与 AWQ</h3>
+      </div></nav></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#三大方案全景对比">三大方案全景对比</a>
+      <ul>
+        <li><a href="#核心特性对比表">核心特性对比表</a></li>
+        <li><a href="#硬件需求对比">硬件需求对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#ollama-实践">Ollama 实践</a>
+      <ul>
+        <li><a href="#架构设计">架构设计</a></li>
+        <li><a href="#安装与快速开始">安装与快速开始</a></li>
+        <li><a href="#模型拉取与运行">模型拉取与运行</a></li>
+        <li><a href="#rest-api-调用">REST API 调用</a></li>
+        <li><a href="#modelfile-自定义模型">Modelfile 自定义模型</a></li>
+        <li><a href="#导入-gguf-模型">导入 GGUF 模型</a></li>
+      </ul>
+    </li>
+    <li><a href="#vllm-实践">vLLM 实践</a>
+      <ul>
+        <li><a href="#pagedattention-原理回顾">PagedAttention 原理回顾</a></li>
+        <li><a href="#安装">安装</a></li>
+        <li><a href="#离线批量推理">离线批量推理</a></li>
+        <li><a href="#启动-openai-兼容-api-服务">启动 OpenAI 兼容 API 服务</a></li>
+        <li><a href="#批量推理与嵌入服务">批量推理与嵌入服务</a></li>
+        <li><a href="#性能调优参数">性能调优参数</a></li>
+      </ul>
+    </li>
+    <li><a href="#tgi-实践">TGI 实践</a>
+      <ul>
+        <li><a href="#架构概览">架构概览</a></li>
+        <li><a href="#docker-部署">Docker 部署</a></li>
+        <li><a href="#流式响应调用">流式响应调用</a></li>
+        <li><a href="#docker-compose-部署">docker-compose 部署</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能基准对比">性能基准对比</a>
+      <ul>
+        <li><a href="#吞吐量对比">吞吐量对比</a></li>
+        <li><a href="#延迟对比">延迟对比</a></li>
+        <li><a href="#显存利用率">显存利用率</a></li>
+      </ul>
+    </li>
+    <li><a href="#选型决策指南">选型决策指南</a>
+      <ul>
+        <li><a href="#决策流程图">决策流程图</a></li>
+        <li><a href="#分场景推荐">分场景推荐</a></li>
+        <li><a href="#综合建议">综合建议</a></li>
+      </ul>
+    </li>
+    <li><a href="#高级部署技巧">高级部署技巧</a>
+      <ul>
+        <li><a href="#模型预加载与缓存">模型预加载与缓存</a></li>
+        <li><a href="#多-gpu-张量并行">多 GPU 张量并行</a></li>
+        <li><a href="#健康检查与监控">健康检查与监控</a></li>
+        <li><a href="#ollama-服务化管理">Ollama 服务化管理</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "模型本地化部署：Ollama、vLLM 与 TGI",
+          url: "https:\/\/dev.infiniteevo.online\/post\/llm\/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96\/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2\/",
+          description: "三大本地化部署方案对比与实践，从消费级 GPU 到生产级服务",
+          cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
+        };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-MWNUH0WmtsYGhn2cbH6ELRCbf9LG3QDqCC&#43;gqPB3IBNO35xjZK3Ejb6oONRpDbPg" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/contrib/auto-render.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv&#43;fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script><script data-pjax>
+          var renderMath = () => {
+            if (!window.renderMathInElement) return;
+            window.renderMathInElement(_$("article"), {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+              ],
+            });
+          };
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderMath, { once: true });
+          } else {
+            renderMath();
+          }
+        </script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>

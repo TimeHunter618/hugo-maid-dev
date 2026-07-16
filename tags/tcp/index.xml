@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>TCP on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/tcp/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 29 May 2026 13:02:21 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/tcp/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>TCP 三次握手与四次挥</title>
+      <link>https://dev.infiniteevo.online/post/network/tcp%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%B8%8E%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B/</link>
+      <pubDate>Fri, 29 May 2026 13:02:21 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/network/tcp%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%B8%8E%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B/</guid>
+      <description>
+        <![CDATA[<h1>TCP 三次握手与四次挥</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2026-05-29首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-05-29</p>]]>
+      </description>
+      
+        <category>传输</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>TCP 流量控制与拥塞控</title>
+      <link>https://dev.infiniteevo.online/post/network/tcp%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E4%B8%8E%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6/</link>
+      <pubDate>Sun, 15 Dec 2024 18:08:14 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/network/tcp%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E4%B8%8E%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6/</guid>
+      <description>
+        <![CDATA[<h1>TCP 流量控制与拥塞控</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2024-12-15首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-12-15</p>]]>
+      </description>
+      
+        <category>传输</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>网络分层模型与数据封装</title>
+      <link>https://dev.infiniteevo.online/post/network/%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%B0%81%E8%A3%85/</link>
+      <pubDate>Thu, 16 Dec 2021 17:20:38 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/network/%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%B0%81%E8%A3%85/</guid>
+      <description>
+        <![CDATA[<h1>网络分层模型与数据封装</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2021-12-16首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-12-16</p>]]>
+      </description>
+      
+        <category>基础理论</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

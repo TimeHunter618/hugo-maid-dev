@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>本地化部署 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 15 Mar 2024 11:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>大模型如何做本地化部署</title>
+      <link>https://dev.infiniteevo.online/post/ai-interview/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%A6%82%E4%BD%95%E5%81%9A%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Fri, 15 Mar 2024 11:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/ai-interview/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%A6%82%E4%BD%95%E5%81%9A%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/</guid>
+      <description>
+        <![CDATA[<h1>大模型如何做本地化部署</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="部署方案">
+<a class="header-anchor" href="#%e9%83%a8%e7%bd%b2%e6%96%b9%e6%a1%88"></a>
+部署方案
+</h2><blockquote>
+<p><strong>面试场景</strong>：如何将大语言模型部署到本地环境？需要考虑哪些因素？</p>
+</blockquote>
+<h2 id="技术选型">
+<a class="header-anchor" href="#%e6%8a%80%e6%9c%af%e9%80%89%e5%9e%8b"></a>
+技术选型
+</h2><h3 id="1-模型量化">
+<a class="header-anchor" href="#1-%e6%a8%a1%e5%9e%8b%e9%87%8f%e5%8c%96"></a>
+1. 模型量化
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoModelForCausalLM</span><span class="p">,</span> <span class="n">AutoTokenizer</span><span class="p">,</span> <span class="n">BitsAndBytesConfig</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">bnb_config</span> <span class="o">=</span> <span class="n">BitsAndBytesConfig</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">load_in_4bit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">bnb_4bit_use_double_quant</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">bnb_4bit_quant_type</span><span class="o">=</span><span class="s2">&#34;nf4&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">bnb_4bit_compute_dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bfloat16</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForCausalLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;model-name&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">quantization_config</span><span class="o">=</span><span class="n">bnb_config</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></div><h3 id="2-推理框架">
+<a class="header-anchor" href="#2-%e6%8e%a8%e7%90%86%e6%a1%86%e6%9e%b6"></a>
+2. 推理框架
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">vllm</span> <span class="kn">import</span> <span class="n">LLM</span><span class="p">,</span> <span class="n">SamplingParams</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">llm</span> <span class="o">=</span> <span class="n">LLM</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="s2">&#34;model-name&#34;</span><span class="p">,</span> <span class="n">tensor_parallel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sampling_params</span> <span class="o">=</span> <span class="n">SamplingParams</span><span class="p">(</span><span class="n">max_tokens</span><span class="o">=</span><span class="mi">1024</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">outputs</span> <span class="o">=</span> <span class="n">llm</span><span class="o">.</span><span class="n">generate</span><span class="p">([</span><span class="s2">&#34;Hello, how are you?&#34;</span><span class="p">],</span> <span class="n">sampling_params</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="3-服务封装">
+<a class="header-anchor" href="#3-%e6%9c%8d%e5%8a%a1%e5%b0%81%e8%a3%85"></a>
+3. 服务封装
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">InferenceRequest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span>
+</span></span><span class="line"><span class="cl">    <span class="n">max_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1024</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@app.post</span><span class="p">(</span><span class="s2">&#34;/generate&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">InferenceRequest</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">outputs</span> <span class="o">=</span> <span class="n">llm</span><span class="o">.</span><span class="n">generate</span><span class="p">([</span><span class="n">request</span><span class="o">.</span><span class="n">prompt</span><span class="p">],</span> <span class="n">sampling_params</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">{</span><span class="s2">&#34;response&#34;</span><span class="p">:</span> <span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">}</span>
+</span></span></code></pre></div><h2 id="总结">
+<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
+总结
+</h2><p>大模型本地化部署需要考虑模型量化、推理框架选择和服务封装等关键环节。</p>
+        
+        <hr><p>本文2024-03-15首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-03-15</p>]]>
+      </description>
+      
+        <category>AI面试</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>本地存储 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Tue, 05 May 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>本地 Agent 落地实践</title>
+      <link>https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E6%9C%AC%E5%9C%B0agent%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Tue, 05 May 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E6%9C%AC%E5%9C%B0agent%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5/</guid>
+      <description>
+        <![CDATA[<h1>本地 Agent 落地实践</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>当 Agent 从云端 Demo 走向真实生产环境，&ldquo;本地化&quot;成为一道绕不开的门槛。无论是企业内网中处理机密数据的研究助手，还是部署在边缘设备上的离线助手，<strong>本地 Agent</strong> 都指向同一组核心诉求：数据不出域、断网可用、成本可控、行为可定制。</p>
+        
+        <hr><p>本文2026-05-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-05-05</p>]]>
+      </description>
+      
+        <category>Prompt工程与Agent系统</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

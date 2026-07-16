@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>能力萃取 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E8%83%BD%E5%8A%9B%E8%90%83%E5%8F%96/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Sat, 08 Nov 2025 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E8%83%BD%E5%8A%9B%E8%90%83%E5%8F%96/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>Skill 蒸馏与能力萃取技术</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/skill%E8%92%B8%E9%A6%8F%E4%B8%8E%E8%83%BD%E5%8A%9B%E8%90%83%E5%8F%96/</link>
+      <pubDate>Sat, 08 Nov 2025 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/skill%E8%92%B8%E9%A6%8F%E4%B8%8E%E8%83%BD%E5%8A%9B%E8%90%83%E5%8F%96/</guid>
+      <description>
+        <![CDATA[<h1>Skill 蒸馏与能力萃取技术</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>随着大语言模型（LLM）参数规模从数十亿增长到数千亿，一个核心矛盾日益凸显：<strong>强大能力往往与庞大参数绑定，而实际部署迫切需要小而精的模型</strong>。传统的知识蒸馏（Knowledge Distillation）试图将大模型的整体知识压缩到小模型中，但这种&quot;全量压缩&quot;的思路在面对复杂能力时往往力不从心——小模型在通用能力上尚可，但在代码生成、数学推理、工具使用等高阶能力上与大模型存在显著鸿沟。</p>
+        
+        <hr><p>本文2025-11-08首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-11-08</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,535 @@
+[
+  {
+    "objectID": "0ee10d1b92f8fd8af026e8e0e9ebddfddad754d8",
+    "permalink": "/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/",
+    "title": "大语言模型基础原理与发展历程","content": " 引言 大语言模型（Large Language Model, LLM）正在深刻改变着人机交互的方式，推动着人工智能技术进入新的时代。从最初的统计语言模型到如今参数规模突破万亿的超大规模预训练模型，语言模型技术经历了数十年的演进与发展。本文将系统梳理大语言模型的发展历程，深入解析其核心技术原理，帮助读者建立对这一前沿技术的全面认知。\n语言模型的定义与本质 什么是语言模型 语言模型本质上是一个概率分布函数，用于计算一个句子或文本序列出现的概率。对于一个由 $n$ 个词组成的序列 $W = w_1, w_2, ..., w_n$，语言模型计算该序列的联合概率：\n$$ P(W) = P(w_1, w_2, ..., w_n) $$根据链式法则，可以将其分解为：\n$$ P(W) = P(w_1)P(w_2|w_1)P(w_3|w_1w_2)...P(w_n|w_1w_2...w_{n-1}) $$ 语言模型的核心挑战 语言建模面临的核心挑战在于维度灾难——随着上下文长度的增加，可能的词组合数量呈指数级增长，导致数据稀疏和计算不可行。如何有效地建模长距离依赖关系，始终是语言模型研究的核心课题。\n发展历程全景 萌芽期：统计语言模型时代（1980s-2017） graph LR A[N-gram模型] --\u0026gt; B[神经网络语言模型] B --\u0026gt; C[RNN/LSTM] C --\u0026gt; D[Transformer] D --\u0026gt; E[预训练语言模型] E --\u0026gt; F[大语言模型时代] N-gram 模型 N-gram 是最早的统计语言模型，基于马尔可夫假设，认为第 $n$ 个词的出现只与前面 $n-1$ 个词相关：\n$$ P(w_i|w_1^{i-1}) \\approx P(w_i|w_{i-n+1}^{i-1}) $$优点：简单直观，计算高效\n缺点：无法建模长距离依赖，数据稀疏问题严重\n神经网络语言模型（NNLM） 2003年，Bengio 等人提出神经网络语言模型，通过词嵌入和前馈神经网络解决数据稀疏问题。模型将每个词映射为低维向量表示，大幅提升了模型的泛化能力。\nRNN/LSTM 时代 循环神经网络（RNN）及其变体 LSTM、GRU 等通过循环连接理论上可以建模任意长度的序列依赖，成为序列建模的主流方法。然而，由于梯度消失问题，RNN 在实际应用中仍难以有效捕捉长距离依赖关系。 …","date": "2026-06-19 03:05:00",
+    "updated": "2026-06-19 03:05:00"
+  }, 
+  {
+    "objectID": "95011968bcc1dd427e2e458e45cdd54fd5afd8b3",
+    "permalink": "/post/middleware-ops/rabbitmq%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%A6%E8%A7%A3/",
+    "title": "RabbitMQ消息队列详解","content": "","date": "2024-05-29 07:22:08",
+    "updated": "2024-05-29 07:22:08"
+  }, 
+  {
+    "objectID": "f3a303e89dbe2a7554bec64dd3dd8eb6ddf4441b",
+    "permalink": "/post/ats/backend/%E5%90%8E%E5%8F%B0%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E/",
+    "title": "后台项目整体说明","content": "","date": "2023-12-10 18:37:24",
+    "updated": "2023-12-10 18:37:24"
+  }, 
+  {
+    "objectID": "9eeb391d7aae55636587876d98bbf518b9c28807",
+    "permalink": "/post/design-patterns/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/",
+    "title": "单例模式详解","content": "","date": "2023-11-16 23:39:19",
+    "updated": "2023-11-16 23:39:19"
+  }, 
+  {
+    "objectID": "edaef8c9a4a6542f6628b699a92aa51add9817f7",
+    "permalink": "/post/algorithm/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A3/",
+    "title": "排序算法详解","content": "","date": "2022-09-29 09:21:31",
+    "updated": "2022-09-29 09:21:31"
+  }, 
+  {
+    "objectID": "83919141c2972403aeeec52dc055d9d02e088be7",
+    "permalink": "/post/network/%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%B0%81%E8%A3%85/",
+    "title": "网络分层模型与数据封装","content": "","date": "2021-12-16 17:20:38",
+    "updated": "2021-12-16 17:20:38"
+  }, 
+  {
+    "objectID": "707fa104ba88bc1374580c588695bbde17ce177c",
+    "permalink": "/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/",
+    "title": "Transformer 架构深度解析","content": " 引言 Transformer 架构自 2017 年提出以来，已经成为自然语言处理乃至整个深度学习领域的基石。从 GPT 系列到 BERT，从 ViT 到 Diffusion Model，Transformer 的身影无处不在。本文将从第一性原理出发，深入拆解 Transformer 的每一个核心组件，帮助读者彻底理解这一革命性的架构设计。\n整体架构概览 架构图 graph TD subgraph 编码器 Encoder E1[输入嵌入] --\u0026gt; E2[位置编码] E2 --\u0026gt; E3[多头自注意力] E3 --\u0026gt; E4[残差连接 + 层归一化] E4 --\u0026gt; E5[前馈神经网络] E5 --\u0026gt; E6[残差连接 + 层归一化] end subgraph 解码器 Decoder D1[输出嵌入] --\u0026gt; D2[位置编码] D2 --\u0026gt; D3[掩码多头自注意力] D3 --\u0026gt; D4[残差连接 + 层归一化] D4 --\u0026gt; D5[编码器-解码器注意力] D5 --\u0026gt; D6[残差连接 + 层归一化] D6 --\u0026gt; D7[前馈神经网络] D7 --\u0026gt; D8[残差连接 + 层归一化] D8 --\u0026gt; D9[线性层 + Softmax] end 输入 --\u0026gt; E1 E6 --\u0026gt; D5 D9 --\u0026gt; 输出 原始的 Transformer 采用编码器-解码器（Encoder-Decoder）架构，适用于序列到序列（seq2seq）任务。但在实际应用中，衍生出了三种主要变体：\n架构类型 代表模型 适用场景 编码器-only BERT、RoBERTa 分类、命名实体识别等理解任务 解码器-only GPT系列、LLaMA 文本生成、对话等生成任务 编码器-解码器 T5、BART 翻译、摘要等序列转换任务 核心组件清单 一个完整的 Transformer 层由以下组件构成：\n输入嵌入（Input Embedding）：将离散 token 映射为连续向量 位置编码（Positional Encoding）：为序列注入位置信息 多头自注意力（Multi-Head Self-Attention）：建模序列内部的依赖关系 前馈神经网络（Feed-Forward Network）：对每个位置进行非线性变换 残差连接（Residual Connection）：缓解梯度消失，加深网络 层归一化（Layer …","date": "2026-06-19 03:10:00",
+    "updated": "2026-06-19 03:10:00"
+  }, 
+  {
+    "objectID": "a9ca74d4d9dd7c9f3376039895300a0ee73c2712",
+    "permalink": "/post/middleware-ops/kafka%E9%AB%98%E5%90%9E%E5%90%90%E6%B6%88%E6%81%AF%E6%B5%81%E5%A4%84%E7%90%86/",
+    "title": "Kafka高吞吐消息流处理","content": "","date": "2026-02-21 11:21:06",
+    "updated": "2026-02-21 11:21:06"
+  }, 
+  {
+    "objectID": "46031680a5df03b6c68ff1df11ef5ca906681fc3",
+    "permalink": "/post/ai-interview/agent%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E5%A4%B1%E8%B4%A5%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86/",
+    "title": "Agent工具调用失败如何处理","content": " 问题背景 面试场景：当系统中的Agent调用外部工具失败时，如何设计健壮的重试和降级机制？\n核心策略 1. 重试机制 public class ToolRetryHandler { private static final int MAX_RETRIES = 3; private static final long BASE_DELAY_MS = 1000; public \u0026lt;T\u0026gt; T executeWithRetry(ToolCall\u0026lt;T\u0026gt; toolCall) throws ToolException { Exception lastException = null; for (int attempt = 1; attempt \u0026lt;= MAX_RETRIES; attempt++) { try { return toolCall.execute(); } catch (Exception e) { lastException = e; long delay = BASE_DELAY_MS * (long) Math.pow(2, attempt - 1); Thread.sleep(delay); } } throw new ToolException(\u0026#34;Max retries exceeded\u0026#34;, lastException); } } 2. 熔断机制 public class CircuitBreaker { private static final int FAILURE_THRESHOLD = 5; private static final long COOLDOWN_MS = 30000; private int failureCount = 0; private long lastFailureTime = 0; private boolean isOpen = false; public synchronized boolean allowRequest() { if (isOpen) { if (System.currentTimeMillis() - lastFailureTime \u0026gt; COOLDOWN_MS) { isOpen = false; failureCount = 0; return true; } return false; } return true; } public synchronized void recordFailure() { failureCount++; lastFailureTime = System.currentTimeMillis(); if (failureCount \u0026gt;= FAILURE_THRESHOLD) { isOpen = true; } } } 3. 降级策略 public class ToolFallbackHandler { private Map\u0026lt;String, ToolCall\u0026lt;?\u0026gt;\u0026gt; fallbackMap = new HashMap\u0026lt;\u0026gt;(); public void registerFallback(String toolName, ToolCall\u0026lt;?\u0026gt; fallback) { fallbackMap.put(toolName, fallback); } public Object executeWithFallback(String toolName, ToolCall\u0026lt;?\u0026gt; primary) { try { return primary.execute(); } catch (Exception e) { ToolCall\u0026lt;?\u0026gt; fallback = fallbackMap.get(toolName); if (fallback != null) { return fallback.execute(); } throw e; } } } 总结 处理工具调用失败需要综合运用重试、熔断和降级策略，确保系统在面对外部依赖故障时仍能保持可用。\n","date": "2026-02-05 04:14:46",
+    "updated": "2026-02-05 04:14:46"
+  }, 
+  {
+    "objectID": "5a3e5752ef64bf26522eb9ef21249d147bc6b41f",
+    "permalink": "/post/design-patterns/%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E4%B8%8E%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/",
+    "title": "工厂方法与抽象工厂模式","content": "","date": "2024-06-04 01:22:11",
+    "updated": "2024-06-04 01:22:11"
+  }, 
+  {
+    "objectID": "06584d2412dec0af7939d339a7694ae04b124381",
+    "permalink": "/post/ats/backend/%E5%90%8E%E5%8F%B0%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9D%97%E5%85%B3%E7%B3%BB%E4%B8%8E%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/",
+    "title": "后台系统模块关系与架构分析","content": "","date": "2023-04-29 01:25:07",
+    "updated": "2023-04-29 01:25:07"
+  }, 
+  {
+    "objectID": "5026d0b63e5e3c981befd428cdb57971cd5e2467",
+    "permalink": "/post/network/http%E5%8D%8F%E8%AE%AE%E8%AF%A6%E8%A7%A3%E4%B8%8Ehttps%E5%8E%9F%E7%90%86/",
+    "title": "HTTP 协议详解?HTTPS 原理","content": "","date": "2022-11-18 01:58:28",
+    "updated": "2022-11-18 01:58:28"
+  }, 
+  {
+    "objectID": "1e4054f963ba512da6147a5af6f2027ee7a807cd",
+    "permalink": "/post/algorithm/%E4%BA%8C%E5%8F%89%E6%A0%91%E4%B8%8E%E9%81%8D%E5%8E%86%E5%AE%9E%E6%88%98/",
+    "title": "二叉树与遍历实战","content": "","date": "2021-02-24 14:16:44",
+    "updated": "2021-02-24 14:16:44"
+  }, 
+  {
+    "objectID": "ac5a44212ab67ed9c6889d3f7b12341f88ebbefd",
+    "permalink": "/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E6%8A%80%E6%9C%AF%E5%85%A8%E6%94%BB%E7%95%A5/",
+    "title": "大模型微调技术全攻略","content": " 引言 大语言模型（LLM）在海量数据上预训练后，获得了强大的通用能力。但要将这些通用能力适配到特定领域或特定任务上，微调（Fine-tuning）是不可或缺的关键步骤。\n然而，随着模型规模从数十亿增长到数千亿甚至万亿参数，传统的全量微调面临着巨大的挑战：\n显存需求爆炸式增长 训练成本高昂 每个任务需要保存一份完整的模型副本 为了解决这些问题，研究者们提出了各种参数高效微调（Parameter-Efficient Fine-Tuning, PEFT）方法，仅需训练极少的参数就能达到接近全量微调的效果。\n本文将系统梳理大模型微调的技术体系，从基础概念到前沿方法，帮助读者全面掌握大模型微调的核心技术。\n微调技术全景图 graph TD A[大模型微调技术] --\u0026gt; B[全量微调] A --\u0026gt; C[参数高效微调 PEFT] C --\u0026gt; D[加法式方法] C --\u0026gt; E[选择式方法] C --\u0026gt; F[重参数化方法] D --\u0026gt; D1[Prefix Tuning] D --\u0026gt; D2[Prompt Tuning] D --\u0026gt; D3[Adapter Tuning] E --\u0026gt; E1[BitFit] E --\u0026gt; E2[Diff Pruning] F --\u0026gt; F1[LoRA] F --\u0026gt; F2[QLoRA] F --\u0026gt; F3[AdaLoRA] 全量微调（Full Fine-tuning） 基本原理 全量微调是最直接的方法：在预训练模型的基础上，使用任务特定的数据更新模型的所有参数。\n$$ \\theta_{ft} = \\arg\\min_{\\theta} \\mathcal{L}_{task}(\\theta; \\mathcal{D}_{task}) $$其中 $\\theta$ 是预训练模型的全部参数。\n优缺点分析 优点 缺点 性能最优，充分适配任务 训练成本极高 技术成熟，实现简单 显存需求大 可充分释放模型潜力 每个任务存储一份完整模型 容易发生灾难性遗忘 适用场景 数据量充足，算力充沛 追求极致性能 模型规模较小（如 7B 以下） 参数高效微调（PEFT）概述 参数高效微调的核心思想是：只训练一小部分参数，冻结大部分预训练参数，从而大幅降低训练成本。\n一个好的 PEFT 方法应该满足：\n参数效率高：训练参数远少于全量微调 性能接近全量微调：在下游任务上表现优秀 推理无额外开销：推理时不 …","date": "2026-06-19 03:15:00",
+    "updated": "2026-06-19 03:15:00"
+  }, 
+  {
+    "objectID": "a7e73ff94257de11d3cbcd15b9a9169788fa4570",
+    "permalink": "/post/network/tcp%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E4%B8%8E%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B/",
+    "title": "TCP 三次握手与四次挥","content": "","date": "2026-05-29 13:02:21",
+    "updated": "2026-05-29 13:02:21"
+  }, 
+  {
+    "objectID": "fc200e16d63efc707dec478d944bb764f02e219d",
+    "permalink": "/post/design-patterns/%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/",
+    "title": "建造者模式详解","content": "","date": "2024-02-03 07:43:18",
+    "updated": "2024-02-03 07:43:18"
+  }, 
+  {
+    "objectID": "0c2e469b582ad168283ca1d06b948e9b902153a1",
+    "permalink": "/post/ai-interview/429%E9%80%9F%E7%8E%87%E9%99%90%E5%88%B6%E6%80%8E%E4%B9%88%E8%A7%A3%E5%86%B3/",
+    "title": "429速率限制怎么解决","content": " 问题分析 面试场景：当调用AI API遇到429错误时，有哪些解决方案？\n解决方案 1. 令牌桶限流 public class TokenBucket { private final int capacity; private final double refillRate; private double tokens; private long lastRefillTime; public TokenBucket(int capacity, double refillRate) { this.capacity = capacity; this.refillRate = refillRate; this.tokens = capacity; this.lastRefillTime = System.currentTimeMillis(); } public synchronized boolean tryAcquire() { refill(); if (tokens \u0026gt;= 1) { tokens--; return true; } return false; } private void refill() { long now = System.currentTimeMillis(); double elapsed = (now - lastRefillTime) / 1000.0; tokens = Math.min(capacity, tokens + elapsed * refillRate); lastRefillTime = now; } } 2. 多Key轮询 public class ApiKeyRotator { private List\u0026lt;String\u0026gt; apiKeys; private int currentIndex = 0; public synchronized String getNextKey() { String key = apiKeys.get(currentIndex); currentIndex = (currentIndex + 1) % apiKeys.size(); return key; } } 总结 解决429速率限制需要结合限流、重试和多Key轮询等策略。\n","date": "2023-07-10 10:00:00",
+    "updated": "2023-07-10 10:00:00"
+  }, 
+  {
+    "objectID": "cb5eac1e0121cff7046f7077b2992d4e0b56a339",
+    "permalink": "/post/ats/backend/%E5%90%8E%E5%8F%B0%E4%B8%9A%E5%8A%A1%E4%BF%A1%E6%81%AF%E6%B5%81%E5%88%86%E6%9E%90/",
+    "title": "后台业务信息流分析","content": "","date": "2022-11-20 03:02:13",
+    "updated": "2022-11-20 03:02:13"
+  }, 
+  {
+    "objectID": "36207c69bcc63adb573b419ad4a4bed02b95aa1e",
+    "permalink": "/post/algorithm/%E5%9B%BE%E7%AE%97%E6%B3%95%E4%B8%8E%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84/",
+    "title": "图算法与最短路径详解","content": "","date": "2022-02-10 09:58:27",
+    "updated": "2022-02-10 09:58:27"
+  }, 
+  {
+    "objectID": "0e27385ce68f14a8b61d02c38c3ab0edaf7c5b8e",
+    "permalink": "/post/middleware-ops/redis%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E6%88%98/",
+    "title": "Redis核心原理与实","content": "","date": "2021-06-07 06:18:26",
+    "updated": "2021-06-07 06:18:26"
+  }, 
+  {
+    "objectID": "677c0f2e9c186e346f5b1a72fb6c1718f22f86c4",
+    "permalink": "/post/middleware-ops/kafkastreams%E6%B5%81%E5%A4%84%E7%90%86%E5%AE%9E%E6%88%98/",
+    "title": "Kafka Streams流处理实","content": "","date": "2021-05-12 14:51:51",
+    "updated": "2021-05-12 14:51:51"
+  }, 
+  {
+    "objectID": "bcef27aa0ba83cf6bd7fe841fe960b26bf757251",
+    "permalink": "/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3/",
+    "title": "RAG 检索增强生成技术详解","content": " 引言 大语言模型（LLM）虽然展现出惊人的语言理解和生成能力，但也面临着一些固有的局限性：\n知识时效性差：模型的知识截止于训练数据的时间点，无法获取最新信息 领域知识不足：在专业领域（如医疗、法律、企业内部）的知识往往不够深入 幻觉问题：模型可能会\u0026amp;quot;一本正经地胡说八道\u0026amp;quot;，生成看似合理但实际错误的内容 知识更新困难：通过微调更新知识成本高昂，且容易导致灾难性遗忘 检索增强生成（Retrieval-Augmented Generation, RAG）为这些问题提供了一个优雅的解决方案。通过在生成过程中引入外部知识检索，RAG 让大模型能够\u0026amp;quot;查资料\u0026amp;quot;后再回答问题，从而大幅提升回答的准确性和时效性。\n本文将从基础原理出发，系统介绍 RAG 的架构设计、核心技术、优化方法和最佳实践，帮助读者全面掌握这一重要技术。\nRAG 基础概念 什么是 RAG RAG 是一种将信息检索（Retrieval）与文本生成（Generation）相结合的技术范式。在回答用户问题时，系统首先从外部知识库中检索相关的文档片段，然后将这些片段作为上下文提供给大语言模型，引导模型基于检索到的信息生成回答。\ngraph LR A[用户问题] --\u0026gt; B[检索模块] C[知识库] --\u0026gt; B B --\u0026gt; D[相关文档] D --\u0026gt; E[大语言模型] A --\u0026gt; E E --\u0026gt; F[生成回答] RAG 的核心优势 优势 说明 知识可更新 只需更新知识库，无需重新训练模型 减少幻觉 基于事实文档生成，回答更准确可靠 成本低廉 相比微调，构建和维护成本低得多 可溯源 回答可以引用来源，便于验证 隐私保护 敏感数据只需放在知识库中，无需训练 时效性强 可以接入实时数据，提供最新信息 RAG vs 微调 维度 RAG 微调（Fine-tuning） 知识更新 简单，更新知识库即可 困难，需要重新训练 事实准确性 高，基于检索文档 中等，可能产生幻觉 实现成本 低 高 适用场景 事实性问答、知识库 风格模仿、任务适配 知识来源 外部文档 训练数据 可解释性 好，可溯源 差，黑盒 最佳实践：RAG 和微调不是互斥的，很多场景下两者结合使用效果最佳——用 RAG 提供事实知识，用微调调整回答风格和格式。\nRAG 系统架构 基础 RAG 架构 一个典型的 RAG 系统包含两个主要阶段 …","date": "2026-06-19 03:20:00",
+    "updated": "2026-06-19 03:20:00"
+  }, 
+  {
+    "objectID": "4970b45053336fabdf91601222944ed37aa9db07",
+    "permalink": "/post/algorithm/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%BB%8F%E5%85%B8%E9%97%AE%E9%A2%98/",
+    "title": "动态规划经典问题","content": "","date": "2025-12-28 23:47:22",
+    "updated": "2025-12-28 23:47:22"
+  }, 
+  {
+    "objectID": "be5b59338f78941af4aab2c6de5be0ae90c2e17b",
+    "permalink": "/post/middleware-ops/nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E4%B8%8E%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/",
+    "title": "Nginx反向代理与负载均","content": "","date": "2025-04-27 04:49:19",
+    "updated": "2025-04-27 04:49:19"
+  }, 
+  {
+    "objectID": "70f0a861557ea0553cf2270ea222b008cd125697",
+    "permalink": "/post/network/tcp%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6%E4%B8%8E%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6/",
+    "title": "TCP 流量控制与拥塞控","content": "","date": "2024-12-15 18:08:14",
+    "updated": "2024-12-15 18:08:14"
+  }, 
+  {
+    "objectID": "9da14d1d0b4c8eb55ea6241e28c6ab1cd631df42",
+    "permalink": "/post/ats/frontend/%E5%89%8D%E7%AB%AF%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/",
+    "title": "前端系统架构与功能模块分","content": "","date": "2024-11-20 18:17:30",
+    "updated": "2024-11-20 18:17:30"
+  }, 
+  {
+    "objectID": "305f1e1af737020e8c311e459af7865a044e380b",
+    "permalink": "/post/middleware-ops/redisstream%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B8%8E%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E5%AE%9E%E6%88%98/",
+    "title": "Redis Stream消息队列与发布订阅实","content": "","date": "2023-12-16 00:46:36",
+    "updated": "2023-12-16 00:46:36"
+  }, 
+  {
+    "objectID": "0773da6729202b1280905556d0db99636daedd96",
+    "permalink": "/post/design-patterns/%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/",
+    "title": "策略模式详解","content": "","date": "2023-08-26 12:18:06",
+    "updated": "2023-08-26 12:18:06"
+  }, 
+  {
+    "objectID": "507a8dabe2cbcdfcebafa95a43acbdb492e11835",
+    "permalink": "/post/ai-interview/springai%E5%A6%82%E4%BD%95%E6%8E%A5%E5%85%A5%E5%A4%9A%E7%A7%8D%E6%A8%A1%E5%9E%8B/",
+    "title": "SpringAI如何接入多种模型","content": " 多模型接入 面试场景：如何使用SpringAI同时接入OpenAI、DeepSeek和GLM等多种模型？\n配置方式 1. Maven依赖 \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;org.springframework.ai\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;spring-ai-openai-spring-boot-starter\u0026lt;/artifactId\u0026gt; \u0026lt;/dependency\u0026gt; \u0026lt;dependency\u0026gt; \u0026lt;groupId\u0026gt;org.springframework.ai\u0026lt;/groupId\u0026gt; \u0026lt;artifactId\u0026gt;spring-ai-ollama-spring-boot-starter\u0026lt;/artifactId\u0026gt; \u0026lt;/dependency\u0026gt; 2. 配置文件 spring: ai: openai: api-key: ${OPENAI_API_KEY} ollama: base-url: http://localhost:11434 3. 模型切换 @Autowired private ChatClient chatClient; @Autowired private ModelRegistry modelRegistry; public String chatWithModel(String modelName, String prompt) { Model model = modelRegistry.getModel(modelName); return chatClient.withModel(model).prompt(prompt).call().getContent(); } 总结 SpringAI通过统一的API抽象，使得接入多种AI模型变得简单高效。\n","date": "2023-08-20 14:30:00",
+    "updated": "2023-08-20 14:30:00"
+  }, 
+  {
+    "objectID": "f1c7e6e20f8944483aab644c6c70d2542c1ad678",
+    "permalink": "/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96%E4%B8%8E%E9%83%A8%E7%BD%B2/",
+    "title": "大模型推理优化与部署实践","content": " 引言 大语言模型在各项任务上展现出卓越的能力，但将它们从实验室推向生产环境却面临着严峻的工程挑战。一个千亿参数的模型，仅模型权重就需要数百 GB 的存储空间，推理时还需要额外的显存来存放激活值和 KV Cache。如何在有限的硬件资源下实现低延迟、高吞吐的推理服务，成为了大模型落地的关键瓶颈。\n大模型推理面临的核心挑战可以归结为三个方面：\n显存墙：模型参数和 KV Cache 随上下文长度线性增长，显存往往成为第一道门槛 延迟瓶颈：自回归解码的逐 token 生成特性导致延迟难以压缩，首 token 延迟（TTFT）和每 token 延迟（TPOT）直接影响用户体验 吞吐量限制：在保证延迟的前提下最大化吞吐量，是降低单次推理成本的关键 推理优化的意义不仅在于\u0026amp;quot;跑得快\u0026amp;quot;，更在于\u0026amp;quot;跑得起\u0026amp;quot;。优秀的优化方案可以让原本需要 8 卡 A100 才能运行的模型，在单卡甚至消费级 GPU 上流畅运行，从而大幅降低部署成本，让更多应用场景成为可能。\n本文将从量化压缩、KV Cache 优化、注意力机制优化、解码策略、模型压缩、推理引擎选型和部署架构等多个维度，系统梳理大模型推理优化的技术体系，并提供实践指南。\n推理优化技术全景图 大模型推理优化是一个多层次的技术体系，涉及从底层算子到上层调度系统的各个环节。下图展示了主要的技术分类：\ngraph TD A[大模型推理优化] --\u0026gt; B[模型量化] A --\u0026gt; C[KV Cache 优化] A --\u0026gt; D[注意力机制优化] A --\u0026gt; E[解码策略优化] A --\u0026gt; F[模型压缩] A --\u0026gt; G[推理引擎] B --\u0026gt; B1[PTQ 训练后量化] B --\u0026gt; B2[QAT 量化感知训练] B --\u0026gt; B3[INT8 / INT4 / GGUF] C --\u0026gt; C1[PagedAttention] C --\u0026gt; C2[KV Cache 量化] C --\u0026gt; C3[混合精度] D --\u0026gt; D1[FlashAttention] D --\u0026gt; D2[稀疏注意力] D --\u0026gt; D3[GQA / MQA] E --\u0026gt; E1[投机解码] E --\u0026gt; E2[Continuous Batching] E --\u0026gt; E3[Prefix Caching] F --\u0026gt; F1[剪枝] F --\u0026gt; F2[知识蒸馏] F --\u0026gt; …","date": "2025-09-15 10:00:00",
+    "updated": "2025-09-15 10:00:00"
+  }, 
+  {
+    "objectID": "90a345ede96de1797f551a27db91e8e7f497e691",
+    "permalink": "/post/middleware-ops/elasticsearch%E5%85%A8%E6%96%87%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/",
+    "title": "Elasticsearch全文搜索引擎","content": "","date": "2024-12-06 00:58:58",
+    "updated": "2024-12-06 00:58:58"
+  }, 
+  {
+    "objectID": "4411b43aab49b6b5fe406f778a30bae6dbeb6e38",
+    "permalink": "/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/",
+    "title": "ControlMonitor 主程序模","content": "","date": "2024-11-14 07:12:21",
+    "updated": "2024-11-14 07:12:21"
+  }, 
+  {
+    "objectID": "54b5d1d8c74c81b7a6cd7131d101c9eb0516c44c",
+    "permalink": "/post/design-patterns/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/",
+    "title": "观察者模式详解","content": "","date": "2024-08-08 07:17:47",
+    "updated": "2024-08-08 07:17:47"
+  }, 
+  {
+    "objectID": "8cb7e261172c65254f6b41c8192b8d0c1ddf46ce",
+    "permalink": "/post/ai-interview/%E5%A4%9Aagent%E7%B3%BB%E7%BB%9F%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1/",
+    "title": "多Agent系统如何设计","content": " 系统架构 面试场景：设计一个多Agent协作系统，需要考虑哪些关键问题？\n协作模式 1. 任务分配 public class TaskAllocator { private List\u0026lt;Agent\u0026gt; agents; public Agent allocateTask(Task task) { return agents.stream() .min(Comparator.comparing(a -\u0026gt; a.getWorkload() + a.getCapabilityScore(task))) .orElse(null); } } 2. 通信协议 public interface Message { String getSender(); String getReceiver(); MessageType getType(); Object getContent(); } public enum MessageType { TASK_ASSIGN, TASK_COMPLETE, STATUS_UPDATE, ERROR_REPORT } 3. 冲突解决 public class ConflictResolver { public Resolution resolve(Conflict conflict) { switch (conflict.getType()) { case RESOURCE_CONFLICT: return resolveResourceConflict(conflict); case GOAL_CONFLICT: return resolveGoalConflict(conflict); default: return Resolution.createDefault(); } } } 总结 多Agent系统设计需要考虑任务分配、通信机制和冲突解决等关键问题。\n","date": "2023-10-15 09:20:00",
+    "updated": "2023-10-15 09:20:00"
+  }, 
+  {
+    "objectID": "5d68279de357e2873bfa3e5bb2ef2f50134fb421",
+    "permalink": "/post/algorithm/%E4%BD%8D%E5%9B%BEbitmap%E8%AF%A6%E8%A7%A3/",
+    "title": "位图 BitMap 详解","content": "","date": "2022-10-17 18:51:12",
+    "updated": "2022-10-17 18:51:12"
+  }, 
+  {
+    "objectID": "1ccc2f7142b4c823f2a82c8ad6d0cfa53ba28f9d",
+    "permalink": "/post/network/%E4%BB%8E%E8%BE%93%E5%85%A5url%E5%88%B0%E9%A1%B5%E9%9D%A2%E6%B8%B2%E6%9F%93%E5%85%A8%E8%BF%87%E7%A8%8B/",
+    "title": "从输?URL 到页面渲染全过程","content": "","date": "2022-09-18 02:47:53",
+    "updated": "2022-09-18 02:47:53"
+  }, 
+  {
+    "objectID": "97f2b7694cf9eb96e38713f6e4a22347d83406e2",
+    "permalink": "/post/middleware-ops/nginxlua%E8%84%9A%E6%9C%AC%E6%89%A9%E5%B1%95%E4%B8%8Eapi%E7%BD%91%E5%85%B3%E5%AE%9E%E8%B7%B5/",
+    "title": "Nginx Lua脚本扩展与API网关实践","content": "","date": "2021-03-13 04:42:09",
+    "updated": "2021-03-13 04:42:09"
+  }, 
+  {
+    "objectID": "2abcd9e24c2021c99e7ba03685fc12fdeffdcd12",
+    "permalink": "/post/network/websocket%E4%B8%8E%E5%AE%9E%E6%97%B6%E9%80%9A%E4%BF%A1/",
+    "title": "WebSocket与实时通信","content": "","date": "2026-03-01 10:52:48",
+    "updated": "2026-03-01 10:52:48"
+  }, 
+  {
+    "objectID": "e0e6b0b06f477aabacfedc4d182da6c90a991aa5",
+    "permalink": "/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F/",
+    "title": "大模型知识蒸馏技术详解","content": " 引言 大语言模型（LLM）的能力随着参数规模的增大而显著提升，但庞大的模型也带来了高昂的部署成本：推理延迟高、显存占用大、服务费用昂贵。与之相对，小模型部署轻快、成本低，但能力往往不足。这就形成了一个核心矛盾——能力与成本难以兼得。\n知识蒸馏（Knowledge Distillation, KD）正是缓解这一矛盾的关键技术。其核心思想源于「教师-学生」（Teacher-Student）范式：让一个能力强但庞大的 Teacher 模型指导一个轻量但高效的 Student 模型学习，使 Student 在参数量大为减少的情况下，尽可能继承 Teacher 的能力。\ngraph LR T[Teacher 大模型能力强 / 成本高] --\u0026gt;|知识传递| S[Student 小模型能力近似 / 成本低] D[训练数据] --\u0026gt; T D --\u0026gt; S S --\u0026gt; R[高效部署] 与微调（Fine-tuning）不同，蒸馏的目标不是让模型适配特定任务，而是压缩模型——将大模型的知识迁移到小模型中。这使得蒸馏成为大模型落地部署的重要工具链环节。\n本文将系统梳理大模型知识蒸馏的技术体系，从 Hinton 的经典方法到面向 LLM 的序列级蒸馏与黑盒蒸馏，帮助读者全面掌握这一技术。\n知识蒸馏技术全景图 大模型蒸馏方法众多，按照信息传递的粒度和 Teacher 的可访问程度，可分为以下几大类：\ngraph TD A[大模型知识蒸馏] --\u0026gt; B[Logit 蒸馏白盒 / 输出层] A --\u0026gt; C[特征蒸馏白盒 / 中间层] A --\u0026gt; D[序列级蒸馏生成式] A --\u0026gt; E[黑盒蒸馏仅 API 访问] A --\u0026gt; F[数据蒸馏用 Teacher 生成数据] B --\u0026gt; B1[软标签对齐] B --\u0026gt; B2[MiniLLM 反向 KL] C --\u0026gt; C1[隐状态对齐] C --\u0026gt; C2[注意力对齐] D --\u0026gt; D1[Teacher 生成序列] D --\u0026gt; D2[Student 模仿学习] E --\u0026gt; E1[指令蒸馏] E --\u0026gt; E2[反馈蒸馏] F --\u0026gt; F1[合成数据 SFT] F --\u0026gt; F2[自我蒸馏] 各类方法的核心区别如下：\n方法类别 访问权限 传递信息 适用场景 Logit 蒸馏 白盒（需权重） 输出概率分布 同构模型压缩 特征蒸馏 白盒（需权重） 中间层表示 深层知识迁 …","date": "2025-10-20 10:00:00",
+    "updated": "2025-10-20 10:00:00"
+  }, 
+  {
+    "objectID": "3d6056756c3029e2f752277780d9156375f5a376",
+    "permalink": "/post/algorithm/%E7%BA%BF%E6%AE%B5%E6%A0%91segmenttree%E8%AF%A6%E8%A7%A3/",
+    "title": "线段树SegmentTree 详解","content": "","date": "2024-10-25 00:03:10",
+    "updated": "2024-10-25 00:03:10"
+  }, 
+  {
+    "objectID": "ca317511b9dbe27245713d5d971cafff2e7d7c73",
+    "permalink": "/post/ai-interview/%E5%A6%82%E4%BD%95%E5%81%9A%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E4%B8%8E%E6%95%B0%E6%8D%AE%E9%9B%86%E5%87%86%E5%A4%87/",
+    "title": "如何做模型微调与数据集准备","content": " 微调流程 面试场景：如何准备高质量的微调数据集？LoRA和QLoRA有什么区别？\n数据集准备 1. 数据格式 { \u0026#34;instruction\u0026#34;: \u0026#34;解释什么是机器学习\u0026#34;, \u0026#34;response\u0026#34;: \u0026#34;机器学习是一种人工智能技术...\u0026#34;, \u0026#34;history\u0026#34;: [] } 2. 数据清洗 import json def clean_dataset(input_path, output_path): with open(input_path, \u0026#39;r\u0026#39;, encoding=\u0026#39;utf-8\u0026#39;) as f: data = json.load(f) cleaned = [] for item in data: if len(item[\u0026#39;response\u0026#39;]) \u0026gt; 10 and len(item[\u0026#39;response\u0026#39;]) \u0026lt; 2000: cleaned.append(item) with open(output_path, \u0026#39;w\u0026#39;, encoding=\u0026#39;utf-8\u0026#39;) as f: json.dump(cleaned, f, ensure_ascii=False, indent=2) 3. LoRA微调配置 from peft import LoraConfig lora_config = LoraConfig( r=8, lora_alpha=32, target_modules=[\u0026#34;q_proj\u0026#34;, \u0026#34;v_proj\u0026#34;], lora_dropout=0.05, bias=\u0026#34;none\u0026#34;, task_type=\u0026#34;CAUSAL_LM\u0026#34; ) 总结 模型微调需要高质量的数据集和合适的参数配置，LoRA是目前最常用的高效微调方法。\n","date": "2024-07-12 18:09:09",
+    "updated": "2024-07-12 18:09:09"
+  }, 
+  {
+    "objectID": "455925c461a908b1afb7017c32b2f415e8acff47",
+    "permalink": "/post/design-patterns/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/",
+    "title": "责任链模式详解","content": "","date": "2023-11-09 22:53:20",
+    "updated": "2023-11-09 22:53:20"
+  }, 
+  {
+    "objectID": "913b3a40b8836d1ff33ba6a3b257836aa1d0aea6",
+    "permalink": "/post/ats/frontend/publicexternals%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/",
+    "title": "PublicExternals 公共外部?","content": "","date": "2023-09-23 16:53:23",
+    "updated": "2023-09-23 16:53:23"
+  }, 
+  {
+    "objectID": "eb4c759d51e8780d4266b1bc6df42a8de5fb6a93",
+    "permalink": "/post/middleware-ops/zookeeper%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F%E8%B0%83/",
+    "title": "ZooKeeper分布式协","content": "","date": "2023-01-20 02:00:43",
+    "updated": "2023-01-20 02:00:43"
+  }, 
+  {
+    "objectID": "cc335fcde032fec80433fdbe0ba3f1aeb2877f5d",
+    "permalink": "/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/skill%E8%92%B8%E9%A6%8F%E4%B8%8E%E8%83%BD%E5%8A%9B%E8%90%83%E5%8F%96/",
+    "title": "Skill 蒸馏与能力萃取技术","content": " 引言 随着大语言模型（LLM）参数规模从数十亿增长到数千亿，一个核心矛盾日益凸显：强大能力往往与庞大参数绑定，而实际部署迫切需要小而精的模型。传统的知识蒸馏（Knowledge Distillation）试图将大模型的整体知识压缩到小模型中，但这种\u0026amp;quot;全量压缩\u0026amp;quot;的思路在面对复杂能力时往往力不从心——小模型在通用能力上尚可，但在代码生成、数学推理、工具使用等高阶能力上与大模型存在显著鸿沟。\nSkill 蒸馏（Skill Distillation）或称能力萃取（Capability Extraction）提供了一种全新的思路：不再追求整体压缩，而是精准识别、提取并迁移大模型的特定能力到小模型中。例如，将 GPT-4 级别的代码生成能力蒸馏到 7B 参数的开源模型中，使其在编程任务上接近闭源大模型的水平。这种\u0026amp;quot;定向萃取\u0026amp;quot;的范式正在成为大模型落地的关键技术路径。\n本文将从能力识别、数据构造、蒸馏训练、能力评估到能力组合，系统梳理 Skill 蒸馏与能力萃取的完整技术体系，并结合实践案例和前沿方向，帮助读者全面掌握这一技术。\n概念定义与边界 什么是「Skill」 在 Skill 蒸馏的语境下，Skill 指的是模型在特定领域或任务上表现出的结构化能力。它不同于零散的知识片段，而是一套包含理解、推理、规划与执行的完整能力体系。例如，\u0026amp;ldquo;代码生成\u0026amp;quot;这一 Skill 不仅包含语法知识，还包含算法设计、调试推理、代码审查等子能力的协同。\nSkill 的分类 我们可以将大语言模型的 Skill 大致分为以下几类：\nSkill 类别 能力描述 典型示例 评估基准 推理能力 逻辑推理、多步推理、因果分析 数学证明、逻辑谜题 GSM8K, MATH 代码能力 代码生成、补全、调试、解释 Python 编程、算法实现 HumanEval, MBPP 工具使用 调用 API、搜索引擎、代码执行 Agent 任务、工具编排 ToolBench, AgentBench 多语言能力 跨语言理解与生成 翻译、跨语言问答 XNLI, FLORES 领域知识 专业领域的深度知识应用 医疗诊断、法律分析 MedQA, LegalBench 指令遵循 精确理解和执行复杂指令 格式约束、多步指令 IFEval, MT-Bench 创意写作 长文本生成、风 …","date": "2025-11-08 10:00:00",
+    "updated": "2025-11-08 10:00:00"
+  }, 
+  {
+    "objectID": "84a046986cafbc767043ba04e6ce60a788ef98a8",
+    "permalink": "/post/design-patterns/%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/",
+    "title": "模板方法模式详解","content": "","date": "2025-09-12 05:44:14",
+    "updated": "2025-09-12 05:44:14"
+  }, 
+  {
+    "objectID": "4f2d1318ed5881c180577d0383b09730debdab00",
+    "permalink": "/post/ats/frontend/cmctrlcmdprocplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/",
+    "title": "CmCtrlCmdProcPlug 控制命令处理插件","content": "","date": "2023-11-26 02:36:10",
+    "updated": "2023-11-26 02:36:10"
+  }, 
+  {
+    "objectID": "959aec3893e762748ab95d13f392dce5f0aaef1a",
+    "permalink": "/post/algorithm/%E5%93%88%E5%B8%8C%E8%A1%A8hashmap%E8%AF%A6%E8%A7%A3/",
+    "title": "哈希?HashMap 详解","content": "","date": "2023-01-26 17:10:48",
+    "updated": "2023-01-26 17:10:48"
+  }, 
+  {
+    "objectID": "69d46f9751b35caaaae9d13eb3ed37b83ad2b592",
+    "permalink": "/post/ai-interview/rag%E5%8F%AC%E5%9B%9E%E7%8E%87%E4%BD%8E%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96/",
+    "title": "RAG召回率低怎么优化","content": " 问题诊断 面试场景：RAG系统召回率低可能有哪些原因？如何优化？\n优化策略 1. 查询改写 def rewrite_query(query, history): if history: context = \u0026#39; \u0026#39;.join([h[\u0026#39;question\u0026#39;] for h in history[-3:]]) return f\u0026#34;{context}. Now answer: {query}\u0026#34; return query 2. 多路召回 def multi_retrieval(query): results = [] vector_results = vector_db.search(query, top_k=5) keyword_results = keyword_search(query, top_k=3) semantic_results = semantic_search(query, top_k=3) results.extend(vector_results) results.extend(keyword_results) results.extend(semantic_results) return deduplicate_and_rerank(results) 3. 重排序 from sentence_transformers import CrossEncoder cross_encoder = CrossEncoder(\u0026#39;cross-encoder/ms-marco-MiniLM-L-6-v2\u0026#39;) def rerank(query, documents): pairs = [[query, doc[\u0026#39;content\u0026#39;]] for doc in documents] scores = cross_encoder.predict(pairs) scored_docs = list(zip(documents, scores)) scored_docs.sort(key=lambda x: x[1], reverse=True) return [doc for doc, _ in scored_docs[:5]] 总结 RAG召回率优化需要综合运用查询改写、多路召回和重排序等技术。\n","date": "2023-01-25 16:45:00",
+    "updated": "2023-01-25 16:45:00"
+  }, 
+  {
+    "objectID": "37ac1cbc840c9d9f9e069a80cab0c43fb5ce3d95",
+    "permalink": "/post/middleware-ops/docker%E5%AE%B9%E5%99%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E8%B7%B5/",
+    "title": "Docker容器化部署实践","content": "","date": "2021-01-05 06:44:02",
+    "updated": "2021-01-05 06:44:02"
+  }, 
+  {
+    "objectID": "968d00bca99314e636f28ba6e47c09dbdcf70a03",
+    "permalink": "/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/agent%E5%BC%80%E5%8F%91%E4%B8%8E%E5%A4%9Aagent%E5%8D%8F%E4%BD%9C/",
+    "title": "Agent 开发与多 Agent 协作","content": " 引言 如果说大语言模型（LLM）是一颗强大的\u0026amp;quot;大脑\u0026amp;quot;，那么 Agent（智能体） 就是赋予这颗大脑以\u0026amp;quot;手脚\u0026amp;quot;与\u0026amp;quot;自主意志\u0026amp;quot;的完整系统。过去两年，AI 应用的形态正在经历一次深刻的范式迁移：从被动应答的 Chatbot，走向能够自主感知环境、规划任务、调用工具、反思修正的 Agent。\n一个经典的定义是：Agent 是一个具备感知（Perception）、规划（Planning）、执行（Action）、反思（Reflection）能力的自主系统。它以 LLM 作为推理核心，结合外部工具、记忆与执行环境，能够在较少人工干预的情况下完成多步骤、长跨度的复杂任务。\ngraph LR A[Chatbot 问答] --\u0026gt; B[工具增强助手] B --\u0026gt; C[单 Agent 自主执行] C --\u0026gt; D[多 Agent 协作系统] D --\u0026gt; E[Agent 组织/生态] 从 Chatbot 到 Agent 的演进，本质上是把 LLM 从一个\u0026amp;quot;无状态文本生成器\u0026amp;quot;升级为\u0026amp;quot;有状态、有目标、有行动力的决策实体\u0026amp;quot;。当任务复杂到单一 Agent 难以承载时，多个分工明确、彼此协作的 Agent 组成的系统便应运而生——这正是当前产业落地的热点方向。\n本文将从 Agent 技术全景出发，系统讲解单 Agent 架构模式、核心组件、多 Agent 协作机制、主流框架、工程实践与评估方法，帮助读者建立对 Agent 技术栈的完整认知。\nAgent 技术全景图 Agent 技术生态可以按照\u0026amp;quot;架构形态—协作方式—框架—支撑组件\u0026amp;quot;四个维度来分类。\ngraph TD A[LLM Agent 技术栈] --\u0026gt; B[单 Agent 架构] A --\u0026gt; C[多 Agent 协作] A --\u0026gt; D[Agent 框架] A --\u0026gt; E[工具与记忆] B --\u0026gt; B1[ReAct] B --\u0026gt; B2[Plan-and-Execute] B --\u0026gt; B3[Reflection / Self-Refine] B --\u0026gt; B4[Tree of Thoughts] C --\u0026gt; C1[串行流水线] C --\u0026gt; C2[并行协作] C --\u0026gt; C3[层级管理] C --\u0026gt; C4[辩论模式] D --\u0026gt; …","date": "2025-12-01 10:00:00",
+    "updated": "2025-12-01 10:00:00"
+  }, 
+  {
+    "objectID": "22737e46fa117e56aabe830704592743f06a88f7",
+    "permalink": "/post/ai-interview/chrome%E6%8F%92%E4%BB%B6%E5%A6%82%E4%BD%95%E5%AE%89%E5%85%A8%E8%B0%83%E7%94%A8ai/",
+    "title": "Chrome插件如何安全调用AI","content": " 安全挑战 面试场景：Chrome插件中存储和使用AI API Key存在哪些安全风险？如何防范？\n安全策略 1. API Key保护 chrome.storage.local.get([\u0026#39;apiKey\u0026#39;], function(result) { if (result.apiKey) { chrome.runtime.sendMessage({ type: \u0026#39;CALL_AI\u0026#39;, apiKey: result.apiKey, prompt: userInput }); } }); 2. 后台脚本隔离 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) { if (request.type === \u0026#39;CALL_AI\u0026#39;) { fetch(\u0026#39;https://api.example.com/ai\u0026#39;, { method: \u0026#39;POST\u0026#39;, headers: { \u0026#39;Authorization\u0026#39;: \u0026#39;Bearer \u0026#39; + request.apiKey, \u0026#39;Content-Type\u0026#39;: \u0026#39;application/json\u0026#39; }, body: JSON.stringify({ prompt: request.prompt }) }).then(response =\u0026gt; response.json()) .then(data =\u0026gt; sendResponse(data)) .catch(error =\u0026gt; sendResponse({ error: error.message })); return true; } }); 3. 权限最小化 { \u0026#34;permissions\u0026#34;: [ \u0026#34;storage\u0026#34;, \u0026#34;activeTab\u0026#34;, \u0026#34;https://api.example.com/*\u0026#34; ] } 总结 Chrome插件调用AI时需要注意API Key的安全存储、后台脚本隔离和权限最小化。\n","date": "2025-02-03 11:35:15",
+    "updated": "2025-02-03 11:35:15"
+  }, 
+  {
+    "objectID": "6b1fb83ef112b07bd24fe765804b42f9e28e7829",
+    "permalink": "/post/middleware-ops/jvm%E8%B0%83%E4%BC%98%E4%B8%8Egc%E7%AD%96%E7%95%A5/",
+    "title": "JVM调优与GC策略","content": "","date": "2024-09-28 03:43:06",
+    "updated": "2024-09-28 03:43:06"
+  }, 
+  {
+    "objectID": "037c9b01b7aebfcb2e3eaedbeb034147311ec7f8",
+    "permalink": "/post/ats/frontend/cmdatamaintainplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/",
+    "title": "CmDataMaintainPlug 数据维护插件","content": "","date": "2023-04-18 09:32:58",
+    "updated": "2023-04-18 09:32:58"
+  }, 
+  {
+    "objectID": "1a2458f28a1829d2c2a7288e9a6b871f4c6ee6c6",
+    "permalink": "/post/design-patterns/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/",
+    "title": "装饰器模式详解","content": "","date": "2021-05-19 18:13:55",
+    "updated": "2021-05-19 18:13:55"
+  }, 
+  {
+    "objectID": "5b78f35dc40e88fc007e3ed457b383a97fb3650e",
+    "permalink": "/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%85%A8%E6%B5%81%E7%A8%8B/",
+    "title": "大模型训练全流程详解","content": " 引言 大语言模型（LLM）的训练并非一蹴而就，而是一个多阶段、多目标的复杂工程。从原始的互联网文本到最终能够安全、有用、诚实地回答用户问题的对话助手，模型需要经历一条精心设计的训练链路。\n典型的现代大模型训练流程可以分为三个核心阶段：\n预训练（Pre-training）：在海量无标注文本上学习语言的通用规律和世界知识 监督微调（SFT, Supervised Fine-Tuning）：在高质量指令-响应对上学习跟随指令的能力 对齐（Alignment）：通过 RLHF 或 DPO 等方法，使模型的输出符合人类偏好与价值观 graph LR A[海量原始文本] --\u0026gt;|预训练| B[基座模型Base Model] B --\u0026gt;|SFT| C[指令模型Instruct Model] C --\u0026gt;|RLHF / DPO| D[对齐模型Aligned Model] D --\u0026gt; E[安全部署] 为什么需要多阶段训练 有人可能会问：为什么不直接在预训练阶段就让模型学会所有能力？多阶段训练的必要性在于：\n目标冲突：预训练的目标是「预测下一个词」，而用户需要的是「给出有帮助的回答」，两者的优化方向并不完全一致 数据差异：预训练数据是海量但低质量的无标注文本，SFT 和对齐阶段需要少量但高质量的标注数据 效率考量：分阶段训练可以让每个阶段专注于一个子目标，避免在冲突目标之间反复拉扯 安全可控：对齐阶段为模型注入了安全约束，防止模型输出有害内容 本文将系统拆解大模型训练的每个阶段，从理论原理到代码实践，帮助读者建立完整的训练链路认知。\n训练全流程全景图 graph TD A[数据采集与清洗] --\u0026gt; B[预训练Pre-training] B --\u0026gt; C[基座模型Base Model] C --\u0026gt; D[指令数据构造] D --\u0026gt; E[监督微调SFT] E --\u0026gt; F[指令模型Instruct Model] F --\u0026gt; G{对齐策略选择} G --\u0026gt;|RLHF| H[奖励模型训练] H --\u0026gt; I[PPO 强化学习] G --\u0026gt;|DPO| J[直接偏好优化] I --\u0026gt; K[对齐模型] J --\u0026gt; K K --\u0026gt; L[评估与安全测试] L --\u0026gt; M[部署上线] style B fill:#e1f5fe style E fill:#fff3e0 style I fill:#f3e5f5 …","date": "2026-01-15 10:00:00",
+    "updated": "2026-01-15 10:00:00"
+  }, 
+  {
+    "objectID": "b6e187ff2d6b09ec84768d0d646d12dd567582ed",
+    "permalink": "/post/ats/frontend/cmoperareamanageplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/",
+    "title": "CmOperAreaManagePlug 操作区域管理插件","content": "","date": "2024-04-30 15:33:15",
+    "updated": "2024-04-30 15:33:15"
+  }, 
+  {
+    "objectID": "ba857314cfccfc65f3b1df2bf3a718f3902229ff",
+    "permalink": "/post/ai-interview/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%A6%82%E4%BD%95%E5%81%9A%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/",
+    "title": "大模型如何做本地化部署","content": " 部署方案 面试场景：如何将大语言模型部署到本地环境？需要考虑哪些因素？\n技术选型 1. 模型量化 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig bnb_config = BitsAndBytesConfig( load_in_4bit=True, bnb_4bit_use_double_quant=True, bnb_4bit_quant_type=\u0026#34;nf4\u0026#34;, bnb_4bit_compute_dtype=torch.bfloat16 ) model = AutoModelForCausalLM.from_pretrained( \u0026#34;model-name\u0026#34;, quantization_config=bnb_config ) 2. 推理框架 from vllm import LLM, SamplingParams llm = LLM(model=\u0026#34;model-name\u0026#34;, tensor_parallel_size=2) sampling_params = SamplingParams(max_tokens=1024) outputs = llm.generate([\u0026#34;Hello, how are you?\u0026#34;], sampling_params) 3. 服务封装 from fastapi import FastAPI from pydantic import BaseModel app = FastAPI() class InferenceRequest(BaseModel): prompt: str max_tokens: int = 1024 @app.post(\u0026#34;/generate\u0026#34;) async def generate(request: InferenceRequest): outputs = llm.generate([request.prompt], sampling_params) return {\u0026#34;response\u0026#34;: outputs[0].outputs[0].text} 总结 大模型本地化部署需要考虑模型量化、推理框架选择和服务封装等关键环节。\n","date": "2024-03-15 11:00:00",
+    "updated": "2024-03-15 11:00:00"
+  }, 
+  {
+    "objectID": "88f5a5b433ac17756b65272ac25b08562d0c1dfa",
+    "permalink": "/post/design-patterns/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/",
+    "title": "适配器模式详解","content": "","date": "2022-03-04 20:00:25",
+    "updated": "2022-03-04 20:00:25"
+  }, 
+  {
+    "objectID": "d76fe1f3bf4b7c22c58370aa5ac028a65027b3c4",
+    "permalink": "/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/",
+    "title": "大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比","content": " 引言 2025 年以来，大语言模型领域呈现出前所未有的百花齐放态势。OpenAI 的 GPT 系列持续领跑闭源阵营，Meta 的 Llama、阿里巴巴的 Qwen、深度求索的 DeepSeek 以及智谱 AI 的 GLM 则在开源与商用之间开辟了各自的差异化路线。对于开发者和企业而言，面对如此众多的选择，模型选型已经成为一项关键的技术决策——它直接影响产品的能力上限、运营成本、数据合规和技术自主性。\n选型的核心矛盾在于闭源与开源的权衡。闭源模型（如 GPT 系列）通常能力最强、生态最成熟，但存在数据隐私风险、API 依赖和长期成本不可控等问题；开源模型（如 Llama、Qwen）则提供了数据主权和部署灵活性，但在顶尖能力上可能存在差距。DeepSeek 和 GLM 则介于两者之间，以开源权重配合极低 API 价格的方式提供了独特的性价比路线。\n本文将从选型维度框架出发，逐一深入解析 GPT、Qwen、Llama、DeepSeek、GLM 五大模型系列的技术特点，通过横向对比和决策树，为读者提供一份系统、可操作的选型指南。\n选型维度框架 五大评估维度 大模型选型不是简单的\u0026amp;quot;谁强选谁\u0026amp;quot;，而是一个多维度的综合决策过程。我们将选型维度归纳为五个核心方面：\ngraph TD A[大模型选型决策] --\u0026gt; B[能力维度] A --\u0026gt; C[成本维度] A --\u0026gt; D[部署维度] A --\u0026gt; E[生态维度] A --\u0026gt; F[合规维度] B --\u0026gt; B1[推理能力] B --\u0026gt; B2[代码能力] B --\u0026gt; B3[多语言能力] B --\u0026gt; B4[多模态能力] B --\u0026gt; B5[工具调用] C --\u0026gt; C1[API 调用价格] C --\u0026gt; C2[部署硬件成本] C --\u0026gt; C3[微调成本] D --\u0026gt; D1[闭源 API / 开源权重] D --\u0026gt; D2[本地部署 / 云端调用] D --\u0026gt; D3[上下文长度需求] E --\u0026gt; E1[社区活跃度] E --\u0026gt; E2[微调生态] E --\u0026gt; E3[推理框架支持] E --\u0026gt; E4[工具链成熟度] F --\u0026gt; F1[数据隐私] F --\u0026gt; F2[许可证限制] F --\u0026gt; F3[数据出境合规] 各维度详细说明 维度 关键考量点 适用场景 能力 推理深度、代码生成质量、中英文表现、多模态支持、工具调用稳定性 对输出质量要求 …","date": "2026-02-10 10:00:00",
+    "updated": "2026-02-10 10:00:00"
+  }, 
+  {
+    "objectID": "850b6e0632ae9ea77d4b5f3451a4133eb65a9b88",
+    "permalink": "/post/design-patterns/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/",
+    "title": "代理模式详解","content": "","date": "2024-10-05 17:06:26",
+    "updated": "2024-10-05 17:06:26"
+  }, 
+  {
+    "objectID": "32caa4cd334eac42b20cacfce013becb465b0c0c",
+    "permalink": "/post/ats/frontend/cmsignaldisplayplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/",
+    "title": "CmSignalDisplayPlug 信号显示插件","content": "","date": "2022-01-04 02:07:59",
+    "updated": "2022-01-04 02:07:59"
+  }, 
+  {
+    "objectID": "eaf14f39f7915ec6f509a6ec24d2db09f915da20",
+    "permalink": "/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AA%97%E5%8F%A3%E4%B8%8E%E5%B9%BB%E8%A7%89%E7%BC%93%E8%A7%A3/",
+    "title": "上下文窗口、Token 计算与 Hallucination 缓解","content": " 引言 大语言模型（LLM）的能力边界，在很大程度上由三个基础但至关重要的因素共同决定：上下文窗口决定了模型一次能\u0026amp;quot;看到\u0026amp;quot;多少信息，Token 是模型处理文本的最小单位且直接关系到推理成本，而**幻觉（Hallucination）**则是模型\u0026amp;quot;一本正经地胡说八道\u0026amp;quot;的顽疾，是 LLM 落地应用的核心障碍。\n这三者并非孤立存在。上下文窗口的扩大让模型能够处理更长的输入，但也带来了注意力稀释与\u0026amp;quot;中间遗忘\u0026amp;quot;问题，反而可能加剧幻觉；Token 计算的效率影响着长上下文的可行性，低效的 Token 化会白白消耗宝贵的上下文空间；而对幻觉的系统性缓解，又往往需要依赖更大的上下文窗口来承载外部知识。\n本文将从上下文窗口的机制出发，深入解析 Token 与 Tokenization 的原理，系统性地探讨幻觉问题的成因、检测与缓解策略，并给出构建低幻觉应用的工程实践。\n上下文窗口（Context Window） 什么是上下文窗口 上下文窗口（Context Window）是指大语言模型在单次推理过程中能够处理的最大 Token 序列长度，包括输入（Prompt）和输出（Generation）两部分。它本质上是模型注意力机制能够\u0026amp;quot;同时关注\u0026amp;quot;的信息容量上限。\n用形式化的语言描述，若模型的上下文窗口为 $N$，则对于输入序列 $\\mathbf{x} = (x_1, x_2, \\dots, x_n)$ 和生成的输出序列 $\\mathbf{y} = (y_1, y_2, \\dots, y_m)$，必须满足：\n$$ n + m \\leq N $$上下文窗口的意义体现在以下几个方面：\n信息承载力：决定了模型能一次性处理的文档长度、对话轮数和任务复杂度 推理能力：更长的上下文允许更多的推理步骤（如 CoT 链），有助于复杂任务 应用边界：直接决定了 RAG 能检索多少文档、Agent 能保留多少历史记忆 成本约束：上下文越长，计算成本越高，对 KV Cache 的压力越大 主流模型上下文窗口对比 模型 上下文窗口 发布方 注意力机制 备注 GPT-4o 128K OpenAI 稀疏注意力 输出上限 16K Claude 3.5 Sonnet 200K Anthropic 滑动窗口 + 全局 长文本召回优秀 Qwen2.5 …","date": "2026-03-05 10:00:00",
+    "updated": "2026-03-05 10:00:00"
+  }, 
+  {
+    "objectID": "109f13b40741c3dadb61c68f54c44b35f5fd949e",
+    "permalink": "/post/ats/frontend/cmsignalprocplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/",
+    "title": "CmSignalProcPlug 信号处理插件","content": "","date": "2022-05-02 13:06:02",
+    "updated": "2022-05-02 13:06:02"
+  }, 
+  {
+    "objectID": "2bbc1afa06b0c3c22559364a09ea01fb76269555",
+    "permalink": "/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E6%80%9D%E7%BB%B4%E9%93%BE%E4%B8%8E%E6%8E%A8%E7%90%86%E5%A2%9E%E5%BC%BA/",
+    "title": "思维链、ReAct 与 Self-Consistency","content": " 引言 大语言模型（LLM）在自然语言理解与生成上已经展现出惊人的能力，但在面对多步数学推理、逻辑演绎、复杂规划这类需要\u0026amp;quot;深度思考\u0026amp;quot;的任务时，直接让模型给出答案往往会得到令人失望的结果。一个典型的现象是：同一个模型，当你要求它\u0026amp;quot;直接回答\u0026amp;quot;时频频出错，而当你让它\u0026amp;quot;一步一步想\u0026amp;quot;时却能力大增。\n这正是**推理增强（Reasoning Enhancement）**技术要解决的核心问题——如何激发、引导并约束大模型的推理过程，使其在复杂任务上逼近甚至超越人类的解题能力。\ngraph LR A[直接回答 Direct Prompting] --\u0026gt;|准确率低| B[思维链 CoT] B --\u0026gt;|多条路径投票| C[Self-Consistency] B --\u0026gt;|结合工具| D[ReAct] B --\u0026gt;|树形搜索| E[Tree-of-Thoughts] D --\u0026gt;|深度融合| F[推理+工具一体化] E --\u0026gt;|图结构| G[Graph-of-Thoughts] 推理增强技术的演进脉络清晰可见：从最朴素的\u0026amp;quot;展示推理过程\u0026amp;quot;，到\u0026amp;quot;采样多条路径择优\u0026amp;quot;，再到\u0026amp;quot;推理与行动交织\u0026amp;quot;，直至\u0026amp;quot;在思维空间上做搜索\u0026amp;quot;。这些方法共同构成了当前 LLM 推理能力的基石，也是 Agent、RAG、自动化决策等上层应用的底层支撑。\n本文将从思维链（CoT）出发，系统讲解 ReAct、Self-Consistency 三大核心方法，并延伸到 Tree-of-Thoughts、Graph-of-Thoughts 等进阶范式，最后给出实践选型指南。\n推理增强技术全景图 在深入每个方法之前，先用一张分类图建立全局认知。推理增强技术可以按\u0026amp;quot;推理结构\u0026amp;quot;和\u0026amp;quot;信息来源\u0026amp;quot;两个维度来组织。\ngraph TD A[LLM 推理增强技术] --\u0026gt; B[线性推理] A --\u0026gt; C[多路采样] A --\u0026gt; D[推理+行动] A --\u0026gt; E[搜索式推理] B --\u0026gt; B1[Zero-shot CoT] B --\u0026gt; B2[Few-shot CoT] B --\u0026gt; B3[Plan-and-Solve] C --\u0026gt; C1[Self-Consistency] C --\u0026gt; …","date": "2026-03-20 10:00:00",
+    "updated": "2026-03-20 10:00:00"
+  }, 
+  {
+    "objectID": "ca8fbbb7f4a611b5b2abe5a821d3139d2f9eb06d",
+    "permalink": "/post/ats/frontend/cmtraindispatchplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/",
+    "title": "CmTrainDispatchPlug 列车调度插件","content": "","date": "2024-05-12 16:37:12",
+    "updated": "2024-05-12 16:37:12"
+  }, 
+  {
+    "objectID": "21c24d31fa5840d46c3efe4b780d257489c74b51",
+    "permalink": "/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E5%A4%9A%E8%A7%92%E8%89%B2agent%E4%B8%8E%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/",
+    "title": "多角色 Agent、工具调用与状态管理","content": " 引言 当单 Agent 系统在面对真实世界的复杂任务时，往往会暴露出三类核心缺陷：角色混淆（一个 Agent 既要规划又要执行，System Prompt 互相冲突）、上下文膨胀（所有工具描述、历史对话堆在同一上下文窗口中，Token 消耗急剧上升）、能力边界模糊（什么都做一点，什么都做不精）。\n多角色 Agent 系统的核心价值正在于此——职责分离、专业化、可组合。将一个庞大而混乱的 Agent 拆解为若干职责清晰、能力聚焦的子角色，通过结构化的通信协议与状态管理机制将它们编排成一个协作整体，这是当前 Agent 工程落地的关键路径。\ngraph LR A[\u0026#34;单 Agent角色混淆 / 上下文膨胀\u0026#34;] --\u0026gt; B[\u0026#34;多角色 Agent职责分离 / 专业分工\u0026#34;] B --\u0026gt; C[\u0026#34;工具编排函数调用 / 动态选择\u0026#34;] B --\u0026gt; D[\u0026#34;状态管理状态机 / 共享黑板 / 持久化\u0026#34;] C --\u0026gt; E[\u0026#34;可靠的多角色系统\u0026#34;] D --\u0026gt; E 本文将从三个维度系统展开：多角色设计（如何定义与组织角色）、工具调用（如何让角色与外部世界交互）、状态管理（如何在多角色协作中维持一致的全局状态），并以一个完整的多角色研究助手系统作为综合实践。\n多角色 Agent 设计 角色设计原则 将软件工程中的 单一职责原则（SRP） 引入 Agent 设计：每个角色应当只有一个变更的原因——一个理由去被修改、一个维度的能力去被优化。当一个角色的 System Prompt 超过 500 Token 且包含\u0026amp;quot;同时\u0026amp;quot;这类连接词时，通常是拆分的信号。\n一个完整的角色定义应包含四个要素：\n要素 含义 示例 身份（Identity） 角色是谁、擅长什么 \u0026amp;ldquo;你是一个资深数据分析师\u0026amp;rdquo; 能力（Capability） 角色能调用哪些工具、掌握哪些知识 可调用 sql_query、plot_chart 约束（Constraint） 角色的行为边界与规则 \u0026amp;ldquo;不直接修改数据库，仅生成查询\u0026amp;rdquo; 目标（Goal） 角色在当前任务中的产出目标 \u0026amp;ldquo;产出一份包含图表的数据分析报告\u0026amp;rdquo; from dataclasses import dataclass, field from typing import Any @dataclass …","date": "2026-04-10 10:00:00",
+    "updated": "2026-04-10 10:00:00"
+  }, 
+  {
+    "objectID": "8cb1a393585169e9209aa3127fd4999e3efd00f3",
+    "permalink": "/post/ats/frontend/cmtrainnumprocplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/",
+    "title": "CmTrainNumProcPlug 列车号处理插件","content": "","date": "2023-01-10 11:53:43",
+    "updated": "2023-01-10 11:53:43"
+  }, 
+  {
+    "objectID": "5a4e5b1936e499de9074fc90b614fd55dd3d1d9d",
+    "permalink": "/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E6%9C%AC%E5%9C%B0agent%E8%90%BD%E5%9C%B0%E5%AE%9E%E8%B7%B5/",
+    "title": "本地 Agent 落地实践","content": " 引言 当 Agent 从云端 Demo 走向真实生产环境，\u0026amp;ldquo;本地化\u0026amp;quot;成为一道绕不开的门槛。无论是企业内网中处理机密数据的研究助手，还是部署在边缘设备上的离线助手，本地 Agent 都指向同一组核心诉求：数据不出域、断网可用、成本可控、行为可定制。\n云端 Agent 的痛点显而易见：每次推理都要上传上下文，带来延迟与数据泄露隐患；API 按 token 计费，长任务成本难预估；Agent 的角色定义、工具集、记忆策略往往硬编码在代码里，调整一行 prompt 就要重新发版。本地 Agent 把模型、配置、存储全部收归本地，用一份配置文件就能重塑 Agent 行为，用一张 SQLite 表就能沉淀全部记忆。一个可用的本地 Agent 系统至少要回答三个问题：\n配置化：能否用一份 YAML 文件定义 Agent 的角色、工具与记忆策略，而无需改代码？ 持久化：对话历史、长期记忆、运行状态能否可靠落到本地存储，重启后无缝恢复？ 可观测：运行过程能否留下结构化日志与检查点，便于调试与回放？ 本文围绕\u0026amp;quot;配置驱动\u0026amp;quot;与\u0026amp;quot;本地存储\u0026amp;quot;两条主线，完整搭建一个可本地运行的 Agent 系统：从 YAML 配置 Schema 与 Pydantic 校验，到 SQLite / 文件系统 / 向量数据库三类存储方案，再到 Ollama 本地模型集成、执行循环、检查点机制，最后给出约 200 行可运行的完整实践，以及 Docker 部署、systemd 服务、日志监控与备份恢复的运维闭环。\ngraph LR A[云端 Agent] --\u0026gt;|数据隐私| B[本地 Agent] A --\u0026gt;|成本控制| B A --\u0026gt;|定制化| B B --\u0026gt; C[配置驱动] B --\u0026gt; D[本地存储] B --\u0026gt; E[可观测运行时] 配置驱动的 Agent 设计 为什么用 Markdown/YAML 配置 传统 Agent 开发常把系统提示词、工具列表、模型参数写死在 Python 代码中。进入运营阶段后弊端立现：改一句 prompt 要走代码评审、发版、重启全套流程；非技术人员无法参与调优；多环境配置差异难管理。把配置从代码中剥离，用 YAML 承载，能带来直接收益：\n维度 硬编码方式 配置文件方式 可编辑性 需改代码、走评审 改文件即可，非技术人员可 …","date": "2026-05-05 10:00:00",
+    "updated": "2026-05-05 10:00:00"
+  }, 
+  {
+    "objectID": "5adcb52db6f35030110d4d4817e21c0fc1e5c732",
+    "permalink": "/post/ats/frontend/usermanagerplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/",
+    "title": "UserManagerPlug 用户管理插件","content": "","date": "2021-04-23 20:56:14",
+    "updated": "2021-04-23 20:56:14"
+  }, 
+  {
+    "objectID": "2519893fbcbd6c948312c3c801c9d97a86aa25cc",
+    "permalink": "/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E9%80%9F%E7%8E%87%E9%99%90%E5%88%B6%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%8E%A7%E5%88%B6/",
+    "title": "速率限制、429 错误与并发控制","content": " 引言 当你的 Agent 系统从\u0026amp;quot;单次调用 Demo\u0026amp;quot;走向\u0026amp;quot;高并发生产服务\u0026amp;quot;时，最先撞上的墙往往不是模型能力，而是 HTTP 429 Too Many Requests。这个状态码的含义简单粗暴：你在短时间内发送了太多请求，被服务端拒绝了。\nLLM API 的速率限制与传统的 Web API 限流有本质区别。传统 API 通常只限制请求频率（RPM, Requests Per Minute），而 LLM API 还要限制Token 吞吐量（TPM, Tokens Per Minute），因为一次包含 8000 Token 上下文的请求与一次 100 Token 的请求，对服务端的计算成本天差地别。\ngraph LR A[客户端请求] --\u0026gt; B{速率限制检查} B --\u0026gt;|RPM 超限| C[429: 请求频率超限] B --\u0026gt;|TPM 超限| D[429: Token 吞吐超限] B --\u0026gt;|通过| E[正常处理] C --\u0026gt; F[等待重试] D --\u0026gt; F F --\u0026gt; A 本文将从三个层面系统展开：速率限制的原理与策略（理解限流机制）、429 错误的鲁棒处理（重试与降级）、并发控制与调度（在限制内最大化吞吐），最后给出完整的工程实践。\n速率限制的原理 为什么需要速率限制 速率限制对服务端和客户端都有保护作用：\n视角 服务端原因 客户端原因 资源保护 GPU 算力有限，过载会导致所有请求变慢 避免意外消耗大量 API 费用 公平性 防止单一用户独占资源 确保多租户共享配额 稳定性 防止突发流量压垮基础设施 防止级联故障扩散 成本控制 按层级分配计算资源 控制月度 API 支出 主流 LLM API 的限流策略 不同提供商的限流维度和规则差异显著：\ngraph TD A[LLM API 速率限制] --\u0026gt; B[请求频率 RPM] A --\u0026gt; C[Token 吞吐 TPM] A --\u0026gt; D[并发请求数] A --\u0026gt; E[日/月配额] B --\u0026gt; B1[OpenAI: 按Tier分层] B --\u0026gt; B2[Anthropic: 按订阅级别] C --\u0026gt; C1[输入Token + 输出Token] C --\u0026gt; C2[部分平台仅计输入Token] D --\u0026gt; D1[限制同时在途的请求数] E --\u0026gt; E1[月度消费上限] 以 …","date": "2026-05-20 10:00:00",
+    "updated": "2026-05-20 10:00:00"
+  }, 
+  {
+    "objectID": "6a8fcc90dceaa2db908012e75b3a7bcf346ff075",
+    "permalink": "/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/springai%E5%AE%8C%E6%95%B4%E9%9B%86%E6%88%90/",
+    "title": "Spring Boot + SpringAI 完整集成","content": " 引言 当 Java 开发者面对大模型应用开发时，往往会遇到一个尴尬的局面：几乎所有前沿的 AI SDK、示例和教程都围绕 Python 生态（LangChain、LlamaIndex、OpenAI SDK），而企业级生产系统却大量运行在 Spring Boot 上。开发者不得不在 Python 微服务和 Java 主业务系统之间架设一层胶水代码，徒增运维复杂度。\nSpring AI 的出现正是为了弥合这一鸿沟。它将 Spring 生态成熟的工程实践（依赖注入、自动配置、Starter 机制、可观测性）带入 AI 应用开发，让 Java 开发者能用熟悉的方式集成各类大模型、向量数据库和 RAG 流程。\ngraph LR A[Spring Boot 应用] --\u0026gt; B[Spring AI] B --\u0026gt; C[ChatClient] B --\u0026gt; D[EmbeddingModel] B --\u0026gt; E[VectorStore] B --\u0026gt; F[Function Calling] C --\u0026gt; G[OpenAI / Ollama / Azure] D --\u0026gt; G E --\u0026gt; H[PgVector / Redis / Chroma] F --\u0026gt; I[本地工具函数] 本文将从零开始，完整实践 SpringAI 的集成路径：项目搭建 → ChatClient 基础调用 → 流式响应 → Embedding 与向量存储 → Function Calling → RAG 检索增强，最终组装出一个生产可用的 Controller 服务。\nSpringAI 框架概述 设计理念 SpringAI 的核心设计理念是可移植性（Portability）与抽象统一（Abstraction）。正如 Spring Data 统一了不同数据库的访问方式，SpringAI 统一了不同 AI 模型提供商的调用接口：\n抽象接口 作用 对应概念 ChatModel 文本对话生成 OpenAI Chat / Anthropic Messages ChatClient 流畅的对话客户端 类似 RestTemplate 的 Fluent API EmbeddingModel 文本向量化 text-embedding / bge-embedding VectorStore 向量存储与检索 Pinecone / PgVector …","date": "2026-06-01 10:00:00",
+    "updated": "2026-06-01 10:00:00"
+  }, 
+  {
+    "objectID": "a4d1b28e24062698a4d12c614560386cc97989c6",
+    "permalink": "/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/api%E8%AE%BE%E8%AE%A1%E4%B8%8E%E9%99%90%E6%B5%81%E7%86%94%E6%96%AD/",
+    "title": "API 设计与限流熔断","content": " 引言 一个能跑通 Demo 的 AI 服务，和一个能在生产环境中稳定运行的 AI 服务之间，隔着 API 设计、流量控制、容错降级三道关卡。大模型服务与传统 Web 服务有本质差异：单次请求耗时动辄数秒到数十秒、成本与 Token 消耗直接挂钩、上游模型服务自身的稳定性不可控。这些特性使得限流、熔断、重试不再是可选项，而是 AI 服务后端的\u0026amp;quot;生命支持系统\u0026amp;quot;。\ngraph TD A[AI 服务后端核心挑战] --\u0026gt; B[高延迟: 5-30s/请求] A --\u0026gt; C[高成本: 按 Token 计费] A --\u0026gt; D[上游不稳定: 模型服务过载] A --\u0026gt; E[流量突发: 用户集中使用] B --\u0026gt; F[超时控制 + 流式响应] C --\u0026gt; G[配额管理 + 成本限流] D --\u0026gt; H[熔断降级 + 重试] E --\u0026gt; I[限流排队 + 优雅拒绝] 本文将围绕\u0026amp;quot;如何构建一个健壮的 AI 服务后端\u0026amp;quot;展开，从 API 设计规范出发，深入限流算法、熔断模式、重试策略的原理与 Spring Boot 实现。\nAI API 设计规范 与传统 RESTful API 的差异 AI API 在几个关键维度上与传统 CRUD API 不同，这些差异直接影响设计决策：\n维度 传统 API AI API 响应时间 \u0026amp;lt; 500ms 2-30s 响应方式 一次性 JSON 流式 Token 输出 成本模型 按请求次数 按 Token 数量 幂等性 易保证 难（模型输出不确定） 错误特征 业务逻辑错误 速率限制、上下文超限、内容审核 URL 设计 graph LR A[\u0026#34;/api/v1/chat/completions\u0026#34;] --\u0026gt; B[POST 同步对话] C[\u0026#34;/api/v1/chat/stream\u0026#34;] --\u0026gt; D[GET 流式对话] E[\u0026#34;/api/v1/embeddings\u0026#34;] --\u0026gt; F[POST 向量化] G[\u0026#34;/api/v1/rag/search\u0026#34;] --\u0026gt; H[POST 知识检索] 核心设计原则：\n版本化：URL 中包含版本号 /api/v1/，便于不兼容变更时平滑迁移 动作语义：对话用 POST /chat/completions，流式用 GET /chat/stream（SSE 约定 GET） 资源导向 …","date": "2026-06-05 10:00:00",
+    "updated": "2026-06-05 10:00:00"
+  }, 
+  {
+    "objectID": "9c317f4e2b2820101afc5477e0ea95a9615572cd",
+    "permalink": "/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86%E4%B8%8E%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/",
+    "title": "异步处理与消息队列","content": " 引言 大模型应用中，\u0026amp;ldquo;慢\u0026amp;quot;是常态。一次文本生成可能耗时 5-30 秒，一次文档摘要可能需要 1 分钟，一次批量向量化可能持续数分钟。如果所有这些操作都在 HTTP 请求线程中同步执行，服务器线程池将在几秒内被耗尽，系统陷入瘫痪。\n这就是 AI 应用必须引入异步处理的根本原因：将耗时的 AI 操作从请求线程中剥离，放到后台异步执行，通过消息队列或事件机制协调结果。\ngraph TD A[同步模型的问题] --\u0026gt; B[线程池耗尽] A --\u0026gt; C[请求超时] A --\u0026gt; D[无法横向扩展] A --\u0026gt; E[任务无法重试] F[异步解决方案] --\u0026gt; G[后台线程池执行] F --\u0026gt; H[消息队列解耦] F --\u0026gt; I[任务状态追踪] F --\u0026gt; J[失败自动重试] 本文将从 Spring 的基础异步机制出发，逐步深入消息队列集成、事件驱动架构和长任务处理，构建完整的 AI 应用异步处理方案。\n为什么 AI 应用需要异步处理 同步 vs 异步：场景对比 考虑一个典型场景：用户上传一份 50 页的 PDF，要求生成摘要。\n方案 流程 问题 同步 用户等待 → 服务器处理 60s → 返回 连接超时、用户体验差、线程占用 异步 立即返回任务 ID → 后台处理 → 用户轮询/SSE 通知 体验好、可扩展、可重试 sequenceDiagram participant U as 用户 participant API as API 服务 participant Q as 消息队列 participant W as Worker Note over U,W: 异步流程 U-\u0026gt;\u0026gt;API: 上传 PDF API-\u0026gt;\u0026gt;Q: 发送摘要任务 API--\u0026gt;\u0026gt;U: 返回 taskId（立即响应） Q-\u0026gt;\u0026gt;W: 消费任务 W-\u0026gt;\u0026gt;W: 调用 LLM 生成摘要（60s） W-\u0026gt;\u0026gt;API: 回调通知完成 U-\u0026gt;\u0026gt;API: 查询结果（轮询/SSE） API--\u0026gt;\u0026gt;U: 返回摘要 异步处理的核心价值 快速响应：用户无需等待，立即获得任务追踪句柄 资源隔离：AI 计算与 Web 请求使用不同线程池，互不影响 削峰填谷：消息队列缓存突发任务，Worker 按固定速率消费 可靠重试：任务持久化在队列中，失败可自动重试 可扩展：Worker 可独立扩缩容，按需增加处理节点 Spring 异 …","date": "2026-06-10 10:00:00",
+    "updated": "2026-06-10 10:00:00"
+  }, 
+  {
+    "objectID": "15085f889997218c33c125ad31fe516965ac43d3",
+    "permalink": "/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E4%B8%8E%E5%AF%86%E9%92%A5%E5%AE%89%E5%85%A8/",
+    "title": "配置管理与密钥安全","content": " 引言 在 AI 应用的所有工程实践中，配置管理与密钥安全往往是\u0026amp;quot;最容易被忽视、却最容易引发灾难\u0026amp;quot;的环节。一个泄露到 GitHub 的 OpenAI API Key，可能在几分钟内被脚本自动扫描到，并在数小时内消耗掉数千美元的配额。一个写死在代码里的数据库密码，会让一次代码泄露演变成全量数据泄露。\ngraph TD A[配置安全风险] --\u0026gt; B[密钥硬编码] A --\u0026gt; C[多环境混淆] A --\u0026gt; D[密钥不轮换] A --\u0026gt; E[无审计追踪] B --\u0026gt; F[代码泄露 = 密钥泄露] C --\u0026gt; G[测试数据进生产] D --\u0026gt; H[长期泄露无法发现] E --\u0026gt; I[事故无法追溯] 本文将系统讲解 AI 应用的配置工程化：多环境配置隔离、密钥安全管理、配置中心实践，以及密钥轮换与审计的最佳实践。\n多环境配置 环境分层 AI 应用通常需要至少三套环境，每套环境的模型、数据和密钥完全隔离：\n环境 用途 模型 数据 密钥 dev 本地开发 小模型 / Mock 测试数据 开发专用 Key staging 预发布验证 真实模型（低配额） 脱敏数据 预发布 Key prod 生产运行 生产模型 真实数据 生产 Key（最高权限） 关键原则：绝不共享密钥。dev 环境的 Key 不应有权访问生产数据，prod 环境的 Key 绝不出现在开发机器上。\nSpring Profiles Spring Boot 通过 Profile 机制实现多环境配置隔离：\ngraph TD A[application.yml通用配置] --\u0026gt; B{激活的 Profile} B --\u0026gt; C[application-dev.yml] B --\u0026gt; D[application-staging.yml] B --\u0026gt; E[application-prod.yml] C --\u0026gt; F[开发环境生效] D --\u0026gt; G[预发布生效] E --\u0026gt; H[生产生效] 基础配置（所有环境共享） # application.yml — 通用配置 spring: application: name: ai-service jpa: open-in-view: false jackson: default-property-inclusion: non_null server: port: 8080 # …","date": "2026-06-15 10:00:00",
+    "updated": "2026-06-15 10:00:00"
+  }, 
+  {
+    "objectID": "4800c171c15df1fc7fc29f637282b9ba7fbdbdc0",
+    "permalink": "/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/",
+    "title": "模型本地化部署：Ollama、vLLM 与 TGI","content": " 引言 随着开源大语言模型的快速发展，越来越多的团队和个人希望在本地环境中部署大模型。本地化部署不仅可以降低 API 调用成本，还能保障数据隐私、减少网络延迟，并为定制化微调提供基础。然而，面对众多的部署工具和框架，如何选择合适的方案成为了一个关键问题。\n目前，大模型本地化部署领域形成了三大主流方案，各自面向不同的使用场景和用户群体：\nOllama——面向个人开发者和轻量级场景，一键运行、开箱即用 vLLM——面向高吞吐量生产服务，PagedAttention 加持、性能卓越 TGI（Text Generation Inference）——HuggingFace 官方出品，与 HF 生态深度集成 本文将从架构原理、安装部署、API 调用到性能基准，全面对比这三大方案，并提供详细的选型决策指南。\n三大方案全景对比 在深入每个方案之前，先通过一张架构图了解它们各自的定位：\ngraph TD A[大模型本地化部署] --\u0026gt; B[Ollama] A --\u0026gt; C[vLLM] A --\u0026gt; D[TGI] B --\u0026gt; B1[定位: 个人/轻量级] B --\u0026gt; B2[核心: GGUF + llama.cpp] B --\u0026gt; B3[优势: 一键运行, 跨平台] C --\u0026gt; C1[定位: 生产级高吞吐] C --\u0026gt; C2[核心: PagedAttention] C --\u0026gt; C3[优势: 极致吞吐, OpenAI 兼容] D --\u0026gt; D1[定位: HF 生态集成] D --\u0026gt; D2[核心: Continuous Batching] D --\u0026gt; D3[优势: 模型兼容性, Docker 友好] 核心特性对比表 特性 Ollama vLLM TGI 开发方 Ollama Inc. UC Berkeley HuggingFace 底层引擎 llama.cpp 自研（PyTorch） 自研（Rust + PyTorch） 量化格式 GGUF AWQ / GPTQ / FP8 GPTQ / AWQ / BitsAndBytes GPU 支持 部分（层卸载） 完整（CUDA） 完整（CUDA） CPU 推理 原生支持 不支持 不支持 OpenAI 兼容 是 是 是 PagedAttention 否 是 是 Continuous Batching 否 是 是 张量并行 否 是 是 部署复杂度 极低 中 中 …","date": "2026-05-25 10:00:00",
+    "updated": "2026-05-25 10:00:00"
+  }, 
+  {
+    "objectID": "ac04e30dbc75741262d0f0b06cbdc8e7020c268a",
+    "permalink": "/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/",
+    "title": "模型量化技术：INT4/INT8、GPTQ 与 AWQ","content": " 引言 大语言模型的参数量从数十亿到数千亿不等，一个 70B 参数的模型仅权重就需要约 140GB 的 FP16 存储空间。庞大的显存需求将大模型限制在了少数拥有顶级 GPU 集群的机构手中。模型量化技术通过将高精度浮点数映射到低精度整数，在不显著损失精度的前提下大幅压缩模型体积，是大模型走向普及的关键技术。\n量化带来的收益是多方面的：显存占用减少 50%-75%，推理吞吐量提升 2-4 倍，能耗降低，部署门槛大幅下降。一个经过 INT4 量化的 70B 模型可以在单张 80GB 的 A100 上运行，而原始 FP16 版本则需要两张。\n本文将从量化的数学原理出发，深入讲解 INT8/INT4 量化方案，重点剖析 GPTQ 和 AWQ 两大主流算法，并涵盖 GGUF 格式和完整的实操流程。\n量化数学原理 什么是量化 量化本质上是将连续的浮点数值域映射到离散的整数数值域。对于从浮点 $x$ 到整数 $x_q$ 的量化过程，核心公式为：\n$$ x_q = \\text{round}\\left(\\frac{x}{s}\\right) + z $$反量化（将整数恢复为浮点的近似值）：\n$$ \\hat{x} = s \\cdot (x_q - z) $$其中：\n$s$ 是缩放因子（Scale），控制浮点域到整数域的映射比例 $z$ 是零点（Zero Point），确保浮点的 0 能精确映射到某个整数值 $\\text{round}(\\cdot)$ 是四舍五入函数 对称量化与非对称量化 根据量化范围是否以零为中心，分为对称量化和非对称量化两种模式。\n对称量化：量化范围以 0 为中心，零点 $z = 0$。\n$$ s = \\frac{\\max(|x|)}{2^{b-1} - 1}, \\quad z = 0 $$对于 INT8 对称量化，整数范围为 $[-127, 127]$。对称量化计算简单，适合近似对称分布的权重。\n非对称量化：量化范围不对称，零点 $z \\neq 0$。\n$$ s = \\frac{x_{\\max} - x_{\\min}}{2^b - 1}, \\quad z = \\text{round}\\left(\\frac{-x_{\\min}}{s}\\right) $$非对称量化适合分布不对称的数据，如经过 ReLU 激活后的值（全部为非负）。\ngraph LR subgraph 对 …","date": "2026-05-30 10:00:00",
+    "updated": "2026-05-30 10:00:00"
+  }, 
+  {
+    "objectID": "24ac7691bbae693482cb6ecc1013d8f3a8c732be",
+    "permalink": "/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%8D%E5%8A%A1%E5%8C%96%E5%B0%81%E8%A3%85/",
+    "title": "模型服务化封装：FastAPI、TorchServe 与 OpenAI 兼容接口","content": " 引言 大模型在本地跑通只是第一步，要让它真正服务于业务，需要将模型封装为标准化的 API 服务。模型服务化涉及一系列工程问题：如何处理高并发请求？如何实现流式输出？如何保证服务的可用性和可观测性？如何设计与主流生态兼容的 API 接口？\n一个优秀的模型服务需要具备以下能力：\n高性能——低延迟、高吞吐，充分利用 GPU 资源 高可用——健康检查、故障恢复、优雅关闭 可扩展——水平扩展、负载均衡 标准化——API 接口兼容主流生态（如 OpenAI API） 可观测——完善的日志、指标和追踪 本文将深入讲解三大服务化方案——FastAPI、TorchServe 和 OpenAI 兼容接口设计，涵盖从架构设计到完整代码实现的全部内容。\n服务化架构设计 整体架构 一个生产级的模型服务架构通常包含多个层次：\ngraph TD A[客户端] --\u0026gt; B[API 网关] B --\u0026gt; C[认证 / 限流 / 日志] C --\u0026gt; D[负载均衡器] D --\u0026gt; E[模型服务实例 1] D --\u0026gt; F[模型服务实例 2] D --\u0026gt; G[模型服务实例 N] E --\u0026gt; H[GPU 0] F --\u0026gt; I[GPU 1] G --\u0026gt; J[GPU N] E -.-\u0026gt; K[模型存储] F -.-\u0026gt; K G -.-\u0026gt; K L[监控系统] --\u0026gt; E L --\u0026gt; F L --\u0026gt; G M[配置中心] --\u0026gt; E M --\u0026gt; F M --\u0026gt; G 核心组件职责 组件 职责 技术选型 API 网关 认证、限流、路由 Nginx, Kong, Traefik 负载均衡 请求分发 HAProxy, Nginx, Envoy 模型服务 模型推理 FastAPI, TorchServe, vLLM 模型存储 模型文件管理 NFS, S3, 本地存储 监控系统 指标采集与告警 Prometheus + Grafana 配置中心 配置管理 Consul, etcd 负载均衡策略 graph LR A[请求到达] --\u0026gt; B{负载均衡策略} B --\u0026gt;|轮询| C[依次分配到各实例] B --\u0026gt;|最少连接| D[分配到连接数最少的实例] B --\u0026gt;|IP 哈希| E[相同 IP 固定路由] B --\u0026gt;|GPU 感知| F[根据 GPU 负载路由] 对于大模型服务，最少连接和 GPU 感知策略最为有效。因为不同请求的生成长 …","date": "2026-06-01 10:00:00",
+    "updated": "2026-06-01 10:00:00"
+  }, 
+  {
+    "objectID": "04dc3b5c5088f93e1d8adbf2acc764149adc6976",
+    "permalink": "/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/docker%E4%B8%8Ek8s%E9%83%A8%E7%BD%B2/",
+    "title": "Docker 与 Kubernetes 部署","content": " 引言 容器化部署是大模型从开发环境走向生产环境的必经之路。大模型的部署面临独特的挑战：动辄数十 GB 的模型文件、对 GPU 硬件的强依赖、不均匀的计算负载、漫长的模型加载时间。传统的应用部署方式难以高效应对这些问题。\nDocker 提供了环境隔离和一致性保障，让\u0026amp;quot;一次构建、处处运行\u0026amp;quot;成为现实；Kubernetes 则提供了集群编排、弹性伸缩和自愈能力，是大规模生产部署的标准方案。两者的结合构成了现代大模型部署的基础设施。\n本文将从 Docker 单机部署出发，逐步深入到 Kubernetes 集群部署，涵盖 GPU 调度、弹性伸缩、生产实践等核心主题，提供完整的 YAML 配置和 Dockerfile 示例。\nDocker 基础 GPU 镜像选择 大模型部署必须使用支持 GPU 的基础镜像。NVIDIA 提供了官方的 CUDA 镜像：\n镜像 说明 大小 适用场景 nvidia/cuda:12.1.0-runtime-ubuntu22.04 仅运行时 ~3GB 仅推理（推荐） nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04 + cuDNN ~4GB 推理（含 cuDNN） nvidia/cuda:12.1.0-devel-ubuntu22.04 开发环境 ~6GB 编译/开发 pytorch/pytorch:2.3.0-cuda12.1-cudnn8-runtime PyTorch 运行时 ~8GB PyTorch 推理 选择原则：\n生产推理：使用 runtime 变体，体积小、攻击面小 需要 cuDNN：选择带 cudnn8 的变体 开发调试：使用 devel 变体 NVIDIA Container Toolkit 在 Docker 中使用 GPU，必须安装 NVIDIA Container Toolkit：\n# Ubuntu/Debian 安装 # 1. 添加 GPG key curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey \\ | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg # 2. 添加仓库 curl -s …","date": "2026-06-05 10:00:00",
+    "updated": "2026-06-05 10:00:00"
+  }, 
+  {
+    "objectID": "24047dd6c0f9fc50635c0a082c1dc73caedf09bd",
+    "permalink": "/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E6%95%B0%E6%8D%AE%E9%9B%86%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%B8%85%E6%B4%97%E6%A0%87%E6%B3%A8/",
+    "title": "数据集构建、清洗与标注","content": " 引言 在大模型时代，业界有一句被反复验证的格言：\u0026amp;ldquo;Garbage In, Garbage Out\u0026amp;rdquo;（垃圾进，垃圾出）。一个千亿参数的模型，如果训练数据质量低劣，其表现甚至不如在高质量数据上训练的几十亿参数小模型。数据，而非模型架构，正日益成为决定大模型能力上限的核心因素。\n从 GPT-3 到 LLaMA 3，从 GPT-4 到 Claude 3，每一次模型能力的飞跃背后，都伴随着数据工程的重大升级。LLaMA 3 使用了超过 15T token 的预训练数据，并投入了大量精力进行数据清洗和质量过滤；而 RLHF 阶段，OpenAI 聘请了数十名博士级别的标注员来构造偏好数据。\n数据工程不是一次性的工作，而是一条贯穿模型全生命周期的流水线：\ngraph LR A[需求定义] --\u0026gt; B[数据采集] B --\u0026gt; C[数据清洗] C --\u0026gt; D[数据标注] D --\u0026gt; E[质量验证] E --\u0026gt; F[模型训练] F --\u0026gt; G[效果评估] G --\u0026gt;|反馈| A 本文将从数据采集、清洗、标注到质量控制，系统讲解 LLM 训练数据工程的全流程，并配以完整的 Python 代码示例。\n数据采集策略 数据是数据工程的起点，采集策略直接决定了数据的规模、多样性和质量。根据数据来源的不同，主流的采集策略可以分为三类：网络爬虫、公开数据集整合与合成数据生成。\ngraph TD A[数据采集策略] --\u0026gt; B[网络爬虫] A --\u0026gt; C[公开数据集整合] A --\u0026gt; D[合成数据生成] B --\u0026gt; B1[Common Crawl] B --\u0026gt; B2[垂直领域爬取] B --\u0026gt; B3[API 数据接入] C --\u0026gt; C1[HuggingFace Hub] C --\u0026gt; C2[学术数据集] C --\u0026gt; C3[政府开放数据] D --\u0026gt; D1[强模型蒸馏] D --\u0026gt; D2[规则模板生成] D --\u0026gt; D3[自我指令] 网络爬虫 网络爬虫是获取大规模预训练数据的主要手段。Common Crawl 是最大的公开网页爬取数据集，包含了自 2008 年以来数 PB 的网页数据。LLaMA、GPT 等模型的预训练数据中，Common Crawl 占据了最大比重。\n一个典型的爬虫流水线包括 URL 管理、页面下载、内容提取和存储四个环节：\nimport scrapy from …","date": "2026-06-01 10:00:00",
+    "updated": "2026-06-01 10:00:00"
+  }, 
+  {
+    "objectID": "3db202b3f72aac01a3ef6bf7fe222d0d4277ff32",
+    "permalink": "/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E8%AF%84%E4%BC%B0%E4%BD%93%E7%B3%BB%E4%B8%8E%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/",
+    "title": "评估体系与基准测试","content": " 引言 \u0026amp;ldquo;如果你不能衡量它，你就不能改进它。\u0026amp;rdquo; 这句管理学的经典格言在大模型领域同样适用。评估（Evaluation）是模型迭代的核心驱动力——没有科学的评估体系，我们就无法判断一个改进是否有效，无法比较不同方案的优劣，也无法向决策者证明投入的价值。\n然而，大模型的评估远比传统机器学习困难。传统分类任务有准确率、F1 等标准指标，但大模型生成的是开放式文本，正确答案不唯一，质量判断高度主观。一个模型可能在数学推理上表现优异，却在创意写作上不尽如人意；另一个模型可能回答更流畅，但事实准确性存疑。\ngraph TD A[大模型评估] --\u0026gt; B[自动评估指标计算] A --\u0026gt; C[人工评估专家打分] A --\u0026gt; D[LLM-as-Judge大模型裁判] B --\u0026gt; B1[生成式指标ROUGE/BLEU/BERTScore] B --\u0026gt; B2[基准测试MMLU/HumanEval] B --\u0026gt; B3[对话评估MT-Bench/AlpacaEval] C --\u0026gt; C1[盲测对比Arena] C --\u0026gt; C2[多维度评分] D --\u0026gt; D1[GPT-4 作为裁判] D --\u0026gt; D2[成对比较] 本文将系统讲解大模型评估的方法论，从生成式指标的数学原理到对话评估基准的实践，再到 RAG 评估框架，帮助读者建立完整的评估知识体系。\n评估方法论 评估范式的演进 大模型评估经历了从\u0026amp;quot;任务专用指标\u0026amp;quot;到\u0026amp;quot;通用能力基准\u0026amp;quot;再到\u0026amp;quot;LLM 裁判\u0026amp;quot;的三次范式转变：\n阶段 代表方法 优势 局限 1.0 任务专用 BLEU（翻译）、ROUGE（摘要） 客观、可复现 无法评估开放式生成 2.0 多任务基准 MMLU、BIG-Bench 覆盖面广 数据泄露、过拟合 3.0 对话评估 MT-Bench、Arena Elo 贴近真实使用场景 依赖人工/强模型 4.0 LLM 裁判 GPT-4 Judge 自动、可扩展 裁判偏见、成本 人工评估 vs 自动评估 vs LLM-as-Judge 三种评估方法各有优劣，实践中通常组合使用：\ngraph LR subgraph 人工评估 A1[专家盲测] --\u0026gt; A2[多维度打分] A2 --\u0026gt; A3[高质量基准] end subgraph 自动评估 B1[指标计算] --\u0026gt; B2[基 …","date": "2026-06-05 10:00:00",
+    "updated": "2026-06-05 10:00:00"
+  }, 
+  {
+    "objectID": "347b1ca5ff3077731a52a4eb4fea2e3ba3dfcf57",
+    "permalink": "/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/ab%E6%B5%8B%E8%AF%95%E4%B8%8E%E8%BF%AD%E4%BB%A3%E6%B5%81%E7%A8%8B/",
+    "title": "A/B 测试与持续迭代流程","content": " 引言 在 AI 产品开发中，一个永恒的难题是：我们怎么知道新版本真的更好了？ 离线评估指标（如准确率、ROUGE 分数）的提升，并不总是能转化为线上用户体验的改善。一个在 MMLU 上得分更高的模型，可能因为回答过于冗长而让用户感到厌烦；一个在基准测试上表现平平的模型，可能因为回答更贴近用户直觉而获得更高的满意度。\n这就是 A/B 测试存在的意义——它是在真实用户环境中验证改进效果的金标准。Google、Meta、字节跳动等科技巨头每天同时运行数千个 A/B 测试，每一个产品决策背后都有数据支撑。\ngraph LR A[想法 Idea] --\u0026gt; B[离线开发] B --\u0026gt; C[离线评估] C --\u0026gt; D{离线达标?} D --\u0026gt;|否| B D --\u0026gt;|是| E[A/B 测试] E --\u0026gt; F{线上显著提升?} F --\u0026gt;|否| G[分析失败原因] G --\u0026gt; B F --\u0026gt;|是| H[灰度发布] H --\u0026gt; I[全量上线] I --\u0026gt; J[持续监控] J --\u0026gt; A 对于 AI 产品而言，A/B 测试面临着独特的挑战：模型输出具有非确定性、用户体验高度主观、效果可能随时间衰减。本文将从统计学基础出发，系统讲解 AI 产品 A/B 测试的设计、执行和分析方法。\nA/B 测试统计学基础 假设检验 A/B 测试的统计学核心是假设检验（Hypothesis Testing）。其逻辑是：\n建立零假设（$H_0$）：新版本（B）与旧版本（A）没有差异 建立备择假设（$H_1$）：新版本与旧版本有差异 收集数据，计算在 $H_0$ 成立的前提下，观察到当前差异（或更大差异）的概率 如果概率很低（低于显著性水平 $\\alpha$），则拒绝 $H_0$，认为差异是真实的 graph TD A[零假设 H0: A = B] --\u0026gt; B[收集实验数据] B --\u0026gt; C[计算检验统计量] C --\u0026gt; D[计算 p 值] D --\u0026gt; E{p \u0026lt; α?} E --\u0026gt;|是| F[拒绝 H0差异显著] E --\u0026gt;|否| G[无法拒绝 H0差异不显著] p 值 p 值（p-value）是在零假设成立的前提下，观察到当前结果或更极端结果的概率。p 值越小，越有理由认为差异不是随机波动造成的。\n常见误解：p 值不是\u0026amp;quot;零假设为真的概率\u0026amp;quot;。正确的理解是：如果零假设为真，出现当前观测结果 …","date": "2026-06-10 10:00:00",
+    "updated": "2026-06-10 10:00:00"
+  }, 
+  {
+    "objectID": "b50712c84bd37679b67d3be48589ecd489b41b08",
+    "permalink": "/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/chrome%E6%8F%92%E4%BB%B6%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/",
+    "title": "Chrome Extension 通信机制详解","content": " 引言 当你想在浏览器中集成 AI 能力——比如选中网页文本一键翻译、右键调用 LLM 总结长文、或者在任意页面注入 AI 对话窗口——Chrome Extension 是最自然的载体。然而，插件的开发难点不在于 UI，而在于通信。\n一个 Chrome Extension 由多个独立运行环境组成：content script 运行在网页上下文中，background service worker 运行在后台，popup 运行在弹出窗口中。它们各自拥有独立的 JavaScript 枒、独立的 DOM、独立的生命周期。如何在这些隔离的环境之间高效、可靠地传递数据和协调行为，是插件开发的核心命题。\ngraph TB subgraph 浏览器 subgraph 网页上下文 CS[Content Script] PAGE[网页 DOM] end subgraph 插件后台 BG[Background Service Worker] end subgraph 弹出窗口 POP[Popup] end subgraph 选项页 OPT[Options Page] end end CS \u0026lt;--\u0026gt;|sendMessage / connect| BG POP \u0026lt;--\u0026gt;|sendMessage / connect| BG OPT \u0026lt;--\u0026gt;|sendMessage / connect| BG CS \u0026lt;--\u0026gt;|DOM 操作| PAGE BG --\u0026gt;|tabs.sendMessage| CS style CS fill:#e1f5fe style BG fill:#fff3e0 style POP fill:#f3e5f5 本文将从 Manifest V3 架构出发，深入剖析每一个通信通道的原理、API 用法和实战技巧，最后通过一个完整的 AI 插件案例串联所有知识点。\nManifest V3 架构概览 从 V2 到 V3 的演进 Manifest V3 是 Chrome 扩展平台的重大架构变革，其核心变化围绕安全性和性能展开：\n特性 Manifest V2 Manifest V3 后台脚本 Background Page（持久页面） Service Worker（事件驱动，可休眠） 网络请求 webRequest（可阻塞） declarativeNetRequest（声明式） 远程代码 允许 …","date": "2026-06-01 10:00:00",
+    "updated": "2026-06-01 10:00:00"
+  }, 
+  {
+    "objectID": "754096dc00ef66baaef5987cac7ecc2e520df485",
+    "permalink": "/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E4%B8%8E%E6%9D%83%E9%99%90/",
+    "title": "本地文件读写与权限控制","content": " 引言 当 AI 应用需要处理本地文档时——比如让用户选择一个 PDF 文件上传到 RAG 系统、将 AI 生成的报告保存到本地、或者批量读取文件夹中的知识库文档——开发者就不得不面对浏览器环境中最受限的能力之一：文件系统访问。\n出于安全考虑，浏览器长期以来只能通过 \u0026amp;lt;input type=\u0026amp;quot;file\u0026amp;quot;\u0026amp;gt; 让用户选择文件，且无法获取文件的真实路径。Chrome 86+ 引入的 File System Access API 打破了这个限制，允许 Web 应用读写本地文件系统。同时，Chrome Extension 提供了更强大的 downloads API 和 file:// 访问能力。\ngraph TB subgraph 浏览器文件访问能力 A[File Input只读单文件] B[Drag \u0026amp; Drop只读拖拽] C[File System Access API读写文件/目录] D[Extension downloads API下载管理] E[Extension file:// 权限本地文件直接访问] end A --\u0026gt; A1[无需权限] B --\u0026gt; B1[无需权限] C --\u0026gt; C1[需用户授权] D --\u0026gt; D1[需 downloads 权限] E --\u0026gt; E1[需 file:// host 权限] style C fill:#e8f5e9 style E fill:#fff3e0 本文将系统讲解浏览器与插件中的文件读写机制、权限模型和安全沙箱，最后通过一个完整的 AI RAG 文档上传插件串联所有知识点。\nFile System Access API API 概览 File System Access API 是 W3C 规范的一部分，目前 Chromium 内核浏览器（Chrome、Edge）全面支持，Firefox 和 Safari 支持有限。它提供了四个核心方法：\n方法 作用 返回值 showOpenFilePicker() 选择文件（读取） FileSystemFileHandle showSaveFilePicker() 选择保存位置（写入） FileSystemFileHandle showDirectoryPicker() 选择目录 FileSystemDirectoryHandle …","date": "2026-06-05 10:00:00",
+    "updated": "2026-06-05 10:00:00"
+  }, 
+  {
+    "objectID": "ff6c955b7eef7bbec9dd7d3fbadf966807becf0b",
+    "permalink": "/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/%E8%B7%A8%E5%9F%9Fcors%E4%B8%8E%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5/",
+    "title": "跨域 CORS 与安全策略","content": " 引言 当你写下第一行 fetch(\u0026#39;https://api.openai.com/v1/chat/completions\u0026#39;, ...) 并在浏览器中运行时，大概率会遇到这个报错：\nAccess to fetch at \u0026amp;#39;https://api.openai.com/...\u0026amp;#39; from origin \u0026amp;#39;http://localhost:3000\u0026amp;#39; has been blocked by CORS policy: No \u0026amp;#39;Access-Control-Allow-Origin\u0026amp;#39; header is present on the requested resource. 这就是 CORS（Cross-Origin Resource Sharing，跨域资源共享） 机制在工作。对于 AI Web 应用来说，跨域问题是开发阶段最常见的\u0026amp;quot;拦路虎\u0026amp;quot;——前端需要直连 LLM API，但 API 服务器默认不允许浏览器跨域访问。\n然而，跨域只是 Web 安全的冰山一角。一个面向用户的 AI 应用还需要面对 XSS（AI 输出中包含恶意脚本）、CSRF（诱导用户执行非预期操作）、CSP 配置（防止代码注入）等多重安全挑战。\ngraph TB subgraph AI Web 应用安全威胁 A[CORS 跨域问题API 访问受阻] B[XSS 跨站脚本AI 输出注入恶意代码] C[CSRF 跨站请求伪造诱导用户操作] D[CSP 策略配置限制资源加载来源] E[数据泄露API Key 暴露] end A --\u0026gt; A1[代理方案 / CORS 头配置] B --\u0026gt; B1[输出消毒 DOMPurify] C --\u0026gt; C1[Token + SameSite Cookie] D --\u0026gt; D1[严格 CSP 响应头] E --\u0026gt; E1[后端代理 + 密钥管理] style A fill:#ffcdd2 style B fill:#fff9c4 style C fill:#ffe0b2 本文将从同源策略出发，系统讲解 CORS 机制、CSP 策略、XSS/CSRF 防护，最后给出完整的 AI Web 应用安全实践方案。\n同源策略与跨域问题 什么是同源策略 同源策略（Same-Origin Policy, SOP）是浏览器最核心的安全机 …","date": "2026-06-10 10:00:00",
+    "updated": "2026-06-10 10:00:00"
+  }, 
+  {
+    "objectID": "4fab68ec2e81d6dee1c06622001bc1d01fd951d4",
+    "permalink": "/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E4%B8%8E%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6/",
+    "title": "日志收集与监控告警","content": " 引言 当大模型服务从 Demo 走向生产，第一个要回答的问题不是\u0026amp;quot;准确率多少\u0026amp;quot;，而是\u0026amp;quot;现在出了什么问题\u0026amp;quot;。一个 RAG 系统由 API 网关、LLM 推理服务、向量数据库、Embedding 服务、缓存等多个组件构成，任何一环出现延迟飙升、错误率上升或资源耗尽，都会导致用户体验劣化甚至服务中断。如果没有完善的可观测性体系，运维人员只能面对用户的投诉\u0026amp;quot;回复变慢了\u0026amp;quot;\u0026amp;ldquo;偶尔报错\u0026amp;quot;而无从下手。\n可观测性（Observability）一词源自控制论，指的是通过系统的外部输出推断系统内部状态的能力。在软件工程中，它由三大支柱构成：日志（Logs）、指标（Metrics）和链路追踪（Traces）。对于 AI 系统而言，还需要在此基础上增加成本维度的观测——每次 LLM 调用都消耗真金白银的 Token。\ngraph TD O[可观测性体系] --\u0026gt; L[日志 Logs] O --\u0026gt; M[指标 Metrics] O --\u0026gt; T[链路追踪 Traces] L --\u0026gt; L1[结构化日志] L --\u0026gt; L2[集中收集] L --\u0026gt; L3[全文检索] M --\u0026gt; M1[系统指标] M --\u0026gt; M2[业务指标] M --\u0026gt; M3[告警规则] T --\u0026gt; T1[请求链路] T --\u0026gt; T2[性能瓶颈] T --\u0026gt; T3[依赖拓扑] 本文聚焦于日志收集与监控告警，涵盖可观测性三支柱的原理、结构化日志实践、Prometheus + Grafana 监控体系，以及面向 AI 系统的告警规则设计。链路追踪和成本监控将在后续文章中专题展开。\n可观测性三支柱 日志、指标、追踪的定位 三者在数据特征、查询模式和用途上各有侧重，理解它们的差异是构建可观测性体系的基础。\n维度 日志 Logs 指标 Metrics 链路追踪 Traces 数据特征 离散事件记录 聚合数值时间序列 有向无环图（请求树） 基数 高（每条日志唯一） 低（有限维度组合） 中（每个请求一条） 查询方式 全文检索、字段过滤 时间范围聚合查询 Trace ID 追溯 主要用途 排查具体错误 监控趋势、告警 定位性能瓶颈 存储成本 高 低 中 典型工具 ELK、Loki Prometheus Jaeger、Tempo 三者的协同关系 在实际排障中，三者通常配合 …","date": "2026-06-01 10:00:00",
+    "updated": "2026-06-01 10:00:00"
+  }, 
+  {
+    "objectID": "0fb3fb18afc6fa47aa7278f0bd9de73c8055ece7",
+    "permalink": "/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/",
+    "title": "分布式链路追踪","content": " 引言 在一个典型的 RAG 系统中，一次用户请求会穿越多个服务：API 网关接收请求、鉴权服务验证身份、查询重写模块改写用户问题、向量数据库执行语义检索、Embedding 服务将文本向量化、LLM 推理服务生成最终回答、缓存层存储结果。如果用户反馈\u0026amp;quot;回复好慢\u0026amp;quot;，你如何知道是哪个环节拖了后腿？\n传统的指标监控只能告诉你\u0026amp;quot;整体 P99 延迟是 8 秒\u0026amp;quot;，但无法告诉你这 8 秒花在了哪里。日志可以记录每个服务的处理日志，但在分布式系统中，一个请求的日志分散在多个节点上，没有关联线索就难以拼凑出完整画面。分布式链路追踪（Distributed Tracing）正是解决这个问题的技术——它为每个请求生成一棵调用树，精确记录每个环节的耗时和状态。\ngraph LR U[用户反馈: 回复很慢] --\u0026gt; Q{排查方向?} Q --\u0026gt; |指标监控| M[P99 = 8s但不知道花在哪] Q --\u0026gt; |日志检索| L[日志分散在 6 个节点无法关联] Q --\u0026gt; |链路追踪| T[完整调用树一眼定位瓶颈] T --\u0026gt; R[结果: 向量检索 5.2s占整体延迟 65%] 本文将从分布式追踪的核心概念出发，深入 OpenTelemetry 标准，并结合 AI 系统的特殊需求，讲解如何实现全链路可观测、精准定位性能瓶颈。\n分布式追踪核心概念 Trace、Span 与调用树 Trace（追踪） 代表一次完整的请求生命周期，由一个全局唯一的 Trace ID 标识。一个 Trace 由多个 Span（跨度） 组成，每个 Span 代表一个操作单元（一次函数调用、一次数据库查询、一次 HTTP 请求）。\nSpan 的核心属性：\n属性 说明 示例 trace_id 整条链路的唯一 ID 4bf92f3577b34da6a3ce929d0e0e4736 span_id 当前 Span 的唯一 ID 00f067aa0ba902b7 parent_span_id 父 Span 的 ID a2fb4a1d1a96d2ef operation_name 操作名称 llm.chat.completion start_time 开始时间 2026-06-05T10:00:00.123Z duration 持续时长 3200ms tags/attributes 键值对标 …","date": "2026-06-05 10:00:00",
+    "updated": "2026-06-05 10:00:00"
+  }, 
+  {
+    "objectID": "499a629279d54030034d0d4cf2e73e02cac79d4f",
+    "permalink": "/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/token%E6%88%90%E6%9C%AC%E7%9B%91%E6%8E%A7/",
+    "title": "Token 成本监控与优化","content": " 引言 传统软件的成本模型是确定的：服务器按月租用、数据库按容量付费、带宽按流量计费。而大模型应用引入了一种全新的成本维度——按 Token 计费。一个用户问一句\u0026amp;quot;帮我总结这篇 50 页的论文\u0026amp;quot;，背后可能消耗 15000 个输入 Token 和 2000 个输出 Token，按照 GPT-4o 的定价就是约 0.06 美元。如果有一千个用户每天各问十次这样的问题，一天的 LLM 费用就是 600 美元，一个月就是 1.8 万美元。\n更令人焦虑的是，这种成本是不可预测的：用户的一个超长 Prompt、一个低效的 RAG 上下文注入、一个没有命中缓存的重复问题，都会让账单悄悄膨胀。很多团队在产品上线后的第一个月，就被云厂商的 LLM 账单震惊。\ngraph TD A[AI 成本失控的原因] --\u0026gt; B[不可预测Token 消耗随用户行为波动] A --\u0026gt; C[不透明用户看不到自己的消耗] A --\u0026gt; D[无节制缺少配额和预算控制] A --\u0026gt; E[低效率简单问题用了昂贵的大模型] B --\u0026gt; F[日均费用从 $50飙升到 $500] C --\u0026gt; G[某个大客户的 API Key被滥用] D --\u0026gt; H[月底账单超出预算 3 倍] E --\u0026gt; I[80% 的请求可以用便宜 10 倍的小模型完成] FinOps（Financial Operations）是云时代的财务运营实践，核心理念是让技术团队对成本负责、让财务团队理解技术决策。将 FinOps 理念引入 AI 系统，就是本文的主题——Token 成本监控与优化。\nLLM 成本模型 Token 计费机制 主流 LLM 提供商均采用 输入 Token + 输出 Token 分别计费 的模式。Token 是模型处理文本的最小单位，大致等同于 0.75 个英文单词或 0.5 个中文字符。\n$$ \\text{Cost} = N_{\\text{input}} \\times P_{\\text{input}} + N_{\\text{output}} \\times P_{\\text{output}} $$其中 $P_{\\text{input}}$ 和 $P_{\\text{output}}$ 分别为每千 Token 的单价（美元）。输出 Token 通常比输入 Token 贵 3-4 倍，因为生成比理解更消耗算力。\n主 …","date": "2026-06-10 10:00:00",
+    "updated": "2026-06-10 10:00:00"
+  }, 
+  {
+    "objectID": "5b2d67ec48c6c5df22c2f19c6bc7d175785738cd",
+    "permalink": "/post/chinese/",
+    "title": "中文測試","content": "","date": "2023-01-03 17:46:47",
+    "updated": "2023-01-03 17:46:47"
+  }]

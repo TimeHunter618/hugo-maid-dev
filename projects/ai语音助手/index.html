@@ -1,0 +1,2563 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  AI 语音助手 Sound AI | Aries
+</title>
+<meta name="description" content="基于浏览器原生 API 的智能语音对话助手，支持语音输入、AI 流式对话、边生成边朗读、知识自动提取，数据完全本地存储"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="AI 语音助手 Sound AI | Aries" />
+  <meta
+    property="og:description"
+    content="基于浏览器原生 API 的智能语音对话助手，支持语音输入、AI 流式对话、边生成边朗读、知识自动提取，数据完全本地存储"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/projects/ai%E8%AF%AD%E9%9F%B3%E5%8A%A9%E6%89%8B/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://d-sketon.top/img/backwebp/bg5.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-06-19T00:00:00&#43;00:00" />
+  <meta property="article:modified_time" content="2026-06-19T00:00:00&#43;00:00" /><meta property="article:tag" content="语音识别, TTS, AI, 前端" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://d-sketon.top/img/backwebp/bg5.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture>
+    <img  fetchpriority="high" src="https://d-sketon.top/img/backwebp/bg5.webp" alt="AI 语音助手 Sound AI"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">AI 语音助手 Sound AI</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">基于浏览器原生 API 的智能语音对话助手，支持语音输入、AI 流式对话、边生成边朗读、知识自动提取，数据完全本地存储</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container "><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div>
+  </div><div class="sidebar-widget"><div class="widget-wrapper">
+    <div
+      class="widget-wrap"
+      data-aos="fade-up"
+    >
+      <div style="display: flex; justify-content: space-between;">
+        <h3 class="widget-title">分类</h3><a class="widget-link" href="https://dev.infiniteevo.online/categories/">查看更多</a></div>
+      <div class="widget">
+        <ul class="category-list"><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/ai%E9%9D%A2%E8%AF%95/" 
+                  title="AI面试"
+                  >AI面试</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/" 
+                  title="Prompt工程与Agent系统"
+                  >Prompt工程与Agent系统</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/rag%E5%85%A8%E6%B5%81%E7%A8%8B/" 
+                  title="RAG全流程"
+                  >RAG全流程</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/web%E5%BC%80%E5%8F%91/" 
+                  title="Web开发"
+                  >Web开发</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/web%E6%9C%8D%E5%8A%A1/" 
+                  title="Web服务"
+                  >Web服务</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" 
+                  title="人工智能"
+                  >人工智能</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E4%BC%A0%E8%BE%93/" 
+                  title="传输"
+                  >传输</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F/" 
+                  title="分布式协"
+                  >分布式协</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/" 
+                  title="创建型模式"
+                  >创建型模式</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/" 
+                  title="前端开发"
+                  >前端开发</a
+                >
+              </li></ul>
+      </div>
+    </div>
+  </div><div class="widget-wrapper">
+    <div
+      class="widget-wrap"
+      data-aos="fade-up"
+    >
+      <div style="display: flex; justify-content: space-between;">
+        <h3 class="widget-title">标签</h3><a class="widget-link" href="https://dev.infiniteevo.online/tags/">查看更多</a></div>
+      <div class="widget">
+        <ul class="tag-list" itemprop="keywords"><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/429%E9%94%99%E8%AF%AF/"
+                  aria-label="标签: 429错误"
+                  title="429错误"
+                >
+                  429错误
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ab%E6%B5%8B%E8%AF%95/"
+                  aria-label="标签: AB测试"
+                  title="AB测试"
+                >
+                  AB测试
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/agent/"
+                  aria-label="标签: Agent"
+                  title="Agent"
+                >
+                  Agent
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ai/"
+                  aria-label="标签: AI"
+                  title="AI"
+                >
+                  AI
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ai%E5%AE%89%E5%85%A8/"
+                  aria-label="标签: AI安全"
+                  title="AI安全"
+                >
+                  AI安全
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ai%E9%9D%A2%E8%AF%95/"
+                  aria-label="标签: AI面试"
+                  title="AI面试"
+                >
+                  AI面试
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/amqp/"
+                  aria-label="标签: AMQP"
+                  title="AMQP"
+                >
+                  AMQP
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/api/"
+                  aria-label="标签: API"
+                  title="API"
+                >
+                  API
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/api%E7%BD%91%E5%85%B3/"
+                  aria-label="标签: API网关"
+                  title="API网关"
+                >
+                  API网关
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/api%E8%AE%BE%E8%AE%A1/"
+                  aria-label="标签: API设计"
+                  title="API设计"
+                >
+                  API设计
+                </a>
+              </li></ul>
+      </div>
+    </div>
+  </div><div class="widget-wrapper">
+  <div
+    class="widget-wrap"
+    data-aos="fade-up"
+  >
+    <h3 class="widget-title">标签云</h3><div class="widget tagcloud"><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/429%E9%94%99%E8%AF%AF/"
+            aria-label="标签: 429错误"
+            >429错误</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ab%E6%B5%8B%E8%AF%95/"
+            aria-label="标签: AB测试"
+            >AB测试</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/agent/"
+            aria-label="标签: Agent"
+            >Agent</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ai/"
+            aria-label="标签: AI"
+            >AI</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ai%E5%AE%89%E5%85%A8/"
+            aria-label="标签: AI安全"
+            >AI安全</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ai%E9%9D%A2%E8%AF%95/"
+            aria-label="标签: AI面试"
+            >AI面试</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/amqp/"
+            aria-label="标签: AMQP"
+            >AMQP</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/api/"
+            aria-label="标签: API"
+            >API</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/api%E7%BD%91%E5%85%B3/"
+            aria-label="标签: API网关"
+            >API网关</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/api%E8%AE%BE%E8%AE%A1/"
+            aria-label="标签: API设计"
+            >API设计</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/arthas/"
+            aria-label="标签: Arthas"
+            >Arthas</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ats/"
+            aria-label="标签: ATS"
+            >ATS</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/avl%E6%A0%91/"
+            aria-label="标签: AVL树"
+            >AVL树</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/awq/"
+            aria-label="标签: AWQ"
+            >AWQ</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bbr/"
+            aria-label="标签: BBR"
+            >BBR</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bfs/"
+            aria-label="标签: BFS"
+            >BFS</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bitmap/"
+            aria-label="标签: BitMap"
+            >BitMap</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bleu/"
+            aria-label="标签: BLEU"
+            >BLEU</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bst/"
+            aria-label="标签: BST"
+            >BST</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/chrome/"
+            aria-label="标签: Chrome"
+            >Chrome</a
+          ></div>
+  </div>
+</div><div class="widget-wrapper">
+    <div
+      class="widget-wrap"
+      data-aos="fade-up"
+    >
+      <h3 class="widget-title">最新文章</h3>
+      <div class="widget">
+        <ul><li>
+              <a href="https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/" title="大语言模型基础原理与发展历程">大语言模型基础原理与发展历程</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/middleware-ops/rabbitmq%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%A6%E8%A7%A3/" title="RabbitMQ消息队列详解">RabbitMQ消息队列详解</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/ats/backend/%E5%90%8E%E5%8F%B0%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E/" title="后台项目整体说明">后台项目整体说明</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/design-patterns/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/" title="单例模式详解">单例模式详解</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/algorithm/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A3/" title="排序算法详解">排序算法详解</a>
+            </li></ul>
+      </div>
+    </div>
+  </div></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-06-19 00:00:00 &#43;0000 UTC" itemprop="datePublished"
+      >2026-06-19</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-06-19</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg5.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg5.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="一项目概述">
+<a class="header-anchor" href="#%e4%b8%80%e9%a1%b9%e7%9b%ae%e6%a6%82%e8%bf%b0"></a>
+一、项目概述
+</h2><h2 id="项目演示">
+<a class="header-anchor" href="#%e9%a1%b9%e7%9b%ae%e6%bc%94%e7%a4%ba"></a>
+项目演示
+</h2><p><strong>语音识别（ASR）</strong> — 对着麦克风说话，实时将语音转换为文字并发送给 AI：</p>
+<p><img src="https://dev.infiniteevo.online/projects/ai-voice-asr.png" alt="语音识别"></p>
+<p><strong>TTS 语音合成配置</strong> — 支持多种语音引擎配置，AI 回复可自动朗读：</p>
+<p><img src="https://dev.infiniteevo.online/projects/ai-voice-tts.png" alt="TTS配置"></p>
+<h3 id="11-这是什么项目">
+<a class="header-anchor" href="#11-%e8%bf%99%e6%98%af%e4%bb%80%e4%b9%88%e9%a1%b9%e7%9b%ae"></a>
+1.1 这是什么项目？
+</h3><p>这是一个<strong>纯前端</strong>的 AI 语音助手应用，核心能力是让用户通过<strong>语音</strong>与 AI 进行自然对话：</p>
+<ul>
+<li><strong>语音输入（ASR）</strong>：对着麦克风说话，自动转成文字发送给 AI</li>
+<li><strong>流式对话</strong>：AI 回复边生成边显示（打字机效果），基于 SSE 实现</li>
+<li><strong>边生成边朗读（TTS）</strong>：AI 回复生成过程中就按句子实时朗读，不用等全部生成完</li>
+<li><strong>知识自动提取</strong>：从对话中自动识别日程、待办、笔记、联系人等结构化信息</li>
+<li><strong>本地持久化</strong>：所有对话和知识存储在浏览器 IndexedDB 中，无需后端</li>
+<li><strong>多语音引擎</strong>：策略模式支持 Web Speech API 和百度语音识别切换</li>
+</ul>
+<h3 id="12-技术栈一览">
+<a class="header-anchor" href="#12-%e6%8a%80%e6%9c%af%e6%a0%88%e4%b8%80%e8%a7%88"></a>
+1.2 技术栈一览
+</h3><table>
+	<thead>
+			<tr>
+					<th>分类</th>
+					<th>技术</th>
+					<th>版本</th>
+					<th>选型理由</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>UI 框架</td>
+					<td>React</td>
+					<td>18.3</td>
+					<td>生态成熟、Hooks 编程模型、Concurrent 渲染</td>
+			</tr>
+			<tr>
+					<td>类型系统</td>
+					<td>TypeScript</td>
+					<td>5.4</td>
+					<td>编译时类型检查、自文档化、IDE 智能提示</td>
+			</tr>
+			<tr>
+					<td>构建工具</td>
+					<td>Vite</td>
+					<td>5.2</td>
+					<td>ESM 原生支持、极速 HMR、Rollup 生产构建</td>
+			</tr>
+			<tr>
+					<td>样式方案</td>
+					<td>Tailwind CSS</td>
+					<td>3.4</td>
+					<td>原子化 CSS、自定义主题色、零运行时开销</td>
+			</tr>
+			<tr>
+					<td>状态管理</td>
+					<td>Zustand</td>
+					<td>4.5</td>
+					<td>轻量（1KB）、无 Provider、selector 精确订阅</td>
+			</tr>
+			<tr>
+					<td>本地数据库</td>
+					<td>Dexie (IndexedDB)</td>
+					<td>4.0</td>
+					<td>Promise API、TypeScript 支持、链式查询</td>
+			</tr>
+			<tr>
+					<td>Markdown 渲染</td>
+					<td>react-markdown + remark-gfm</td>
+					<td>10.1 / 4.0</td>
+					<td>AI 回复渲染、支持 GFM 表格/任务列表</td>
+			</tr>
+			<tr>
+					<td>图标库</td>
+					<td>lucide-react</td>
+					<td>0.378</td>
+					<td>轻量、Tree-shaking 友好</td>
+			</tr>
+			<tr>
+					<td>AI 对话</td>
+					<td>Fetch SSE 流式</td>
+					<td>-</td>
+					<td>兼容智谱 AI / OpenAI，单向推送场景最优</td>
+			</tr>
+			<tr>
+					<td>语音识别</td>
+					<td>Web Speech API + 百度 WebSocket</td>
+					<td>-</td>
+					<td>策略模式多 Provider，可扩展</td>
+			</tr>
+			<tr>
+					<td>语音合成</td>
+					<td>Web Speech Synthesis API</td>
+					<td>-</td>
+					<td>原生队列播放，支持流式朗读</td>
+			</tr>
+			<tr>
+					<td>工具库</td>
+					<td>clsx</td>
+					<td>2.1</td>
+					<td>条件 className 拼接</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="13-核心亮点">
+<a class="header-anchor" href="#13-%e6%a0%b8%e5%bf%83%e4%ba%ae%e7%82%b9"></a>
+1.3 核心亮点
+</h3><ol>
+<li><strong>流式语音播放（最大亮点）</strong>：AI 回复边生成边朗读，涉及句子分割、播放队列管理、代码块状态机、Markdown 过滤等多个技术点</li>
+<li><strong>零后端依赖</strong>：纯前端实现，数据全部存本地（IndexedDB + localStorage），部署成本为零</li>
+<li><strong>多语音引擎策略模式</strong>：通过 <code>SpeechRecognitionManager</code> 统一调度，支持 Web Speech 和百度语音切换，预留阿里云/讯飞接口</li>
+<li><strong>知识自动提取</strong>：正则引擎从对话中自动识别 4 类结构化信息，存入独立数据库</li>
+<li><strong>空对话优化</strong>：新建对话不立即写库，首次发消息才持久化，避免数据冗余</li>
+<li><strong>设置版本迁移</strong>：localStorage 设置带版本号，支持平滑升级默认值</li>
+</ol>
+<h3 id="14-目标用户与场景">
+<a class="header-anchor" href="#14-%e7%9b%ae%e6%a0%87%e7%94%a8%e6%88%b7%e4%b8%8e%e5%9c%ba%e6%99%af"></a>
+1.4 目标用户与场景
+</h3><table>
+	<thead>
+			<tr>
+					<th>用户群体</th>
+					<th>典型场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>职场白领</td>
+					<td>语音快速记录会议要点、待办事项</td>
+			</tr>
+			<tr>
+					<td>学生群体</td>
+					<td>语音记录学习笔记、智能问答</td>
+			</tr>
+			<tr>
+					<td>技术爱好者</td>
+					<td>AI 辅助编程、写作、知识管理</td>
+			</tr>
+			<tr>
+					<td>视障用户</td>
+					<td>纯语音交互，解放双手</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h2 id="二系统架构">
+<a class="header-anchor" href="#%e4%ba%8c%e7%b3%bb%e7%bb%9f%e6%9e%b6%e6%9e%84"></a>
+二、系统架构
+</h2><h3 id="21-三层分离架构">
+<a class="header-anchor" href="#21-%e4%b8%89%e5%b1%82%e5%88%86%e7%a6%bb%e6%9e%b6%e6%9e%84"></a>
+2.1 三层分离架构
+</h3><p>项目采用清晰的<strong>组件层 → 状态层 → 服务层</strong>三层分离架构：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">┌──────────────────────────────────────────────────────────────┐
+</span></span><span class="line"><span class="cl">│                      UI 组件层 (Components)                    │
+</span></span><span class="line"><span class="cl">│  ┌──────────┐ ┌──────────────┐ ┌──────────┐ ┌──────────┐    │
+</span></span><span class="line"><span class="cl">│  │ Sidebar  │ │ MessageBubble│ │Knowledge │ │ Settings │    │
+</span></span><span class="line"><span class="cl">│  │ 对话列表  │ │ 消息气泡      │ │Panel知识库│ │ 设置弹窗  │    │
+</span></span><span class="line"><span class="cl">│  └──────────┘ └──────────────┘ └──────────┘ └──────────┘    │
+</span></span><span class="line"><span class="cl">├──────────────────────────────────────────────────────────────┤
+</span></span><span class="line"><span class="cl">│                     状态管理层 (Stores - Zustand)              │
+</span></span><span class="line"><span class="cl">│  ┌──────────────┐ ┌──────────────┐ ┌──────────────────┐     │
+</span></span><span class="line"><span class="cl">│  │  chatStore   │ │  voiceStore  │ │  knowledgeStore  │     │
+</span></span><span class="line"><span class="cl">│  │ 对话+消息状态 │ │ 语音识别+合成 │ │   知识库状态      │     │
+</span></span><span class="line"><span class="cl">│  └──────────────┘ └──────────────┘ └──────────────────┘     │
+</span></span><span class="line"><span class="cl">├──────────────────────────────────────────────────────────────┤
+</span></span><span class="line"><span class="cl">│                      服务层 (Services - 单例)                  │
+</span></span><span class="line"><span class="cl">│  ┌─────────┐ ┌─────────────┐ ┌──────────┐ ┌──────────────┐  │
+</span></span><span class="line"><span class="cl">│  │AI Service│ │Speech Service│ │Storage   │ │Knowledge     │  │
+</span></span><span class="line"><span class="cl">│  │SSE流式   │ │识别+合成     │ │Service   │ │Service       │  │
+</span></span><span class="line"><span class="cl">│  │          │ │策略模式      │ │Dexie+LS  │ │正则提取+存储  │  │
+</span></span><span class="line"><span class="cl">│  └─────────┘ └─────────────┘ └──────────┘ └──────────────┘  │
+</span></span><span class="line"><span class="cl">├──────────────────────────────────────────────────────────────┤
+</span></span><span class="line"><span class="cl">│                   外部服务 / 浏览器原生 API                     │
+</span></span><span class="line"><span class="cl">│  ┌─────────────┐ ┌──────────────┐ ┌──────────┐ ┌──────────┐ │
+</span></span><span class="line"><span class="cl">│  │ 智谱AI API  │ │Web Speech API│ │IndexedDB │ │localStorage│ │
+</span></span><span class="line"><span class="cl">│  │ glm-4-flash │ │Recognition+  │ │Dexie封装 │ │设置+APIKey│ │
+</span></span><span class="line"><span class="cl">│  │             │ │Synthesis     │ │          │ │           │ │
+</span></span><span class="line"><span class="cl">│  └─────────────┘ └──────────────┘ └──────────┘ └──────────┘ │
+</span></span><span class="line"><span class="cl">└──────────────────────────────────────────────────────────────┘
+</span></span></code></pre></div><h3 id="22-架构设计原则">
+<a class="header-anchor" href="#22-%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99"></a>
+2.2 架构设计原则
+</h3><table>
+	<thead>
+			<tr>
+					<th>原则</th>
+					<th>说明</th>
+					<th>示例</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>关注点分离</strong></td>
+					<td>组件只管渲染，Store 只管状态，Service 只管 I/O</td>
+					<td>MessageBubble 不含任何业务逻辑</td>
+			</tr>
+			<tr>
+					<td><strong>单例模式</strong></td>
+					<td>所有 Service 导出单例实例，全局唯一</td>
+					<td><code>export const aiService = new OpenAIService()</code></td>
+			</tr>
+			<tr>
+					<td><strong>可替换性</strong></td>
+					<td>Service 接口统一，实现可替换</td>
+					<td>语音识别切换 Provider 不影响上层</td>
+			</tr>
+			<tr>
+					<td><strong>状态与持久化解耦</strong></td>
+					<td>Zustand 管运行时状态，Dexie 管持久化</td>
+					<td>Store 不直接用 persist 中间件</td>
+			</tr>
+			<tr>
+					<td><strong>流式优先</strong></td>
+					<td>所有 AI 交互都是流式，避免长时间等待</td>
+					<td>SSE + 边生成边朗读</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="23-完整目录结构">
+<a class="header-anchor" href="#23-%e5%ae%8c%e6%95%b4%e7%9b%ae%e5%bd%95%e7%bb%93%e6%9e%84"></a>
+2.3 完整目录结构
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">f:\project\ai\sound\
+</span></span><span class="line"><span class="cl">├── public/
+</span></span><span class="line"><span class="cl">│   └── vite.svg                        # 网站图标
+</span></span><span class="line"><span class="cl">├── src/
+</span></span><span class="line"><span class="cl">│   ├── components/                     # ========== UI 组件层 ==========
+</span></span><span class="line"><span class="cl">│   │   ├── Chat/
+</span></span><span class="line"><span class="cl">│   │   │   └── MessageBubble.tsx       # 消息气泡（Markdown渲染 + 操作按钮）
+</span></span><span class="line"><span class="cl">│   │   ├── Sidebar/
+</span></span><span class="line"><span class="cl">│   │   │   └── Sidebar.tsx             # 侧边栏（对话列表/搜索/高亮/删除）
+</span></span><span class="line"><span class="cl">│   │   ├── Settings/
+</span></span><span class="line"><span class="cl">│   │   │   └── SettingsModal.tsx       # 设置弹窗（5个Tab：语音/助手/知识库/隐私/外观）
+</span></span><span class="line"><span class="cl">│   │   ├── Knowledge/
+</span></span><span class="line"><span class="cl">│   │   │   └── KnowledgePanel.tsx      # 知识库面板（可折叠/分类/搜索/增删）
+</span></span><span class="line"><span class="cl">│   │   ├── History/
+</span></span><span class="line"><span class="cl">│   │   │   └── HistoryModal.tsx        # 历史记录弹窗（按日期分组）
+</span></span><span class="line"><span class="cl">│   │   └── ErrorBoundary.tsx           # 全局错误边界（捕获渲染异常）
+</span></span><span class="line"><span class="cl">│   │
+</span></span><span class="line"><span class="cl">│   ├── stores/                         # ========== 状态管理层 ==========
+</span></span><span class="line"><span class="cl">│   │   ├── chatStore.ts                # 对话状态：列表/当前/消息/增删改查
+</span></span><span class="line"><span class="cl">│   │   ├── voiceStore.ts              # 语音状态：识别(ASR)+合成(TTS)
+</span></span><span class="line"><span class="cl">│   │   └── knowledgeStore.ts          # 知识库状态：列表/筛选/搜索
+</span></span><span class="line"><span class="cl">│   │
+</span></span><span class="line"><span class="cl">│   ├── services/                       # ========== 服务层（单例）==========
+</span></span><span class="line"><span class="cl">│   │   ├── ai/
+</span></span><span class="line"><span class="cl">│   │   │   └── OpenAIService.ts        # AI对话：chat() + chatStream() SSE流式
+</span></span><span class="line"><span class="cl">│   │   ├── speech/
+</span></span><span class="line"><span class="cl">│   │   │   ├── SpeechRecognitionManager.ts  # 识别管理器（策略模式调度）
+</span></span><span class="line"><span class="cl">│   │   │   ├── SpeechRecognition.tsx        # Web Speech API 识别实现
+</span></span><span class="line"><span class="cl">│   │   │   ├── BaiduSpeechRecognition.ts   # 百度语音识别（WebSocket+PCM）
+</span></span><span class="line"><span class="cl">│   │   │   └── SpeechSynthesis.ts           # 语音合成（speak+speakQueued队列）
+</span></span><span class="line"><span class="cl">│   │   ├── knowledge/
+</span></span><span class="line"><span class="cl">│   │   │   └── KnowledgeService.ts     # 知识提取（正则引擎）+ Dexie存储
+</span></span><span class="line"><span class="cl">│   │   └── storage/
+</span></span><span class="line"><span class="cl">│   │       ├── MessageStorage.ts       # 对话/消息持久化（Dexie/IndexedDB）
+</span></span><span class="line"><span class="cl">│   │       └── SettingsStorage.ts      # 设置持久化（localStorage+版本迁移）
+</span></span><span class="line"><span class="cl">│   │
+</span></span><span class="line"><span class="cl">│   ├── utils/
+</span></span><span class="line"><span class="cl">│   │   └── markdownUtils.ts            # Markdown剥离（语音朗读前过滤格式符号）
+</span></span><span class="line"><span class="cl">│   │
+</span></span><span class="line"><span class="cl">│   ├── types/
+</span></span><span class="line"><span class="cl">│   │   └── index.ts                    # 全局TypeScript类型定义
+</span></span><span class="line"><span class="cl">│   │
+</span></span><span class="line"><span class="cl">│   ├── styles/
+</span></span><span class="line"><span class="cl">│   │   └── globals.css                 # 全局样式 + Tailwind 指令
+</span></span><span class="line"><span class="cl">│   │
+</span></span><span class="line"><span class="cl">│   ├── App.tsx                         # 主应用组件（核心流程编排）
+</span></span><span class="line"><span class="cl">│   └── main.tsx                        # 应用入口（ReactDOM render）
+</span></span><span class="line"><span class="cl">│
+</span></span><span class="line"><span class="cl">├── index.html                          # HTML 模板
+</span></span><span class="line"><span class="cl">├── package.json                        # 依赖与脚本
+</span></span><span class="line"><span class="cl">├── vite.config.ts                      # Vite 配置（路径别名 + allowedHosts）
+</span></span><span class="line"><span class="cl">├── tsconfig.json                       # TypeScript 配置
+</span></span><span class="line"><span class="cl">├── tailwind.config.js                  # Tailwind 主题配置
+</span></span><span class="line"><span class="cl">├── postcss.config.js                   # PostCSS 配置
+</span></span><span class="line"><span class="cl">│
+</span></span><span class="line"><span class="cl">├── 需求文档.md                         # 功能需求 + 用户界面设计
+</span></span><span class="line"><span class="cl">├── 产品设计文档.md                     # 产品定位 + 用户画像 + 交互设计
+</span></span><span class="line"><span class="cl">├── 技术方案文档.md                     # 技术架构 + 核心模块设计 + API设计
+</span></span><span class="line"><span class="cl">├── 语音合成技术方案.md                 # 多音色/声音克隆技术选型对比
+</span></span><span class="line"><span class="cl">├── 面试问答.md                         # 大厂风格面试题
+</span></span><span class="line"><span class="cl">└── 项目介绍.md                         # 本文档
+</span></span></code></pre></div><hr>
+<h2 id="三核心功能详解">
+<a class="header-anchor" href="#%e4%b8%89%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd%e8%af%a6%e8%a7%a3"></a>
+三、核心功能详解
+</h2><h3 id="31-ai-流式对话sse">
+<a class="header-anchor" href="#31-ai-%e6%b5%81%e5%bc%8f%e5%af%b9%e8%af%9dsse"></a>
+3.1 AI 流式对话（SSE）
+</h3><p><strong>实现方式</strong>：基于 Fetch API + ReadableStream + TextDecoder 的 SSE 流式输出</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">用户发送消息
+</span></span><span class="line"><span class="cl">  ↓
+</span></span><span class="line"><span class="cl">fetch API 请求（stream: true）
+</span></span><span class="line"><span class="cl">  ↓
+</span></span><span class="line"><span class="cl">ReadableStream + TextDecoder 逐块读取
+</span></span><span class="line"><span class="cl">  ↓
+</span></span><span class="line"><span class="cl">按行解析 SSE 格式（data: ...）
+</span></span><span class="line"><span class="cl">  ↓
+</span></span><span class="line"><span class="cl">提取 choices[0].delta.content
+</span></span><span class="line"><span class="cl">  ↓
+</span></span><span class="line"><span class="cl">逐字追加到 UI（打字机效果）
+</span></span></code></pre></div><p><strong>核心代码思路</strong>（<a href="#ZgotmplZ">OpenAIService.ts</a>）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">async</span> <span class="o">*</span><span class="nx">chatStream</span><span class="p">(</span><span class="nx">messages</span>: <span class="kt">ChatMessage</span><span class="p">[])</span><span class="o">:</span> <span class="nx">AsyncGenerator</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">fetch</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">baseUrl</span> <span class="o">+</span> <span class="s1">&#39;/chat/completions&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="sb">`Bearer </span><span class="si">${</span><span class="k">this</span><span class="p">.</span><span class="nx">apiKey</span><span class="si">}</span><span class="sb">`</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">body</span>: <span class="kt">JSON.stringify</span><span class="p">({</span> <span class="nx">model</span>: <span class="kt">this.model</span><span class="p">,</span> <span class="nx">messages</span><span class="p">,</span> <span class="nx">stream</span>: <span class="kt">true</span> <span class="p">}),</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">reader</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">body</span><span class="o">?</span><span class="p">.</span><span class="nx">getReader</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">decoder</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TextDecoder</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="p">{</span> <span class="nx">done</span><span class="p">,</span> <span class="nx">value</span> <span class="p">}</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">reader</span><span class="o">!</span><span class="p">.</span><span class="nx">read</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">done</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">chunk</span> <span class="o">=</span> <span class="nx">decoder</span><span class="p">.</span><span class="nx">decode</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">lines</span> <span class="o">=</span> <span class="nx">chunk</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">&#39;\n&#39;</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="nx">line</span> <span class="o">=&gt;</span> <span class="nx">line</span><span class="p">.</span><span class="nx">startsWith</span><span class="p">(</span><span class="s1">&#39;data: &#39;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">line</span> <span class="k">of</span> <span class="nx">lines</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">line</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">6</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">data</span> <span class="o">===</span> <span class="s1">&#39;[DONE]&#39;</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">parsed</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="kr">const</span> <span class="nx">content</span> <span class="o">=</span> <span class="nx">parsed</span><span class="p">.</span><span class="nx">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">delta</span><span class="o">?</span><span class="p">.</span><span class="nx">content</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">content</span><span class="p">)</span> <span class="k">yield</span> <span class="nx">content</span><span class="p">;</span>  <span class="c1">// 逐块 yield
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>为什么用 SSE 而不是 WebSocket？</strong></p>
+<table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>SSE</th>
+					<th>WebSocket</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>通信方向</td>
+					<td>服务端→客户端（单向）</td>
+					<td>双向</td>
+			</tr>
+			<tr>
+					<td>协议</td>
+					<td>HTTP</td>
+					<td>独立协议</td>
+			</tr>
+			<tr>
+					<td>断线重连</td>
+					<td>原生支持</td>
+					<td>需自己实现</td>
+			</tr>
+			<tr>
+					<td>复杂度</td>
+					<td>低</td>
+					<td>高（握手协议）</td>
+			</tr>
+			<tr>
+					<td>适用场景</td>
+					<td>一问一答、推送</td>
+					<td>聊天室、游戏</td>
+			</tr>
+	</tbody>
+</table>
+<p>本项目是&quot;一问一答&quot;场景，SSE 更轻量合适。</p>
+<h3 id="32-流式语音播放边生成边朗读-核心亮点">
+<a class="header-anchor" href="#32-%e6%b5%81%e5%bc%8f%e8%af%ad%e9%9f%b3%e6%92%ad%e6%94%be%e8%be%b9%e7%94%9f%e6%88%90%e8%be%b9%e6%9c%97%e8%af%bb-%e6%a0%b8%e5%bf%83%e4%ba%ae%e7%82%b9"></a>
+3.2 流式语音播放（边生成边朗读）— 核心亮点
+</h3><p>这是本项目<strong>技术含量最高</strong>的功能：AI 回复生成过程中，<strong>按句子实时朗读</strong>，不用等全部生成完。</p>
+<h4 id="整体流程">
+<a class="header-anchor" href="#%e6%95%b4%e4%bd%93%e6%b5%81%e7%a8%8b"></a>
+整体流程
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">┌─────────────────────────────────────────────────────────┐
+</span></span><span class="line"><span class="cl">│                  AI 流式响应 (SSE)                        │
+</span></span><span class="line"><span class="cl">│         逐字符返回：&#34;你好，我是AI助手...&#34;                  │
+</span></span><span class="line"><span class="cl">└────────────────────────┬────────────────────────────────┘
+</span></span><span class="line"><span class="cl">                         │ 每个 chunk
+</span></span><span class="line"><span class="cl">                         ▼
+</span></span><span class="line"><span class="cl">┌─────────────────────────────────────────────────────────┐
+</span></span><span class="line"><span class="cl">│              句子分割器 (Sentence Splitter)               │
+</span></span><span class="line"><span class="cl">│  1. spokenIndex 记录已播放位置                            │
+</span></span><span class="line"><span class="cl">│  2. 正则匹配句子结束符（。！？；！?;）                     │
+</span></span><span class="line"><span class="cl">│  3. 检测 ``` 代码块边界，跳过代码内容                      │
+</span></span><span class="line"><span class="cl">│  4. setTimeout(..., 0) 不阻塞 UI                          │
+</span></span><span class="line"><span class="cl">└────────────────────────┬────────────────────────────────┘
+</span></span><span class="line"><span class="cl">                         │ 完整句子
+</span></span><span class="line"><span class="cl">                         ▼
+</span></span><span class="line"><span class="cl">┌─────────────────────────────────────────────────────────┐
+</span></span><span class="line"><span class="cl">│              播放队列管理器 (Playback Queue)              │
+</span></span><span class="line"><span class="cl">│  1. stripMarkdown() 过滤 Markdown 格式                   │
+</span></span><span class="line"><span class="cl">│  2. 创建 SpeechSynthesisUtterance                        │
+</span></span><span class="line"><span class="cl">│  3. pendingCount++ 追踪待播放数量                         │
+</span></span><span class="line"><span class="cl">│  4. synth.speak() 加入浏览器原生队列                      │
+</span></span><span class="line"><span class="cl">└────────────────────────┬────────────────────────────────┘
+</span></span><span class="line"><span class="cl">                         │
+</span></span><span class="line"><span class="cl">                         ▼
+</span></span><span class="line"><span class="cl">┌─────────────────────────────────────────────────────────┐
+</span></span><span class="line"><span class="cl">│            Web Speech API (SpeechSynthesis)              │
+</span></span><span class="line"><span class="cl">│          原生队列播放，自动依次播放                        │
+</span></span><span class="line"><span class="cl">│  onend → pendingCount-- → 归零则播放完成                  │
+</span></span><span class="line"><span class="cl">└─────────────────────────────────────────────────────────┘
+</span></span></code></pre></div><h4 id="关键技术点详解">
+<a class="header-anchor" href="#%e5%85%b3%e9%94%ae%e6%8a%80%e6%9c%af%e7%82%b9%e8%af%a6%e8%a7%a3"></a>
+关键技术点详解
+</h4><p><strong>1. 句子分割算法</strong></p>
+<p>使用正则 <code>exec()</code> 循环匹配，维护 <code>spokenIndex</code> 避免重复播放：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">speakIfSentence</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">sentenceEndPattern</span> <span class="o">=</span> <span class="sr">/[。！？!?；;]\s*|\n\n+/g</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">sentenceEndPattern</span><span class="p">.</span><span class="nx">lastIndex</span> <span class="o">=</span> <span class="nx">spokenIndex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kd">let</span> <span class="nx">match</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">((</span><span class="nx">match</span> <span class="o">=</span> <span class="nx">sentenceEndPattern</span><span class="p">.</span><span class="nx">exec</span><span class="p">(</span><span class="nx">assistantContent</span><span class="p">))</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">sentenceEndIndex</span> <span class="o">=</span> <span class="nx">match</span><span class="p">.</span><span class="nx">index</span> <span class="o">+</span> <span class="nx">match</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">let</span> <span class="nx">sentence</span> <span class="o">=</span> <span class="nx">assistantContent</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="nx">spokenIndex</span><span class="p">,</span> <span class="nx">sentenceEndIndex</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">// 代码块边界检测
+</span></span></span><span class="line"><span class="cl">    <span class="kr">const</span> <span class="nx">codeBlockMatches</span> <span class="o">=</span> <span class="nx">sentence</span><span class="p">.</span><span class="nx">match</span><span class="p">(</span><span class="sr">/```/g</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">codeBlockMatches</span> <span class="o">&amp;&amp;</span> <span class="nx">codeBlockMatches</span><span class="p">.</span><span class="nx">length</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// 跨越代码块边界，只播放 ``` 之前或之后的部分
+</span></span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">inCodeBlock</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">beforeCode</span> <span class="o">=</span> <span class="nx">sentence</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">sentence</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;```&#39;</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">beforeCode</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span> <span class="nx">speakQueued</span><span class="p">(</span><span class="nx">beforeCode</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">inCodeBlock</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">const</span> <span class="nx">afterCode</span> <span class="o">=</span> <span class="nx">sentence</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="nx">sentence</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">&#39;```&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">afterCode</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span> <span class="nx">speakQueued</span><span class="p">(</span><span class="nx">afterCode</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">inCodeBlock</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">inCodeBlock</span> <span class="o">&amp;&amp;</span> <span class="nx">sentence</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">speakQueued</span><span class="p">(</span><span class="nx">sentence</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nx">spokenIndex</span> <span class="o">=</span> <span class="nx">sentenceEndIndex</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><p><strong>2. 播放队列管理</strong></p>
+<p>利用 Web Speech API 原生队列 + <code>pendingCount</code> 计数器：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="nx">speakQueued</span><span class="p">(</span><span class="nx">text</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">options?</span>: <span class="kt">SpeakOptions</span><span class="p">)</span><span class="o">:</span> <span class="k">void</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">speakText</span> <span class="o">=</span> <span class="nx">stripMarkdown</span><span class="p">(</span><span class="nx">text</span><span class="p">);</span>  <span class="c1">// 过滤 Markdown
+</span></span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">speakText</span><span class="p">.</span><span class="nx">trim</span><span class="p">())</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">utterance</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">SpeechSynthesisUtterance</span><span class="p">(</span><span class="nx">speakText</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">utterance</span><span class="p">.</span><span class="nx">lang</span> <span class="o">=</span> <span class="s1">&#39;zh-CN&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">utterance</span><span class="p">.</span><span class="nx">rate</span> <span class="o">=</span> <span class="nx">opts</span><span class="o">?</span><span class="p">.</span><span class="nx">rate</span> <span class="o">??</span> <span class="mf">1.2</span><span class="p">;</span>  <span class="c1">// 默认 1.2 倍速
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">pendingCount</span><span class="o">++</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">fullText</span> <span class="o">+=</span> <span class="nx">text</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">utterance</span><span class="p">.</span><span class="nx">onend</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="p">.</span><span class="nx">pendingCount</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">pendingCount</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">pendingCount</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">this</span><span class="p">.</span><span class="nx">state</span> <span class="o">=</span> <span class="s1">&#39;idle&#39;</span><span class="p">;</span>  <span class="c1">// 全部播放完毕
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="p">.</span><span class="nx">synth</span><span class="p">.</span><span class="nx">speak</span><span class="p">(</span><span class="nx">utterance</span><span class="p">);</span>  <span class="c1">// 加入原生队列
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>3. Markdown 格式过滤</strong></p>
+<p>朗读前通过 <code>stripMarkdown()</code> 剥离所有格式符号（<a href="#ZgotmplZ">markdownUtils.ts</a>）：</p>
+<table>
+	<thead>
+			<tr>
+					<th>过滤项</th>
+					<th>正则</th>
+					<th>示例</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>代码块</td>
+					<td><code>/```[\s\S]*?```/g</code></td>
+					<td><code>python...</code> → &ldquo;代码略&rdquo;</td>
+			</tr>
+			<tr>
+					<td>行内代码</td>
+					<td><code>/</code>([^<code>]+)</code>/g`</td>
+					<td><code>turtle</code> → &ldquo;turtle&rdquo;（保留内容）</td>
+			</tr>
+			<tr>
+					<td>标题</td>
+					<td><code>/^#{1,6}\s+/gm</code></td>
+					<td><code>## 标题</code> → &ldquo;标题&rdquo;</td>
+			</tr>
+			<tr>
+					<td>加粗</td>
+					<td><code>/\*\*([^*]+)\*\*/g</code></td>
+					<td><strong>文字</strong> → &ldquo;文字&rdquo;</td>
+			</tr>
+			<tr>
+					<td>列表</td>
+					<td><code>/^\s*[-*+]\s+/gm</code></td>
+					<td><code>- 项目</code> → &ldquo;项目&rdquo;</td>
+			</tr>
+			<tr>
+					<td>有序列表（带冒号标题保留数字）</td>
+					<td><code>/^\s*\d+\.\s+(?!.*：)/gm</code></td>
+					<td><code>1. 项目</code> → &ldquo;项目&rdquo;</td>
+			</tr>
+			<tr>
+					<td>链接</td>
+					<td><code>/\[([^\]]+)\]\([^)]+\)/g</code></td>
+					<td><a href="url">文字</a> → &ldquo;文字&rdquo;</td>
+			</tr>
+			<tr>
+					<td>Emoji</td>
+					<td>Unicode 范围过滤</td>
+					<td>😀🎉 → 移除</td>
+			</tr>
+	</tbody>
+</table>
+<p><strong>4. 不阻塞 UI 渲染</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="k">for</span> <span class="k">await</span> <span class="p">(</span><span class="kr">const</span> <span class="nx">chunk</span> <span class="k">of</span> <span class="nx">aiService</span><span class="p">.</span><span class="nx">chatStream</span><span class="p">(</span><span class="nx">allMessages</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">assistantContent</span> <span class="o">+=</span> <span class="nx">chunk</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">updateMessageContent</span><span class="p">(</span><span class="nx">assistantMessage</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">assistantContent</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">setTimeout</span><span class="p">(</span><span class="nx">speakIfSentence</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>  <span class="c1">// 放到下一个事件循环
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>5. 错误处理</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="nx">utterance</span><span class="p">.</span><span class="nx">onerror</span> <span class="o">=</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 忽略 interrupted 和 canceled（主动停止的正常行为）
+</span></span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">error</span> <span class="o">===</span> <span class="s1">&#39;interrupted&#39;</span> <span class="o">||</span> <span class="nx">event</span><span class="p">.</span><span class="nx">error</span> <span class="o">===</span> <span class="s1">&#39;canceled&#39;</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;语音播放错误:&#39;</span><span class="p">,</span> <span class="nx">event</span><span class="p">.</span><span class="nx">error</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><h3 id="33-语音识别asr">
+<a class="header-anchor" href="#33-%e8%af%ad%e9%9f%b3%e8%af%86%e5%88%abasr"></a>
+3.3 语音识别（ASR）
+</h3><p>采用<strong>策略模式 + 管理器</strong>设计，支持多 Provider 切换：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">┌─────────────────────────────────────────┐
+</span></span><span class="line"><span class="cl">│     SpeechRecognitionManager (管理器)     │
+</span></span><span class="line"><span class="cl">│   统一接口：start/stop/onResult/onError  │
+</span></span><span class="line"><span class="cl">├──────────────┬──────────────────────────┤
+</span></span><span class="line"><span class="cl">│  Web Speech  │    百度语音识别           │
+</span></span><span class="line"><span class="cl">│  (浏览器原生) │   (WebSocket + PCM流)    │
+</span></span><span class="line"><span class="cl">│  免费/免配置  │    国内更稳定/需配置      │
+</span></span><span class="line"><span class="cl">└──────────────┴──────────────────────────┘
+</span></span><span class="line"><span class="cl">         ↕ 预留接口（未实现）
+</span></span><span class="line"><span class="cl">┌──────────────┬──────────────────────────┐
+</span></span><span class="line"><span class="cl">│  阿里云语音   │    讯飞语音识别           │
+</span></span><span class="line"><span class="cl">└──────────────┴──────────────────────────┘
+</span></span></code></pre></div><p><strong>Web Speech API 识别特性</strong>：</p>
+<ul>
+<li><code>continuous: true</code> — 连续识别模式</li>
+<li><code>interimResults: true</code> — 实时返回中间结果（用户看到文字在跳动）</li>
+<li><code>lang: 'zh-CN'</code> — 中文识别</li>
+<li>网络错误时自动重连</li>
+</ul>
+<h3 id="34-知识自动提取">
+<a class="header-anchor" href="#34-%e7%9f%a5%e8%af%86%e8%87%aa%e5%8a%a8%e6%8f%90%e5%8f%96"></a>
+3.4 知识自动提取
+</h3><p>从用户消息中通过正则引擎自动识别 4 类结构化信息：</p>
+<table>
+	<thead>
+			<tr>
+					<th>类型</th>
+					<th>触发模式（正则）</th>
+					<th>示例</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>日程 (schedule)</td>
+					<td>日期时间模式：`明天</td>
+					<td>后天</td>
+			</tr>
+			<tr>
+					<td>待办 (todo)</td>
+					<td>关键词：`提醒我</td>
+					<td>记得</td>
+			</tr>
+			<tr>
+					<td>笔记 (note)</td>
+					<td>关键词：`记住</td>
+					<td>记一下</td>
+			</tr>
+			<tr>
+					<td>联系人 (contact)</td>
+					<td>电话号码 <code>\d{11}</code> / 邮箱 <code>\S+@\S+</code></td>
+					<td>&ldquo;张三的电话是13800138000&rdquo;</td>
+			</tr>
+	</tbody>
+</table>
+<p>提取流程：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="err">用户发送消息</span>
+</span></span><span class="line"><span class="cl">  <span class="err">↓</span>
+</span></span><span class="line"><span class="cl"><span class="n">knowledgeService</span><span class="o">.</span><span class="n">extractAndStore</span><span class="p">(</span><span class="n">userMessage</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="err">↓</span> <span class="n">KnowledgeExtractor</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="err">↓</span> <span class="err">正则匹配</span> <span class="mi">4</span> <span class="err">种模式</span>
+</span></span><span class="line"><span class="cl"><span class="err">匹配成功</span> <span class="err">→</span> <span class="err">存入</span> <span class="n">Dexie</span> <span class="err">知识库（</span><span class="n">SoundAIKnowledge</span><span class="err">）</span>
+</span></span><span class="line"><span class="cl">  <span class="err">↓</span>
+</span></span><span class="line"><span class="cl"><span class="n">knowledgeStore</span><span class="o">.</span><span class="n">loadItems</span><span class="p">()</span> <span class="err">→</span> <span class="err">刷新知识库面板</span>
+</span></span></code></pre></div><h3 id="35-数据持久化">
+<a class="header-anchor" href="#35-%e6%95%b0%e6%8d%ae%e6%8c%81%e4%b9%85%e5%8c%96"></a>
+3.5 数据持久化
+</h3><h4 id="分层存储策略">
+<a class="header-anchor" href="#%e5%88%86%e5%b1%82%e5%ad%98%e5%82%a8%e7%ad%96%e7%95%a5"></a>
+分层存储策略
+</h4><table>
+	<thead>
+			<tr>
+					<th>数据类型</th>
+					<th>存储方式</th>
+					<th>数据库/键名</th>
+					<th>容量</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>用户设置</td>
+					<td>localStorage</td>
+					<td><code>sound-ai-settings</code></td>
+					<td>~5MB</td>
+					<td>含版本迁移机制</td>
+			</tr>
+			<tr>
+					<td>API Key</td>
+					<td>localStorage</td>
+					<td><code>sound-ai-api-key</code></td>
+					<td>~5MB</td>
+					<td>独立键存储</td>
+			</tr>
+			<tr>
+					<td>Base URL</td>
+					<td>localStorage</td>
+					<td><code>sound-ai-base-url</code></td>
+					<td>~5MB</td>
+					<td>AI 服务地址</td>
+			</tr>
+			<tr>
+					<td>对话/消息</td>
+					<td>IndexedDB</td>
+					<td><code>SoundAIMessages</code></td>
+					<td>~500MB+</td>
+					<td>Dexie 封装，支持索引</td>
+			</tr>
+			<tr>
+					<td>知识库</td>
+					<td>IndexedDB</td>
+					<td><code>SoundAIKnowledge</code></td>
+					<td>~500MB+</td>
+					<td>独立数据库</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="indexeddb-数据库设计">
+<a class="header-anchor" href="#indexeddb-%e6%95%b0%e6%8d%ae%e5%ba%93%e8%ae%be%e8%ae%a1"></a>
+IndexedDB 数据库设计
+</h4><p><strong>SoundAIMessages 数据库</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">MessageDatabase</span> <span class="kr">extends</span> <span class="nx">Dexie</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">conversations</span><span class="o">!:</span> <span class="nx">Table</span><span class="p">&lt;</span><span class="nt">Conversation</span><span class="p">&gt;;</span>  <span class="c1">// 对话表
+</span></span></span><span class="line"><span class="cl">  <span class="nx">messages</span><span class="o">!:</span> <span class="nx">Table</span><span class="p">&lt;</span><span class="nt">Message</span><span class="p">&gt;;</span>            <span class="c1">// 消息表
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">constructor</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">super</span><span class="p">(</span><span class="s1">&#39;SoundAIMessages&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="p">.</span><span class="nx">version</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">stores</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">messages</span><span class="o">:</span> <span class="s1">&#39;++id, conversationId, role, timestamp&#39;</span><span class="p">,</span>  <span class="c1">// 自增主键 + 索引
+</span></span></span><span class="line"><span class="cl">      <span class="nx">conversations</span><span class="o">:</span> <span class="s1">&#39;++id, title, createdAt, updatedAt&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>SoundAIKnowledge 数据库</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">class</span> <span class="nx">KnowledgeDatabase</span> <span class="kr">extends</span> <span class="nx">Dexie</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">knowledge</span><span class="o">!:</span> <span class="nx">Table</span><span class="p">&lt;</span><span class="nt">KnowledgeItem</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">constructor</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">super</span><span class="p">(</span><span class="s1">&#39;SoundAIKnowledge&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">this</span><span class="p">.</span><span class="nx">version</span><span class="p">(</span><span class="mi">1</span><span class="p">).</span><span class="nx">stores</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">knowledge</span><span class="o">:</span> <span class="s1">&#39;++id, type, title, *tags, createdAt, updatedAt&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="设置版本迁移机制">
+<a class="header-anchor" href="#%e8%ae%be%e7%bd%ae%e7%89%88%e6%9c%ac%e8%bf%81%e7%a7%bb%e6%9c%ba%e5%88%b6"></a>
+设置版本迁移机制
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">SETTINGS_VERSION</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">function</span> <span class="nx">migrateSettings</span><span class="p">(</span><span class="nx">stored</span>: <span class="kt">any</span><span class="p">)</span><span class="o">:</span> <span class="kt">any</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">version</span> <span class="o">=</span> <span class="nx">stored</span><span class="o">?</span><span class="p">.</span><span class="nx">_version</span> <span class="o">||</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">version</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// v2: 默认语速从 1.0 升级到 1.2
+</span></span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">stored</span><span class="o">?</span><span class="p">.</span><span class="nx">voice</span><span class="o">?</span><span class="p">.</span><span class="nx">speed</span> <span class="o">===</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">stored</span><span class="p">.</span><span class="nx">voice</span><span class="p">.</span><span class="nx">speed</span> <span class="o">=</span> <span class="mf">1.2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">stored</span><span class="p">.</span><span class="nx">_version</span> <span class="o">=</span> <span class="nx">SETTINGS_VERSION</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">stored</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="空对话优化">
+<a class="header-anchor" href="#%e7%a9%ba%e5%af%b9%e8%af%9d%e4%bc%98%e5%8c%96"></a>
+空对话优化
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">新建对话 → currentConversationId = null（仅内存，不写数据库）
+</span></span><span class="line"><span class="cl">  ↓
+</span></span><span class="line"><span class="cl">发送第一条消息 → createConversation() 写入 IndexedDB
+</span></span><span class="line"><span class="cl">  ↓
+</span></span><span class="line"><span class="cl">左侧列表显示对话，currentConversationId 赋值
+</span></span></code></pre></div><p>再次点击&quot;新建对话&quot;时，如果当前已经是空对话（<code>id = null</code> 且无消息），直接复用，不重复创建。</p>
+<h3 id="36-ai-自动生成对话标题">
+<a class="header-anchor" href="#36-ai-%e8%87%aa%e5%8a%a8%e7%94%9f%e6%88%90%e5%af%b9%e8%af%9d%e6%a0%87%e9%a2%98"></a>
+3.6 AI 自动生成对话标题
+</h3><p>发送消息后，异步调用 AI（<code>glm-4-flash</code>）生成精简标题：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">const</span> <span class="nx">generateTitleWithAI</span> <span class="o">=</span> <span class="kr">async</span> <span class="p">(</span><span class="nx">userMessage</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">assistantMessage</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 打招呼/感谢/告别等简单消息不生成标题
+</span></span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">isSimpleGreeting</span><span class="p">(</span><span class="nx">userMessage</span><span class="p">))</span> <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">aiService</span><span class="p">.</span><span class="nx">chat</span><span class="p">([{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">role</span><span class="o">:</span> <span class="s1">&#39;user&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">content</span><span class="o">:</span> <span class="sb">`请为以下对话生成一个不超过15字的简短标题：</span><span class="err">\</span><span class="sb">n用户：</span><span class="si">${</span><span class="nx">userMessage</span><span class="si">}</span><span class="err">\</span><span class="sb">nAI：</span><span class="si">${</span><span class="nx">assistantMessage</span><span class="si">}</span><span class="sb">`</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nx">response</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/[&#34;&#34;&#34;&#39;]/g</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">).</span><span class="nx">trim</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">};</span>
+</span></span></code></pre></div><hr>
+<h2 id="四数据流与核心流程">
+<a class="header-anchor" href="#%e5%9b%9b%e6%95%b0%e6%8d%ae%e6%b5%81%e4%b8%8e%e6%a0%b8%e5%bf%83%e6%b5%81%e7%a8%8b"></a>
+四、数据流与核心流程
+</h2><h3 id="41-完整对话流程核心流程图">
+<a class="header-anchor" href="#41-%e5%ae%8c%e6%95%b4%e5%af%b9%e8%af%9d%e6%b5%81%e7%a8%8b%e6%a0%b8%e5%bf%83%e6%b5%81%e7%a8%8b%e5%9b%be"></a>
+4.1 完整对话流程（核心流程图）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">用户输入文字 / 语音识别完成确认
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ▼
+</span></span><span class="line"><span class="cl">App.handleSendMessage(content)
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ├─① 停止之前的语音播放（stopSpeech）
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ├─② 确保有对话
+</span></span><span class="line"><span class="cl">  │   └─ 如果 currentConversationId 为 null → createConversation() 持久化
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ├─③ chatStore.addMessage(userMessage)
+</span></span><span class="line"><span class="cl">  │   └─ 写入 IndexedDB + 更新内存状态
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ├─④ chatStore.addMessage(空 assistantMessage)
+</span></span><span class="line"><span class="cl">  │   └─ 创建占位消息（流式输出会逐步填充）
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ├─⑤ for await (chunk of aiService.chatStream())
+</span></span><span class="line"><span class="cl">  │   ├─ 拼接 assistantContent
+</span></span><span class="line"><span class="cl">  │   ├─ updateMessageContent() ── 仅更新内存（打字机效果）
+</span></span><span class="line"><span class="cl">  │   └─ setTimeout(speakIfSentence, 0)
+</span></span><span class="line"><span class="cl">  │       ├─ 正则匹配句子结束符
+</span></span><span class="line"><span class="cl">  │       ├─ 检测代码块边界，跳过代码内容
+</span></span><span class="line"><span class="cl">  │       └─ speakQueued(sentence) ── 加入播放队列
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ├─⑥ messageStorage.updateMessage() ── 流结束后更新数据库
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ├─⑦ generateTitleWithAI() ── 异步用 AI 生成精简标题
+</span></span><span class="line"><span class="cl">  │   └─ 失败时 fallback 为用户消息前 15 字
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  └─⑧ knowledgeService.extractAndStore(userMessage)
+</span></span><span class="line"><span class="cl">      └─ 正则匹配 → 存入知识库 → 刷新面板
+</span></span></code></pre></div><h3 id="42-语音输入流程">
+<a class="header-anchor" href="#42-%e8%af%ad%e9%9f%b3%e8%be%93%e5%85%a5%e6%b5%81%e7%a8%8b"></a>
+4.2 语音输入流程
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">点击麦克风按钮
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ▼
+</span></span><span class="line"><span class="cl">voiceStore.startRecognition()
+</span></span><span class="line"><span class="cl">  └─ speechRecognitionManager.start()
+</span></span><span class="line"><span class="cl">      ├─ Web Speech API（浏览器原生）
+</span></span><span class="line"><span class="cl">      └─ 百度语音（WebSocket + PCM 音频流）
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ├─ 实时回调 interimText（中间结果，文字跳动）
+</span></span><span class="line"><span class="cl">  └─ 最终回调 recognizedText（isFinal = true）
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ▼
+</span></span><span class="line"><span class="cl">再次点击麦克风停止
+</span></span><span class="line"><span class="cl">  └─ voiceStore.stopRecognition()
+</span></span><span class="line"><span class="cl">  │
+</span></span><span class="line"><span class="cl">  ▼
+</span></span><span class="line"><span class="cl">弹出语音确认栏（可编辑文字）
+</span></span><span class="line"><span class="cl">  ├─ 确认发送 → handleSendMessage(text)
+</span></span><span class="line"><span class="cl">  └─ 取消 → 关闭确认栏
+</span></span></code></pre></div><h3 id="43-页面初始化流程">
+<a class="header-anchor" href="#43-%e9%a1%b5%e9%9d%a2%e5%88%9d%e5%a7%8b%e5%8c%96%e6%b5%81%e7%a8%8b"></a>
+4.3 页面初始化流程
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">App</span> <span class="err">组件挂载</span>
+</span></span><span class="line"><span class="cl">  <span class="err">│</span>
+</span></span><span class="line"><span class="cl">  <span class="err">├─</span> <span class="n">chatStore</span><span class="o">.</span><span class="n">loadConversations</span><span class="p">()</span> <span class="err">──</span> <span class="err">从</span> <span class="n">IndexedDB</span> <span class="err">加载对话列表</span>
+</span></span><span class="line"><span class="cl">  <span class="err">│</span>
+</span></span><span class="line"><span class="cl">  <span class="err">├─</span> <span class="err">判断对话列表</span>
+</span></span><span class="line"><span class="cl">  <span class="err">│</span>   <span class="err">├─</span> <span class="err">有对话</span> <span class="err">→</span> <span class="n">selectConversation</span><span class="p">(</span><span class="n">conversations</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="err">──</span> <span class="err">自动选中第一个</span>
+</span></span><span class="line"><span class="cl">  <span class="err">│</span>   <span class="err">└─</span> <span class="err">无对话</span> <span class="err">→</span> <span class="n">newEmptyConversation</span><span class="p">()</span> <span class="err">──</span> <span class="err">创建临时空对话</span>
+</span></span><span class="line"><span class="cl">  <span class="err">│</span>
+</span></span><span class="line"><span class="cl">  <span class="err">├─</span> <span class="n">voiceStore</span><span class="o">.</span><span class="n">loadVoices</span><span class="p">()</span> <span class="err">──</span> <span class="err">加载语音列表（优先</span> <span class="n">Google</span> <span class="err">普通话）</span>
+</span></span><span class="line"><span class="cl">  <span class="err">│</span>
+</span></span><span class="line"><span class="cl">  <span class="err">├─</span> <span class="n">knowledgeStore</span><span class="o">.</span><span class="n">loadItems</span><span class="p">()</span> <span class="err">──</span> <span class="err">加载知识库</span>
+</span></span><span class="line"><span class="cl">  <span class="err">│</span>
+</span></span><span class="line"><span class="cl">  <span class="err">└─</span> <span class="err">检查</span> <span class="n">API</span> <span class="n">Key</span>
+</span></span><span class="line"><span class="cl">      <span class="err">├─</span> <span class="err">有</span> <span class="n">Key</span> <span class="err">→</span> <span class="err">正常使用</span>
+</span></span><span class="line"><span class="cl">      <span class="err">└─</span> <span class="err">无</span> <span class="n">Key</span> <span class="err">→</span> <span class="err">弹出</span> <span class="n">API</span> <span class="n">Key</span> <span class="err">输入框</span>
+</span></span></code></pre></div><h3 id="44-状态管理设计">
+<a class="header-anchor" href="#44-%e7%8a%b6%e6%80%81%e7%ae%a1%e7%90%86%e8%ae%be%e8%ae%a1"></a>
+4.4 状态管理设计
+</h3><p>三个独立的 Zustand Store，各司其职：</p>
+<h4 id="chatstore--对话状态">
+<a class="header-anchor" href="#chatstore--%e5%af%b9%e8%af%9d%e7%8a%b6%e6%80%81"></a>
+chatStore — 对话状态
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">ChatState</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 状态
+</span></span></span><span class="line"><span class="cl">  <span class="nx">conversations</span>: <span class="kt">Conversation</span><span class="p">[];</span>        <span class="c1">// 所有对话列表
+</span></span></span><span class="line"><span class="cl">  <span class="nx">currentConversationId</span>: <span class="kt">string</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span> <span class="c1">// 当前对话ID（null=临时空对话）
+</span></span></span><span class="line"><span class="cl">  <span class="nx">messages</span>: <span class="kt">Message</span><span class="p">[];</span>                  <span class="c1">// 当前对话的消息列表
+</span></span></span><span class="line"><span class="cl">  <span class="nx">isLoading</span>: <span class="kt">boolean</span><span class="p">;</span>                   <span class="c1">// 加载状态
+</span></span></span><span class="line"><span class="cl">  <span class="nx">error</span>: <span class="kt">string</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span>                 <span class="c1">// 错误信息
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// Actions
+</span></span></span><span class="line"><span class="cl">  <span class="nx">loadConversations</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">void</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">createConversation</span><span class="o">:</span> <span class="p">(</span><span class="nx">title?</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">string</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">newEmptyConversation</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>     <span class="c1">// 创建临时空对话（不写库）
+</span></span></span><span class="line"><span class="cl">  <span class="nx">selectConversation</span><span class="o">:</span> <span class="p">(</span><span class="nx">id</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">void</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">deleteConversation</span><span class="o">:</span> <span class="p">(</span><span class="nx">id</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">void</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">addMessage</span><span class="o">:</span> <span class="p">(</span><span class="nx">msg</span>: <span class="kt">Omit</span><span class="p">&lt;</span><span class="nt">Message</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">&gt;)</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">Message</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">updateMessageContent</span><span class="o">:</span> <span class="p">(</span><span class="nx">id</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">content</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span> <span class="c1">// 仅内存
+</span></span></span><span class="line"><span class="cl">  <span class="nx">updateConversationTitle</span><span class="o">:</span> <span class="p">(</span><span class="nx">id</span>: <span class="kt">string</span><span class="p">,</span> <span class="nx">title</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">void</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="voicestore--语音状态">
+<a class="header-anchor" href="#voicestore--%e8%af%ad%e9%9f%b3%e7%8a%b6%e6%80%81"></a>
+voiceStore — 语音状态
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">VoiceState</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// 识别状态（ASR）
+</span></span></span><span class="line"><span class="cl">  <span class="nx">isListening</span>: <span class="kt">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">recognizedText</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">interimText</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">isRecognitionSupported</span>: <span class="kt">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">recognitionProvider</span>: <span class="kt">SpeechRecognitionProvider</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">recognitionError</span>: <span class="kt">string</span> <span class="o">|</span> <span class="kc">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// 合成状态（TTS）
+</span></span></span><span class="line"><span class="cl">  <span class="nx">playbackState</span>: <span class="kt">PlaybackState</span><span class="p">;</span>         <span class="c1">// &#39;idle&#39; | &#39;playing&#39; | &#39;paused&#39;
+</span></span></span><span class="line"><span class="cl">  <span class="nx">voices</span>: <span class="kt">Voice</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">selectedVoice</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">speed</span>: <span class="kt">number</span><span class="p">;</span>                        <span class="c1">// 默认 1.2
+</span></span></span><span class="line"><span class="cl">  <span class="nx">volume</span>: <span class="kt">number</span><span class="p">;</span>                       <span class="c1">// 默认 1.0
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// Actions（识别）
+</span></span></span><span class="line"><span class="cl">  <span class="nx">startRecognition</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">void</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">stopRecognition</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// Actions（合成）
+</span></span></span><span class="line"><span class="cl">  <span class="nx">speakText</span><span class="o">:</span> <span class="p">(</span><span class="nx">text</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">void</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">speakQueued</span><span class="o">:</span> <span class="p">(</span><span class="nx">text</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>  <span class="c1">// 流式播放
+</span></span></span><span class="line"><span class="cl">  <span class="nx">pauseSpeech</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">resumeSpeech</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">stopSpeech</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">loadVoices</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">void</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="knowledgestore--知识库状态">
+<a class="header-anchor" href="#knowledgestore--%e7%9f%a5%e8%af%86%e5%ba%93%e7%8a%b6%e6%80%81"></a>
+knowledgeStore — 知识库状态
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">KnowledgeState</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">items</span>: <span class="kt">KnowledgeItem</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">selectedType</span>: <span class="kt">KnowledgeType</span> <span class="o">|</span> <span class="s1">&#39;all&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">searchQuery</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">isLoading</span>: <span class="kt">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="nx">loadItems</span><span class="o">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">void</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">addItem</span><span class="o">:</span> <span class="p">(</span><span class="nx">item</span>: <span class="kt">Omit</span><span class="p">&lt;</span><span class="nt">KnowledgeItem</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">&gt;)</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">void</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">deleteItem</span><span class="o">:</span> <span class="p">(</span><span class="nx">id</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">Promise</span><span class="p">&lt;</span><span class="nt">void</span><span class="p">&gt;;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">setSelectedType</span><span class="o">:</span> <span class="p">(</span><span class="kr">type</span><span class="o">:</span> <span class="nx">KnowledgeType</span> <span class="o">|</span> <span class="s1">&#39;all&#39;</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">setSearchQuery</span><span class="o">:</span> <span class="p">(</span><span class="nx">query</span>: <span class="kt">string</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">void</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>为什么选 Zustand 而不是 Redux？</strong></p>
+<table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>Zustand</th>
+					<th>Redux</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>包体积</td>
+					<td>~1KB</td>
+					<td>~15KB（+中间件）</td>
+			</tr>
+			<tr>
+					<td>样板代码</td>
+					<td>几乎没有</td>
+					<td>reducer/action/types</td>
+			</tr>
+			<tr>
+					<td>Provider</td>
+					<td>不需要</td>
+					<td>需要 <code>&lt;Provider&gt;</code></td>
+			</tr>
+			<tr>
+					<td>学习曲线</td>
+					<td>极低</td>
+					<td>中等</td>
+			</tr>
+			<tr>
+					<td>适合项目</td>
+					<td>中小型</td>
+					<td>大型复杂应用</td>
+			</tr>
+	</tbody>
+</table>
+<p>本项目状态不复杂，Zustand 性价比最高。且持久化和状态管理解耦（用 Dexie 而非 persist 中间件），更灵活。</p>
+<hr>
+<h2 id="五各层详细设计">
+<a class="header-anchor" href="#%e4%ba%94%e5%90%84%e5%b1%82%e8%af%a6%e7%bb%86%e8%ae%be%e8%ae%a1"></a>
+五、各层详细设计
+</h2><h3 id="51-ui-组件层">
+<a class="header-anchor" href="#51-ui-%e7%bb%84%e4%bb%b6%e5%b1%82"></a>
+5.1 UI 组件层
+</h3><h4 id="messagebubble--消息气泡">
+<a class="header-anchor" href="#messagebubble--%e6%b6%88%e6%81%af%e6%b0%94%e6%b3%a1"></a>
+MessageBubble — 消息气泡
+</h4><table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>差异化渲染</td>
+					<td>用户消息纯文本右对齐；AI 消息用 react-markdown 渲染（支持 GFM）</td>
+			</tr>
+			<tr>
+					<td>流式光标</td>
+					<td>AI 消息流式输出时显示闪烁光标动画</td>
+			</tr>
+			<tr>
+					<td>操作按钮</td>
+					<td>播放语音、保存到知识库、复制内容、分享</td>
+			</tr>
+			<tr>
+					<td>自动滚动</td>
+					<td>新消息时自动滚动到底部</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="sidebar--侧边栏">
+<a class="header-anchor" href="#sidebar--%e4%be%a7%e8%be%b9%e6%a0%8f"></a>
+Sidebar — 侧边栏
+</h4><table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>对话列表</td>
+					<td>按更新时间倒序排列</td>
+			</tr>
+			<tr>
+					<td>搜索</td>
+					<td>按标题关键词搜索</td>
+			</tr>
+			<tr>
+					<td>新建对话</td>
+					<td>复用空对话或创建新的临时空对话</td>
+			</tr>
+			<tr>
+					<td>当前对话高亮</td>
+					<td>深蓝背景 + 白色文字 + 左边框</td>
+			</tr>
+			<tr>
+					<td>删除对话</td>
+					<td>直接删除，无需二次确认</td>
+			</tr>
+			<tr>
+					<td>临时空对话</td>
+					<td>显示&quot;新对话&quot;条目，选中时高亮</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="settingsmodal--设置弹窗5-个-tab">
+<a class="header-anchor" href="#settingsmodal--%e8%ae%be%e7%bd%ae%e5%bc%b9%e7%aa%975-%e4%b8%aa-tab"></a>
+SettingsModal — 设置弹窗（5 个 Tab）
+</h4><table>
+	<thead>
+			<tr>
+					<th>Tab</th>
+					<th>设置项</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>语音设置</td>
+					<td>识别服务切换、音色选择、语速/音量调节、自动朗读开关、测试语音</td>
+			</tr>
+			<tr>
+					<td>助手设置</td>
+					<td>API Key、Base URL、连接测试、助手名称/角色/性格</td>
+			</tr>
+			<tr>
+					<td>知识库设置</td>
+					<td>自动提取开关、分类管理</td>
+			</tr>
+			<tr>
+					<td>隐私设置</td>
+					<td>保存历史开关、数据加密</td>
+			</tr>
+			<tr>
+					<td>外观设置</td>
+					<td>主题（预留）</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="52-服务层">
+<a class="header-anchor" href="#52-%e6%9c%8d%e5%8a%a1%e5%b1%82"></a>
+5.2 服务层
+</h3><h4 id="ai-serviceopenaiservicets">
+<a class="header-anchor" href="#ai-serviceopenaiservicets"></a>
+AI Service（<a href="#ZgotmplZ">OpenAIService.ts</a>）
+</h4><table>
+	<thead>
+			<tr>
+					<th>方法</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>chat(messages)</code></td>
+					<td>普通对话，返回完整回复</td>
+			</tr>
+			<tr>
+					<td><code>chatStream(messages)</code></td>
+					<td>SSE 流式对话，AsyncGenerator 逐块 yield</td>
+			</tr>
+			<tr>
+					<td><code>setApiKey(key)</code></td>
+					<td>设置 API Key</td>
+			</tr>
+			<tr>
+					<td><code>setBaseUrl(url)</code></td>
+					<td>设置服务地址（默认智谱 AI）</td>
+			</tr>
+			<tr>
+					<td><code>testConnection()</code></td>
+					<td>测试 API 连接</td>
+			</tr>
+	</tbody>
+</table>
+<p>默认配置：</p>
+<ul>
+<li>BaseUrl: <code>https://open.bigmodel.cn/api/paas/v4</code>（智谱 AI）</li>
+<li>Model: <code>glm-4-flash</code></li>
+</ul>
+<h4 id="speech-service">
+<a class="header-anchor" href="#speech-service"></a>
+Speech Service
+</h4><p><strong>语音识别</strong>（策略模式）：</p>
+<table>
+	<thead>
+			<tr>
+					<th>组件</th>
+					<th>角色</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>SpeechRecognitionManager</code></td>
+					<td>管理器，统一调度，注册/切换 Provider</td>
+			</tr>
+			<tr>
+					<td><code>SpeechRecognition</code></td>
+					<td>Web Speech API 实现（浏览器原生）</td>
+			</tr>
+			<tr>
+					<td><code>BaiduSpeechRecognition</code></td>
+					<td>百度语音实现（WebSocket + PCM 音频流）</td>
+			</tr>
+	</tbody>
+</table>
+<p><strong>语音合成</strong>（<a href="#ZgotmplZ">SpeechSynthesis.ts</a>）：</p>
+<table>
+	<thead>
+			<tr>
+					<th>方法</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>speak(text)</code></td>
+					<td>单次播放（中断当前）</td>
+			</tr>
+			<tr>
+					<td><code>speakQueued(text)</code></td>
+					<td>队列播放（流式朗读关键方法）</td>
+			</tr>
+			<tr>
+					<td><code>pause()</code> / <code>resume()</code></td>
+					<td>暂停 / 继续</td>
+			</tr>
+			<tr>
+					<td><code>stop()</code></td>
+					<td>停止并清空队列</td>
+			</tr>
+			<tr>
+					<td><code>getVoices()</code></td>
+					<td>获取可用语音列表</td>
+			</tr>
+			<tr>
+					<td><code>getState()</code></td>
+					<td>获取播放状态</td>
+			</tr>
+			<tr>
+					<td><code>getPendingCount()</code></td>
+					<td>获取待播放数量</td>
+			</tr>
+			<tr>
+					<td><code>getFullText()</code></td>
+					<td>获取完整播放文本（用于状态匹配）</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="storage-service">
+<a class="header-anchor" href="#storage-service"></a>
+Storage Service
+</h4><p><strong>MessageStorage</strong>（Dexie / IndexedDB）：</p>
+<table>
+	<thead>
+			<tr>
+					<th>方法</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>createConversation(title?)</code></td>
+					<td>创建对话，返回 id</td>
+			</tr>
+			<tr>
+					<td><code>getConversations()</code></td>
+					<td>获取所有对话（按更新时间倒序）</td>
+			</tr>
+			<tr>
+					<td><code>getConversation(id)</code></td>
+					<td>获取单个对话</td>
+			</tr>
+			<tr>
+					<td><code>deleteConversation(id)</code></td>
+					<td>删除对话及其所有消息</td>
+			</tr>
+			<tr>
+					<td><code>updateConversationTitle(id, title)</code></td>
+					<td>更新对话标题</td>
+			</tr>
+			<tr>
+					<td><code>addMessage(message)</code></td>
+					<td>添加消息</td>
+			</tr>
+			<tr>
+					<td><code>updateMessage(id, updates)</code></td>
+					<td>更新消息</td>
+			</tr>
+			<tr>
+					<td><code>getConversationMessages(conversationId)</code></td>
+					<td>获取对话所有消息（按时间排序）</td>
+			</tr>
+	</tbody>
+</table>
+<p><strong>SettingsStorage</strong>（localStorage）：</p>
+<table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>设置读写</td>
+					<td><code>getSettings()</code> / <code>updateSettings()</code></td>
+			</tr>
+			<tr>
+					<td>分模块读写</td>
+					<td>语音/助手/知识库/隐私 各自独立的 getter/setter</td>
+			</tr>
+			<tr>
+					<td>版本迁移</td>
+					<td><code>migrateSettings()</code> 平滑升级默认值</td>
+			</tr>
+			<tr>
+					<td>API Key 管理</td>
+					<td><code>getApiKey()</code> / <code>setApiKey()</code> 独立键存储</td>
+			</tr>
+			<tr>
+					<td>深度合并</td>
+					<td><code>deepMergeDefaults()</code> 新增字段自动补全默认值</td>
+			</tr>
+			<tr>
+					<td>重置</td>
+					<td><code>reset()</code> 恢复默认设置</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="53-typescript-类型系统">
+<a class="header-anchor" href="#53-typescript-%e7%b1%bb%e5%9e%8b%e7%b3%bb%e7%bb%9f"></a>
+5.3 TypeScript 类型系统
+</h3><p>项目核心类型定义（<a href="#ZgotmplZ">types/index.ts</a>）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// 消息
+</span></span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">Message</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">conversationId</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">role</span><span class="o">:</span> <span class="s1">&#39;user&#39;</span> <span class="o">|</span> <span class="s1">&#39;assistant&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">content</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">timestamp</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">audioUrl?</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">knowledgeItems?</span>: <span class="kt">string</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 对话
+</span></span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">Conversation</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">title</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">createdAt</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">updatedAt</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 知识项
+</span></span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">KnowledgeType</span> <span class="o">=</span> <span class="s1">&#39;schedule&#39;</span> <span class="o">|</span> <span class="s1">&#39;note&#39;</span> <span class="o">|</span> <span class="s1">&#39;contact&#39;</span> <span class="o">|</span> <span class="s1">&#39;todo&#39;</span> <span class="o">|</span> <span class="s1">&#39;knowledge&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">KnowledgeItem</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">id?</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">type</span><span class="o">:</span> <span class="nx">KnowledgeType</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">title</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">content</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">tags</span>: <span class="kt">string</span><span class="p">[];</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">source?</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">createdAt?</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">updatedAt?</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 用户设置（嵌套结构）
+</span></span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">UserSettings</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">voice</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">style</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">speed</span>: <span class="kt">number</span><span class="p">;</span>        <span class="c1">// 默认 1.2
+</span></span></span><span class="line"><span class="cl">    <span class="nx">volume</span>: <span class="kt">number</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">autoSpeak</span>: <span class="kt">boolean</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">recognitionProvider</span><span class="o">:</span> <span class="s1">&#39;web-speech&#39;</span> <span class="o">|</span> <span class="s1">&#39;baidu&#39;</span> <span class="o">|</span> <span class="s1">&#39;aliyun&#39;</span> <span class="o">|</span> <span class="s1">&#39;xunfei&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">assistant</span><span class="o">:</span> <span class="p">{</span> <span class="nx">name</span>: <span class="kt">string</span><span class="p">;</span> <span class="nx">role</span>: <span class="kt">string</span><span class="p">;</span> <span class="nx">personality</span>: <span class="kt">string</span><span class="p">;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">knowledge</span><span class="o">:</span> <span class="p">{</span> <span class="nx">autoExtract</span>: <span class="kt">boolean</span><span class="p">;</span> <span class="nx">categories</span>: <span class="kt">string</span><span class="p">[];</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">privacy</span><span class="o">:</span> <span class="p">{</span> <span class="nx">saveHistory</span>: <span class="kt">boolean</span><span class="p">;</span> <span class="nx">encryptData</span>: <span class="kt">boolean</span><span class="p">;</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 语音播放选项
+</span></span></span><span class="line"><span class="cl"><span class="kr">interface</span> <span class="nx">SpeakOptions</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">voice?</span>: <span class="kt">string</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">rate?</span>: <span class="kt">number</span><span class="p">;</span>      <span class="c1">// 语速 0.1-10
+</span></span></span><span class="line"><span class="cl">  <span class="nx">pitch?</span>: <span class="kt">number</span><span class="p">;</span>     <span class="c1">// 音调 0-2
+</span></span></span><span class="line"><span class="cl">  <span class="nx">volume?</span>: <span class="kt">number</span><span class="p">;</span>    <span class="c1">// 音量 0-1
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// 播放状态
+</span></span></span><span class="line"><span class="cl"><span class="kr">type</span> <span class="nx">PlaybackState</span> <span class="o">=</span> <span class="s1">&#39;idle&#39;</span> <span class="o">|</span> <span class="s1">&#39;playing&#39;</span> <span class="o">|</span> <span class="s1">&#39;paused&#39;</span><span class="p">;</span>
+</span></span></code></pre></div><hr>
+<h2 id="六技术难点与解决方案">
+<a class="header-anchor" href="#%e5%85%ad%e6%8a%80%e6%9c%af%e9%9a%be%e7%82%b9%e4%b8%8e%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88"></a>
+六、技术难点与解决方案
+</h2><h3 id="难点-1流式语音播放的状态管理">
+<a class="header-anchor" href="#%e9%9a%be%e7%82%b9-1%e6%b5%81%e5%bc%8f%e8%af%ad%e9%9f%b3%e6%92%ad%e6%94%be%e7%9a%84%e7%8a%b6%e6%80%81%e7%ae%a1%e7%90%86"></a>
+难点 1：流式语音播放的状态管理
+</h3><p><strong>问题</strong>：AI 回复是逐字流式输出的，什么时候切句子、什么时候播放、怎么避免重复播放？</p>
+<p><strong>解决</strong>：</p>
+<ul>
+<li><code>spokenIndex</code> 指针记录已播放位置，每次只扫描新增内容</li>
+<li>正则 <code>exec()</code> 循环匹配句子结束符</li>
+<li>Web Speech API 原生队列自动排队播放</li>
+<li><code>pendingCount</code> 计数器追踪播放状态</li>
+</ul>
+<h3 id="难点-2流式输出时代码块的过滤">
+<a class="header-anchor" href="#%e9%9a%be%e7%82%b9-2%e6%b5%81%e5%bc%8f%e8%be%93%e5%87%ba%e6%97%b6%e4%bb%a3%e7%a0%81%e5%9d%97%e7%9a%84%e8%bf%87%e6%bb%a4"></a>
+难点 2：流式输出时代码块的过滤
+</h3><p><strong>问题</strong>：代码块是逐行输出的，可能只收到开头的 <code>还没收到结尾的</code>，<code>stripMarkdown</code> 正则匹配不上完整代码块。</p>
+<p><strong>解决</strong>：引入 <code>inCodeBlock</code> 状态机：</p>
+<ul>
+<li>遇到第一个 ``` → 进入代码块，停止朗读</li>
+<li>遇到第二个 ``` → 退出代码块，恢复朗读</li>
+<li>跨越边界的句子只播放代码块外的部分</li>
+</ul>
+<h3 id="难点-3dexie-自增主键类型不一致">
+<a class="header-anchor" href="#%e9%9a%be%e7%82%b9-3dexie-%e8%87%aa%e5%a2%9e%e4%b8%bb%e9%94%ae%e7%b1%bb%e5%9e%8b%e4%b8%8d%e4%b8%80%e8%87%b4"></a>
+难点 3：Dexie 自增主键类型不一致
+</h3><p><strong>问题</strong>：Dexie 自增主键是 <code>number</code>，但代码中定义的类型是 <code>string</code>，刷新页面后类型不匹配导致查询不到消息。</p>
+<p><strong>解决</strong>：在所有返回数据的方法中统一 <code>id.toString()</code> 转换。</p>
+<h3 id="难点-4语音合成的-interrupted-错误">
+<a class="header-anchor" href="#%e9%9a%be%e7%82%b9-4%e8%af%ad%e9%9f%b3%e5%90%88%e6%88%90%e7%9a%84-interrupted-%e9%94%99%e8%af%af"></a>
+难点 4：语音合成的 interrupted 错误
+</h3><p><strong>问题</strong>：调用 <code>speechSynthesis.cancel()</code> 停止播放时，会触发 <code>onerror</code> 事件，错误类型是 <code>interrupted</code>，这是正常行为但被当错误处理了。</p>
+<p><strong>解决</strong>：在 <code>onerror</code> 中判断，忽略 <code>interrupted</code> 和 <code>canceled</code> 错误。</p>
+<h3 id="难点-5默认设置升级">
+<a class="header-anchor" href="#%e9%9a%be%e7%82%b9-5%e9%bb%98%e8%ae%a4%e8%ae%be%e7%bd%ae%e5%8d%87%e7%ba%a7"></a>
+难点 5：默认设置升级
+</h3><p><strong>问题</strong>：修改默认语速后，已经使用过的用户 localStorage 中保存了旧设置，新默认值不生效。</p>
+<p><strong>解决</strong>：引入设置版本迁移机制，检测到版本 &lt; 2 且语速为 1.0 时自动升级。</p>
+<hr>
+<h2 id="七性能优化策略">
+<a class="header-anchor" href="#%e4%b8%83%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e7%ad%96%e7%95%a5"></a>
+七、性能优化策略
+</h2><table>
+	<thead>
+			<tr>
+					<th>优化点</th>
+					<th>策略</th>
+					<th>效果</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>流式渲染</td>
+					<td>AI 回复边生成边显示</td>
+					<td>用户无需等待完整回复</td>
+			</tr>
+			<tr>
+					<td>流式朗读</td>
+					<td>边生成边切句子播放</td>
+					<td>即听即用，感知速度更快</td>
+			</tr>
+			<tr>
+					<td>不阻塞 UI</td>
+					<td><code>setTimeout(..., 0)</code> 分批处理</td>
+					<td>打字机效果流畅，不卡顿</td>
+			</tr>
+			<tr>
+					<td>精确订阅</td>
+					<td>Zustand selector 只订阅需要的状态</td>
+					<td>避免不必要的组件重渲染</td>
+			</tr>
+			<tr>
+					<td>空对话优化</td>
+					<td>不写数据库，仅内存</td>
+					<td>减少 IndexedDB 写入</td>
+			</tr>
+			<tr>
+					<td>流式更新只改内存</td>
+					<td><code>updateMessageContent()</code> 不写库</td>
+					<td>流式输出时零数据库开销</td>
+			</tr>
+			<tr>
+					<td>Dexie 索引查询</td>
+					<td>conversationId / timestamp 索引</td>
+					<td>消息查询 O(1) 或 O(log n)</td>
+			</tr>
+			<tr>
+					<td>错误边界</td>
+					<td>ErrorBoundary 捕获渲染异常</td>
+					<td>局部错误不影响全局</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h2 id="八部署与运行">
+<a class="header-anchor" href="#%e5%85%ab%e9%83%a8%e7%bd%b2%e4%b8%8e%e8%bf%90%e8%a1%8c"></a>
+八、部署与运行
+</h2><h3 id="81-开发环境">
+<a class="header-anchor" href="#81-%e5%bc%80%e5%8f%91%e7%8e%af%e5%a2%83"></a>
+8.1 开发环境
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 安装依赖</span>
+</span></span><span class="line"><span class="cl">npm install
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动开发服务器（默认 http://localhost:5173）</span>
+</span></span><span class="line"><span class="cl">npm run dev
+</span></span></code></pre></div><h3 id="82-生产构建">
+<a class="header-anchor" href="#82-%e7%94%9f%e4%ba%a7%e6%9e%84%e5%bb%ba"></a>
+8.2 生产构建
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 类型检查 + 构建</span>
+</span></span><span class="line"><span class="cl">npm run build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 预览构建结果</span>
+</span></span><span class="line"><span class="cl">npm run preview
+</span></span></code></pre></div><p>构建产物在 <code>dist/</code> 目录，纯静态文件。</p>
+<h3 id="83-部署方式">
+<a class="header-anchor" href="#83-%e9%83%a8%e7%bd%b2%e6%96%b9%e5%bc%8f"></a>
+8.3 部署方式
+</h3><table>
+	<thead>
+			<tr>
+					<th>方式</th>
+					<th>适用场景</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Vercel / Netlify</td>
+					<td>最简单</td>
+					<td>连接 GitHub，自动构建部署，免费</td>
+			</tr>
+			<tr>
+					<td>Nginx</td>
+					<td>自有服务器</td>
+					<td>把 dist 目录放到 Nginx 静态目录</td>
+			</tr>
+			<tr>
+					<td>GitHub Pages</td>
+					<td>免费托管</td>
+					<td>适合开源项目</td>
+			</tr>
+			<tr>
+					<td>阿里云 OSS / 腾讯云 COS</td>
+					<td>国内 CDN</td>
+					<td>对象存储 + CDN 加速</td>
+			</tr>
+			<tr>
+					<td>ngrok</td>
+					<td>临时测试</td>
+					<td>暴露本地端口，需配置 <code>allowedHosts: true</code></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="84-使用前提">
+<a class="header-anchor" href="#84-%e4%bd%bf%e7%94%a8%e5%89%8d%e6%8f%90"></a>
+8.4 使用前提
+</h3><ol>
+<li>需要 AI 服务的 API Key（默认智谱 AI <code>glm-4-flash</code>，免费模型）</li>
+<li>推荐 Chrome 浏览器（Web Speech API 支持最好）</li>
+<li>语音功能需要 HTTPS 或 localhost 环境</li>
+<li>需要麦克风权限（语音识别）</li>
+</ol>
+<h3 id="85-vite-配置">
+<a class="header-anchor" href="#85-vite-%e9%85%8d%e7%bd%ae"></a>
+8.5 Vite 配置
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-typescript" data-lang="typescript"><span class="line"><span class="cl"><span class="c1">// vite.config.ts
+</span></span></span><span class="line"><span class="cl"><span class="kr">export</span> <span class="k">default</span> <span class="nx">defineConfig</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">plugins</span><span class="o">:</span> <span class="p">[</span><span class="nx">react</span><span class="p">()],</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">resolve</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">alias</span><span class="o">:</span> <span class="p">{</span> <span class="s1">&#39;@&#39;</span><span class="o">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="s1">&#39;./src&#39;</span><span class="p">)</span> <span class="p">},</span>  <span class="c1">// @ 路径别名
+</span></span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">server</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">allowedHosts</span>: <span class="kt">true</span><span class="p">,</span>  <span class="c1">// 允许所有主机（ngrok 等需要）
+</span></span></span><span class="line"><span class="cl">  <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">});</span>
+</span></span></code></pre></div><hr>
+<h2 id="九扩展规划">
+<a class="header-anchor" href="#%e4%b9%9d%e6%89%a9%e5%b1%95%e8%a7%84%e5%88%92"></a>
+九、扩展规划
+</h2><h3 id="已实现功能">
+<a class="header-anchor" href="#%e5%b7%b2%e5%ae%9e%e7%8e%b0%e5%8a%9f%e8%83%bd"></a>
+已实现功能
+</h3><ul>
+<li>语音识别输入（Web Speech + 百度，策略模式可切换）</li>
+<li>AI 流式对话（智谱 AI / OpenAI 兼容，SSE 流式）</li>
+<li>流式语音播放（边生成边朗读，正则切句 + 队列管理）</li>
+<li>Markdown 格式过滤（朗读前剥离格式符号 + Emoji）</li>
+<li>代码块智能跳过（流式状态机跟踪 ``` 边界）</li>
+<li>知识自动提取（正则引擎，4 类信息）</li>
+<li>本地持久化（IndexedDB + localStorage，分层存储）</li>
+<li>AI 自动生成对话标题（异步，fallback 兜底）</li>
+<li>空对话优化（不写库，复用机制）</li>
+<li>设置版本迁移（平滑升级默认值）</li>
+</ul>
+<h3 id="规划中功能">
+<a class="header-anchor" href="#%e8%a7%84%e5%88%92%e4%b8%ad%e5%8a%9f%e8%83%bd"></a>
+规划中功能
+</h3><table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>说明</th>
+					<th>优先级</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>语音合成升级</td>
+					<td>接入火山引擎/阿里云，支持多音色和声音克隆</td>
+					<td>高</td>
+			</tr>
+			<tr>
+					<td>跨设备同步</td>
+					<td>增加 Node.js 后端，&ldquo;本地为主，云端同步&rdquo;</td>
+					<td>中</td>
+			</tr>
+			<tr>
+					<td>PWA 离线应用</td>
+					<td>Service Worker 缓存，离线可用</td>
+					<td>中</td>
+			</tr>
+			<tr>
+					<td>更智能的知识提取</td>
+					<td>用 NLP 模型替代正则，提升准确率</td>
+					<td>中</td>
+			</tr>
+			<tr>
+					<td>虚拟滚动</td>
+					<td>长对话列表性能优化（react-window）</td>
+					<td>低</td>
+			</tr>
+			<tr>
+					<td>多语言支持</td>
+					<td>英文等多语言识别和合成</td>
+					<td>低</td>
+			</tr>
+			<tr>
+					<td>声音克隆</td>
+					<td>用户录制 10-30 秒样本，克隆自己的声音</td>
+					<td>低</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h2 id="十项目文档导航">
+<a class="header-anchor" href="#%e5%8d%81%e9%a1%b9%e7%9b%ae%e6%96%87%e6%a1%a3%e5%af%bc%e8%88%aa"></a>
+十、项目文档导航
+</h2><table>
+	<thead>
+			<tr>
+					<th>文档</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="#ZgotmplZ">需求文档.md</a></td>
+					<td>功能需求、用户界面设计、非功能需求、项目里程碑</td>
+			</tr>
+			<tr>
+					<td><a href="#ZgotmplZ">产品设计文档.md</a></td>
+					<td>产品定位、用户画像、功能设计、界面交互、数据模型</td>
+			</tr>
+			<tr>
+					<td><a href="#ZgotmplZ">技术方案文档.md</a></td>
+					<td>技术架构、核心模块设计（含代码）、API 设计、部署方案</td>
+			</tr>
+			<tr>
+					<td><a href="#ZgotmplZ">语音合成技术方案.md</a></td>
+					<td>多音色/声音克隆技术选型对比（火山引擎/阿里云/讯飞/OpenAI/本地模型）</td>
+			</tr>
+			<tr>
+					<td><a href="#ZgotmplZ">面试问答.md</a></td>
+					<td>大厂风格面试题，12 个模块，追问式，覆盖全链路技术点</td>
+			</tr>
+			<tr>
+					<td><a href="#ZgotmplZ">项目介绍.md</a></td>
+					<td>本文档 — 项目整体介绍</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h2 id="附技术总结速查表">
+<a class="header-anchor" href="#%e9%99%84%e6%8a%80%e6%9c%af%e6%80%bb%e7%bb%93%e9%80%9f%e6%9f%a5%e8%a1%a8"></a>
+附：技术总结速查表
+</h2><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>技术选型</th>
+					<th>设计考量</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>状态管理</td>
+					<td>Zustand 4</td>
+					<td>轻量 1KB、无 Provider、selector 精确订阅</td>
+			</tr>
+			<tr>
+					<td>本地存储</td>
+					<td>Dexie 4 (IndexedDB)</td>
+					<td>大容量、结构化、异步、索引查询</td>
+			</tr>
+			<tr>
+					<td>设置存储</td>
+					<td>localStorage + 版本迁移</td>
+					<td>轻量、同步读取、支持平滑升级</td>
+			</tr>
+			<tr>
+					<td>流式输出</td>
+					<td>Fetch + ReadableStream + SSE</td>
+					<td>单向推送场景最优解</td>
+			</tr>
+			<tr>
+					<td>流式朗读</td>
+					<td>正则切句 + 原生队列 + 状态机</td>
+					<td>边生成边播放，不阻塞 UI</td>
+			</tr>
+			<tr>
+					<td>语音识别</td>
+					<td>策略模式多 Provider</td>
+					<td>可扩展、可替换</td>
+			</tr>
+			<tr>
+					<td>语音合成</td>
+					<td>Web Speech Synthesis API</td>
+					<td>原生队列、免费、支持流式</td>
+			</tr>
+			<tr>
+					<td>Markdown 过滤</td>
+					<td>正则替换链</td>
+					<td>朗读前剥离所有格式符号</td>
+			</tr>
+			<tr>
+					<td>架构分层</td>
+					<td>Components → Stores → Services</td>
+					<td>关注点分离、可测试、可替换</td>
+			</tr>
+			<tr>
+					<td>类型安全</td>
+					<td>TypeScript 严格模式</td>
+					<td>编译时检查、自文档化</td>
+			</tr>
+			<tr>
+					<td>构建工具</td>
+					<td>Vite 5</td>
+					<td>ESM 原生、极速 HMR、Rollup 构建</td>
+			</tr>
+			<tr>
+					<td>样式方案</td>
+					<td>Tailwind CSS 3</td>
+					<td>原子化、自定义主题、零运行时</td>
+			</tr>
+	</tbody>
+</table>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/projects/ai%E8%AF%AD%E9%9F%B3%E5%8A%A9%E6%89%8B/&amp;appkey=&amp;title=AI%20%e8%af%ad%e9%9f%b3%e5%8a%a9%e6%89%8b%20Sound%20AI&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="AI 语音助手 Sound AI">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/projects/ai%E8%AF%AD%E9%9F%B3%E5%8A%A9%E6%89%8B/&amp;title=AI%20%e8%af%ad%e9%9f%b3%e5%8a%a9%e6%89%8b%20Sound%20AI&amp;desc=%e5%9f%ba%e4%ba%8e%e6%b5%8f%e8%a7%88%e5%99%a8%e5%8e%9f%e7%94%9f%20API%20%e7%9a%84%e6%99%ba%e8%83%bd%e8%af%ad%e9%9f%b3%e5%af%b9%e8%af%9d%e5%8a%a9%e6%89%8b%ef%bc%8c%e6%94%af%e6%8c%81%e8%af%ad%e9%9f%b3%e8%be%93%e5%85%a5%e3%80%81AI%20%e6%b5%81%e5%bc%8f%e5%af%b9%e8%af%9d%e3%80%81%e8%be%b9%e7%94%9f%e6%88%90%e8%be%b9%e6%9c%97%e8%af%bb%e3%80%81%e7%9f%a5%e8%af%86%e8%87%aa%e5%8a%a8%e6%8f%90%e5%8f%96%ef%bc%8c%e6%95%b0%e6%8d%ae%e5%ae%8c%e5%85%a8%e6%9c%ac%e5%9c%b0%e5%ad%98%e5%82%a8&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="AI 语音助手 Sound AI">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="AI 语音助手 Sound AI">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/projects/ai%E8%AF%AD%E9%9F%B3%E5%8A%A9%E6%89%8B/&amp;text=AI%20%e8%af%ad%e9%9f%b3%e5%8a%a9%e6%89%8b%20Sound%20AI&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="AI 语音助手 Sound AI">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/projects/ai%E8%AF%AD%E9%9F%B3%E5%8A%A9%E6%89%8B/" target="_blank" rel="noopener noreferrer" title="AI 语音助手 Sound AI">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e5%89%8d%e7%ab%af%e5%bc%80%e5%8f%91"
+      data-aos="zoom-in"
+      >前端开发</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e8%af%ad%e9%9f%b3%e8%af%86%e5%88%ab"
+        rel="tag"
+        >语音识别</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/tts"
+        rel="tag"
+        >TTS</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/ai"
+        rel="tag"
+        >AI</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%89%8d%e7%ab%af"
+        rel="tag"
+        >前端</a
+      >
+    </li></ul>
+</footer>
+  </div></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "AI 语音助手 Sound AI",
+          url: "https:\/\/dev.infiniteevo.online\/projects\/ai%E8%AF%AD%E9%9F%B3%E5%8A%A9%E6%89%8B\/",
+          description: "基于浏览器原生 API 的智能语音对话助手，支持语音输入、AI 流式对话、边生成边朗读、知识自动提取，数据完全本地存储",
+          cover: "https:\/\/d-sketon.top\/img\/backwebp\/bg5.webp",
+        };
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>

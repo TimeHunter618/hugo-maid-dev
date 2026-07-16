@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ReAct on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/react/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 20 Mar 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/react/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>思维链、ReAct 与 Self-Consistency</title>
+      <link>https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E6%80%9D%E7%BB%B4%E9%93%BE%E4%B8%8E%E6%8E%A8%E7%90%86%E5%A2%9E%E5%BC%BA/</link>
+      <pubDate>Fri, 20 Mar 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E6%80%9D%E7%BB%B4%E9%93%BE%E4%B8%8E%E6%8E%A8%E7%90%86%E5%A2%9E%E5%BC%BA/</guid>
+      <description>
+        <![CDATA[<h1>思维链、ReAct 与 Self-Consistency</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）在自然语言理解与生成上已经展现出惊人的能力，但在面对<strong>多步数学推理、逻辑演绎、复杂规划</strong>这类需要&quot;深度思考&quot;的任务时，直接让模型给出答案往往会得到令人失望的结果。一个典型的现象是：同一个模型，当你要求它&quot;直接回答&quot;时频频出错，而当你让它&quot;一步一步想&quot;时却能力大增。</p>
+        
+        <hr><p>本文2026-03-20首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-03-20</p>]]>
+      </description>
+      
+        <category>Prompt工程与Agent系统</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

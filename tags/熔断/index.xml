@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>熔断 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E7%86%94%E6%96%AD/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 05 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E7%86%94%E6%96%AD/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>API 设计与限流熔断</title>
+      <link>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/api%E8%AE%BE%E8%AE%A1%E4%B8%8E%E9%99%90%E6%B5%81%E7%86%94%E6%96%AD/</link>
+      <pubDate>Fri, 05 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/api%E8%AE%BE%E8%AE%A1%E4%B8%8E%E9%99%90%E6%B5%81%E7%86%94%E6%96%AD/</guid>
+      <description>
+        <![CDATA[<h1>API 设计与限流熔断</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>一个能跑通 Demo 的 AI 服务，和一个能在生产环境中稳定运行的 AI 服务之间，隔着 API 设计、流量控制、容错降级三道关卡。大模型服务与传统 Web 服务有本质差异：单次请求耗时动辄数秒到数十秒、成本与 Token 消耗直接挂钩、上游模型服务自身的稳定性不可控。这些特性使得<strong>限流、熔断、重试</strong>不再是可选项，而是 AI 服务后端的&quot;生命支持系统&quot;。</p>
+        
+        <hr><p>本文2026-06-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-05</p>]]>
+      </description>
+      
+        <category>后端与AI工程</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

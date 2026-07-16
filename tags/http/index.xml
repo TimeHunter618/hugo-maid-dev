@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>HTTP on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/http/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 18 Nov 2022 01:58:28 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/http/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>HTTP 协议详解?HTTPS 原理</title>
+      <link>https://dev.infiniteevo.online/post/network/http%E5%8D%8F%E8%AE%AE%E8%AF%A6%E8%A7%A3%E4%B8%8Ehttps%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Fri, 18 Nov 2022 01:58:28 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/network/http%E5%8D%8F%E8%AE%AE%E8%AF%A6%E8%A7%A3%E4%B8%8Ehttps%E5%8E%9F%E7%90%86/</guid>
+      <description>
+        <![CDATA[<h1>HTTP 协议详解?HTTPS 原理</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2022-11-18首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-11-18</p>]]>
+      </description>
+      
+        <category>应用</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

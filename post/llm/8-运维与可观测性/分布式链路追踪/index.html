@@ -1,0 +1,1890 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  分布式链路追踪 | Aries
+</title>
+<meta name="description" content="OpenTelemetry、Jaeger、调用链分析——AI 多组件系统的全链路可观测"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="分布式链路追踪 | Aries" />
+  <meta
+    property="og:description"
+    content="OpenTelemetry、Jaeger、调用链分析——AI 多组件系统的全链路可观测"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-06-05T10:00:00&#43;08:00" />
+  <meta property="article:modified_time" content="2026-06-05T10:00:00&#43;08:00" /><meta property="article:tag" content="大模型, 链路追踪, OpenTelemetry, Jaeger" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200" alt="分布式链路追踪"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">分布式链路追踪</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">OpenTelemetry、Jaeger、调用链分析——AI 多组件系统的全链路可观测</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container sticky"><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#分布式追踪核心概念">分布式追踪核心概念</a>
+      <ul>
+        <li><a href="#tracespan-与调用树">Trace、Span 与调用树</a></li>
+        <li><a href="#context-propagation上下文传播">Context Propagation（上下文传播）</a></li>
+      </ul>
+    </li>
+    <li><a href="#opentelemetry-标准">OpenTelemetry 标准</a>
+      <ul>
+        <li><a href="#架构概览">架构概览</a></li>
+        <li><a href="#三大组件">三大组件</a></li>
+        <li><a href="#otel-collector-配置">OTel Collector 配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#ai-请求全链路追踪">AI 请求全链路追踪</a>
+      <ul>
+        <li><a href="#一次-rag-请求的完整链路">一次 RAG 请求的完整链路</a></li>
+        <li><a href="#python-自动埋点">Python 自动埋点</a></li>
+        <li><a href="#java-手动埋点spring-boot">Java 手动埋点（Spring Boot）</a></li>
+      </ul>
+    </li>
+    <li><a href="#span-属性设计规范">Span 属性设计规范</a>
+      <ul>
+        <li><a href="#ai-语义约定">AI 语义约定</a></li>
+        <li><a href="#自定义属性建议">自定义属性建议</a></li>
+        <li><a href="#敏感信息处理">敏感信息处理</a></li>
+      </ul>
+    </li>
+    <li><a href="#jaeger-与-tempo-可视化">Jaeger 与 Tempo 可视化</a>
+      <ul>
+        <li><a href="#jaeger-ui-分析">Jaeger UI 分析</a></li>
+        <li><a href="#性能瓶颈定位实战">性能瓶颈定位实战</a></li>
+        <li><a href="#tempo--grafana-方案">Tempo + Grafana 方案</a></li>
+      </ul>
+    </li>
+    <li><a href="#采样策略设计">采样策略设计</a>
+      <ul>
+        <li><a href="#为什么需要采样">为什么需要采样</a></li>
+        <li><a href="#采样策略对比">采样策略对比</a></li>
+        <li><a href="#推荐采样配置">推荐采样配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#完整架构与部署">完整架构与部署</a>
+      <ul>
+        <li><a href="#docker-compose-部署">Docker Compose 部署</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+    <li><a href="#参考文献">参考文献</a></li>
+  </ul>
+</nav>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div><div class="sidebar-widget"></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-06-05 10:00:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2026-06-05</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-06-05</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg2.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg2.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在一个典型的 RAG 系统中，一次用户请求会穿越多个服务：API 网关接收请求、鉴权服务验证身份、查询重写模块改写用户问题、向量数据库执行语义检索、Embedding 服务将文本向量化、LLM 推理服务生成最终回答、缓存层存储结果。如果用户反馈&quot;回复好慢&quot;，你如何知道是哪个环节拖了后腿？</p>
+<p>传统的指标监控只能告诉你&quot;整体 P99 延迟是 8 秒&quot;，但无法告诉你这 8 秒花在了哪里。日志可以记录每个服务的处理日志，但在分布式系统中，一个请求的日志分散在多个节点上，没有关联线索就难以拼凑出完整画面。<strong>分布式链路追踪</strong>（Distributed Tracing）正是解决这个问题的技术——它为每个请求生成一棵调用树，精确记录每个环节的耗时和状态。</p>
+<pre class="mermaid">
+  graph LR
+    U[用户反馈: 回复很慢] --> Q{排查方向?}
+
+    Q --> |指标监控| M[P99 = 8s<br/>但不知道花在哪]
+    Q --> |日志检索| L[日志分散在 6 个节点<br/>无法关联]
+    Q --> |链路追踪| T[完整调用树<br/>一眼定位瓶颈]
+
+    T --> R[结果: 向量检索 5.2s<br/>占整体延迟 65%]
+</pre><p>本文将从分布式追踪的核心概念出发，深入 OpenTelemetry 标准，并结合 AI 系统的特殊需求，讲解如何实现全链路可观测、精准定位性能瓶颈。</p>
+<h2 id="分布式追踪核心概念">
+<a class="header-anchor" href="#%e5%88%86%e5%b8%83%e5%bc%8f%e8%bf%bd%e8%b8%aa%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5"></a>
+分布式追踪核心概念
+</h2><h3 id="tracespan-与调用树">
+<a class="header-anchor" href="#tracespan-%e4%b8%8e%e8%b0%83%e7%94%a8%e6%a0%91"></a>
+Trace、Span 与调用树
+</h3><p><strong>Trace（追踪）</strong> 代表一次完整的请求生命周期，由一个全局唯一的 <code>Trace ID</code> 标识。一个 Trace 由多个 <strong>Span（跨度）</strong> 组成，每个 Span 代表一个操作单元（一次函数调用、一次数据库查询、一次 HTTP 请求）。</p>
+<p>Span 的核心属性：</p>
+<table>
+	<thead>
+			<tr>
+					<th>属性</th>
+					<th>说明</th>
+					<th>示例</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>trace_id</code></td>
+					<td>整条链路的唯一 ID</td>
+					<td><code>4bf92f3577b34da6a3ce929d0e0e4736</code></td>
+			</tr>
+			<tr>
+					<td><code>span_id</code></td>
+					<td>当前 Span 的唯一 ID</td>
+					<td><code>00f067aa0ba902b7</code></td>
+			</tr>
+			<tr>
+					<td><code>parent_span_id</code></td>
+					<td>父 Span 的 ID</td>
+					<td><code>a2fb4a1d1a96d2ef</code></td>
+			</tr>
+			<tr>
+					<td><code>operation_name</code></td>
+					<td>操作名称</td>
+					<td><code>llm.chat.completion</code></td>
+			</tr>
+			<tr>
+					<td><code>start_time</code></td>
+					<td>开始时间</td>
+					<td><code>2026-06-05T10:00:00.123Z</code></td>
+			</tr>
+			<tr>
+					<td><code>duration</code></td>
+					<td>持续时长</td>
+					<td><code>3200ms</code></td>
+			</tr>
+			<tr>
+					<td><code>tags/attributes</code></td>
+					<td>键值对标签</td>
+					<td><code>model=gpt-4o</code></td>
+			</tr>
+			<tr>
+					<td><code>status</code></td>
+					<td>状态码</td>
+					<td><code>OK</code> / <code>ERROR</code></td>
+			</tr>
+			<tr>
+					<td><code>events</code></td>
+					<td>时间点事件</td>
+					<td>异常堆栈、日志</td>
+			</tr>
+	</tbody>
+</table>
+<p>通过 <code>parent_span_id</code> 串联，所有 Span 构成一棵有向树：</p>
+<pre class="mermaid">
+  graph TD
+    A["Span A: API Gateway<br/>trace_id=abc, span_id=A<br/>duration=8200ms"] --> B["Span B: Auth Service<br/>span_id=B, parent=A<br/>duration=50ms"]
+    A --> C["Span C: RAG Orchestration<br/>span_id=C, parent=A<br/>duration=8000ms"]
+    C --> D["Span D: Query Rewrite<br/>span_id=D, parent=C<br/>duration=800ms"]
+    C --> E["Span E: Vector Search<br/>span_id=E, parent=C<br/>duration=5200ms"]
+    C --> F["Span F: LLM Call<br/>span_id=F, parent=C<br/>duration=1900ms"]
+    F --> G["Span G: LLM Streaming<br/>span_id=G, parent=F<br/>duration=1850ms"]
+
+    style A fill:#4a90d9,color:#fff
+    style E fill:#ff6b6b,color:#fff
+    style F fill:#f9ca24,color:#333
+</pre><p>在这棵树中，可以清晰地看到：向量检索（Span E）耗时 5200ms，占了整体延迟的 63%，是性能瓶颈所在。</p>
+<h3 id="context-propagation上下文传播">
+<a class="header-anchor" href="#context-propagation%e4%b8%8a%e4%b8%8b%e6%96%87%e4%bc%a0%e6%92%ad"></a>
+Context Propagation（上下文传播）
+</h3><p>在单体应用中，Span 之间的父子关系通过函数调用栈天然维护。但在分布式系统中，请求跨越进程和网络边界，上下文需要显式传播。</p>
+<p><strong>Context Propagation</strong> 的核心是将 <code>trace_id</code> 和当前 <code>span_id</code> 通过请求头（HTTP Header、gRPC Metadata、消息队列属性）传递给下游服务：</p>
+<pre class="mermaid">
+  sequenceDiagram
+    participant Client as 客户端
+    participant Gateway as API 网关
+    participant LLM as LLM 服务
+    participant VDB as 向量数据库
+
+    Client->>Gateway: GET /chat<br/>traceparent: 00-{trace_id}-{span_A}-01
+    Note over Gateway: 创建 Span A<br/>提取 trace_id
+
+    Gateway->>LLM: POST /complete<br/>traceparent: 00-{trace_id}-{span_B}-01
+    Note over LLM: 创建 Span B<br/>parent=A, 继承 trace_id
+
+    Gateway->>VDB: POST /search<br/>traceparent: 00-{trace_id}-{span_C}-01
+    Note over VDB: 创建 Span C<br/>parent=A, 继承 trace_id
+
+    VDB-->>Gateway: 200 OK
+    LLM-->>Gateway: 200 OK
+    Gateway-->>Client: 200 OK
+</pre><p><strong>W3C Trace Context</strong> 标准定义了 <code>traceparent</code> 请求头格式：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">traceparent: 00-{version}-{trace-id}-{parent-id}-{trace-flags}
+</span></span></code></pre></div><ul>
+<li><code>version</code>：格式版本，当前为 <code>00</code></li>
+<li><code>trace-id</code>：32 字符十六进制，全链路唯一</li>
+<li><code>parent-id</code>：16 字符十六进制，发起方的 Span ID</li>
+<li><code>trace-flags</code>：采样标志位，<code>01</code> 表示采样</li>
+</ul>
+<p>示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">traceparent: 00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01
+</span></span></code></pre></div><h2 id="opentelemetry-标准">
+<a class="header-anchor" href="#opentelemetry-%e6%a0%87%e5%87%86"></a>
+OpenTelemetry 标准
+</h2><h3 id="架构概览">
+<a class="header-anchor" href="#%e6%9e%b6%e6%9e%84%e6%a6%82%e8%a7%88"></a>
+架构概览
+</h3><p>OpenTelemetry（简称 OTel）是 CNCF 主导的可观测性标准，旨在统一 Logs、Metrics、Traces 三种遥测数据的采集和传输。它的核心价值在于<strong>厂商中立</strong>——一套 SDK 可以对接 Jaeger、Zipkin、Tempo、Datadog 等任意后端。</p>
+<pre class="mermaid">
+  graph LR
+    subgraph 应用代码
+        A1[Python App<br/>OTel SDK] 
+        A2[Java App<br/>OTel SDK]
+        A3[Go App<br/>OTel SDK]
+    end
+
+    subgraph OTel Collector
+        direction TB
+        R[Receiver<br/>接收数据]
+        P[Processor<br/>批量/采样/过滤]
+        E[Exporter<br/>导出到后端]
+        R --> P --> E
+    end
+
+    A1 --> |OTLP/gRPC| R
+    A2 --> |OTLP/gRPC| R
+    A3 --> |OTLP/HTTP| R
+
+    E --> |Traces| JAEGER[Jaeger / Tempo]
+    E --> |Metrics| PROM[Prometheus]
+    E --> |Logs| LOKI[Loki]
+</pre><h3 id="三大组件">
+<a class="header-anchor" href="#%e4%b8%89%e5%a4%a7%e7%bb%84%e4%bb%b6"></a>
+三大组件
+</h3><p><strong>API（应用程序接口）</strong>：定义了 Tracer、Meter、Logger 等接口，应用代码只依赖 API，不耦合具体实现。</p>
+<p><strong>SDK（软件开发工具包）</strong>：API 的具体实现，负责 Span 的创建、采样、批量发送。</p>
+<p><strong>Collector（收集器）</strong>：独立部署的数据管道，接收来自各应用的遥测数据，经过处理后导出到后端存储。</p>
+<h3 id="otel-collector-配置">
+<a class="header-anchor" href="#otel-collector-%e9%85%8d%e7%bd%ae"></a>
+OTel Collector 配置
+</h3><p>Collector 是整个 OTel 体系的中枢，以下是一个面向 AI 系统的完整配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># otel-collector-config.yaml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">receivers</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">otlp</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">protocols</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">grpc</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="m">0.0.0.0</span><span class="p">:</span><span class="m">4317</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">http</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="m">0.0.0.0</span><span class="p">:</span><span class="m">4318</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">processors</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># 内存限制保护</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">memory_limiter</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">check_interval</span><span class="p">:</span><span class="w"> </span><span class="l">1s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">limit_percentage</span><span class="p">:</span><span class="w"> </span><span class="m">80</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">spike_limit_percentage</span><span class="p">:</span><span class="w"> </span><span class="m">25</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># 批量处理，提高吞吐</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">batch</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l">5s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">send_batch_size</span><span class="p">:</span><span class="w"> </span><span class="m">1024</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">send_batch_max_size</span><span class="p">:</span><span class="w"> </span><span class="m">2048</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># 采样：保留 100% 错误 + 10% 正常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">tail_sampling</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">decision_wait</span><span class="p">:</span><span class="w"> </span><span class="l">10s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">num_traces</span><span class="p">:</span><span class="w"> </span><span class="m">50000</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">policies</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">errors</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">status_code</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">status_code</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">status_codes</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">ERROR]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">slow</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">latency</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">latency</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">threshold_ms</span><span class="p">:</span><span class="w"> </span><span class="m">5000</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">sample</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">probabilistic</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">probabilistic</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">sampling_percentage</span><span class="p">:</span><span class="w"> </span><span class="m">10</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># 资源属性增强</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">resource</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">deployment.environment</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">value</span><span class="p">:</span><span class="w"> </span><span class="l">production</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">action</span><span class="p">:</span><span class="w"> </span><span class="l">upsert</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">exporters</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># 导出到 Jaeger</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">otlp/jaeger</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l">jaeger:4317</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">tls</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">insecure</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># 导出到 Tempo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">otlp/tempo</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l">tempo:4317</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">tls</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">insecure</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># 导出到 Prometheus（指标）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">prometheusremotewrite</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l">http://prometheus:9090/api/v1/write</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">service</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">pipelines</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">traces</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">receivers</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">otlp]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">processors</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">memory_limiter, tail_sampling, batch]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">exporters</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">otlp/jaeger, otlp/tempo]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">metrics</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">receivers</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">otlp]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">processors</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">memory_limiter, batch]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">exporters</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="l">prometheusremotewrite]</span><span class="w">
+</span></span></span></code></pre></div><p><strong>尾采样（Tail Sampling）</strong> 是 AI 系统的关键配置——由于 LLM 请求量大，全量采集链路数据成本极高。尾采样在 Trace 完成后根据策略决定是否保留，可以做到：100% 保留错误请求、100% 保留慢请求（&gt;5s）、10% 采样正常请求。</p>
+<h2 id="ai-请求全链路追踪">
+<a class="header-anchor" href="#ai-%e8%af%b7%e6%b1%82%e5%85%a8%e9%93%be%e8%b7%af%e8%bf%bd%e8%b8%aa"></a>
+AI 请求全链路追踪
+</h2><h3 id="一次-rag-请求的完整链路">
+<a class="header-anchor" href="#%e4%b8%80%e6%ac%a1-rag-%e8%af%b7%e6%b1%82%e7%9a%84%e5%ae%8c%e6%95%b4%e9%93%be%e8%b7%af"></a>
+一次 RAG 请求的完整链路
+</h3><p>AI 系统的请求链路比传统 CRUD 服务复杂得多。一次 RAG 请求涉及多个异步操作和外部依赖：</p>
+<pre class="mermaid">
+  sequenceDiagram
+    participant U as 用户
+    participant GW as API 网关
+    participant AUTH as 鉴权服务
+    participant RAG as RAG 编排器
+    participant RW as 查询重写
+    participant EMB as Embedding 服务
+    participant VDB as 向量数据库
+    participant CACHE as 缓存
+    participant LLM as LLM 推理
+
+    U->>GW: POST /chat/stream
+    Note over GW: Span: gateway.receive
+    
+    GW->>AUTH: 验证 Token
+    Note over AUTH: Span: auth.verify
+    AUTH-->>GW: ✅ 合法用户
+
+    GW->>RAG: 转发请求
+    Note over RAG: Span: rag.orchestrate
+
+    RAG->>CACHE: 查询缓存
+    Note over CACHE: Span: cache.lookup
+    CACHE-->>RAG: ❌ 未命中
+
+    RAG->>RW: 查询重写
+    Note over RW: Span: query.rewrite<br/>attributes: original_query
+    RW-->>RAG: 优化后的查询
+
+    RAG->>EMB: 文本向量化
+    Note over EMB: Span: embedding.generate<br/>attributes: model=text-embedding-3
+    EMB-->>RAG: query_vector[1536]
+
+    RAG->>VDB: 语义检索
+    Note over VDB: Span: vector.search<br/>attributes: top_k=5
+    VDB-->>RAG: 5 篇相关文档
+
+    RAG->>LLM: 生成回答（流式）
+    Note over LLM: Span: llm.chat<br/>attributes: model, tokens, ttft
+    loop 逐 Token 流式输出
+        LLM-->>RAG: token chunk
+        RAG-->>GW: SSE event
+        GW-->>U: data: {chunk}
+    end
+
+    Note over RAG: Span: rag.complete<br/>缓存结果
+</pre><h3 id="python-自动埋点">
+<a class="header-anchor" href="#python-%e8%87%aa%e5%8a%a8%e5%9f%8b%e7%82%b9"></a>
+Python 自动埋点
+</h3><p>OpenTelemetry 的自动埋点（Auto-instrumentation）通过库拦截器自动为 HTTP 请求、数据库调用等创建 Span，无需修改业务代码。</p>
+<h4 id="fastapi-自动埋点">
+<a class="header-anchor" href="#fastapi-%e8%87%aa%e5%8a%a8%e5%9f%8b%e7%82%b9"></a>
+FastAPI 自动埋点
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">opentelemetry.instrumentation.fastapi</span> <span class="kn">import</span> <span class="n">FastAPIInstrumentor</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">opentelemetry.instrumentation.httpx</span> <span class="kn">import</span> <span class="n">HTTPXClientInstrumentor</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">opentelemetry.instrumentation.redis</span> <span class="kn">import</span> <span class="n">RedisInstrumentor</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">opentelemetry.sdk.trace</span> <span class="kn">import</span> <span class="n">TracerProvider</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">opentelemetry.sdk.trace.export</span> <span class="kn">import</span> <span class="n">BatchSpanProcessor</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">opentelemetry.exporter.otlp.proto.grpc.trace_exporter</span> <span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">OTLPSpanExporter</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">opentelemetry.sdk.resources</span> <span class="kn">import</span> <span class="n">Resource</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 初始化 Tracer</span>
+</span></span><span class="line"><span class="cl"><span class="n">resource</span> <span class="o">=</span> <span class="n">Resource</span><span class="o">.</span><span class="n">create</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;service.name&#34;</span><span class="p">:</span> <span class="s2">&#34;rag-orchestrator&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;service.version&#34;</span><span class="p">:</span> <span class="s2">&#34;1.0.0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;deployment.environment&#34;</span><span class="p">:</span> <span class="s2">&#34;production&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">tracer_provider</span> <span class="o">=</span> <span class="n">TracerProvider</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">resource</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tracer_provider</span><span class="o">.</span><span class="n">add_span_processor</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">BatchSpanProcessor</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">OTLPSpanExporter</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="s2">&#34;otel-collector:4317&#34;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">max_queue_size</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">max_export_batch_size</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 设置全局 Tracer Provider</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">opentelemetry</span> <span class="kn">import</span> <span class="n">trace</span>
+</span></span><span class="line"><span class="cl"><span class="n">trace</span><span class="o">.</span><span class="n">set_tracer_provider</span><span class="p">(</span><span class="n">tracer_provider</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 自动埋点：为所有 HTTP 请求/响应创建 Span</span>
+</span></span><span class="line"><span class="cl"><span class="n">FastAPIInstrumentor</span><span class="o">.</span><span class="n">instrument_app</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">HTTPXClientInstrumentor</span><span class="p">()</span><span class="o">.</span><span class="n">instrument</span><span class="p">()</span>  <span class="c1"># 自动追踪 HTTP 调用</span>
+</span></span><span class="line"><span class="cl"><span class="n">RedisInstrumentor</span><span class="p">()</span><span class="o">.</span><span class="n">instrument</span><span class="p">()</span>       <span class="c1"># 自动追踪 Redis 操作</span>
+</span></span></code></pre></div><p>安装自动埋点库：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">pip install opentelemetry-distro opentelemetry-exporter-otlp
+</span></span><span class="line"><span class="cl">opentelemetry-bootstrap -a install
+</span></span></code></pre></div><p>自动埋点会为以下操作自动创建 Span：</p>
+<table>
+	<thead>
+			<tr>
+					<th>库</th>
+					<th>自动追踪的操作</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>FastAPIInstrumentor</code></td>
+					<td>所有 HTTP 路由请求</td>
+			</tr>
+			<tr>
+					<td><code>HTTPXClientInstrumentor</code></td>
+					<td>所有 HTTP 客户端调用</td>
+			</tr>
+			<tr>
+					<td><code>RedisInstrumentor</code></td>
+					<td>所有 Redis GET/SET 等操作</td>
+			</tr>
+			<tr>
+					<td><code>RequestsInstrumentor</code></td>
+					<td>requests 库的 HTTP 调用</td>
+			</tr>
+			<tr>
+					<td><code>PymongoInstrumentor</code></td>
+					<td>MongoDB 查询</td>
+			</tr>
+			<tr>
+					<td><code>AsyncpgInstrumentor</code></td>
+					<td>PostgreSQL 异步查询</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="手动-span追踪-llm-调用">
+<a class="header-anchor" href="#%e6%89%8b%e5%8a%a8-span%e8%bf%bd%e8%b8%aa-llm-%e8%b0%83%e7%94%a8"></a>
+手动 Span：追踪 LLM 调用
+</h4><p>自动埋点无法感知业务语义，需要手动创建 Span 来记录 AI 特有的信息：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">opentelemetry</span> <span class="kn">import</span> <span class="n">trace</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">opentelemetry.trace</span> <span class="kn">import</span> <span class="n">Status</span><span class="p">,</span> <span class="n">StatusCode</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">tracer</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">get_tracer</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">LLMTracingMiddleware</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;LLM 调用链路追踪中间件&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">async</span> <span class="k">def</span> <span class="nf">call_llm_with_tracing</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">messages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">max_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">stream</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">tracer</span><span class="o">.</span><span class="n">start_as_current_span</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;llm.chat.completion&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">attributes</span><span class="o">=</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># 模型信息</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;llm.model&#34;</span><span class="p">:</span> <span class="n">model</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;llm.temperature&#34;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;llm.max_tokens&#34;</span><span class="p">:</span> <span class="n">max_tokens</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;llm.stream&#34;</span><span class="p">:</span> <span class="n">stream</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># Prompt 信息（注意脱敏）</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;llm.prompt.length&#34;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&#34;content&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">))</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span>
+</span></span><span class="line"><span class="cl">                <span class="p">),</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;llm.message_count&#34;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">            <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span> <span class="k">as</span> <span class="n">span</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">first_token_time</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">            <span class="n">full_response</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">            <span class="n">total_tokens</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">messages</span><span class="o">=</span><span class="n">messages</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">max_tokens</span><span class="o">=</span><span class="n">max_tokens</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">stream</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">if</span> <span class="n">first_token_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">first_token_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">ttft</span> <span class="o">=</span> <span class="n">first_token_time</span> <span class="o">-</span> <span class="n">start_time</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;llm.ttft_ms&#34;</span><span class="p">,</span> <span class="n">ttft</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                        <span class="n">content</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delta</span><span class="o">.</span><span class="n">content</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">full_response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                            <span class="n">total_tokens</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># 简化计数</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">yield</span> <span class="n">chunk</span>
+</span></span><span class="line"><span class="cl">                <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">full_response</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">total_tokens</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">total_tokens</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="c1"># 记录最终属性</span>
+</span></span><span class="line"><span class="cl">                <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;llm.completion_tokens&#34;</span><span class="p">,</span> <span class="n">total_tokens</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;llm.response.length&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                   <span class="nb">len</span><span class="p">(</span><span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_response</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">                <span class="n">span</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">Status</span><span class="p">(</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">OK</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">span</span><span class="o">.</span><span class="n">record_exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">span</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">Status</span><span class="p">(</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">                <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;llm.error_type&#34;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">raise</span>
+</span></span></code></pre></div><h4 id="追踪向量检索">
+<a class="header-anchor" href="#%e8%bf%bd%e8%b8%aa%e5%90%91%e9%87%8f%e6%a3%80%e7%b4%a2"></a>
+追踪向量检索
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">vector_search_with_tracing</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">query_vector</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">collection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&#34;documents&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;带链路追踪的向量检索&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="n">tracer</span><span class="o">.</span><span class="n">start_as_current_span</span><span class="p">(</span><span class="s2">&#34;vector.search&#34;</span><span class="p">)</span> <span class="k">as</span> <span class="n">span</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;vector.collection&#34;</span><span class="p">,</span> <span class="n">collection</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;vector.top_k&#34;</span><span class="p">,</span> <span class="n">top_k</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;vector.dimensions&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">query_vector</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">            <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vector_client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                <span class="n">collection_name</span><span class="o">=</span><span class="n">collection</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">query_vector</span><span class="o">=</span><span class="n">query_vector</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="n">limit</span><span class="o">=</span><span class="n">top_k</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">search_duration</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span>
+</span></span><span class="line"><span class="cl">            <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;vector.search_duration_ms&#34;</span><span class="p">,</span> <span class="n">search_duration</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;vector.results_count&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># 记录 Top 结果的相似度分数</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">scores</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">score</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">                <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;vector.top_score&#34;</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">                <span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;vector.avg_score&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                   <span class="nb">sum</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">scores</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="n">span</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">Status</span><span class="p">(</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">OK</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">results</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">span</span><span class="o">.</span><span class="n">record_exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">span</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">Status</span><span class="p">(</span><span class="n">StatusCode</span><span class="o">.</span><span class="n">ERROR</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="k">raise</span>
+</span></span></code></pre></div><h3 id="java-手动埋点spring-boot">
+<a class="header-anchor" href="#java-%e6%89%8b%e5%8a%a8%e5%9f%8b%e7%82%b9spring-boot"></a>
+Java 手动埋点（Spring Boot）
+</h3><p>在 Java 生态中，使用 OpenTelemetry SDK + Spring 集成：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">io.opentelemetry.api.trace.Span</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">io.opentelemetry.api.trace.Tracer</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">io.opentelemetry.api.trace.StatusCode</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">io.opentelemetry.api.common.Attributes</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">io.opentelemetry.context.Scope</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Service</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LlmTracingService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Tracer</span><span class="w"> </span><span class="n">tracer</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">LlmTracingService</span><span class="p">(</span><span class="n">Tracer</span><span class="w"> </span><span class="n">tracer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">tracer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tracer</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">callLlmWithTracing</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">prompt</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                     </span><span class="kt">double</span><span class="w"> </span><span class="n">temperature</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">maxTokens</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Span</span><span class="w"> </span><span class="n">span</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tracer</span><span class="p">.</span><span class="na">spanBuilder</span><span class="p">(</span><span class="s">&#34;llm.chat.completion&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">setAttribute</span><span class="p">(</span><span class="s">&#34;llm.model&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">setAttribute</span><span class="p">(</span><span class="s">&#34;llm.temperature&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">temperature</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">setAttribute</span><span class="p">(</span><span class="s">&#34;llm.max_tokens&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">maxTokens</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">setAttribute</span><span class="p">(</span><span class="s">&#34;llm.prompt.length&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">prompt</span><span class="p">.</span><span class="na">length</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">startSpan</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">Scope</span><span class="w"> </span><span class="n">scope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">span</span><span class="p">.</span><span class="na">makeCurrent</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">long</span><span class="w"> </span><span class="n">startTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 调用 LLM</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">LlmResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">llmClient</span><span class="p">.</span><span class="na">chat</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">prompt</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">temperature</span><span class="p">,</span><span class="w"> </span><span class="n">maxTokens</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">long</span><span class="w"> </span><span class="n">durationMs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">nanoTime</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">startTime</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">1_000_000</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">span</span><span class="p">.</span><span class="na">setAttribute</span><span class="p">(</span><span class="s">&#34;llm.completion_tokens&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">response</span><span class="p">.</span><span class="na">getUsage</span><span class="p">().</span><span class="na">getCompletionTokens</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">span</span><span class="p">.</span><span class="na">setAttribute</span><span class="p">(</span><span class="s">&#34;llm.prompt_tokens&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">response</span><span class="p">.</span><span class="na">getUsage</span><span class="p">().</span><span class="na">getPromptTokens</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">span</span><span class="p">.</span><span class="na">setAttribute</span><span class="p">(</span><span class="s">&#34;llm.duration_ms&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">durationMs</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">span</span><span class="p">.</span><span class="na">setAttribute</span><span class="p">(</span><span class="s">&#34;llm.response.length&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">response</span><span class="p">.</span><span class="na">getContent</span><span class="p">().</span><span class="na">length</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">span</span><span class="p">.</span><span class="na">setStatus</span><span class="p">(</span><span class="n">StatusCode</span><span class="p">.</span><span class="na">OK</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">response</span><span class="p">.</span><span class="na">getContent</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">span</span><span class="p">.</span><span class="na">recordException</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">span</span><span class="p">.</span><span class="na">setStatus</span><span class="p">(</span><span class="n">StatusCode</span><span class="p">.</span><span class="na">ERROR</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">span</span><span class="p">.</span><span class="na">setAttribute</span><span class="p">(</span><span class="s">&#34;llm.error_type&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">e</span><span class="p">.</span><span class="na">getClass</span><span class="p">().</span><span class="na">getSimpleName</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">span</span><span class="p">.</span><span class="na">end</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>Spring Boot 自动配置（<code>application.yml</code>）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">otel</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">exporter</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">otlp</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">endpoint</span><span class="p">:</span><span class="w"> </span><span class="l">http://otel-collector:4317</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">protocol</span><span class="p">:</span><span class="w"> </span><span class="l">grpc</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">service</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">llm-gateway</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="m">1.0.0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">resource</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">attributes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">deployment.environment</span><span class="p">:</span><span class="w"> </span><span class="l">production</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">traces</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">sampler</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">parentbased_traceidratio</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">arg</span><span class="p">:</span><span class="w"> </span><span class="m">0.1</span><span class="w">  </span><span class="c"># 10% 采样率</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">instrumentation</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">micrometer</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span></code></pre></div><h2 id="span-属性设计规范">
+<a class="header-anchor" href="#span-%e5%b1%9e%e6%80%a7%e8%ae%be%e8%ae%a1%e8%a7%84%e8%8c%83"></a>
+Span 属性设计规范
+</h2><h3 id="ai-语义约定">
+<a class="header-anchor" href="#ai-%e8%af%ad%e4%b9%89%e7%ba%a6%e5%ae%9a"></a>
+AI 语义约定
+</h3><p>OpenTelemetry 社区正在推进 <a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/">Semantic Conventions for GenAI</a>，定义了 LLM 操作的标准属性命名。遵循这些约定可以确保跨工具的兼容性。</p>
+<table>
+	<thead>
+			<tr>
+					<th>属性</th>
+					<th>类型</th>
+					<th>说明</th>
+					<th>示例值</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>gen_ai.system</code></td>
+					<td>string</td>
+					<td>AI 系统名称</td>
+					<td><code>openai</code> / <code>anthropic</code></td>
+			</tr>
+			<tr>
+					<td><code>gen_ai.request.model</code></td>
+					<td>string</td>
+					<td>请求的模型</td>
+					<td><code>gpt-4o</code></td>
+			</tr>
+			<tr>
+					<td><code>gen_ai.request.temperature</code></td>
+					<td>double</td>
+					<td>温度参数</td>
+					<td><code>0.7</code></td>
+			</tr>
+			<tr>
+					<td><code>gen_ai.request.max_tokens</code></td>
+					<td>int</td>
+					<td>最大输出 Token</td>
+					<td><code>1000</code></td>
+			</tr>
+			<tr>
+					<td><code>gen_ai.usage.prompt_tokens</code></td>
+					<td>int</td>
+					<td>输入 Token 数</td>
+					<td><code>1523</code></td>
+			</tr>
+			<tr>
+					<td><code>gen_ai.usage.completion_tokens</code></td>
+					<td>int</td>
+					<td>输出 Token 数</td>
+					<td><code>842</code></td>
+			</tr>
+			<tr>
+					<td><code>gen_ai.response.id</code></td>
+					<td>string</td>
+					<td>响应 ID</td>
+					<td><code>chatcmpl-xxx</code></td>
+			</tr>
+			<tr>
+					<td><code>gen_ai.response.finish_reason</code></td>
+					<td>string</td>
+					<td>结束原因</td>
+					<td><code>stop</code> / <code>length</code></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="自定义属性建议">
+<a class="header-anchor" href="#%e8%87%aa%e5%ae%9a%e4%b9%89%e5%b1%9e%e6%80%a7%e5%bb%ba%e8%ae%ae"></a>
+自定义属性建议
+</h3><p>除了标准属性，AI 系统还需要追踪以下自定义维度：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># RAG 相关</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;rag.query_rewrite.enabled&#34;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;rag.retrieved_docs.count&#34;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;rag.retrieved_docs.avg_score&#34;</span><span class="p">,</span> <span class="mf">0.87</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;rag.context_length&#34;</span><span class="p">,</span> <span class="mi">8200</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 性能分解</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;llm.ttft_ms&#34;</span><span class="p">,</span> <span class="mi">320</span><span class="p">)</span>          <span class="c1"># 首 Token 延迟</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;llm.tpot_ms&#34;</span><span class="p">,</span> <span class="mi">45</span><span class="p">)</span>           <span class="c1"># 每 Token 延迟</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;llm.tokens_per_second&#34;</span><span class="p">,</span> <span class="mi">22</span><span class="p">)</span> <span class="c1"># 吞吐量</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 缓存</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;cache.hit&#34;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;cache.key_hash&#34;</span><span class="p">,</span> <span class="s2">&#34;a1b2c3d4&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 成本</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;cost.estimated_usd&#34;</span><span class="p">,</span> <span class="mf">0.015</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="敏感信息处理">
+<a class="header-anchor" href="#%e6%95%8f%e6%84%9f%e4%bf%a1%e6%81%af%e5%a4%84%e7%90%86"></a>
+敏感信息处理
+</h3><p>Prompt 中可能包含用户隐私数据，直接记录到 Span 会造成合规风险：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">hashlib</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">sanitize_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;脱敏处理：截断 + 哈希&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">200</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">prompt</span><span class="p">[:</span><span class="mi">200</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&#34;...[truncated]&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">prompt</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">hash_pii</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;对 PII 数据做哈希&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">16</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 只记录长度和哈希，不记录原始内容</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;llm.prompt.length&#34;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">prompt</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">span</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="s2">&#34;llm.prompt.hash&#34;</span><span class="p">,</span> <span class="n">hash_pii</span><span class="p">(</span><span class="n">prompt</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># span.set_attribute(&#34;llm.prompt.preview&#34;, sanitize_prompt(prompt))  # 可选</span>
+</span></span></code></pre></div><h2 id="jaeger-与-tempo-可视化">
+<a class="header-anchor" href="#jaeger-%e4%b8%8e-tempo-%e5%8f%af%e8%a7%86%e5%8c%96"></a>
+Jaeger 与 Tempo 可视化
+</h2><h3 id="jaeger-ui-分析">
+<a class="header-anchor" href="#jaeger-ui-%e5%88%86%e6%9e%90"></a>
+Jaeger UI 分析
+</h3><p>Jaeger 是最流行的开源链路追踪后端，提供了强大的 Trace 搜索和可视化能力。</p>
+<p><strong>搜索 Trace</strong>：可以通过服务名、操作名、标签、持续时间、时间范围等多维度搜索。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 搜索示例
+</span></span><span class="line"><span class="cl">Service: rag-orchestrator
+</span></span><span class="line"><span class="cl">Operation: llm.chat.completion
+</span></span><span class="line"><span class="cl">Tags: {&#34;gen_ai.request.model&#34;: &#34;gpt-4o&#34;, &#34;error&#34;: &#34;true&#34;}
+</span></span><span class="line"><span class="cl">Min Duration: 5s
+</span></span><span class="line"><span class="cl">Max Duration: 30s
+</span></span></code></pre></div><p><strong>Trace 详情视图</strong>：Jaeger 的火焰图（Flame Graph）直观展示 Span 的层级和耗时：</p>
+<pre class="mermaid">
+  graph LR
+    subgraph Jaeger 火焰图
+        A["gateway.receive  8200ms"] --> B["auth.verify  50ms"]
+        A --> C["rag.orchestrate  8000ms"]
+        C --> D["query.rewrite  800ms"]
+        C --> E["vector.search  5200ms ⚠️"]
+        C --> F["llm.chat  1900ms"]
+        F --> G["llm.streaming  1850ms"]
+    end
+
+    style E fill:#ff6b6b,color:#fff
+</pre><h3 id="性能瓶颈定位实战">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e7%93%b6%e9%a2%88%e5%ae%9a%e4%bd%8d%e5%ae%9e%e6%88%98"></a>
+性能瓶颈定位实战
+</h3><p>以下是一个真实场景的性能分析流程：</p>
+<p><strong>场景</strong>：用户反馈 AI 助手回复延迟从 3 秒劣化到 12 秒。</p>
+<pre class="mermaid">
+  graph TD
+    S1[Step 1: 在 Jaeger 搜索<br/>duration > 10s 的 Trace] --> S2[Step 2: 查看火焰图<br/>找到最宽的 Span]
+    S2 --> S3{瓶颈在哪?}
+
+    S3 --> |向量检索| V[vector.search 8.5s]
+    S3 --> |LLM 调用| L[llm.chat 9.2s]
+    S3 --> |查询重写| R[query.rewrite 6s]
+
+    V --> V1[查看 Span 属性:<br/>results_count=5000]
+    V1 --> V2[根因: top_k 配置错误<br/>从 5 改为 5000]
+
+    L --> L1[查看 Span 属性:<br/>prompt_tokens=50000]
+    L1 --> L2[根因: RAG 注入过多上下文<br/>超出上下文窗口]
+
+    R --> R1[查看 Span 属性:<br/>llm.model=gpt-4o-mini]
+    R1 --> R2[根因: 查询重写用了<br/>能力不足的小模型]
+</pre><p><strong>关键技巧</strong>：</p>
+<ol>
+<li><strong>按持续时间排序</strong>：在 Jaeger 中按 Duration 降序排列 Trace，快速找到最慢请求</li>
+<li><strong>对比分析</strong>：选择一个慢 Trace 和一个快 Trace，对比 Span 差异</li>
+<li><strong>标签过滤</strong>：用 <code>error=true</code> 快速过滤出失败请求</li>
+<li><strong>依赖图</strong>：Jaeger 的 Service Map 展示服务间调用关系和错误率</li>
+</ol>
+<h3 id="tempo--grafana-方案">
+<a class="header-anchor" href="#tempo--grafana-%e6%96%b9%e6%a1%88"></a>
+Tempo + Grafana 方案
+</h3><p>Grafana Tempo 是新一代追踪后端，与 Grafana 深度集成，支持 Trace 与 Metrics、Logs 的关联跳转。</p>
+<pre class="mermaid">
+  graph LR
+    subgraph Grafana 统一面板
+        M[Metrics 面板<br/>P99 延迟飙升] --> |点击跳转| T[Trace 面板<br/>查看慢请求详情]
+        T --> |关联日志| L[Logs 面板<br/>同一 trace_id 的日志]
+        L --> |回到| T
+    end
+</pre><p>Tempo 的优势在于 <strong>Trace 到 Logs 的无缝关联</strong>：在 Grafana 中查看某个 Trace 时，可以直接跳转到同时间窗口、同 <code>trace_id</code> 的日志面板，无需手动拼接查询条件。</p>
+<h2 id="采样策略设计">
+<a class="header-anchor" href="#%e9%87%87%e6%a0%b7%e7%ad%96%e7%95%a5%e8%ae%be%e8%ae%a1"></a>
+采样策略设计
+</h2><h3 id="为什么需要采样">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e9%87%87%e6%a0%b7"></a>
+为什么需要采样
+</h3><p>一个日均百万次 LLM 调用的系统，如果全量采集链路数据，每天会产生数 GB 的 Span 数据。采样（Sampling）是在可观测性和成本之间做平衡。</p>
+<h3 id="采样策略对比">
+<a class="header-anchor" href="#%e9%87%87%e6%a0%b7%e7%ad%96%e7%95%a5%e5%af%b9%e6%af%94"></a>
+采样策略对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>策略</th>
+					<th>机制</th>
+					<th>优点</th>
+					<th>缺点</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Head Sampling</strong></td>
+					<td>请求入口决定是否采样</td>
+					<td>简单、低开销</td>
+					<td>可能丢失错误请求</td>
+					<td>低流量系统</td>
+			</tr>
+			<tr>
+					<td><strong>Tail Sampling</strong></td>
+					<td>Trace 完成后决定</td>
+					<td>可保留所有错误</td>
+					<td>需缓存完整 Trace</td>
+					<td>高流量系统</td>
+			</tr>
+			<tr>
+					<td><strong>Probabilistic</strong></td>
+					<td>按概率采样</td>
+					<td>统计均匀</td>
+					<td>随机性强</td>
+					<td>通用场景</td>
+			</tr>
+			<tr>
+					<td><strong>Rate Limiting</strong></td>
+					<td>每秒限采 N 条</td>
+					<td>可控流量</td>
+					<td>高峰期丢数据</td>
+					<td>成本敏感</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="推荐采样配置">
+<a class="header-anchor" href="#%e6%8e%a8%e8%8d%90%e9%87%87%e6%a0%b7%e9%85%8d%e7%bd%ae"></a>
+推荐采样配置
+</h3><p>对于 AI 系统，推荐组合使用多种策略：</p>
+<pre class="mermaid">
+  graph TD
+    R[请求到达] --> S{采样决策}
+
+    S --> |Head Sampler| H[10% 概率采样<br/>入口处快速决策]
+    S --> |Tail Sampler| T[Trace 完成后评估]
+
+    T --> T1{包含错误?}
+    T1 --> |是| KEEP1[100% 保留]
+    T1 --> |否| T2{延迟 > 5s?}
+    T2 --> |是| KEEP2[100% 保留]
+    T2 --> |否| T3{10% 概率}
+    T3 --> |命中| KEEP3[保留]
+    T3 --> |未命中| DROP[丢弃]
+
+    style KEEP1 fill:#ff6b6b,color:#fff
+    style KEEP2 fill:#f9ca24,color:#333
+</pre><p>Python 端配置尾采样：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">opentelemetry.sdk.trace.sampling</span> <span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Sampler</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">SamplingResult</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Decision</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ParentBased</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">TraceIdRatioBased</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 使用 ParentBased + TraceIdRatioBased 组合</span>
+</span></span><span class="line"><span class="cl"><span class="n">sampler</span> <span class="o">=</span> <span class="n">ParentBased</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">root</span><span class="o">=</span><span class="n">TraceIdRatioBased</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>  <span class="c1"># 根 Span 采样 10%</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></div><p>Collector 端的尾采样配置已在前面给出，这里强调 AI 场景的两个关键策略：</p>
+<ol>
+<li><strong>100% 保留错误 Trace</strong>：AI 系统的错误（如 <code>rate_limit</code>、<code>context_length_exceeded</code>）需要完整链路来排查</li>
+<li><strong>100% 保留慢请求</strong>：延迟 &gt; 5s 的请求往往是性能优化的首要目标</li>
+</ol>
+<h2 id="完整架构与部署">
+<a class="header-anchor" href="#%e5%ae%8c%e6%95%b4%e6%9e%b6%e6%9e%84%e4%b8%8e%e9%83%a8%e7%bd%b2"></a>
+完整架构与部署
+</h2><h3 id="docker-compose-部署">
+<a class="header-anchor" href="#docker-compose-%e9%83%a8%e7%bd%b2"></a>
+Docker Compose 部署
+</h3><p>以下是一个完整的开发/测试环境部署配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># docker-compose.yml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3.8&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># OpenTelemetry Collector</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">otel-collector</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">otel/opentelemetry-collector-contrib:latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;--config=/etc/otelcol/config.yaml&#34;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">./otel-collector-config.yaml:/etc/otelcol/config.yaml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s2">&#34;4317:4317&#34;</span><span class="w">   </span><span class="c"># OTLP gRPC</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s2">&#34;4318:4318&#34;</span><span class="w">   </span><span class="c"># OTLP HTTP</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">jaeger</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># Jaeger</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">jaeger</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">jaegertracing/all-in-one:1.55</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">COLLECTOR_OTLP_ENABLED=true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">SPAN_STORAGE_TYPE=badger</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">BADGER_EPHEMERAL=false</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">BADGER_DIRECTORY_VALUE=/badger/data</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">BADGER_DIRECTORY_KEY=/badger/key</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">jaeger-data:/badger</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s2">&#34;16686:16686&#34;</span><span class="w">  </span><span class="c"># Jaeger UI</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># Grafana Tempo（可选，替代 Jaeger）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">tempo</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">grafana/tempo:latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;-config.file=/etc/tempo.yaml&#34;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">./tempo.yaml:/etc/tempo.yaml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s2">&#34;3200:3200&#34;</span><span class="w">   </span><span class="c"># Tempo API</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># Grafana</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">grafana</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">grafana/grafana:latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">GF_AUTH_ANONYMOUS_ENABLED=true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">GF_AUTH_ANONYMOUS_ORG_ROLE=Admin</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s2">&#34;3000:3000&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">jaeger</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">tempo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">jaeger-data</span><span class="p">:</span><span class="w">
+</span></span></span></code></pre></div><p>Grafana 数据源配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># grafana-datasources.yaml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="m">1</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">datasources</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Jaeger</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">jaeger</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">access</span><span class="p">:</span><span class="w"> </span><span class="l">proxy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l">http://jaeger:16686</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">jsonData</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">tracesToLogs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">datasourceUid</span><span class="p">:</span><span class="w"> </span><span class="l">loki</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">tags</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;trace_id&#39;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Tempo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l">tempo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">access</span><span class="p">:</span><span class="w"> </span><span class="l">proxy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l">http://tempo:3200</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">jsonData</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">tracesToLogs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">datasourceUid</span><span class="p">:</span><span class="w"> </span><span class="l">loki</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">serviceMap</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">datasourceUid</span><span class="p">:</span><span class="w"> </span><span class="l">prometheus</span><span class="w">
+</span></span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>分布式链路追踪是 AI 系统可观测性的核心能力。与传统微服务不同，AI 系统的链路追踪面临三个独特挑战：</p>
+<ol>
+<li><strong>请求链路更长</strong>：一次 RAG 请求涉及 5-10 个服务，传统手动排查几乎不可能</li>
+<li><strong>性能维度更丰富</strong>：TTFT、TPOT、Token 吞吐量等指标需要嵌入 Span 属性</li>
+<li><strong>数据量更大</strong>：LLM 调用产生大量 Span，需要精细的采样策略控制成本</li>
+</ol>
+<p>实践中，建议遵循以下路径：</p>
+<ol>
+<li><strong>从自动埋点开始</strong>：使用 OTel 自动埋点库覆盖 HTTP、数据库、缓存调用，零代码改动获得基础追踪能力</li>
+<li><strong>逐步添加手动 Span</strong>：为 LLM 调用、向量检索等核心 AI 操作添加语义丰富的 Span</li>
+<li><strong>遵循语义约定</strong>：使用 <code>gen_ai.*</code> 命名空间，确保与社区标准和工具兼容</li>
+<li><strong>配置尾采样</strong>：保留所有错误和慢请求，正常请求按比例采样</li>
+<li><strong>打通 Trace-Log-Metric</strong>：通过 <code>trace_id</code> 将三者关联，实现一键跳转排查</li>
+</ol>
+<p>结合上一篇的日志收集与监控告警，以及下一篇的 Token 成本监控，三者共同构成了 AI 系统的完整可观测性体系。</p>
+<h2 id="参考文献">
+<a class="header-anchor" href="#%e5%8f%82%e8%80%83%e6%96%87%e7%8c%ae"></a>
+参考文献
+</h2><ul>
+<li><a href="https://opentelemetry.io/docs/">OpenTelemetry Documentation</a></li>
+<li><a href="https://opentelemetry.io/docs/specs/semconv/gen-ai/">OpenTelemetry Semantic Conventions for GenAI</a></li>
+<li><a href="https://www.w3.org/TR/trace-context/">W3C Trace Context Specification</a></li>
+<li><a href="https://www.jaegertracing.io/docs/">Jaeger Documentation</a></li>
+<li><a href="https://grafana.com/docs/tempo/latest/">Grafana Tempo Documentation</a></li>
+<li><a href="https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/processor/tailsamplingprocessor/README.md">OpenTelemetry Collector Tail Sampling Processor</a></li>
+<li><a href="https://research.google/pubs/dapper-a-large-scale-distributed-systems-tracing-infrastructure/">Dapper: Google&rsquo;s Production Tracing System</a></li>
+<li><a href="https://opentelemetry.io/docs/languages/python/automatic/">OpenTelemetry Python Instrumentation Libraries</a></li>
+</ul>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/&amp;appkey=&amp;title=%e5%88%86%e5%b8%83%e5%bc%8f%e9%93%be%e8%b7%af%e8%bf%bd%e8%b8%aa&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="分布式链路追踪">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/&amp;title=%e5%88%86%e5%b8%83%e5%bc%8f%e9%93%be%e8%b7%af%e8%bf%bd%e8%b8%aa&amp;desc=OpenTelemetry%e3%80%81Jaeger%e3%80%81%e8%b0%83%e7%94%a8%e9%93%be%e5%88%86%e6%9e%90%e2%80%94%e2%80%94AI%20%e5%a4%9a%e7%bb%84%e4%bb%b6%e7%b3%bb%e7%bb%9f%e7%9a%84%e5%85%a8%e9%93%be%e8%b7%af%e5%8f%af%e8%a7%82%e6%b5%8b&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="分布式链路追踪">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="分布式链路追踪">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/&amp;text=%e5%88%86%e5%b8%83%e5%bc%8f%e9%93%be%e8%b7%af%e8%bf%bd%e8%b8%aa&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="分布式链路追踪">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/" target="_blank" rel="noopener noreferrer" title="分布式链路追踪">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e8%bf%90%e7%bb%b4%e4%b8%8e%e5%8f%af%e8%a7%82%e6%b5%8b%e6%80%a7"
+      data-aos="zoom-in"
+      >运维与可观测性</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%a4%a7%e6%a8%a1%e5%9e%8b"
+        rel="tag"
+        >大模型</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e9%93%be%e8%b7%af%e8%bf%bd%e8%b8%aa"
+        rel="tag"
+        >链路追踪</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/opentelemetry"
+        rel="tag"
+        >OpenTelemetry</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/jaeger"
+        rel="tag"
+        >Jaeger</a
+      >
+    </li></ul>
+</footer>
+  </div><nav
+    id="article-nav"
+    aria-label="Article navigation"
+    data-aos="fade-up"
+  ><div class="article-nav-link-wrap left"><img
+              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-sizes="auto"
+              alt="Token 成本监控与优化"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/token%E6%88%90%E6%9C%AC%E7%9B%91%E6%8E%A7/"
+          aria-label="前一篇:Token 成本监控与优化"
+          title="前一篇:Token 成本监控与优化"
+        ></a>
+        <div class="article-nav-caption">前一篇</div>
+        <h3 class="article-nav-title">Token 成本监控与优化</h3>
+      </div><div class="article-nav-link-wrap right"><img
+              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
+              data-sizes="auto"
+              alt="日志收集与监控告警"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E4%B8%8E%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6/"
+          aria-label="后一篇:日志收集与监控告警"
+          title="后一篇:日志收集与监控告警"
+        ></a>
+        <div class="article-nav-caption">后一篇</div>
+        <h3 class="article-nav-title">日志收集与监控告警</h3>
+      </div></nav></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#分布式追踪核心概念">分布式追踪核心概念</a>
+      <ul>
+        <li><a href="#tracespan-与调用树">Trace、Span 与调用树</a></li>
+        <li><a href="#context-propagation上下文传播">Context Propagation（上下文传播）</a></li>
+      </ul>
+    </li>
+    <li><a href="#opentelemetry-标准">OpenTelemetry 标准</a>
+      <ul>
+        <li><a href="#架构概览">架构概览</a></li>
+        <li><a href="#三大组件">三大组件</a></li>
+        <li><a href="#otel-collector-配置">OTel Collector 配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#ai-请求全链路追踪">AI 请求全链路追踪</a>
+      <ul>
+        <li><a href="#一次-rag-请求的完整链路">一次 RAG 请求的完整链路</a></li>
+        <li><a href="#python-自动埋点">Python 自动埋点</a></li>
+        <li><a href="#java-手动埋点spring-boot">Java 手动埋点（Spring Boot）</a></li>
+      </ul>
+    </li>
+    <li><a href="#span-属性设计规范">Span 属性设计规范</a>
+      <ul>
+        <li><a href="#ai-语义约定">AI 语义约定</a></li>
+        <li><a href="#自定义属性建议">自定义属性建议</a></li>
+        <li><a href="#敏感信息处理">敏感信息处理</a></li>
+      </ul>
+    </li>
+    <li><a href="#jaeger-与-tempo-可视化">Jaeger 与 Tempo 可视化</a>
+      <ul>
+        <li><a href="#jaeger-ui-分析">Jaeger UI 分析</a></li>
+        <li><a href="#性能瓶颈定位实战">性能瓶颈定位实战</a></li>
+        <li><a href="#tempo--grafana-方案">Tempo + Grafana 方案</a></li>
+      </ul>
+    </li>
+    <li><a href="#采样策略设计">采样策略设计</a>
+      <ul>
+        <li><a href="#为什么需要采样">为什么需要采样</a></li>
+        <li><a href="#采样策略对比">采样策略对比</a></li>
+        <li><a href="#推荐采样配置">推荐采样配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#完整架构与部署">完整架构与部署</a>
+      <ul>
+        <li><a href="#docker-compose-部署">Docker Compose 部署</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+    <li><a href="#参考文献">参考文献</a></li>
+  </ul>
+</nav>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "分布式链路追踪",
+          url: "https:\/\/dev.infiniteevo.online\/post\/llm\/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7\/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA\/",
+          description: "OpenTelemetry、Jaeger、调用链分析——AI 多组件系统的全链路可观测",
+          cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
+        };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-MWNUH0WmtsYGhn2cbH6ELRCbf9LG3QDqCC&#43;gqPB3IBNO35xjZK3Ejb6oONRpDbPg" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/contrib/auto-render.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv&#43;fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script><script data-pjax>
+          var renderMath = () => {
+            if (!window.renderMathInElement) return;
+            window.renderMathInElement(_$("article"), {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+              ],
+            });
+          };
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderMath, { once: true });
+          } else {
+            renderMath();
+          }
+        </script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>
