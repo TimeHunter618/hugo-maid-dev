@@ -90,7 +90,7 @@ searcher = RoleDefinition(
         "不得编造搜索结果，引用必须附带来源链接",
         "单次搜索关键词不超过 3 个",
     ],
-    goal="为团队提供准确、可溯源的信息支撑",
+    goal="为团队提供准确、可溯源的信息支撑6",
 )
 print(searcher.build_prompt())
 ```
