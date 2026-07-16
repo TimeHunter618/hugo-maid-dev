@@ -1,65 +1,17 @@
----
+﻿---
 title: CmDataMaintainPlug 数据维护插件
 description: 系统数据的加载、初始化、维护与监控任务管理
-date: 2023-11-15T10:00:00+08:00
-lastmod: 2023-11-15T10:00:00+08:00
+date: 2023-04-18T09:32:58+08:00
+lastmod: 2023-04-18T09:32:58+08:00
 weight: 8
 tags:
   - ATS
-  - 轨道交通
+  - 轨道交�
   - 数据维护
 categories:
-  - 轨道交通
-  - 技术分享
-mermaid: true
+  - 轨道交�
+  - 技术分�
+mermaid:  true
 photos:
   - https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=system%20data%20maintenance%20dashboard%20with%20loading%20progress%20bar%20blue%20tech%20style&image_size=landscape_16_9
 ---
-
-# CmDataMaintainPlug 模块功能说明
-
-## 1. 模块概述
-
-CmDataMaintainPlug 是一个数据维护插件，负责处理系统数据的维护和管理功能。
-
-## 2. 核心功能
-
-- **数据加载**：负责数据的加载和初始化
-- **数据维护**：提供数据维护功能
-- **监控任务**：提供监控任务功能
-- **进度显示**：显示数据加载和处理的进度
-
-## 3. 主要组件
-
-| 组件名称 | 功能描述 |
-|---------|---------|
-| DataLoader | 数据加载器，负责数据的加载 |
-| DlgProgress | 进度对话框，显示处理进度 |
-| MonitorTask | 监控任务，提供监控功能 |
-
-## 4. 技术实现
-
-- 基于Qt框架开发
-- 实现了数据加载机制
-- 支持进度显示
-- 提供监控任务功能
-
-## 5. 应用场景
-
-- 系统数据的初始化加载
-- 数据的维护和更新
-- 监控系统数据状态
-
-## 6. 依赖关系
-
-- Qt框架
-
-## 7. 关键文件说明
-
-| 文件名 | 功能描述 |
-|-------|---------|
-| DataLoader.h | 数据加载器定义 |
-| DlgProgress.h | 进度对话框定义 |
-| MonitorTask.h | 监控任务定义 |
-| VC2Qt_cdm.h | VC到Qt的转换工具 |
-| resource.h | 资源定义文件 |
