@@ -190,7 +190,58 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#openresty-架构原理">OpenResty 架构原理</a>
+      <ul>
+        <li><a href="#什么是-openresty">什么是 OpenResty</a></li>
+        <li><a href="#nginx-请求处理阶段">Nginx 请求处理阶段</a></li>
+        <li><a href="#lua-模块与库">Lua 模块与库</a></li>
+      </ul>
+    </li>
+    <li><a href="#lua-脚本开发基础">Lua 脚本开发基础</a>
+      <ul>
+        <li><a href="#hello-world">Hello World</a></li>
+        <li><a href="#获取请求信息">获取请求信息</a></li>
+        <li><a href="#返回响应">返回响应</a></li>
+        <li><a href="#子请求与上游调用">子请求与上游调用</a></li>
+      </ul>
+    </li>
+    <li><a href="#api-网关核心功能实现">API 网关核心功能实现</a>
+      <ul>
+        <li><a href="#1-请求路由">1. 请求路由</a></li>
+        <li><a href="#2-jwt-鉴权">2. JWT 鉴权</a></li>
+        <li><a href="#3-限流熔断">3. 限流熔断</a></li>
+        <li><a href="#4-灰度发布">4. 灰度发布</a></li>
+        <li><a href="#5-请求日志">5. 请求日志</a></li>
+      </ul>
+    </li>
+    <li><a href="#完整-api-网关配置">完整 API 网关配置</a></li>
+    <li><a href="#性能优化策略">性能优化策略</a>
+      <ul>
+        <li><a href="#连接池复用">连接池复用</a></li>
+        <li><a href="#缓存优化">缓存优化</a></li>
+        <li><a href="#异步处理">异步处理</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题与调试">常见问题与调试</a>
+      <ul>
+        <li><a href="#调试技巧">调试技巧</a></li>
+        <li><a href="#性能监控">性能监控</a></li>
+        <li><a href="#常见错误">常见错误</a></li>
+      </ul>
+    </li>
+    <li><a href="#部署与运维">部署与运维</a>
+      <ul>
+        <li><a href="#配置管理">配置管理</a></li>
+        <li><a href="#热重载">热重载</a></li>
+        <li><a href="#健康检查">健康检查</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +322,599 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Nginx 的原生配置虽然强大，但面对复杂的业务逻辑（如动态路由、请求鉴权、限流熔断、灰度发布）时显得力不从心。OpenResty 的出现改变了这一切——它将 Nginx 与 LuaJIT 深度集成，让我们可以用 Lua 脚本编写高性能的 HTTP 处理逻辑。</p>
+<p>本文将从 OpenResty 架构入手，深入讲解 Lua 脚本在 Nginx 中的应用，最终构建一个完整的 API 网关。</p>
+<h2 id="openresty-架构原理">
+<a class="header-anchor" href="#openresty-%e6%9e%b6%e6%9e%84%e5%8e%9f%e7%90%86"></a>
+OpenResty 架构原理
+</h2><h3 id="什么是-openresty">
+<a class="header-anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-openresty"></a>
+什么是 OpenResty
+</h3><p>OpenResty 是一个基于 Nginx 和 LuaJIT 的高性能 Web 平台。它通过将 LuaJIT 编译器嵌入 Nginx 工作进程，实现了用 Lua 脚本处理 HTTP 请求的能力。</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "OpenResty 架构"
+        subgraph "Nginx 层"
+            HTTP[HTTP Server]
+            TCP[TCP/UDP Server]
+            Stream[Stream Module]
+        end
+
+        subgraph "Lua 层"
+            LuaJIT[LuaJIT 编译器]
+            L1[Lua 核心库]
+            L2[LuaResty 库]
+            L3[第三方 Lua 库]
+        end
+
+        subgraph "上游服务"
+            Redis[Redis]
+            MySQL[MySQL]
+            Backend[后端 API]
+        end
+    end
+
+    HTTP --> LuaJIT
+    TCP --> LuaJIT
+    LuaJIT --> L1
+    LuaJIT --> L2
+    L2 --> Redis
+    L2 --> MySQL
+    L2 --> Backend
+</pre><h3 id="nginx-请求处理阶段">
+<a class="header-anchor" href="#nginx-%e8%af%b7%e6%b1%82%e5%a4%84%e7%90%86%e9%98%b6%e6%ae%b5"></a>
+Nginx 请求处理阶段
+</h3><p>在 OpenResty 中，HTTP 请求会经过多个处理阶段，每个阶段都可以用 Lua 脚本介入：</p>
+<pre class="mermaid">
+  sequenceDiagram
+    participant C as Client
+    participant N as Nginx
+    participant L as Lua Handler
+
+    C->>N: HTTP Request
+
+    Note over N: 1. rewrite_by_lua<br/>URL重写、变量设置
+    N->>L: rewrite_by_lua
+    L-->>N: 返回
+
+    Note over N: 2. access_by_lua<br/>鉴权、限流
+    N->>L: access_by_lua
+    L-->>N: 返回
+
+    Note over N: 3. content_by_lua<br/>内容生成
+    N->>L: content_by_lua
+    L-->>N: 返回
+
+    Note over N: 4. header_filter_by_lua<br/>响应头处理
+    N->>L: header_filter_by_lua
+    L-->>N: 返回
+
+    Note over N: 5. body_filter_by_lua<br/>响应体处理
+    N->>L: body_filter_by_lua
+    L-->>N: 返回
+
+    N-->>C: HTTP Response
+</pre><h3 id="lua-模块与库">
+<a class="header-anchor" href="#lua-%e6%a8%a1%e5%9d%97%e4%b8%8e%e5%ba%93"></a>
+Lua 模块与库
+</h3><p>OpenResty 提供了丰富的 Lua 库：</p>
+<table>
+	<thead>
+			<tr>
+					<th>模块</th>
+					<th>功能</th>
+					<th>常用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>ngx.req</code></td>
+					<td>请求对象操作</td>
+					<td>获取参数、Header</td>
+			</tr>
+			<tr>
+					<td><code>ngx.resp</code></td>
+					<td>响应对象操作</td>
+					<td>设置状态码、Header</td>
+			</tr>
+			<tr>
+					<td><code>ngx.location</code></td>
+					<td>子请求</td>
+					<td>访问上游服务</td>
+			</tr>
+			<tr>
+					<td><code>ngx.shared</code></td>
+					<td>共享内存</td>
+					<td>限流计数器、缓存</td>
+			</tr>
+			<tr>
+					<td><code>resty.redis</code></td>
+					<td>Redis 客户端</td>
+					<td>缓存、分布式锁</td>
+			</tr>
+			<tr>
+					<td><code>resty.mysql</code></td>
+					<td>MySQL 客户端</td>
+					<td>数据库查询</td>
+			</tr>
+			<tr>
+					<td><code>resty.http</code></td>
+					<td>HTTP 客户端</td>
+					<td>调用上游 API</td>
+			</tr>
+			<tr>
+					<td><code>resty.limit</code></td>
+					<td>限流模块</td>
+					<td>速率限制</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="lua-脚本开发基础">
+<a class="header-anchor" href="#lua-%e8%84%9a%e6%9c%ac%e5%bc%80%e5%8f%91%e5%9f%ba%e7%a1%80"></a>
+Lua 脚本开发基础
+</h2><h3 id="hello-world">
+<a class="header-anchor" href="#hello-world"></a>
+Hello World
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">http</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">location</span> <span class="s">/hello</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">default_type</span> <span class="s">text/plain</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">content_by_lua_block</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="kn">ngx.say(&#34;Hello,</span> <span class="s">OpenResty!&#34;)</span>
+</span></span><span class="line"><span class="cl">            <span class="err">}</span>
+</span></span><span class="line"><span class="cl">        <span class="err">}</span>
+</span></span><span class="line"><span class="cl">    <span class="err">}</span>
+</span></span><span class="line"><span class="cl"><span class="err">}</span>
+</span></span></code></pre></div><h3 id="获取请求信息">
+<a class="header-anchor" href="#%e8%8e%b7%e5%8f%96%e8%af%b7%e6%b1%82%e4%bf%a1%e6%81%af"></a>
+获取请求信息
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 获取请求方法</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">method</span> <span class="o">=</span> <span class="n">ngx.req</span><span class="p">.</span><span class="n">get_method</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 获取请求 URI</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">ngx.var</span><span class="p">.</span><span class="n">request_uri</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 获取 Query 参数</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">args</span> <span class="o">=</span> <span class="n">ngx.req</span><span class="p">.</span><span class="n">get_uri_args</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">name</span> <span class="o">=</span> <span class="n">args.name</span> <span class="ow">or</span> <span class="s2">&#34;Guest&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 获取 Header</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">token</span> <span class="o">=</span> <span class="n">ngx.req</span><span class="p">.</span><span class="n">get_headers</span><span class="p">()[</span><span class="s2">&#34;Authorization&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 获取请求体</span>
+</span></span><span class="line"><span class="cl"><span class="n">ngx.req</span><span class="p">.</span><span class="n">read_body</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">body_data</span> <span class="o">=</span> <span class="n">ngx.req</span><span class="p">.</span><span class="n">get_body_data</span><span class="p">()</span>
+</span></span></code></pre></div><h3 id="返回响应">
+<a class="header-anchor" href="#%e8%bf%94%e5%9b%9e%e5%93%8d%e5%ba%94"></a>
+返回响应
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 设置响应头</span>
+</span></span><span class="line"><span class="cl"><span class="n">ngx.header</span><span class="p">[</span><span class="s2">&#34;Content-Type&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&#34;application/json; charset=utf-8&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 设置状态码</span>
+</span></span><span class="line"><span class="cl"><span class="n">ngx.status</span> <span class="o">=</span> <span class="n">ngx.HTTP_OK</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 输出内容</span>
+</span></span><span class="line"><span class="cl"><span class="n">ngx.say</span><span class="p">(</span><span class="s1">&#39;{&#34;message&#34;: &#34;success&#34;}&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 退出处理</span>
+</span></span><span class="line"><span class="cl"><span class="n">ngx.exit</span><span class="p">(</span><span class="n">ngx.HTTP_OK</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="子请求与上游调用">
+<a class="header-anchor" href="#%e5%ad%90%e8%af%b7%e6%b1%82%e4%b8%8e%e4%b8%8a%e6%b8%b8%e8%b0%83%e7%94%a8"></a>
+子请求与上游调用
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 发起子请求（同步）</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">res</span> <span class="o">=</span> <span class="n">ngx.location</span><span class="p">.</span><span class="n">capture</span><span class="p">(</span><span class="s1">&#39;/api/user&#39;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">method</span> <span class="o">=</span> <span class="n">ngx.HTTP_GET</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">args</span> <span class="o">=</span> <span class="p">{</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">123</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 检查响应</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="n">res.status</span> <span class="o">==</span> <span class="n">ngx.HTTP_OK</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.say</span><span class="p">(</span><span class="n">res.body</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">else</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.exit</span><span class="p">(</span><span class="n">res.status</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></div><h2 id="api-网关核心功能实现">
+<a class="header-anchor" href="#api-%e7%bd%91%e5%85%b3%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd%e5%ae%9e%e7%8e%b0"></a>
+API 网关核心功能实现
+</h2><h3 id="1-请求路由">
+<a class="header-anchor" href="#1-%e8%af%b7%e6%b1%82%e8%b7%af%e7%94%b1"></a>
+1. 请求路由
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 路由配置</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">routes</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="s2">&#34;/api/v1/users&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">upstream</span> <span class="o">=</span> <span class="s2">&#34;http://127.0.0.1:8081&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">method</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;GET&#34;</span><span class="p">,</span> <span class="s2">&#34;POST&#34;</span><span class="p">,</span> <span class="s2">&#34;PUT&#34;</span><span class="p">,</span> <span class="s2">&#34;DELETE&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="s2">&#34;/api/v1/orders&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">upstream</span> <span class="o">=</span> <span class="s2">&#34;http://127.0.0.1:8082&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">method</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;GET&#34;</span><span class="p">,</span> <span class="s2">&#34;POST&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="s2">&#34;/api/v1/products&#34;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">upstream</span> <span class="o">=</span> <span class="s2">&#34;http://127.0.0.1:8083&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">method</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;GET&#34;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 路由匹配</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="kr">function</span> <span class="nf">match_route</span><span class="p">(</span><span class="n">uri</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">for</span> <span class="n">path</span><span class="p">,</span> <span class="n">config</span> <span class="kr">in</span> <span class="n">pairs</span><span class="p">(</span><span class="n">routes</span><span class="p">)</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">if</span> <span class="n">ngx.re</span><span class="p">.</span><span class="n">match</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s2">&#34;^&#34;</span> <span class="o">..</span> <span class="n">path</span> <span class="o">..</span> <span class="s2">&#34;(/.*)?$&#34;</span><span class="p">)</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">            <span class="kr">return</span> <span class="n">config</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span> <span class="kc">nil</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 使用示例</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">route</span> <span class="o">=</span> <span class="n">match_route</span><span class="p">(</span><span class="n">ngx.var</span><span class="p">.</span><span class="n">uri</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="n">route</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.var</span><span class="p">.</span><span class="n">upstream</span> <span class="o">=</span> <span class="n">route.upstream</span>
+</span></span><span class="line"><span class="cl"><span class="kr">else</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.exit</span><span class="p">(</span><span class="n">ngx.HTTP_NOT_FOUND</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></div><h3 id="2-jwt-鉴权">
+<a class="header-anchor" href="#2-jwt-%e9%89%b4%e6%9d%83"></a>
+2. JWT 鉴权
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">jwt</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s2">&#34;resty.jwt&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="kr">function</span> <span class="nf">validate_jwt</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">auth_header</span> <span class="o">=</span> <span class="n">ngx.req</span><span class="p">.</span><span class="n">get_headers</span><span class="p">()[</span><span class="s2">&#34;Authorization&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="ow">not</span> <span class="n">auth_header</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.exit</span><span class="p">(</span><span class="n">ngx.HTTP_UNAUTHORIZED</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">token</span> <span class="o">=</span> <span class="n">string.match</span><span class="p">(</span><span class="n">auth_header</span><span class="p">,</span> <span class="s2">&#34;^Bearer%s+(.+)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="ow">not</span> <span class="n">token</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.exit</span><span class="p">(</span><span class="n">ngx.HTTP_UNAUTHORIZED</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">secret</span> <span class="o">=</span> <span class="s2">&#34;your-secret-key&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">jwt_obj</span> <span class="o">=</span> <span class="n">jwt</span><span class="p">:</span><span class="n">verify</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="ow">not</span> <span class="n">jwt_obj.verified</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.log</span><span class="p">(</span><span class="n">ngx.ERR</span><span class="p">,</span> <span class="s2">&#34;JWT verification failed: &#34;</span><span class="p">,</span> <span class="n">jwt_obj.reason</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.exit</span><span class="p">(</span><span class="n">ngx.HTTP_UNAUTHORIZED</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1">-- 将用户信息存入上下文</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.ctx</span><span class="p">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">jwt_obj.payload</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></div><h3 id="3-限流熔断">
+<a class="header-anchor" href="#3-%e9%99%90%e6%b5%81%e7%86%94%e6%96%ad"></a>
+3. 限流熔断
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 基于共享内存的限流</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">limit_req</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s2">&#34;resty.limit.req&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 创建限流器（1000 req/sec，突发 100）</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">lim</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">limit_req.new</span><span class="p">(</span><span class="s2">&#34;api_limit&#34;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="ow">not</span> <span class="n">lim</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.log</span><span class="p">(</span><span class="n">ngx.ERR</span><span class="p">,</span> <span class="s2">&#34;failed to create limit_req: &#34;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.exit</span><span class="p">(</span><span class="n">ngx.HTTP_INTERNAL_SERVER_ERROR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">key</span> <span class="o">=</span> <span class="n">ngx.var</span><span class="p">.</span><span class="n">remote_addr</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">delay</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">lim</span><span class="p">:</span><span class="n">incoming</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="kc">true</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="ow">not</span> <span class="n">delay</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="n">err</span> <span class="o">==</span> <span class="s2">&#34;rejected&#34;</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.exit</span><span class="p">(</span><span class="n">ngx.HTTP_TOO_MANY_REQUESTS</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.log</span><span class="p">(</span><span class="n">ngx.ERR</span><span class="p">,</span> <span class="s2">&#34;failed to limit req: &#34;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.exit</span><span class="p">(</span><span class="n">ngx.HTTP_INTERNAL_SERVER_ERROR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 如果需要等待，设置延迟</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="n">delay</span> <span class="o">&gt;=</span> <span class="mf">0.001</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></div><h3 id="4-灰度发布">
+<a class="header-anchor" href="#4-%e7%81%b0%e5%ba%a6%e5%8f%91%e5%b8%83"></a>
+4. 灰度发布
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 灰度配置</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">canary_rules</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">path</span> <span class="o">=</span> <span class="s2">&#34;/api/v1/users&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">percentage</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>  <span class="c1">-- 10% 流量</span>
+</span></span><span class="line"><span class="cl">        <span class="n">upstream</span> <span class="o">=</span> <span class="s2">&#34;http://127.0.0.1:8081-canary&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="kr">function</span> <span class="nf">check_canary</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">uri</span> <span class="o">=</span> <span class="n">ngx.var</span><span class="p">.</span><span class="n">uri</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">rule</span> <span class="kr">in</span> <span class="n">ipairs</span><span class="p">(</span><span class="n">canary_rules</span><span class="p">)</span> <span class="kr">do</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">if</span> <span class="n">ngx.re</span><span class="p">.</span><span class="n">match</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="s2">&#34;^&#34;</span> <span class="o">..</span> <span class="n">rule.path</span><span class="p">)</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">            <span class="c1">-- 根据用户 ID 哈希决定是否走灰度</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">local</span> <span class="n">user_id</span> <span class="o">=</span> <span class="n">ngx.ctx</span><span class="p">.</span><span class="n">user</span> <span class="ow">and</span> <span class="n">ngx.ctx</span><span class="p">.</span><span class="n">user.id</span> <span class="ow">or</span> <span class="n">ngx.var</span><span class="p">.</span><span class="n">remote_addr</span>
+</span></span><span class="line"><span class="cl">            <span class="kd">local</span> <span class="n">hash</span> <span class="o">=</span> <span class="n">ngx.crc32_long</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="o">%</span> <span class="mi">100</span>
+</span></span><span class="line"><span class="cl">            
+</span></span><span class="line"><span class="cl">            <span class="kr">if</span> <span class="n">hash</span> <span class="o">&lt;</span> <span class="n">rule.percentage</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ngx.var</span><span class="p">.</span><span class="n">upstream</span> <span class="o">=</span> <span class="n">rule.upstream</span>
+</span></span><span class="line"><span class="cl">                <span class="n">ngx.log</span><span class="p">(</span><span class="n">ngx.INFO</span><span class="p">,</span> <span class="s2">&#34;Canary routing for &#34;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="kr">return</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">            <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span> <span class="kc">false</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></div><h3 id="5-请求日志">
+<a class="header-anchor" href="#5-%e8%af%b7%e6%b1%82%e6%97%a5%e5%bf%97"></a>
+5. 请求日志
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 记录访问日志</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="kr">function</span> <span class="nf">log_request</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">start_time</span> <span class="o">=</span> <span class="n">ngx.req</span><span class="p">.</span><span class="n">start_time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">latency</span> <span class="o">=</span> <span class="n">ngx.now</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">log_entry</span> <span class="o">=</span> <span class="n">string.format</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;{&#34;time&#34;: &#34;%s&#34;, &#34;ip&#34;: &#34;%s&#34;, &#34;uri&#34;: &#34;%s&#34;, &#34;method&#34;: &#34;%s&#34;, &#39;</span> <span class="o">..</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;&#34;status&#34;: %d, &#34;latency&#34;: %.2f, &#34;user&#34;: &#34;%s&#34;}&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.localtime</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.var</span><span class="p">.</span><span class="n">remote_addr</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.var</span><span class="p">.</span><span class="n">request_uri</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.req</span><span class="p">.</span><span class="n">get_method</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.status</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">latency</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.ctx</span><span class="p">.</span><span class="n">user</span> <span class="ow">and</span> <span class="n">ngx.ctx</span><span class="p">.</span><span class="n">user.id</span> <span class="ow">or</span> <span class="s2">&#34;anonymous&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.log</span><span class="p">(</span><span class="n">ngx.INFO</span><span class="p">,</span> <span class="n">log_entry</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></div><h2 id="完整-api-网关配置">
+<a class="header-anchor" href="#%e5%ae%8c%e6%95%b4-api-%e7%bd%91%e5%85%b3%e9%85%8d%e7%bd%ae"></a>
+完整 API 网关配置
+</h2><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">worker_processes</span> <span class="mi">4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">worker_rlimit_nofile</span> <span class="mi">65535</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">events</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">worker_connections</span> <span class="mi">10240</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">use</span> <span class="s">epoll</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">http</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">include</span> <span class="s">mime.types</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">default_type</span> <span class="s">application/octet-stream</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">sendfile</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">tcp_nopush</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">tcp_nodelay</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 共享内存
+</span></span></span><span class="line"><span class="cl">    <span class="kn">lua_shared_dict</span> <span class="s">api_limit</span> <span class="mi">10m</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">lua_shared_dict</span> <span class="s">jwt_cache</span> <span class="mi">10m</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 上游服务
+</span></span></span><span class="line"><span class="cl">    <span class="kn">upstream</span> <span class="s">user_service</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server</span> <span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">8081</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">keepalive</span> <span class="mi">100</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">upstream</span> <span class="s">order_service</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server</span> <span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">8082</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">keepalive</span> <span class="mi">100</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server_name</span> <span class="s">api.example.com</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 加载 Lua 模块
+</span></span></span><span class="line"><span class="cl">        <span class="kn">lua_package_path</span> <span class="s">&#34;/path/to/lua/modules/?.lua</span><span class="p">;</span>;<span class="kn">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 前置处理
+</span></span></span><span class="line"><span class="cl">        <span class="kn">rewrite_by_lua_file</span> <span class="s">/path/to/lua/rewrite.lua</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">access_by_lua_file</span> <span class="s">/path/to/lua/access.lua</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># API 路由
+</span></span></span><span class="line"><span class="cl">        <span class="kn">location</span> <span class="s">/api/v1/users</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_pass</span> <span class="s">http://user_service</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$host</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_set_header</span> <span class="s">X-User-ID</span> <span class="nv">$ctx_user_id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">location</span> <span class="s">/api/v1/orders</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_pass</span> <span class="s">http://order_service</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$host</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_set_header</span> <span class="s">X-User-ID</span> <span class="nv">$ctx_user_id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 后置处理
+</span></span></span><span class="line"><span class="cl">        <span class="kn">header_filter_by_lua_file</span> <span class="s">/path/to/lua/header_filter.lua</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">body_filter_by_lua_file</span> <span class="s">/path/to/lua/body_filter.lua</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">log_by_lua_file</span> <span class="s">/path/to/lua/log.lua</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="性能优化策略">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96%e7%ad%96%e7%95%a5"></a>
+性能优化策略
+</h2><h3 id="连接池复用">
+<a class="header-anchor" href="#%e8%bf%9e%e6%8e%a5%e6%b1%a0%e5%a4%8d%e7%94%a8"></a>
+连接池复用
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 初始化 Redis 连接池</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">redis</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s2">&#34;resty.redis&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">red</span> <span class="o">=</span> <span class="n">redis</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">red</span><span class="p">:</span><span class="n">set_timeout</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">red</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="s2">&#34;127.0.0.1&#34;</span><span class="p">,</span> <span class="mi">6379</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="ow">not</span> <span class="n">ok</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.log</span><span class="p">(</span><span class="n">ngx.ERR</span><span class="p">,</span> <span class="s2">&#34;failed to connect to redis: &#34;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 将连接放入连接池</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">red</span><span class="p">:</span><span class="n">set_keepalive</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="ow">not</span> <span class="n">ok</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.log</span><span class="p">(</span><span class="n">ngx.ERR</span><span class="p">,</span> <span class="s2">&#34;failed to set keepalive: &#34;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></div><h3 id="缓存优化">
+<a class="header-anchor" href="#%e7%bc%93%e5%ad%98%e4%bc%98%e5%8c%96"></a>
+缓存优化
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 使用共享内存缓存</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">cache</span> <span class="o">=</span> <span class="n">ngx.shared</span><span class="p">.</span><span class="n">jwt_cache</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 获取缓存</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="n">cached_token</span> <span class="o">=</span> <span class="n">cache</span><span class="p">:</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="kr">if</span> <span class="n">cached_token</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ngx.ctx</span><span class="p">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">cjson.decode</span><span class="p">(</span><span class="n">cached_token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">return</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">-- 设置缓存（10分钟）</span>
+</span></span><span class="line"><span class="cl"><span class="n">cache</span><span class="p">:</span><span class="n">set</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">cjson.encode</span><span class="p">(</span><span class="n">user_info</span><span class="p">),</span> <span class="mi">600</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="异步处理">
+<a class="header-anchor" href="#%e5%bc%82%e6%ad%a5%e5%a4%84%e7%90%86"></a>
+异步处理
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 异步发送日志</span>
+</span></span><span class="line"><span class="cl"><span class="kd">local</span> <span class="kr">function</span> <span class="nf">async_log</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">ngx.timer</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kr">function</span><span class="p">(</span><span class="n">premature</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">-- 异步处理逻辑</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">file</span> <span class="o">=</span> <span class="n">io.open</span><span class="p">(</span><span class="s2">&#34;/var/log/api.log&#34;</span><span class="p">,</span> <span class="s2">&#34;a&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">if</span> <span class="n">file</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">            <span class="n">file</span><span class="p">:</span><span class="n">write</span><span class="p">(</span><span class="n">msg</span> <span class="o">..</span> <span class="s2">&#34;</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">file</span><span class="p">:</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="kr">if</span> <span class="ow">not</span> <span class="n">ok</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ngx.log</span><span class="p">(</span><span class="n">ngx.ERR</span><span class="p">,</span> <span class="s2">&#34;failed to create timer: &#34;</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="kr">end</span>
+</span></span><span class="line"><span class="cl"><span class="kr">end</span>
+</span></span></code></pre></div><h2 id="常见问题与调试">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b8%8e%e8%b0%83%e8%af%95"></a>
+常见问题与调试
+</h2><h3 id="调试技巧">
+<a class="header-anchor" href="#%e8%b0%83%e8%af%95%e6%8a%80%e5%b7%a7"></a>
+调试技巧
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 启用 Lua 调试日志</span>
+</span></span><span class="line"><span class="cl">error_log /var/log/nginx/lua-error.log debug<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 使用 ngx.log 输出调试信息</span>
+</span></span><span class="line"><span class="cl">ngx.log<span class="o">(</span>ngx.DEBUG, <span class="s2">&#34;Debug info: &#34;</span>, variable<span class="o">)</span>
+</span></span><span class="line"><span class="cl">ngx.log<span class="o">(</span>ngx.INFO, <span class="s2">&#34;Info: &#34;</span>, variable<span class="o">)</span>
+</span></span><span class="line"><span class="cl">ngx.log<span class="o">(</span>ngx.WARN, <span class="s2">&#34;Warning: &#34;</span>, variable<span class="o">)</span>
+</span></span><span class="line"><span class="cl">ngx.log<span class="o">(</span>ngx.ERR, <span class="s2">&#34;Error: &#34;</span>, variable<span class="o">)</span>
+</span></span></code></pre></div><h3 id="性能监控">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e7%9b%91%e6%8e%a7"></a>
+性能监控
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看 Nginx 状态</span>
+</span></span><span class="line"><span class="cl">curl http://localhost/nginx_status
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看 Lua 内存使用</span>
+</span></span><span class="line"><span class="cl">ngx.log<span class="o">(</span>ngx.INFO, <span class="s2">&#34;Lua memory: &#34;</span>, collectgarbage<span class="o">(</span><span class="s2">&#34;count&#34;</span><span class="o">))</span>
+</span></span></code></pre></div><h3 id="常见错误">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e9%94%99%e8%af%af"></a>
+常见错误
+</h3><table>
+	<thead>
+			<tr>
+					<th>错误</th>
+					<th>原因</th>
+					<th>解决方案</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>lua_code_cache is off</code></td>
+					<td>Lua 代码未缓存</td>
+					<td>生产环境设置 <code>lua_code_cache on</code></td>
+			</tr>
+			<tr>
+					<td><code>attempt to index a nil value</code></td>
+					<td>变量未初始化</td>
+					<td>添加 nil 检查</td>
+			</tr>
+			<tr>
+					<td><code>connection refused</code></td>
+					<td>上游服务不可达</td>
+					<td>检查上游服务状态，配置健康检查</td>
+			</tr>
+			<tr>
+					<td><code>no memory</code></td>
+					<td>共享内存不足</td>
+					<td>增大 <code>lua_shared_dict</code> 大小</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="部署与运维">
+<a class="header-anchor" href="#%e9%83%a8%e7%bd%b2%e4%b8%8e%e8%bf%90%e7%bb%b4"></a>
+部署与运维
+</h2><h3 id="配置管理">
+<a class="header-anchor" href="#%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86"></a>
+配置管理
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 配置文件结构</span>
+</span></span><span class="line"><span class="cl">/etc/openresty/
+</span></span><span class="line"><span class="cl">├── nginx.conf              <span class="c1"># 主配置</span>
+</span></span><span class="line"><span class="cl">├── conf.d/
+</span></span><span class="line"><span class="cl">│   ├── api_gateway.conf    <span class="c1"># API 网关配置</span>
+</span></span><span class="line"><span class="cl">│   └── upstream.conf       <span class="c1"># 上游服务配置</span>
+</span></span><span class="line"><span class="cl">└── lua/
+</span></span><span class="line"><span class="cl">    ├── rewrite.lua         <span class="c1"># URL 重写</span>
+</span></span><span class="line"><span class="cl">    ├── access.lua          <span class="c1"># 鉴权限流</span>
+</span></span><span class="line"><span class="cl">    ├── header_filter.lua   <span class="c1"># 响应头处理</span>
+</span></span><span class="line"><span class="cl">    ├── body_filter.lua     <span class="c1"># 响应体处理</span>
+</span></span><span class="line"><span class="cl">    └── log.lua             <span class="c1"># 日志记录</span>
+</span></span></code></pre></div><h3 id="热重载">
+<a class="header-anchor" href="#%e7%83%ad%e9%87%8d%e8%bd%bd"></a>
+热重载
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 检查配置</span>
+</span></span><span class="line"><span class="cl">nginx -t
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 热重载（不中断服务）</span>
+</span></span><span class="line"><span class="cl">nginx -s reload
+</span></span></code></pre></div><h3 id="健康检查">
+<a class="header-anchor" href="#%e5%81%a5%e5%ba%b7%e6%a3%80%e6%9f%a5"></a>
+健康检查
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-lua" data-lang="lua"><span class="line"><span class="cl"><span class="c1">-- 上游健康检查</span>
+</span></span><span class="line"><span class="cl"><span class="n">lua_need_request_body</span> <span class="n">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">location</span> <span class="o">/</span><span class="n">health</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">content_by_lua_block</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">http</span> <span class="o">=</span> <span class="n">require</span><span class="p">(</span><span class="s2">&#34;resty.http&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">httpc</span> <span class="o">=</span> <span class="n">http.new</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="kd">local</span> <span class="n">res</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">httpc</span><span class="p">:</span><span class="n">request_uri</span><span class="p">(</span><span class="s2">&#34;http://127.0.0.1:8081/health&#34;</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">method</span> <span class="o">=</span> <span class="s2">&#34;GET&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">timeout</span> <span class="o">=</span> <span class="mi">1000</span>
+</span></span><span class="line"><span class="cl">        <span class="p">})</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="kr">if</span> <span class="n">res</span> <span class="ow">and</span> <span class="n">res.status</span> <span class="o">==</span> <span class="mi">200</span> <span class="kr">then</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ngx.say</span><span class="p">(</span><span class="s2">&#34;OK&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">else</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ngx.exit</span><span class="p">(</span><span class="n">ngx.HTTP_SERVICE_UNAVAILABLE</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="kr">end</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>OpenResty 让 Nginx 从一个静态配置的 Web 服务器变成了一个可编程的平台。通过 Lua 脚本，我们可以轻松实现请求路由、鉴权限流、灰度发布、日志收集等复杂功能，构建企业级的 API 网关。</p>
+<p>核心要点：</p>
+<ul>
+<li><strong>请求阶段</strong>：利用 rewrite、access、content、filter 等阶段介入请求处理</li>
+<li><strong>共享内存</strong>：使用 <code>lua_shared_dict</code> 实现跨请求的数据共享</li>
+<li><strong>连接池</strong>：复用 Redis、MySQL、HTTP 连接，提升性能</li>
+<li><strong>异步处理</strong>：使用 timer 异步处理日志等非关键逻辑</li>
+</ul>
+<p>掌握 OpenResty，你就拥有了构建高性能网关的利器。</p>
+<hr>
+<p><strong>延伸阅读</strong>：</p>
+<ol>
+<li>OpenResty 官方文档 - <a href="https://openresty.org/en/docs/">https://openresty.org/en/docs/</a></li>
+<li>Lua 编程入门 - <a href="https://www.lua.org/pil/contents.html">https://www.lua.org/pil/contents.html</a></li>
+<li>ngx_lua 模块文档 - <a href="https://github.com/openresty/lua-nginx-module">https://github.com/openresty/lua-nginx-module</a></li>
+</ol>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/middleware-ops/nginxlua%E8%84%9A%E6%9C%AC%E6%89%A9%E5%B1%95%E4%B8%8Eapi%E7%BD%91%E5%85%B3%E5%AE%9E%E8%B7%B5/&amp;appkey=&amp;title=Nginx%20Lua%e8%84%9a%e6%9c%ac%e6%89%a9%e5%b1%95%e4%b8%8eAPI%e7%bd%91%e5%85%b3%e5%ae%9e%e8%b7%b5&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="Nginx Lua脚本扩展与API网关实践">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/middleware-ops/nginxlua%E8%84%9A%E6%9C%AC%E6%89%A9%E5%B1%95%E4%B8%8Eapi%E7%BD%91%E5%85%B3%E5%AE%9E%E8%B7%B5/&amp;title=Nginx%20Lua%e8%84%9a%e6%9c%ac%e6%89%a9%e5%b1%95%e4%b8%8eAPI%e7%bd%91%e5%85%b3%e5%ae%9e%e8%b7%b5&amp;desc=OpenResty%e6%9e%b6%e6%9e%84%e3%80%81Lua%e8%84%9a%e6%9c%ac%e5%bc%80%e5%8f%91%e3%80%81%e8%af%b7%e6%b1%82%e6%8b%a6%e6%88%aa%e4%b8%8e%e9%89%b4%e6%9d%83%e3%80%81%e9%99%90%e6%b5%81%e7%86%94%e6%96%ad%e3%80%81API%e7%bd%91%e5%85%b3%e5%ae%8c%e6%95%b4%e5%ae%9e%e7%8e%b0&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="Nginx Lua脚本扩展与API网关实践">
@@ -348,7 +991,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
+              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
               data-sizes="auto"
               alt="ZooKeeper分布式协"
               class="lazyload"
@@ -392,10 +1035,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -445,7 +1088,58 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#openresty-架构原理">OpenResty 架构原理</a>
+      <ul>
+        <li><a href="#什么是-openresty">什么是 OpenResty</a></li>
+        <li><a href="#nginx-请求处理阶段">Nginx 请求处理阶段</a></li>
+        <li><a href="#lua-模块与库">Lua 模块与库</a></li>
+      </ul>
+    </li>
+    <li><a href="#lua-脚本开发基础">Lua 脚本开发基础</a>
+      <ul>
+        <li><a href="#hello-world">Hello World</a></li>
+        <li><a href="#获取请求信息">获取请求信息</a></li>
+        <li><a href="#返回响应">返回响应</a></li>
+        <li><a href="#子请求与上游调用">子请求与上游调用</a></li>
+      </ul>
+    </li>
+    <li><a href="#api-网关核心功能实现">API 网关核心功能实现</a>
+      <ul>
+        <li><a href="#1-请求路由">1. 请求路由</a></li>
+        <li><a href="#2-jwt-鉴权">2. JWT 鉴权</a></li>
+        <li><a href="#3-限流熔断">3. 限流熔断</a></li>
+        <li><a href="#4-灰度发布">4. 灰度发布</a></li>
+        <li><a href="#5-请求日志">5. 请求日志</a></li>
+      </ul>
+    </li>
+    <li><a href="#完整-api-网关配置">完整 API 网关配置</a></li>
+    <li><a href="#性能优化策略">性能优化策略</a>
+      <ul>
+        <li><a href="#连接池复用">连接池复用</a></li>
+        <li><a href="#缓存优化">缓存优化</a></li>
+        <li><a href="#异步处理">异步处理</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题与调试">常见问题与调试</a>
+      <ul>
+        <li><a href="#调试技巧">调试技巧</a></li>
+        <li><a href="#性能监控">性能监控</a></li>
+        <li><a href="#常见错误">常见错误</a></li>
+      </ul>
+    </li>
+    <li><a href="#部署与运维">部署与运维</a>
+      <ul>
+        <li><a href="#配置管理">配置管理</a></li>
+        <li><a href="#热重载">热重载</a></li>
+        <li><a href="#健康检查">健康检查</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -576,6 +1270,105 @@
           description: "OpenResty架构、Lua脚本开发、请求拦截与鉴权、限流熔断、API网关完整实现",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

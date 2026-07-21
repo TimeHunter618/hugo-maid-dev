@@ -190,7 +190,52 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#线段树原理">线段树原理</a>
+      <ul>
+        <li><a href="#基本概念">基本概念</a></li>
+        <li><a href="#核心特点">核心特点</a></li>
+      </ul>
+    </li>
+    <li><a href="#线段树实现">线段树实现</a>
+      <ul>
+        <li><a href="#基础实现区间求和">基础实现（区间求和）</a></li>
+        <li><a href="#单点更新流程">单点更新流程</a></li>
+        <li><a href="#区间查询流程">区间查询流程</a></li>
+      </ul>
+    </li>
+    <li><a href="#懒标记lazy-propagation">懒标记（Lazy Propagation）</a>
+      <ul>
+        <li><a href="#原理">原理</a></li>
+        <li><a href="#实现">实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#扩展应用">扩展应用</a>
+      <ul>
+        <li><a href="#区间最大值">区间最大值</a></li>
+        <li><a href="#区间最小值">区间最小值</a></li>
+        <li><a href="#区间-gcd">区间 GCD</a></li>
+      </ul>
+    </li>
+    <li><a href="#应用场景">应用场景</a>
+      <ul>
+        <li><a href="#动态区间统计">动态区间统计</a></li>
+        <li><a href="#区间染色问题">区间染色问题</a></li>
+        <li><a href="#在线算法">在线算法</a></li>
+      </ul>
+    </li>
+    <li><a href="#线段树-vs-其他数据结构">线段树 vs 其他数据结构</a></li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +316,719 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1543005472-1b1d37fa4eae?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1543005472-1b1d37fa4eae?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>线段树（Segment Tree）是一种高效的数据结构，用于处理区间查询和区间更新问题。它可以在 O(log n) 的时间复杂度内完成单点更新、区间查询、区间更新等操作，是算法竞赛和实际工程中常用的数据结构。</p>
+<p>本文将深入讲解线段树的原理、构建过程、区间查询、单点更新、区间更新（懒标记）等核心内容。</p>
+<h2 id="线段树原理">
+<a class="header-anchor" href="#%e7%ba%bf%e6%ae%b5%e6%a0%91%e5%8e%9f%e7%90%86"></a>
+线段树原理
+</h2><h3 id="基本概念">
+<a class="header-anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5"></a>
+基本概念
+</h3><p>线段树是一棵二叉树，每个节点代表一个区间。根节点代表整个区间 [0, n-1]，每个叶子节点代表一个单独的元素。</p>
+<pre class="mermaid">
+  graph TD
+    A["[0,7] sum=36"] --> B["[0,3] sum=10"]
+    A --> C["[4,7] sum=26"]
+    B --> D["[0,1] sum=3"]
+    B --> E["[2,3] sum=7"]
+    C --> F["[4,5] sum=11"]
+    C --> G["[6,7] sum=15"]
+    D --> H["[0,0] sum=1"]
+    D --> I["[1,1] sum=2"]
+    E --> J["[2,2] sum=3"]
+    E --> K["[3,3] sum=4"]
+    F --> L["[4,4] sum=5"]
+    F --> M["[5,5] sum=6"]
+    G --> N["[6,6] sum=7"]
+    G --> O["[7,7] sum=8"]
+</pre><h3 id="核心特点">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e7%89%b9%e7%82%b9"></a>
+核心特点
+</h3><table>
+	<thead>
+			<tr>
+					<th>特点</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>结构</strong></td>
+					<td>完全二叉树，通常用数组存储</td>
+			</tr>
+			<tr>
+					<td><strong>构建</strong></td>
+					<td>自底向上或自顶向下递归构建</td>
+			</tr>
+			<tr>
+					<td><strong>查询</strong></td>
+					<td>O(log n) 时间复杂度</td>
+			</tr>
+			<tr>
+					<td><strong>更新</strong></td>
+					<td>O(log n) 时间复杂度</td>
+			</tr>
+			<tr>
+					<td><strong>空间</strong></td>
+					<td>4 × n 的数组空间</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="线段树实现">
+<a class="header-anchor" href="#%e7%ba%bf%e6%ae%b5%e6%a0%91%e5%ae%9e%e7%8e%b0"></a>
+线段树实现
+</h2><h3 id="基础实现区间求和">
+<a class="header-anchor" href="#%e5%9f%ba%e7%a1%80%e5%ae%9e%e7%8e%b0%e5%8c%ba%e9%97%b4%e6%b1%82%e5%92%8c"></a>
+基础实现（区间求和）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SegmentTree</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">tree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">SegmentTree</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">start</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">update</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">idx</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">mid</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">update</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">update</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">leftSum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">rightSum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">leftSum</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">rightSum</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="单点更新流程">
+<a class="header-anchor" href="#%e5%8d%95%e7%82%b9%e6%9b%b4%e6%96%b0%e6%b5%81%e7%a8%8b"></a>
+单点更新流程
+</h3><pre class="mermaid">
+  graph TD
+    A["更新 index=3, value=10"] --> B["节点[0,7]"]
+    B --> C["节点[0,3]"]
+    C --> D["节点[2,3]"]
+    D --> E["节点[3,3]"]
+    E --> F["更新为10"]
+    F --> G["回溯更新父节点"]
+    G --> H["[2,3]: 3+10=13"]
+    H --> I["[0,3]: 3+13=16"]
+    I --> J["[0,7]: 16+26=42"]
+</pre><h3 id="区间查询流程">
+<a class="header-anchor" href="#%e5%8c%ba%e9%97%b4%e6%9f%a5%e8%af%a2%e6%b5%81%e7%a8%8b"></a>
+区间查询流程
+</h3><pre class="mermaid">
+  graph TD
+    A["查询 [2,6]"] --> B["节点[0,7]"]
+    B --> C["节点[0,3]"]
+    B --> D["节点[4,7]"]
+    C --> E["节点[0,1]: 不在范围内"]
+    C --> F["节点[2,3]: 在范围内，返回7"]
+    D --> G["节点[4,5]: 在范围内，返回11"]
+    D --> H["节点[6,7]"]
+    H --> I["节点[6,6]: 在范围内，返回7"]
+    H --> J["节点[7,7]: 不在范围内"]
+    F --> K["汇总: 7+11+7=25"]
+    G --> K
+    I --> K
+</pre><h2 id="懒标记lazy-propagation">
+<a class="header-anchor" href="#%e6%87%92%e6%a0%87%e8%ae%b0lazy-propagation"></a>
+懒标记（Lazy Propagation）
+</h2><h3 id="原理">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86"></a>
+原理
+</h3><p>懒标记用于优化区间更新操作，将更新延迟到需要时才执行。</p>
+<pre class="mermaid">
+  graph TD
+    A["区间更新 [2,5] +3"] --> B["节点[0,7]"]
+    B --> C["节点[0,3]"]
+    B --> D["节点[4,7]"]
+    C --> E["节点[0,1]: 不重叠"]
+    C --> F["节点[2,3]: 完全重叠，添加懒标记+3"]
+    D --> G["节点[4,5]: 完全重叠，添加懒标记+3"]
+    D --> H["节点[6,7]: 不重叠"]
+</pre><h3 id="实现">
+<a class="header-anchor" href="#%e5%ae%9e%e7%8e%b0"></a>
+实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SegmentTreeWithLazy</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">tree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">lazy</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">SegmentTreeWithLazy</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">lazy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">start</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">push</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">lazy</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">lazy</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">rangeUpdate</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">rangeUpdate</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">rangeUpdate</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">push</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">push</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">rangeUpdate</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">rangeUpdate</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">push</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">leftSum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">rightSum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">leftSum</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">rightSum</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="扩展应用">
+<a class="header-anchor" href="#%e6%89%a9%e5%b1%95%e5%ba%94%e7%94%a8"></a>
+扩展应用
+</h2><h3 id="区间最大值">
+<a class="header-anchor" href="#%e5%8c%ba%e9%97%b4%e6%9c%80%e5%a4%a7%e5%80%bc"></a>
+区间最大值
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SegmentTreeMax</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">tree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">lazy</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">INF</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MIN_VALUE</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">SegmentTreeMax</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">lazy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Arrays</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="n">lazy</span><span class="p">,</span><span class="w"> </span><span class="n">INF</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">start</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">push</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">INF</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">lazy</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="n">lazy</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">lazy</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="n">lazy</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">INF</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">rangeUpdate</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">rangeUpdate</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">rangeUpdate</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">push</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">push</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">rangeUpdate</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">rangeUpdate</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">INF</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">push</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">leftMax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">rightMax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="n">leftMax</span><span class="p">,</span><span class="w"> </span><span class="n">rightMax</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="区间最小值">
+<a class="header-anchor" href="#%e5%8c%ba%e9%97%b4%e6%9c%80%e5%b0%8f%e5%80%bc"></a>
+区间最小值
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SegmentTreeMin</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">tree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">lazy</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">INF</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">SegmentTreeMin</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">lazy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Arrays</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="n">lazy</span><span class="p">,</span><span class="w"> </span><span class="n">INF</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">start</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">push</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">INF</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">lazy</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="n">lazy</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">lazy</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="n">lazy</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">INF</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">rangeUpdate</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">rangeUpdate</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">rangeUpdate</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">push</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="n">lazy</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">push</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">rangeUpdate</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">rangeUpdate</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">INF</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">push</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">leftMin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">rightMin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="n">leftMin</span><span class="p">,</span><span class="w"> </span><span class="n">rightMin</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="区间-gcd">
+<a class="header-anchor" href="#%e5%8c%ba%e9%97%b4-gcd"></a>
+区间 GCD
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SegmentTreeGCD</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">tree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">SegmentTreeGCD</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">gcd</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">start</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">build</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gcd</span><span class="p">(</span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">update</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">idx</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">mid</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">update</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">update</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gcd</span><span class="p">(</span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">l</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">l</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">tree</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">leftGcd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">rightGcd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">query</span><span class="p">(</span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">gcd</span><span class="p">(</span><span class="n">leftGcd</span><span class="p">,</span><span class="w"> </span><span class="n">rightGcd</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="应用场景">
+<a class="header-anchor" href="#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+应用场景
+</h2><h3 id="动态区间统计">
+<a class="header-anchor" href="#%e5%8a%a8%e6%80%81%e5%8c%ba%e9%97%b4%e7%bb%9f%e8%ae%a1"></a>
+动态区间统计
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">RangeStatistic</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">SegmentTree</span><span class="w"> </span><span class="n">sumTree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">SegmentTreeMax</span><span class="w"> </span><span class="n">maxTree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">SegmentTreeMin</span><span class="w"> </span><span class="n">minTree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">RangeStatistic</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">sumTree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SegmentTree</span><span class="p">(</span><span class="n">arr</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">maxTree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SegmentTreeMax</span><span class="p">(</span><span class="n">arr</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">minTree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SegmentTreeMin</span><span class="p">(</span><span class="n">arr</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getSum</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">sumTree</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getMax</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">maxTree</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getMin</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">minTree</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">sumTree</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">maxTree</span><span class="p">.</span><span class="na">rangeUpdate</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">minTree</span><span class="p">.</span><span class="na">rangeUpdate</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="区间染色问题">
+<a class="header-anchor" href="#%e5%8c%ba%e9%97%b4%e6%9f%93%e8%89%b2%e9%97%ae%e9%a2%98"></a>
+区间染色问题
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">RangeColor</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">SegmentTreeWithLazy</span><span class="w"> </span><span class="n">colorTree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">RangeColor</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">initialColor</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Arrays</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">initialColor</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">colorTree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SegmentTreeWithLazy</span><span class="p">(</span><span class="n">arr</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">paint</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">color</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">colorTree</span><span class="p">.</span><span class="na">rangeUpdate</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">color</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getColor</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">colorTree</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="在线算法">
+<a class="header-anchor" href="#%e5%9c%a8%e7%ba%bf%e7%ae%97%e6%b3%95"></a>
+在线算法
+</h3><p>线段树可以用于在线处理动态数据：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OnlineProcessor</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">SegmentTreeWithLazy</span><span class="w"> </span><span class="n">tree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">OnlineProcessor</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">maxSize</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">maxSize</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SegmentTreeWithLazy</span><span class="p">(</span><span class="n">arr</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addValue</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">current</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tree</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">tree</span><span class="p">.</span><span class="na">rangeUpdate</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">idx</span><span class="p">,</span><span class="w"> </span><span class="n">current</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getRangeSum</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">tree</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addRange</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">tree</span><span class="p">.</span><span class="na">rangeUpdate</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="w"> </span><span class="n">r</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="线段树-vs-其他数据结构">
+<a class="header-anchor" href="#%e7%ba%bf%e6%ae%b5%e6%a0%91-vs-%e5%85%b6%e4%bb%96%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84"></a>
+线段树 vs 其他数据结构
+</h2><table>
+	<thead>
+			<tr>
+					<th>数据结构</th>
+					<th>单点更新</th>
+					<th>区间查询</th>
+					<th>区间更新</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>前缀和</strong></td>
+					<td>O(n)</td>
+					<td>O(1)</td>
+					<td>O(n)</td>
+					<td>静态数组查询</td>
+			</tr>
+			<tr>
+					<td><strong>树状数组</strong></td>
+					<td>O(log n)</td>
+					<td>O(log n)</td>
+					<td>O(log n)</td>
+					<td>前缀和、单点更新</td>
+			</tr>
+			<tr>
+					<td><strong>线段树</strong></td>
+					<td>O(log n)</td>
+					<td>O(log n)</td>
+					<td>O(log n)</td>
+					<td>复杂区间操作</td>
+			</tr>
+			<tr>
+					<td><strong>块状数组</strong></td>
+					<td>O(√n)</td>
+					<td>O(√n)</td>
+					<td>O(√n)</td>
+					<td>平衡性能</td>
+			</tr>
+	</tbody>
+</table>
+<pre class="mermaid">
+  graph TD
+    A["数据结构选择"] --> B["静态数据"]
+    A --> C["动态数据"]
+    B --> D["前缀和"]
+    C --> E["单点更新为主"]
+    C --> F["区间更新为主"]
+    E --> G["树状数组"]
+    F --> H["线段树"]
+</pre><h2 id="实战题目">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e9%a2%98%e7%9b%ae"></a>
+实战题目
+</h2><h3 id="leetcode-相关题目">
+<a class="header-anchor" href="#leetcode-%e7%9b%b8%e5%85%b3%e9%a2%98%e7%9b%ae"></a>
+LeetCode 相关题目
+</h3><table>
+	<thead>
+			<tr>
+					<th>题目</th>
+					<th>难度</th>
+					<th>标签</th>
+					<th>链接</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>307. 区域和检索 - 数组可修改</td>
+					<td>中等</td>
+					<td>线段树/树状数组</td>
+					<td><a href="https://leetcode.cn/problems/range-sum-query-mutable/">https://leetcode.cn/problems/range-sum-query-mutable/</a></td>
+			</tr>
+			<tr>
+					<td>1109. 航班预订统计</td>
+					<td>中等</td>
+					<td>线段树/差分数组</td>
+					<td><a href="https://leetcode.cn/problems/corporate-flight-bookings/">https://leetcode.cn/problems/corporate-flight-bookings/</a></td>
+			</tr>
+			<tr>
+					<td>715. Range 模块</td>
+					<td>困难</td>
+					<td>线段树</td>
+					<td><a href="https://leetcode.cn/problems/range-module/">https://leetcode.cn/problems/range-module/</a></td>
+			</tr>
+			<tr>
+					<td>699. 掉落的方块</td>
+					<td>困难</td>
+					<td>线段树</td>
+					<td><a href="https://leetcode.cn/problems/falling-squares/">https://leetcode.cn/problems/falling-squares/</a></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="题解示例">
+<a class="header-anchor" href="#%e9%a2%98%e8%a7%a3%e7%a4%ba%e4%be%8b"></a>
+题解示例
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// LeetCode 307: 区域和检索 - 数组可修改</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">class</span> <span class="nc">NumArray</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">SegmentTree</span><span class="w"> </span><span class="n">tree</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">NumArray</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">nums</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">tree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SegmentTree</span><span class="p">(</span><span class="n">nums</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">tree</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">sumRange</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">left</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">right</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">tree</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="n">left</span><span class="p">,</span><span class="w"> </span><span class="n">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>线段树是一种功能强大的数据结构，能够高效处理各种区间操作。</p>
+<p>核心要点：</p>
+<ul>
+<li><strong>O(log n) 复杂度</strong>：单点更新、区间查询、区间更新都能在对数时间完成</li>
+<li><strong>懒标记</strong>：优化区间更新，延迟传递更新操作</li>
+<li><strong>通用性</strong>：支持求和、最大/最小值、GCD 等多种聚合操作</li>
+</ul>
+<p>选择线段树时需要注意：</p>
+<ol>
+<li>空间复杂度为 O(4n)，需要预先分配足够空间</li>
+<li>递归深度为 O(log n)，对于极端情况可能需要迭代实现</li>
+<li>懒标记需要正确传递和清除，否则会导致错误</li>
+</ol>
+<p>线段树是算法竞赛和实际工程中的必备工具，掌握它将极大提升你的问题解决能力。</p>
+<hr>
+<p><strong>延伸阅读</strong>：</p>
+<ol>
+<li><em>算法导论</em> - 线段树章节</li>
+<li>LeetCode 线段树专题 - <a href="https://leetcode.cn/tag/segment-tree/">https://leetcode.cn/tag/segment-tree/</a></li>
+<li>线段树可视化 - <a href="https://visualgo.net/zh/segmenttree">https://visualgo.net/zh/segmenttree</a></li>
+</ol>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/algorithm/%E7%BA%BF%E6%AE%B5%E6%A0%91segmenttree%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=%e7%ba%bf%e6%ae%b5%e6%a0%91SegmentTree%20%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="线段树SegmentTree 详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/algorithm/%E7%BA%BF%E6%AE%B5%E6%A0%91segmenttree%E8%AF%A6%E8%A7%A3/&amp;title=%e7%ba%bf%e6%ae%b5%e6%a0%91SegmentTree%20%e8%af%a6%e8%a7%a3&amp;desc=%e7%ba%bf%e6%ae%b5%e6%a0%91%e5%8e%9f%e7%90%86%e3%80%81%e6%9e%84%e5%bb%ba%e3%80%81%e5%8c%ba%e9%97%b4%e6%9f%a5%e8%af%a2%e3%80%81%e5%8d%95%e7%82%b9%e6%9b%b4%e6%96%b0%e5%8f%8a%e5%8c%ba%e9%97%b4%e6%9b%b4%e6%96%b0&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="线段树SegmentTree 详解">
@@ -348,7 +1105,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
+              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
               data-sizes="auto"
               alt="哈希?HashMap 详解"
               class="lazyload"
@@ -360,7 +1117,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">哈希?HashMap 详解</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
               data-sizes="auto"
               alt="位图 BitMap 详解"
               class="lazyload"
@@ -392,10 +1149,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -445,7 +1202,52 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#线段树原理">线段树原理</a>
+      <ul>
+        <li><a href="#基本概念">基本概念</a></li>
+        <li><a href="#核心特点">核心特点</a></li>
+      </ul>
+    </li>
+    <li><a href="#线段树实现">线段树实现</a>
+      <ul>
+        <li><a href="#基础实现区间求和">基础实现（区间求和）</a></li>
+        <li><a href="#单点更新流程">单点更新流程</a></li>
+        <li><a href="#区间查询流程">区间查询流程</a></li>
+      </ul>
+    </li>
+    <li><a href="#懒标记lazy-propagation">懒标记（Lazy Propagation）</a>
+      <ul>
+        <li><a href="#原理">原理</a></li>
+        <li><a href="#实现">实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#扩展应用">扩展应用</a>
+      <ul>
+        <li><a href="#区间最大值">区间最大值</a></li>
+        <li><a href="#区间最小值">区间最小值</a></li>
+        <li><a href="#区间-gcd">区间 GCD</a></li>
+      </ul>
+    </li>
+    <li><a href="#应用场景">应用场景</a>
+      <ul>
+        <li><a href="#动态区间统计">动态区间统计</a></li>
+        <li><a href="#区间染色问题">区间染色问题</a></li>
+        <li><a href="#在线算法">在线算法</a></li>
+      </ul>
+    </li>
+    <li><a href="#线段树-vs-其他数据结构">线段树 vs 其他数据结构</a></li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -576,6 +1378,105 @@
           description: "线段树原理、构建、区间查询、单点更新及区间更新",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

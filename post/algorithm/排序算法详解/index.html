@@ -190,7 +190,73 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#排序算法分类">排序算法分类</a>
+      <ul>
+        <li><a href="#按时间复杂度分类">按时间复杂度分类</a></li>
+        <li><a href="#按稳定性分类">按稳定性分类</a></li>
+      </ul>
+    </li>
+    <li><a href="#冒泡排序">冒泡排序</a>
+      <ul>
+        <li><a href="#原理">原理</a></li>
+        <li><a href="#代码实现">代码实现</a></li>
+        <li><a href="#复杂度分析">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#选择排序">选择排序</a>
+      <ul>
+        <li><a href="#原理-1">原理</a></li>
+        <li><a href="#代码实现-1">代码实现</a></li>
+        <li><a href="#复杂度分析-1">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#插入排序">插入排序</a>
+      <ul>
+        <li><a href="#原理-2">原理</a></li>
+        <li><a href="#代码实现-2">代码实现</a></li>
+        <li><a href="#复杂度分析-2">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#快速排序">快速排序</a>
+      <ul>
+        <li><a href="#原理-3">原理</a></li>
+        <li><a href="#代码实现-3">代码实现</a></li>
+        <li><a href="#复杂度分析-3">复杂度分析</a></li>
+        <li><a href="#优化策略">优化策略</a></li>
+      </ul>
+    </li>
+    <li><a href="#归并排序">归并排序</a>
+      <ul>
+        <li><a href="#原理-4">原理</a></li>
+        <li><a href="#代码实现-4">代码实现</a></li>
+        <li><a href="#复杂度分析-4">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#堆排序">堆排序</a>
+      <ul>
+        <li><a href="#原理-5">原理</a></li>
+        <li><a href="#代码实现-5">代码实现</a></li>
+        <li><a href="#复杂度分析-5">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#算法对比">算法对比</a>
+      <ul>
+        <li><a href="#复杂度对比">复杂度对比</a></li>
+        <li><a href="#选择策略">选择策略</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +337,781 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>排序算法是计算机科学中最基础也是最重要的算法之一。无论是数据检索、数据统计还是数据展示，排序都是不可或缺的步骤。理解各种排序算法的原理、复杂度和适用场景，是每个程序员的必修课。</p>
+<p>本文将系统讲解六大经典排序算法：冒泡排序、选择排序、插入排序、快速排序、归并排序和堆排序。每种算法都配有原理图解、代码实现和复杂度分析。</p>
+<h2 id="排序算法分类">
+<a class="header-anchor" href="#%e6%8e%92%e5%ba%8f%e7%ae%97%e6%b3%95%e5%88%86%e7%b1%bb"></a>
+排序算法分类
+</h2><h3 id="按时间复杂度分类">
+<a class="header-anchor" href="#%e6%8c%89%e6%97%b6%e9%97%b4%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%88%86%e7%b1%bb"></a>
+按时间复杂度分类
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "O(n²) 排序算法"
+        B["冒泡排序"]
+        S["选择排序"]
+        I["插入排序"]
+    end
+
+    subgraph "O(n log n) 排序算法"
+        Q["快速排序"]
+        M["归并排序"]
+        H["堆排序"]
+    end
+
+    subgraph "O(n) 排序算法"
+        C["计数排序"]
+        R["基数排序"]
+        B2["桶排序"]
+    end
+</pre><h3 id="按稳定性分类">
+<a class="header-anchor" href="#%e6%8c%89%e7%a8%b3%e5%ae%9a%e6%80%a7%e5%88%86%e7%b1%bb"></a>
+按稳定性分类
+</h3><table>
+	<thead>
+			<tr>
+					<th>算法</th>
+					<th style="text-align: center">稳定性</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>冒泡排序</td>
+					<td style="text-align: center">稳定</td>
+					<td>相等元素相对顺序不变</td>
+			</tr>
+			<tr>
+					<td>选择排序</td>
+					<td style="text-align: center">不稳定</td>
+					<td>交换可能改变相对顺序</td>
+			</tr>
+			<tr>
+					<td>插入排序</td>
+					<td style="text-align: center">稳定</td>
+					<td>相等元素不交换</td>
+			</tr>
+			<tr>
+					<td>快速排序</td>
+					<td style="text-align: center">不稳定</td>
+					<td>分区交换可能改变顺序</td>
+			</tr>
+			<tr>
+					<td>归并排序</td>
+					<td style="text-align: center">稳定</td>
+					<td>合并时相等元素先取左半部分</td>
+			</tr>
+			<tr>
+					<td>堆排序</td>
+					<td style="text-align: center">不稳定</td>
+					<td>堆调整可能改变顺序</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="冒泡排序">
+<a class="header-anchor" href="#%e5%86%92%e6%b3%a1%e6%8e%92%e5%ba%8f"></a>
+冒泡排序
+</h2><h3 id="原理">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86"></a>
+原理
+</h3><p>冒泡排序通过重复遍历数组，比较相邻元素并交换顺序错误的元素，直到整个数组有序。</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "初始数组"
+        A[64] --> B[34] --> C[25] --> D[12] --> E[22] --> F[11] --> G[90]
+    end
+
+    subgraph "第一轮冒泡"
+        B2[34] --> A2[64] --> C2[25] --> D2[12] --> E2[22] --> F2[11] --> G2[90]
+        B3[34] --> C3[25] --> A3[64] --> D3[12] --> E3[22] --> F3[11] --> G3[90]
+        B4[34] --> C4[25] --> D4[12] --> A4[64] --> E4[22] --> F4[11] --> G4[90]
+        B5[34] --> C5[25] --> D5[12] --> E5[22] --> A5[64] --> F5[11] --> G5[90]
+        B6[34] --> C6[25] --> D6[12] --> E6[22] --> F6[11] --> A6[64] --> G6[90]
+    end
+</pre><h3 id="代码实现">
+<a class="header-anchor" href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0"></a>
+代码实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">BubbleSort</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">bubbleSort</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">boolean</span><span class="w"> </span><span class="n">swapped</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">swapped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="c1">// 交换</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="kt">int</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">swapped</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 如果没有发生交换，说明已经有序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">swapped</span><span class="p">)</span><span class="w"> </span><span class="k">break</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="复杂度分析">
+<a class="header-anchor" href="#%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%88%86%e6%9e%90"></a>
+复杂度分析
+</h3><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>最好情况</th>
+					<th>最坏情况</th>
+					<th>平均情况</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>时间复杂度</strong></td>
+					<td>O(n)</td>
+					<td>O(n²)</td>
+					<td>O(n²)</td>
+			</tr>
+			<tr>
+					<td><strong>空间复杂度</strong></td>
+					<td>O(1)</td>
+					<td>O(1)</td>
+					<td>O(1)</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="选择排序">
+<a class="header-anchor" href="#%e9%80%89%e6%8b%a9%e6%8e%92%e5%ba%8f"></a>
+选择排序
+</h2><h3 id="原理-1">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86-1"></a>
+原理
+</h3><p>选择排序每次从未排序部分选择最小（或最大）的元素，放到已排序部分的末尾。</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "初始数组"
+        A[64] --> B[34] --> C[25] --> D[12] --> E[22] --> F[11] --> G[90]
+    end
+
+    subgraph "第一轮选择"
+        F2[11]:::selected --> B2[34] --> C2[25] --> D2[12] --> E2[22] --> A2[64] --> G2[90]
+    end
+
+    subgraph "第二轮选择"
+        F3[11] --> D3[12]:::selected --> C3[25] --> B3[34] --> E3[22] --> A3[64] --> G3[90]
+    end
+
+    style F2 fill:#90EE90
+    style D3 fill:#90EE90
+</pre><h3 id="代码实现-1">
+<a class="header-anchor" href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0-1"></a>
+代码实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SelectionSort</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">selectionSort</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">minIdx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 找到未排序部分的最小值</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">minIdx</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">minIdx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">j</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 交换到已排序部分末尾</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">minIdx</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">arr</span><span class="o">[</span><span class="n">minIdx</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="复杂度分析-1">
+<a class="header-anchor" href="#%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%88%86%e6%9e%90-1"></a>
+复杂度分析
+</h3><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>最好情况</th>
+					<th>最坏情况</th>
+					<th>平均情况</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>时间复杂度</strong></td>
+					<td>O(n²)</td>
+					<td>O(n²)</td>
+					<td>O(n²)</td>
+			</tr>
+			<tr>
+					<td><strong>空间复杂度</strong></td>
+					<td>O(1)</td>
+					<td>O(1)</td>
+					<td>O(1)</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="插入排序">
+<a class="header-anchor" href="#%e6%8f%92%e5%85%a5%e6%8e%92%e5%ba%8f"></a>
+插入排序
+</h2><h3 id="原理-2">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86-2"></a>
+原理
+</h3><p>插入排序将数组分为已排序和未排序两部分，每次从未排序部分取一个元素插入到已排序部分的正确位置。</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "初始状态"
+        A[64]:::sorted --> B[34] --> C[25] --> D[12] --> E[22] --> F[11] --> G[90]
+    end
+
+    subgraph "插入 34"
+        B2[34]:::sorted --> A2[64]:::sorted --> C2[25] --> D2[12] --> E2[22] --> F2[11] --> G2[90]
+    end
+
+    subgraph "插入 25"
+        C3[25]:::sorted --> B3[34]:::sorted --> A3[64]:::sorted --> D3[12] --> E3[22] --> F3[11] --> G3[90]
+    end
+
+    style A fill:#ADD8E6
+    style A2 fill:#ADD8E6
+    style B2 fill:#ADD8E6
+    style A3 fill:#ADD8E6
+    style B3 fill:#ADD8E6
+    style C3 fill:#ADD8E6
+</pre><h3 id="代码实现-2">
+<a class="header-anchor" href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0-2"></a>
+代码实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">InsertionSort</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">insertionSort</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 将大于 key 的元素向后移动</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">j</span><span class="o">--</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 插入到正确位置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">key</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="复杂度分析-2">
+<a class="header-anchor" href="#%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%88%86%e6%9e%90-2"></a>
+复杂度分析
+</h3><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>最好情况</th>
+					<th>最坏情况</th>
+					<th>平均情况</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>时间复杂度</strong></td>
+					<td>O(n)</td>
+					<td>O(n²)</td>
+					<td>O(n²)</td>
+			</tr>
+			<tr>
+					<td><strong>空间复杂度</strong></td>
+					<td>O(1)</td>
+					<td>O(1)</td>
+					<td>O(1)</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="快速排序">
+<a class="header-anchor" href="#%e5%bf%ab%e9%80%9f%e6%8e%92%e5%ba%8f"></a>
+快速排序
+</h2><h3 id="原理-3">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86-3"></a>
+原理
+</h3><p>快速排序采用分治策略，选择一个基准元素，将数组分为小于基准和大于基准两部分，然后递归排序。</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "初始数组"
+        A[64] --> B[34] --> C[25] --> D[12] --> E[22] --> F[11] --> G[90]
+    end
+
+    subgraph "选择基准 25"
+        B2[11] --> D2[12] --> E2[22] --> C2[25]:::pivot --> A2[64] --> B3[34] --> G2[90]
+    end
+
+    subgraph "递归排序左半部分"
+        D3[11] --> E3[12] --> F3[22] --> C3[25]:::pivot --> A3[64] --> B4[34] --> G3[90]
+    end
+
+    style C2 fill:#FFD700
+    style C3 fill:#FFD700
+</pre><h3 id="代码实现-3">
+<a class="header-anchor" href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0-3"></a>
+代码实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">QuickSort</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">quickSort</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">quickSort</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">quickSort</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">high</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">low</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">high</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">pi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">partition</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="n">high</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">quickSort</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="n">pi</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">quickSort</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">pi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">high</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">partition</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">high</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">pivot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">high</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">low</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">low</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">high</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">pivot</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">i</span><span class="o">++</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="c1">// 交换</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="kt">int</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">arr</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 将基准放到正确位置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">high</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">arr</span><span class="o">[</span><span class="n">high</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="复杂度分析-3">
+<a class="header-anchor" href="#%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%88%86%e6%9e%90-3"></a>
+复杂度分析
+</h3><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>最好情况</th>
+					<th>最坏情况</th>
+					<th>平均情况</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>时间复杂度</strong></td>
+					<td>O(n log n)</td>
+					<td>O(n²)</td>
+					<td>O(n log n)</td>
+			</tr>
+			<tr>
+					<td><strong>空间复杂度</strong></td>
+					<td>O(log n)</td>
+					<td>O(n)</td>
+					<td>O(log n)</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="优化策略">
+<a class="header-anchor" href="#%e4%bc%98%e5%8c%96%e7%ad%96%e7%95%a5"></a>
+优化策略
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 三数取中优化</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">medianOfThree</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">high</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">low</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">high</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">low</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr</span><span class="o">[</span><span class="n">low</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">mid</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="n">swap</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr</span><span class="o">[</span><span class="n">low</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">high</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="n">swap</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="n">high</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr</span><span class="o">[</span><span class="n">mid</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">high</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="n">swap</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">high</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">swap</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">high</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">high</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 小数组使用插入排序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">quickSortOptimized</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">high</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">high</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">low</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">10</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">insertionSort</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="n">high</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">pivot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">medianOfThree</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">low</span><span class="p">,</span><span class="w"> </span><span class="n">high</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// ... 后续逻辑</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="归并排序">
+<a class="header-anchor" href="#%e5%bd%92%e5%b9%b6%e6%8e%92%e5%ba%8f"></a>
+归并排序
+</h2><h3 id="原理-4">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86-4"></a>
+原理
+</h3><p>归并排序采用分治策略，将数组分成两半分别排序，然后将两个有序部分合并。</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "初始数组"
+        A[64] --> B[34] --> C[25] --> D[12] --> E[22] --> F[11] --> G[90] --> H[45]
+    end
+
+    subgraph "分割"
+        A2[64] --> B2[34] --> C2[25] --> D2[12]
+        E2[22] --> F2[11] --> G2[90] --> H2[45]
+    end
+
+    subgraph "递归分割"
+        A3[64] --> B3[34]
+        C3[25] --> D3[12]
+        E3[22] --> F3[11]
+        G3[90] --> H3[45]
+    end
+
+    subgraph "合并"
+        B4[34] --> A4[64]
+        D4[12] --> C4[25]
+        F4[11] --> E4[22]
+        H4[45] --> G4[90]
+    end
+
+    subgraph "最终合并"
+        F5[11] --> D5[12] --> E5[22] --> C5[25] --> B5[34] --> H5[45] --> A5[64] --> G5[90]
+    end
+</pre><h3 id="代码实现-4">
+<a class="header-anchor" href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0-4"></a>
+代码实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MergeSort</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">mergeSort</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">mid</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">copyOfRange</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">copyOfRange</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">mid</span><span class="p">,</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">mergeSort</span><span class="p">(</span><span class="n">left</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">mergeSort</span><span class="p">(</span><span class="n">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">merge</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">left</span><span class="p">,</span><span class="w"> </span><span class="n">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">merge</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">left</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">right</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">left</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">right</span><span class="p">.</span><span class="na">length</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">left</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">right</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">arr</span><span class="o">[</span><span class="n">k</span><span class="o">++]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">left</span><span class="o">[</span><span class="n">i</span><span class="o">++]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">arr</span><span class="o">[</span><span class="n">k</span><span class="o">++]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">right</span><span class="o">[</span><span class="n">j</span><span class="o">++]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">left</span><span class="p">.</span><span class="na">length</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">arr</span><span class="o">[</span><span class="n">k</span><span class="o">++]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">left</span><span class="o">[</span><span class="n">i</span><span class="o">++]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">right</span><span class="p">.</span><span class="na">length</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">arr</span><span class="o">[</span><span class="n">k</span><span class="o">++]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">right</span><span class="o">[</span><span class="n">j</span><span class="o">++]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="复杂度分析-4">
+<a class="header-anchor" href="#%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%88%86%e6%9e%90-4"></a>
+复杂度分析
+</h3><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>最好情况</th>
+					<th>最坏情况</th>
+					<th>平均情况</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>时间复杂度</strong></td>
+					<td>O(n log n)</td>
+					<td>O(n log n)</td>
+					<td>O(n log n)</td>
+			</tr>
+			<tr>
+					<td><strong>空间复杂度</strong></td>
+					<td>O(n)</td>
+					<td>O(n)</td>
+					<td>O(n)</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="堆排序">
+<a class="header-anchor" href="#%e5%a0%86%e6%8e%92%e5%ba%8f"></a>
+堆排序
+</h2><h3 id="原理-5">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86-5"></a>
+原理
+</h3><p>堆排序利用堆这种数据结构，将数组构建成最大堆，然后依次取出堆顶元素放到数组末尾。</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "初始数组"
+        A[64] --> B[34] --> C[25] --> D[12] --> E[22] --> F[11] --> G[90]
+    end
+
+    subgraph "构建最大堆"
+        G2[90]:::heap --> A2[64] --> C2[25] --> D2[12] --> E2[22] --> F2[11] --> B2[34]
+    end
+
+    subgraph "取出堆顶"
+        G3[90]:::sorted --> A3[64]:::heap --> B3[34] --> D3[12] --> E3[22] --> F3[11] --> C3[25]
+    end
+
+    style G2 fill:#FF6347
+    style G3 fill:#90EE90
+</pre><h3 id="代码实现-5">
+<a class="header-anchor" href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0-5"></a>
+代码实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">HeapSort</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">heapSort</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 构建最大堆</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">--</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">heapify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 依次取出堆顶元素</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">--</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 将堆顶元素放到数组末尾</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">arr</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 调整剩余堆</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">heapify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">heapify</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">largest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">left</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">left</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">largest</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">largest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">left</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">right</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">right</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">largest</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">largest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">right</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">largest</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">arr</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">arr</span><span class="o">[</span><span class="n">largest</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">arr</span><span class="o">[</span><span class="n">largest</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">heapify</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">largest</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="复杂度分析-5">
+<a class="header-anchor" href="#%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%88%86%e6%9e%90-5"></a>
+复杂度分析
+</h3><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>最好情况</th>
+					<th>最坏情况</th>
+					<th>平均情况</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>时间复杂度</strong></td>
+					<td>O(n log n)</td>
+					<td>O(n log n)</td>
+					<td>O(n log n)</td>
+			</tr>
+			<tr>
+					<td><strong>空间复杂度</strong></td>
+					<td>O(1)</td>
+					<td>O(1)</td>
+					<td>O(1)</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="算法对比">
+<a class="header-anchor" href="#%e7%ae%97%e6%b3%95%e5%af%b9%e6%af%94"></a>
+算法对比
+</h2><h3 id="复杂度对比">
+<a class="header-anchor" href="#%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%af%b9%e6%af%94"></a>
+复杂度对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>算法</th>
+					<th>时间复杂度(平均)</th>
+					<th>时间复杂度(最坏)</th>
+					<th>空间复杂度</th>
+					<th style="text-align: center">稳定性</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>冒泡排序</strong></td>
+					<td>O(n²)</td>
+					<td>O(n²)</td>
+					<td>O(1)</td>
+					<td style="text-align: center">稳定</td>
+			</tr>
+			<tr>
+					<td><strong>选择排序</strong></td>
+					<td>O(n²)</td>
+					<td>O(n²)</td>
+					<td>O(1)</td>
+					<td style="text-align: center">不稳定</td>
+			</tr>
+			<tr>
+					<td><strong>插入排序</strong></td>
+					<td>O(n²)</td>
+					<td>O(n²)</td>
+					<td>O(1)</td>
+					<td style="text-align: center">稳定</td>
+			</tr>
+			<tr>
+					<td><strong>快速排序</strong></td>
+					<td>O(n log n)</td>
+					<td>O(n²)</td>
+					<td>O(log n)</td>
+					<td style="text-align: center">不稳定</td>
+			</tr>
+			<tr>
+					<td><strong>归并排序</strong></td>
+					<td>O(n log n)</td>
+					<td>O(n log n)</td>
+					<td>O(n)</td>
+					<td style="text-align: center">稳定</td>
+			</tr>
+			<tr>
+					<td><strong>堆排序</strong></td>
+					<td>O(n log n)</td>
+					<td>O(n log n)</td>
+					<td>O(1)</td>
+					<td style="text-align: center">不稳定</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="选择策略">
+<a class="header-anchor" href="#%e9%80%89%e6%8b%a9%e7%ad%96%e7%95%a5"></a>
+选择策略
+</h3><pre class="mermaid">
+  graph TD
+    A["数据量小 (< 100)"] --> B["插入排序"]
+    B -->|"简单、常数因子小"| B1
+    
+    C["数据基本有序"] --> D["插入排序"]
+    D -->|"接近 O(n)"| D1
+    
+    E["数据量大"] --> F{"稳定性要求"}
+    F -->|"是"| G["归并排序"]
+    F -->|"否"| H["快速排序/堆排序"]
+    
+    H --> I{"内存限制"}
+    I -->|"严格"| J["堆排序"]
+    I -->|"宽松"| K["快速排序"]
+    
+    L["需要稳定排序"] --> M["归并排序"]
+    
+    style B fill:#90EE90
+    style D fill:#90EE90
+    style G fill:#ADD8E6
+    style K fill:#FFD700
+</pre><h2 id="实战题目">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e9%a2%98%e7%9b%ae"></a>
+实战题目
+</h2><h3 id="leetcode-相关题目">
+<a class="header-anchor" href="#leetcode-%e7%9b%b8%e5%85%b3%e9%a2%98%e7%9b%ae"></a>
+LeetCode 相关题目
+</h3><table>
+	<thead>
+			<tr>
+					<th>题目</th>
+					<th>难度</th>
+					<th>标签</th>
+					<th>链接</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>215. 数组中的第K个最大元素</td>
+					<td>中等</td>
+					<td>堆排序</td>
+					<td><a href="https://leetcode.cn/problems/kth-largest-element-in-an-array/">https://leetcode.cn/problems/kth-largest-element-in-an-array/</a></td>
+			</tr>
+			<tr>
+					<td>75. 颜色分类</td>
+					<td>中等</td>
+					<td>排序</td>
+					<td><a href="https://leetcode.cn/problems/sort-colors/">https://leetcode.cn/problems/sort-colors/</a></td>
+			</tr>
+			<tr>
+					<td>148. 排序链表</td>
+					<td>中等</td>
+					<td>归并排序</td>
+					<td><a href="https://leetcode.cn/problems/sort-list/">https://leetcode.cn/problems/sort-list/</a></td>
+			</tr>
+			<tr>
+					<td>912. 排序数组</td>
+					<td>中等</td>
+					<td>快速排序</td>
+					<td><a href="https://leetcode.cn/problems/sort-an-array/">https://leetcode.cn/problems/sort-an-array/</a></td>
+			</tr>
+			<tr>
+					<td>31. 下一个排列</td>
+					<td>中等</td>
+					<td>排序</td>
+					<td><a href="https://leetcode.cn/problems/next-permutation/">https://leetcode.cn/problems/next-permutation/</a></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="题解示例">
+<a class="header-anchor" href="#%e9%a2%98%e8%a7%a3%e7%a4%ba%e4%be%8b"></a>
+题解示例
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// LeetCode 215: 数组中的第K个最大元素</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">findKthLargest</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">nums</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nums</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">k</span><span class="p">;</span><span class="w"> </span><span class="c1">// 转换为第 n-k 小的元素</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">left</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">right</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">pivot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">partition</span><span class="p">(</span><span class="n">nums</span><span class="p">,</span><span class="w"> </span><span class="n">left</span><span class="p">,</span><span class="w"> </span><span class="n">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pivot</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">nums</span><span class="o">[</span><span class="n">pivot</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pivot</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="n">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pivot</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="n">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pivot</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>排序算法是算法学习的基石。掌握各种排序算法的原理和适用场景，不仅能帮助你在面试中应对各种问题，更能培养你的算法思维和问题解决能力。</p>
+<p>核心要点：</p>
+<ul>
+<li><strong>O(n²) 算法</strong>：简单但效率低，适合小规模数据</li>
+<li><strong>O(n log n) 算法</strong>：高效，适合大规模数据</li>
+<li><strong>稳定性</strong>：相等元素相对顺序是否保持</li>
+<li><strong>空间复杂度</strong>：是否需要额外空间</li>
+</ul>
+<p>选择排序算法时，需要综合考虑数据规模、数据特征、稳定性要求和内存限制。</p>
+<hr>
+<p><strong>延伸阅读</strong>：</p>
+<ol>
+<li><em>算法导论</em> - 排序算法章节</li>
+<li>LeetCode 排序专题 - <a href="https://leetcode.cn/tag/sort/">https://leetcode.cn/tag/sort/</a></li>
+<li>排序算法可视化 - <a href="https://visualgo.net/zh/sorting">https://visualgo.net/zh/sorting</a></li>
+</ol>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/algorithm/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=%e6%8e%92%e5%ba%8f%e7%ae%97%e6%b3%95%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="排序算法详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/algorithm/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A3/&amp;title=%e6%8e%92%e5%ba%8f%e7%ae%97%e6%b3%95%e8%af%a6%e8%a7%a3&amp;desc=%e5%86%92%e6%b3%a1%e3%80%81%e9%80%89%e6%8b%a9%e3%80%81%e6%8f%92%e5%85%a5%e3%80%81%e5%bf%ab%e9%80%9f%e3%80%81%e5%bd%92%e5%b9%b6%e3%80%81%e5%a0%86%e6%8e%92%e5%ba%8f%e5%8e%9f%e7%90%86%e4%b8%8e%e5%ae%9e%e7%8e%b0%ef%bc%8c%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%af%b9%e6%af%94%e4%b8%8e%e9%80%89%e6%8b%a9%e7%ad%96%e7%95%a5&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="排序算法详解">
@@ -373,10 +1213,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -426,7 +1266,73 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#排序算法分类">排序算法分类</a>
+      <ul>
+        <li><a href="#按时间复杂度分类">按时间复杂度分类</a></li>
+        <li><a href="#按稳定性分类">按稳定性分类</a></li>
+      </ul>
+    </li>
+    <li><a href="#冒泡排序">冒泡排序</a>
+      <ul>
+        <li><a href="#原理">原理</a></li>
+        <li><a href="#代码实现">代码实现</a></li>
+        <li><a href="#复杂度分析">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#选择排序">选择排序</a>
+      <ul>
+        <li><a href="#原理-1">原理</a></li>
+        <li><a href="#代码实现-1">代码实现</a></li>
+        <li><a href="#复杂度分析-1">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#插入排序">插入排序</a>
+      <ul>
+        <li><a href="#原理-2">原理</a></li>
+        <li><a href="#代码实现-2">代码实现</a></li>
+        <li><a href="#复杂度分析-2">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#快速排序">快速排序</a>
+      <ul>
+        <li><a href="#原理-3">原理</a></li>
+        <li><a href="#代码实现-3">代码实现</a></li>
+        <li><a href="#复杂度分析-3">复杂度分析</a></li>
+        <li><a href="#优化策略">优化策略</a></li>
+      </ul>
+    </li>
+    <li><a href="#归并排序">归并排序</a>
+      <ul>
+        <li><a href="#原理-4">原理</a></li>
+        <li><a href="#代码实现-4">代码实现</a></li>
+        <li><a href="#复杂度分析-4">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#堆排序">堆排序</a>
+      <ul>
+        <li><a href="#原理-5">原理</a></li>
+        <li><a href="#代码实现-5">代码实现</a></li>
+        <li><a href="#复杂度分析-5">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#算法对比">算法对比</a>
+      <ul>
+        <li><a href="#复杂度对比">复杂度对比</a></li>
+        <li><a href="#选择策略">选择策略</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -557,6 +1463,105 @@
           description: "冒泡、选择、插入、快速、归并、堆排序原理与实现，复杂度对比与选择策略",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

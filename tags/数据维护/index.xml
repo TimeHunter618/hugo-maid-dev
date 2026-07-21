@@ -30,7 +30,103 @@
       <description>
         <![CDATA[<h1>CmDataMaintainPlug 数据维护插件</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h1 id="cmdatamaintainplug-模块功能说明">
+<a class="header-anchor" href="#cmdatamaintainplug-%e6%a8%a1%e5%9d%97%e5%8a%9f%e8%83%bd%e8%af%b4%e6%98%8e"></a>
+CmDataMaintainPlug 模块功能说明
+</h1><h2 id="1-模块概述">
+<a class="header-anchor" href="#1-%e6%a8%a1%e5%9d%97%e6%a6%82%e8%bf%b0"></a>
+1. 模块概述
+</h2><p>CmDataMaintainPlug 是一个数据维护插件，负责处理系统数据的维护和管理功能。</p>
+<h2 id="2-核心功能">
+<a class="header-anchor" href="#2-%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd"></a>
+2. 核心功能
+</h2><ul>
+<li><strong>数据加载</strong>：负责数据的加载和初始化</li>
+<li><strong>数据维护</strong>：提供数据维护功能</li>
+<li><strong>监控任务</strong>：提供监控任务功能</li>
+<li><strong>进度显示</strong>：显示数据加载和处理的进度</li>
+</ul>
+<h2 id="3-主要组件">
+<a class="header-anchor" href="#3-%e4%b8%bb%e8%a6%81%e7%bb%84%e4%bb%b6"></a>
+3. 主要组件
+</h2><table>
+	<thead>
+			<tr>
+					<th>组件名称</th>
+					<th>功能描述</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>DataLoader</td>
+					<td>数据加载器，负责数据的加载</td>
+			</tr>
+			<tr>
+					<td>DlgProgress</td>
+					<td>进度对话框，显示处理进度</td>
+			</tr>
+			<tr>
+					<td>MonitorTask</td>
+					<td>监控任务，提供监控功能</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="4-技术实现">
+<a class="header-anchor" href="#4-%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0"></a>
+4. 技术实现
+</h2><ul>
+<li>基于Qt框架开发</li>
+<li>实现了数据加载机制</li>
+<li>支持进度显示</li>
+<li>提供监控任务功能</li>
+</ul>
+<h2 id="5-应用场景">
+<a class="header-anchor" href="#5-%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+5. 应用场景
+</h2><ul>
+<li>系统数据的初始化加载</li>
+<li>数据的维护和更新</li>
+<li>监控系统数据状态</li>
+</ul>
+<h2 id="6-依赖关系">
+<a class="header-anchor" href="#6-%e4%be%9d%e8%b5%96%e5%85%b3%e7%b3%bb"></a>
+6. 依赖关系
+</h2><ul>
+<li>Qt框架</li>
+</ul>
+<h2 id="7-关键文件说明">
+<a class="header-anchor" href="#7-%e5%85%b3%e9%94%ae%e6%96%87%e4%bb%b6%e8%af%b4%e6%98%8e"></a>
+7. 关键文件说明
+</h2><table>
+	<thead>
+			<tr>
+					<th>文件名</th>
+					<th>功能描述</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>DataLoader.h</td>
+					<td>数据加载器定义</td>
+			</tr>
+			<tr>
+					<td>DlgProgress.h</td>
+					<td>进度对话框定义</td>
+			</tr>
+			<tr>
+					<td>MonitorTask.h</td>
+					<td>监控任务定义</td>
+			</tr>
+			<tr>
+					<td>VC2Qt_cdm.h</td>
+					<td>VC到Qt的转换工具</td>
+			</tr>
+			<tr>
+					<td>resource.h</td>
+					<td>资源定义文件</td>
+			</tr>
+	</tbody>
+</table>
         
         <hr><p>本文2023-04-18首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-04-18</p>]]>
       </description>

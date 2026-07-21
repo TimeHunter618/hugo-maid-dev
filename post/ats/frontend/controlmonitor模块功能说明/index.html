@@ -190,7 +190,60 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-模块概述">1. 模块概述</a></li>
+    <li><a href="#2-主要功能">2. 主要功能</a>
+      <ul>
+        <li><a href="#21-应用程序初始化">2.1 应用程序初始化</a></li>
+        <li><a href="#22-数据中心管理">2.2 数据中心管理</a></li>
+        <li><a href="#23-插件管理">2.3 插件管理</a></li>
+        <li><a href="#24-主窗口管理">2.4 主窗口管理</a></li>
+        <li><a href="#25-系统级消息处理">2.5 系统级消息处理</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-核心组件">3. 核心组件</a>
+      <ul>
+        <li><a href="#31-主程序入口">3.1 主程序入口</a></li>
+        <li><a href="#32-主窗口类">3.2 主窗口类</a></li>
+        <li><a href="#33-配置管理">3.3 配置管理</a></li>
+        <li><a href="#34-消息对象">3.4 消息对象</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-技术实现">4. 技术实现</a>
+      <ul>
+        <li><a href="#41-单例模式">4.1 单例模式</a></li>
+        <li><a href="#42-插件架构">4.2 插件架构</a></li>
+        <li><a href="#43-消息机制">4.3 消息机制</a></li>
+        <li><a href="#44-跨平台支持">4.4 跨平台支持</a></li>
+        <li><a href="#45-异常处理">4.5 异常处理</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-与其他模块的关系">5. 与其他模块的关系</a>
+      <ul>
+        <li><a href="#51-依赖关系">5.1 依赖关系</a></li>
+        <li><a href="#52-调用关系">5.2 调用关系</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-关键文件说明">6. 关键文件说明</a></li>
+    <li><a href="#7-工作流程">7. 工作流程</a></li>
+    <li><a href="#8-技术特点">8. 技术特点</a></li>
+    <li><a href="#9-使用说明">9. 使用说明</a>
+      <ul>
+        <li><a href="#91-启动方式">9.1 启动方式</a></li>
+        <li><a href="#92-配置文件">9.2 配置文件</a></li>
+        <li><a href="#93-日志文件">9.3 日志文件</a></li>
+      </ul>
+    </li>
+    <li><a href="#10-维护与扩展">10. 维护与扩展</a>
+      <ul>
+        <li><a href="#101-添加新插件">10.1 添加新插件</a></li>
+        <li><a href="#102-修改系统行为">10.2 修改系统行为</a></li>
+        <li><a href="#103-调试与测试">10.3 调试与测试</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +324,253 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h1 id="controlmonitor-模块功能说明">
+<a class="header-anchor" href="#controlmonitor-%e6%a8%a1%e5%9d%97%e5%8a%9f%e8%83%bd%e8%af%b4%e6%98%8e"></a>
+ControlMonitor 模块功能说明
+</h1><h2 id="1-模块概述">
+<a class="header-anchor" href="#1-%e6%a8%a1%e5%9d%97%e6%a6%82%e8%bf%b0"></a>
+1. 模块概述
+</h2><p>ControlMonitor是整个系统的主程序模块，作为系统的入口点，负责初始化应用程序、管理数据中心、加载和管理插件、创建主窗口以及处理系统级消息。</p>
+<h2 id="2-主要功能">
+<a class="header-anchor" href="#2-%e4%b8%bb%e8%a6%81%e5%8a%9f%e8%83%bd"></a>
+2. 主要功能
+</h2><h3 id="21-应用程序初始化">
+<a class="header-anchor" href="#21-%e5%ba%94%e7%94%a8%e7%a8%8b%e5%ba%8f%e5%88%9d%e5%a7%8b%e5%8c%96"></a>
+2.1 应用程序初始化
+</h3><ul>
+<li>注册异常处理器，处理程序崩溃</li>
+<li>设置Qt应用程序属性和字体</li>
+<li>加载语言翻译文件</li>
+<li>初始化日志系统</li>
+</ul>
+<h3 id="22-数据中心管理">
+<a class="header-anchor" href="#22-%e6%95%b0%e6%8d%ae%e4%b8%ad%e5%bf%83%e7%ae%a1%e7%90%86"></a>
+2.2 数据中心管理
+</h3><ul>
+<li>创建和初始化数据中心单例</li>
+<li>读取设备ID、进程ID等系统参数</li>
+<li>判断终端类型（历史回放终端、联锁终端或控制监控终端）</li>
+</ul>
+<h3 id="23-插件管理">
+<a class="header-anchor" href="#23-%e6%8f%92%e4%bb%b6%e7%ae%a1%e7%90%86"></a>
+2.3 插件管理
+</h3><ul>
+<li>加载插件配置文件</li>
+<li>初始化插件管理器</li>
+<li>加载所有插件</li>
+<li>初始化插件并添加菜单、工具栏和状态栏</li>
+</ul>
+<h3 id="24-主窗口管理">
+<a class="header-anchor" href="#24-%e4%b8%bb%e7%aa%97%e5%8f%a3%e7%ae%a1%e7%90%86"></a>
+2.4 主窗口管理
+</h3><ul>
+<li>创建主窗口实例</li>
+<li>发送系统启动消息</li>
+<li>加载窗口位置和大小</li>
+<li>设置窗口样式和外观</li>
+</ul>
+<h3 id="25-系统级消息处理">
+<a class="header-anchor" href="#25-%e7%b3%bb%e7%bb%9f%e7%ba%a7%e6%b6%88%e6%81%af%e5%a4%84%e7%90%86"></a>
+2.5 系统级消息处理
+</h3><ul>
+<li>发送框架启动消息</li>
+<li>发送终端类型消息</li>
+<li>发送用户认证启动消息</li>
+<li>发送数据加载消息</li>
+</ul>
+<h2 id="3-核心组件">
+<a class="header-anchor" href="#3-%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6"></a>
+3. 核心组件
+</h2><h3 id="31-主程序入口">
+<a class="header-anchor" href="#31-%e4%b8%bb%e7%a8%8b%e5%ba%8f%e5%85%a5%e5%8f%a3"></a>
+3.1 主程序入口
+</h3><ul>
+<li><strong>main.cpp</strong>：程序的入口点，负责初始化整个应用程序</li>
+</ul>
+<h3 id="32-主窗口类">
+<a class="header-anchor" href="#32-%e4%b8%bb%e7%aa%97%e5%8f%a3%e7%b1%bb"></a>
+3.2 主窗口类
+</h3><ul>
+<li><strong>ControlMonitor</strong>：主窗口类，负责管理整个系统的UI和消息处理</li>
+</ul>
+<h3 id="33-配置管理">
+<a class="header-anchor" href="#33-%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86"></a>
+3.3 配置管理
+</h3><ul>
+<li><strong>CfgReader</strong>：读取和解析配置文件</li>
+</ul>
+<h3 id="34-消息对象">
+<a class="header-anchor" href="#34-%e6%b6%88%e6%81%af%e5%af%b9%e8%b1%a1"></a>
+3.4 消息对象
+</h3><ul>
+<li><strong>MessageObject</strong>：用于在系统各模块间发送消息</li>
+</ul>
+<h2 id="4-技术实现">
+<a class="header-anchor" href="#4-%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0"></a>
+4. 技术实现
+</h2><h3 id="41-单例模式">
+<a class="header-anchor" href="#41-%e5%8d%95%e4%be%8b%e6%a8%a1%e5%bc%8f"></a>
+4.1 单例模式
+</h3><ul>
+<li>使用单例模式管理数据中心（CDataCenter）和插件管理器（PlugInManager）</li>
+</ul>
+<h3 id="42-插件架构">
+<a class="header-anchor" href="#42-%e6%8f%92%e4%bb%b6%e6%9e%b6%e6%9e%84"></a>
+4.2 插件架构
+</h3><ul>
+<li>基于Qt插件系统，支持动态加载和卸载插件</li>
+<li>通过PlugInManager统一管理所有插件</li>
+</ul>
+<h3 id="43-消息机制">
+<a class="header-anchor" href="#43-%e6%b6%88%e6%81%af%e6%9c%ba%e5%88%b6"></a>
+4.3 消息机制
+</h3><ul>
+<li>使用自定义消息机制在系统各模块间通信</li>
+<li>支持同步和异步消息传递</li>
+</ul>
+<h3 id="44-跨平台支持">
+<a class="header-anchor" href="#44-%e8%b7%a8%e5%b9%b3%e5%8f%b0%e6%94%af%e6%8c%81"></a>
+4.4 跨平台支持
+</h3><ul>
+<li>基于Qt框架，支持Windows、Linux等多个平台</li>
+</ul>
+<h3 id="45-异常处理">
+<a class="header-anchor" href="#45-%e5%bc%82%e5%b8%b8%e5%a4%84%e7%90%86"></a>
+4.5 异常处理
+</h3><ul>
+<li>实现了全局异常处理器，捕获未处理的异常并生成崩溃转储文件</li>
+</ul>
+<h2 id="5-与其他模块的关系">
+<a class="header-anchor" href="#5-%e4%b8%8e%e5%85%b6%e4%bb%96%e6%a8%a1%e5%9d%97%e7%9a%84%e5%85%b3%e7%b3%bb"></a>
+5. 与其他模块的关系
+</h2><h3 id="51-依赖关系">
+<a class="header-anchor" href="#51-%e4%be%9d%e8%b5%96%e5%85%b3%e7%b3%bb"></a>
+5.1 依赖关系
+</h3><ul>
+<li><strong>CmDataCenter</strong>：依赖数据中心提供核心数据服务</li>
+<li><strong>PublicExternals/PlugInCommon</strong>：依赖插件管理器实现插件管理</li>
+<li><strong>所有插件模块</strong>：负责加载和管理所有插件</li>
+</ul>
+<h3 id="52-调用关系">
+<a class="header-anchor" href="#52-%e8%b0%83%e7%94%a8%e5%85%b3%e7%b3%bb"></a>
+5.2 调用关系
+</h3><ul>
+<li>启动时调用CmDataCenter初始化数据中心</li>
+<li>调用PlugInManager加载和初始化所有插件</li>
+<li>向各插件发送系统启动消息</li>
+</ul>
+<h2 id="6-关键文件说明">
+<a class="header-anchor" href="#6-%e5%85%b3%e9%94%ae%e6%96%87%e4%bb%b6%e8%af%b4%e6%98%8e"></a>
+6. 关键文件说明
+</h2><table>
+	<thead>
+			<tr>
+					<th>文件名</th>
+					<th>功能描述</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>main.cpp</td>
+					<td>程序入口，初始化应用程序和加载插件</td>
+			</tr>
+			<tr>
+					<td>controlmonitor.h/cpp</td>
+					<td>主窗口类，管理系统UI和消息处理</td>
+			</tr>
+			<tr>
+					<td>CfgReader.h/cpp</td>
+					<td>读取和解析配置文件</td>
+			</tr>
+			<tr>
+					<td>NetSession.h/cpp</td>
+					<td>网络会话管理</td>
+			</tr>
+			<tr>
+					<td>SendNetState.h/cpp</td>
+					<td>发送网络状态消息</td>
+			</tr>
+			<tr>
+					<td>CrashHandler.h/cpp</td>
+					<td>崩溃处理，生成崩溃转储文件</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="7-工作流程">
+<a class="header-anchor" href="#7-%e5%b7%a5%e4%bd%9c%e6%b5%81%e7%a8%8b"></a>
+7. 工作流程
+</h2><ol>
+<li>程序启动，注册异常处理器</li>
+<li>初始化Qt应用程序</li>
+<li>创建数据中心实例</li>
+<li>检查终端类型和是否允许多实例运行</li>
+<li>加载插件配置文件和所有插件</li>
+<li>初始化插件并添加到主窗口</li>
+<li>发送系统启动消息</li>
+<li>加载窗口位置和样式</li>
+<li>显示主窗口</li>
+<li>进入事件循环</li>
+</ol>
+<h2 id="8-技术特点">
+<a class="header-anchor" href="#8-%e6%8a%80%e6%9c%af%e7%89%b9%e7%82%b9"></a>
+8. 技术特点
+</h2><ul>
+<li><strong>模块化设计</strong>：系统功能通过插件实现，便于扩展和维护</li>
+<li><strong>跨平台</strong>：基于Qt框架，支持多种操作系统</li>
+<li><strong>高可靠性</strong>：实现了异常处理和崩溃转储机制</li>
+<li><strong>灵活配置</strong>：支持通过配置文件调整系统行为</li>
+<li><strong>多终端支持</strong>：支持历史回放终端、联锁终端和控制监控终端</li>
+</ul>
+<h2 id="9-使用说明">
+<a class="header-anchor" href="#9-%e4%bd%bf%e7%94%a8%e8%af%b4%e6%98%8e"></a>
+9. 使用说明
+</h2><h3 id="91-启动方式">
+<a class="header-anchor" href="#91-%e5%90%af%e5%8a%a8%e6%96%b9%e5%bc%8f"></a>
+9.1 启动方式
+</h3><ul>
+<li>直接运行ControlMonitor可执行文件</li>
+<li>支持命令行参数（如果有）</li>
+</ul>
+<h3 id="92-配置文件">
+<a class="header-anchor" href="#92-%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6"></a>
+9.2 配置文件
+</h3><ul>
+<li>插件配置文件：<code>PlugIn.xml</code></li>
+<li>语言配置文件：<code>Language.xml</code></li>
+<li>样式表文件：<code>ControlMonitor.qss</code></li>
+</ul>
+<h3 id="93-日志文件">
+<a class="header-anchor" href="#93-%e6%97%a5%e5%bf%97%e6%96%87%e4%bb%b6"></a>
+9.3 日志文件
+</h3><ul>
+<li>日志文件存储在应用程序目录下的<code>log/ControlMonitor</code>文件夹中</li>
+<li>按日期和时间命名</li>
+</ul>
+<h2 id="10-维护与扩展">
+<a class="header-anchor" href="#10-%e7%bb%b4%e6%8a%a4%e4%b8%8e%e6%89%a9%e5%b1%95"></a>
+10. 维护与扩展
+</h2><h3 id="101-添加新插件">
+<a class="header-anchor" href="#101-%e6%b7%bb%e5%8a%a0%e6%96%b0%e6%8f%92%e4%bb%b6"></a>
+10.1 添加新插件
+</h3><ul>
+<li>在<code>PlugIn.xml</code>中配置新插件</li>
+<li>将插件DLL文件放入<code>PlugIns/ControlMonitor</code>目录</li>
+</ul>
+<h3 id="102-修改系统行为">
+<a class="header-anchor" href="#102-%e4%bf%ae%e6%94%b9%e7%b3%bb%e7%bb%9f%e8%a1%8c%e4%b8%ba"></a>
+10.2 修改系统行为
+</h3><ul>
+<li>修改配置文件调整系统参数</li>
+<li>修改代码实现新功能或调整现有功能</li>
+</ul>
+<h3 id="103-调试与测试">
+<a class="header-anchor" href="#103-%e8%b0%83%e8%af%95%e4%b8%8e%e6%b5%8b%e8%af%95"></a>
+10.3 调试与测试
+</h3><ul>
+<li>利用日志系统跟踪系统运行状态</li>
+<li>使用异常处理器生成的崩溃转储文件分析程序崩溃原因</li>
+</ul>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/&amp;appkey=&amp;title=ControlMonitor%20%e4%b8%bb%e7%a8%8b%e5%ba%8f%e6%a8%a1&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="ControlMonitor 主程序模">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/ats/frontend/controlmonitor%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/&amp;title=ControlMonitor%20%e4%b8%bb%e7%a8%8b%e5%ba%8f%e6%a8%a1&amp;desc=%e7%b3%bb%e7%bb%9f%e4%b8%bb%e7%a8%8b%e5%ba%8f%e5%85%a5%e5%8f%a3%ef%bc%8c%e8%b4%9f%e8%b4%a3%e5%88%9d%e5%a7%8b%e5%8c%96%e3%80%81%e6%95%b0%e6%8d%ae%e4%b8%ad%e5%bf%83%e7%ae%a1%e7%90%86%e3%80%81%e6%8f%92%e4%bb%b6%e5%8a%a0%e8%bd%bd%e4%b8%8e%e7%b3%bb%e7%bb%9f%e7%ba%a7%e6%b6%88%e6%81%af%e5%a4%84&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="ControlMonitor 主程序模">
@@ -348,7 +647,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
+              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
               data-sizes="auto"
               alt="PublicExternals 公共外部?"
               class="lazyload"
@@ -360,7 +659,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">PublicExternals 公共外部?</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
+              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
               data-sizes="auto"
               alt="前端系统架构与功能模块分"
               class="lazyload"
@@ -392,10 +691,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -445,7 +744,60 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-模块概述">1. 模块概述</a></li>
+    <li><a href="#2-主要功能">2. 主要功能</a>
+      <ul>
+        <li><a href="#21-应用程序初始化">2.1 应用程序初始化</a></li>
+        <li><a href="#22-数据中心管理">2.2 数据中心管理</a></li>
+        <li><a href="#23-插件管理">2.3 插件管理</a></li>
+        <li><a href="#24-主窗口管理">2.4 主窗口管理</a></li>
+        <li><a href="#25-系统级消息处理">2.5 系统级消息处理</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-核心组件">3. 核心组件</a>
+      <ul>
+        <li><a href="#31-主程序入口">3.1 主程序入口</a></li>
+        <li><a href="#32-主窗口类">3.2 主窗口类</a></li>
+        <li><a href="#33-配置管理">3.3 配置管理</a></li>
+        <li><a href="#34-消息对象">3.4 消息对象</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-技术实现">4. 技术实现</a>
+      <ul>
+        <li><a href="#41-单例模式">4.1 单例模式</a></li>
+        <li><a href="#42-插件架构">4.2 插件架构</a></li>
+        <li><a href="#43-消息机制">4.3 消息机制</a></li>
+        <li><a href="#44-跨平台支持">4.4 跨平台支持</a></li>
+        <li><a href="#45-异常处理">4.5 异常处理</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-与其他模块的关系">5. 与其他模块的关系</a>
+      <ul>
+        <li><a href="#51-依赖关系">5.1 依赖关系</a></li>
+        <li><a href="#52-调用关系">5.2 调用关系</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-关键文件说明">6. 关键文件说明</a></li>
+    <li><a href="#7-工作流程">7. 工作流程</a></li>
+    <li><a href="#8-技术特点">8. 技术特点</a></li>
+    <li><a href="#9-使用说明">9. 使用说明</a>
+      <ul>
+        <li><a href="#91-启动方式">9.1 启动方式</a></li>
+        <li><a href="#92-配置文件">9.2 配置文件</a></li>
+        <li><a href="#93-日志文件">9.3 日志文件</a></li>
+      </ul>
+    </li>
+    <li><a href="#10-维护与扩展">10. 维护与扩展</a>
+      <ul>
+        <li><a href="#101-添加新插件">10.1 添加新插件</a></li>
+        <li><a href="#102-修改系统行为">10.2 修改系统行为</a></li>
+        <li><a href="#103-调试与测试">10.3 调试与测试</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img

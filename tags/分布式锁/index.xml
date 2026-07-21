@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>ZooKeeper分布式协</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在分布式系统中，协调（Coordination）是一个基础而关键的问题——如何选主、如何同步配置、如何实现分布式锁、如何感知服务上下线？ZooKeeper 最初由 Yahoo 开发，用于解决 Hadoop 生态的协调问题，如今已成为最经典的分布式协调框架。Kafka、HBase、Dubbo 等知名系统都依赖 ZooKeeper 作为协调中心。</p>
         
         <hr><p>本文2023-01-20首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-01-20</p>]]>
       </description>
@@ -50,7 +53,10 @@
       <description>
         <![CDATA[<h1>Redis核心原理与实</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Redis 是目前最流行的内存数据存储系统，它不仅是缓存，更是支撑高并发架构的核心中间件。从简单的 key-value 缓存到分布式锁、限流器、排行榜、消息队列，Redis 的数据结构和单线程模型赋予了它极强的多面性。</p>
         
         <hr><p>本文2021-06-07首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-06-07</p>]]>
       </description>

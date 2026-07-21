@@ -190,7 +190,50 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+      </ul>
+    </li>
+    <li><a href="#为什么需要建造者模式">为什么需要建造者模式？</a>
+      <ul>
+        <li><a href="#问题重叠构造器模式telescoping-constructor">问题：重叠构造器模式（Telescoping Constructor）</a></li>
+        <li><a href="#问题javabean-模式setter-方法">问题：JavaBean 模式（Setter 方法）</a></li>
+        <li><a href="#解决方案建造者模式">解决方案：建造者模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#经典建造者模式实现">经典建造者模式实现</a>
+      <ul>
+        <li><a href="#完整的-director--builder-实现">完整的 Director + Builder 实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#lombok-builder-注解">Lombok @Builder 注解</a>
+      <ul>
+        <li><a href="#lombok-builder-的底层原理">Lombok @Builder 的底层原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#带参数校验的增强-builder">带参数校验的增强 Builder</a></li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#建造者模式-vs-工厂模式">建造者模式 vs 工厂模式</a></li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#stringbuilder--stringbuffer">StringBuilder / StringBuffer</a></li>
+        <li><a href="#mybatis-的-sqlsessionfactorybuilder">MyBatis 的 SqlSessionFactoryBuilder</a></li>
+        <li><a href="#okhttp-的-requestbuilder">OkHttp 的 Request.Builder</a></li>
+        <li><a href="#spring-security-的-httpsecurity">Spring Security 的 HttpSecurity</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +314,348 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>建造者模式（Builder Pattern）将一个复杂对象的构建过程与它的表示分离，使得同样的构建过程可以创建不同的表示。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。</p>
+</blockquote>
+<p>简单来说：当一个对象有很多可选参数时，与其写一个有十几个参数的构造方法，不如一步步地&quot;建造&quot;它。</p>
+<h3 id="类图">
+<a class="header-anchor" href="#%e7%b1%bb%e5%9b%be"></a>
+类图
+</h3><pre class="mermaid">
+  classDiagram
+    class Product {
+        -String partA
+        -String partB
+        -String partC
+    }
+    class Builder {
+        <<interface>>
+        +buildPartA() Builder
+        +buildPartB() Builder
+        +buildPartC() Builder
+        +getResult() Product
+    }
+    class ConcreteBuilder {
+        +buildPartA() Builder
+        +buildPartB() Builder
+        +buildPartC() Builder
+        +getResult() Product
+    }
+    class Director {
+        -Builder builder
+        +construct() Product
+    }
+    Builder <|.. ConcreteBuilder
+    Director --> Builder : 指挥
+    ConcreteBuilder ..> Product : 构建
+</pre><h2 id="为什么需要建造者模式">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e5%bb%ba%e9%80%a0%e8%80%85%e6%a8%a1%e5%bc%8f"></a>
+为什么需要建造者模式？
+</h2><h3 id="问题重叠构造器模式telescoping-constructor">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98%e9%87%8d%e5%8f%a0%e6%9e%84%e9%80%a0%e5%99%a8%e6%a8%a1%e5%bc%8ftelescoping-constructor"></a>
+问题：重叠构造器模式（Telescoping Constructor）
+</h3><p>当一个类有很多可选参数时，传统做法是提供多个构造方法重载：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 噩梦般的构造方法重载</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">User</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span><span class="w">      </span><span class="c1">// 必填</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">;</span><span class="w">  </span><span class="c1">// 必填</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">;</span><span class="w">     </span><span class="c1">// 可选</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">phone</span><span class="p">;</span><span class="w">     </span><span class="c1">// 可选</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">age</span><span class="p">;</span><span class="w">          </span><span class="c1">// 可选</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">address</span><span class="p">;</span><span class="w">   </span><span class="c1">// 可选</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">User</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">User</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">User</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">phone</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">phone</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">User</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">phone</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">age</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">(</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">phone</span><span class="p">,</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">User</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">phone</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">address</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">name</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">password</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">password</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// ...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 调用时难以阅读，参数顺序容易搞错</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">User</span><span class="p">(</span><span class="s">&#34;张三&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;123456&#34;</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;13800138000&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">25</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;北京&#34;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h3 id="问题javabean-模式setter-方法">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98javabean-%e6%a8%a1%e5%bc%8fsetter-%e6%96%b9%e6%b3%95"></a>
+问题：JavaBean 模式（Setter 方法）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">User</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">user</span><span class="p">.</span><span class="na">setName</span><span class="p">(</span><span class="s">&#34;张三&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">user</span><span class="p">.</span><span class="na">setPassword</span><span class="p">(</span><span class="s">&#34;123456&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">user</span><span class="p">.</span><span class="na">setAge</span><span class="p">(</span><span class="n">25</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 问题：对象在构建过程中处于不完整状态，且无法做参数校验</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 多线程下不安全</span><span class="w">
+</span></span></span></code></pre></div><h3 id="解决方案建造者模式">
+<a class="header-anchor" href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88%e5%bb%ba%e9%80%a0%e8%80%85%e6%a8%a1%e5%bc%8f"></a>
+解决方案：建造者模式
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">Builder</span><span class="p">(</span><span class="s">&#34;张三&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;123456&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">age</span><span class="p">(</span><span class="n">25</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">phone</span><span class="p">(</span><span class="s">&#34;13800138000&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">address</span><span class="p">(</span><span class="s">&#34;北京&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div><p>清晰、优雅、可读性强。</p>
+<h2 id="经典建造者模式实现">
+<a class="header-anchor" href="#%e7%bb%8f%e5%85%b8%e5%bb%ba%e9%80%a0%e8%80%85%e6%a8%a1%e5%bc%8f%e5%ae%9e%e7%8e%b0"></a>
+经典建造者模式实现
+</h2><h3 id="完整的-director--builder-实现">
+<a class="header-anchor" href="#%e5%ae%8c%e6%95%b4%e7%9a%84-director--builder-%e5%ae%9e%e7%8e%b0"></a>
+完整的 Director + Builder 实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 产品类</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Computer</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">cpu</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">ram</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">disk</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">gpu</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 私有构造，只能通过 Builder 创建</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">Computer</span><span class="p">(</span><span class="n">Builder</span><span class="w"> </span><span class="n">builder</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">cpu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">cpu</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">ram</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">ram</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">disk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">disk</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">gpu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">gpu</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 静态内部类 Builder</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Builder</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">cpu</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">ram</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">disk</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">gpu</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="n">Builder</span><span class="w"> </span><span class="nf">cpu</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">cpu</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">cpu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cpu</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="n">Builder</span><span class="w"> </span><span class="nf">ram</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">ram</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">ram</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ram</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="n">Builder</span><span class="w"> </span><span class="nf">disk</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">disk</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">disk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">disk</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="n">Builder</span><span class="w"> </span><span class="nf">gpu</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">gpu</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">gpu</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gpu</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">this</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">public</span><span class="w"> </span><span class="n">Computer</span><span class="w"> </span><span class="nf">build</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 在此处可以进行参数校验</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cpu</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">ram</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="p">(</span><span class="s">&#34;CPU 和 RAM 为必填项&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Computer</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">toString</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">format</span><span class="p">(</span><span class="s">&#34;Computer{cpu=%s, ram=%s, disk=%s, gpu=%s}&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">cpu</span><span class="p">,</span><span class="w"> </span><span class="n">ram</span><span class="p">,</span><span class="w"> </span><span class="n">disk</span><span class="p">,</span><span class="w"> </span><span class="n">gpu</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 客户端使用（链式调用）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Client</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Computer</span><span class="w"> </span><span class="n">computer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Computer</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">cpu</span><span class="p">(</span><span class="s">&#34;Intel i9-13900K&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">ram</span><span class="p">(</span><span class="s">&#34;32GB DDR5&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">disk</span><span class="p">(</span><span class="s">&#34;2TB NVMe SSD&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">gpu</span><span class="p">(</span><span class="s">&#34;RTX 4090&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">computer</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="lombok-builder-注解">
+<a class="header-anchor" href="#lombok-builder-%e6%b3%a8%e8%a7%a3"></a>
+Lombok @Builder 注解
+</h2><p>Lombok 让建造者模式的使用变得极为简单，只需一个注解即可自动生成 Builder：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">lombok.Builder</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">lombok.Getter</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">lombok.ToString</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Builder</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Getter</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@ToString</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">User</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">password</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Builder.Default</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">18</span><span class="p">;</span><span class="w">  </span><span class="c1">// 默认值</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">email</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">phone</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">address</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 使用方式完全一致</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">name</span><span class="p">(</span><span class="s">&#34;张三&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">password</span><span class="p">(</span><span class="s">&#34;123456&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">age</span><span class="p">(</span><span class="n">25</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">address</span><span class="p">(</span><span class="s">&#34;北京&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div><h3 id="lombok-builder-的底层原理">
+<a class="header-anchor" href="#lombok-builder-%e7%9a%84%e5%ba%95%e5%b1%82%e5%8e%9f%e7%90%86"></a>
+Lombok @Builder 的底层原理
+</h3><p>Lombok 在编译期自动生成了类似上面的静态内部类 <code>Builder</code>，包括所有字段的 setter 方法和 <code>build()</code> 方法。反编译后可以看到它与手写的 Builder 结构一致。</p>
+<blockquote>
+<p><strong>注意</strong>：使用 <code>@Builder</code> 时，如果类中有必填字段需要校验，可以在类上添加 <code>@NonNull</code> 或手动补充 <code>build()</code> 的校验逻辑。</p>
+</blockquote>
+<h2 id="带参数校验的增强-builder">
+<a class="header-anchor" href="#%e5%b8%a6%e5%8f%82%e6%95%b0%e6%a0%a1%e9%aa%8c%e7%9a%84%e5%a2%9e%e5%bc%ba-builder"></a>
+带参数校验的增强 Builder
+</h2><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Builder</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// ... 字段省略</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Computer</span><span class="w"> </span><span class="nf">build</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 必填校验</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Objects</span><span class="p">.</span><span class="na">requireNonNull</span><span class="p">(</span><span class="n">cpu</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;CPU 不能为空&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Objects</span><span class="p">.</span><span class="na">requireNonNull</span><span class="p">(</span><span class="n">ram</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;RAM 不能为空&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 业务校验</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ram</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="s">&#34;DDR3&#34;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s">&#34;不支持 DDR3 内存&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Computer</span><span class="w"> </span><span class="n">computer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Computer</span><span class="p">(</span><span class="k">this</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 构建后清空 Builder，使其可复用</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">computer</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="适用场景">
+<a class="header-anchor" href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+适用场景
+</h2><ol>
+<li><strong>对象参数多</strong>：当一个类有超过 4 个参数（尤其是可选参数）时</li>
+<li><strong>不可变对象</strong>：需要创建不可变对象（所有字段 final）时</li>
+<li><strong>分步构建</strong>：对象需要按特定步骤组装（如 SQL 构建器、HTML 构建器）</li>
+<li><strong>参数校验</strong>：需要在构建时统一校验参数合法性时</li>
+</ol>
+<h2 id="优缺点">
+<a class="header-anchor" href="#%e4%bc%98%e7%bc%ba%e7%82%b9"></a>
+优缺点
+</h2><h3 id="优点">
+<a class="header-anchor" href="#%e4%bc%98%e7%82%b9"></a>
+优点
+</h3><ol>
+<li><strong>链式调用，可读性强</strong>：每个方法名即参数说明</li>
+<li><strong>参数灵活</strong>：可选参数可任意组合</li>
+<li><strong>不可变对象</strong>：构建完成后对象不可变，线程安全</li>
+<li><strong>统一校验</strong>：在 <code>build()</code> 中集中校验</li>
+</ol>
+<h3 id="缺点">
+<a class="header-anchor" href="#%e7%bc%ba%e7%82%b9"></a>
+缺点
+</h3><ol>
+<li><strong>代码量增加</strong>：需要额外编写 Builder 类（Lombok 可解决）</li>
+<li><strong>对象创建开销</strong>：多创建了一个 Builder 对象</li>
+<li><strong>不适用于简单对象</strong>：参数少时反而过度设计</li>
+</ol>
+<h2 id="建造者模式-vs-工厂模式">
+<a class="header-anchor" href="#%e5%bb%ba%e9%80%a0%e8%80%85%e6%a8%a1%e5%bc%8f-vs-%e5%b7%a5%e5%8e%82%e6%a8%a1%e5%bc%8f"></a>
+建造者模式 vs 工厂模式
+</h2><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>工厂模式</th>
+					<th>建造者模式</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>关注点</td>
+					<td>创建<strong>单个</strong>产品</td>
+					<td><strong>分步</strong>构建复杂产品</td>
+			</tr>
+			<tr>
+					<td>创建方式</td>
+					<td>一步到位</td>
+					<td>多步组装</td>
+			</tr>
+			<tr>
+					<td>返回时机</td>
+					<td>立即返回完整产品</td>
+					<td>最后一步 <code>build()</code> 返回</td>
+			</tr>
+			<tr>
+					<td>参数</td>
+					<td>通常参数少</td>
+					<td>通常参数多且有可选项</td>
+			</tr>
+			<tr>
+					<td>典型场景</td>
+					<td>根据类型创建不同产品</td>
+					<td>组装复杂配置对象</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>简记：<strong>工厂关心&quot;创建什么&quot;，建造者关心&quot;怎么创建&quot;</strong>。</p>
+</blockquote>
+<h2 id="实战案例">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8b"></a>
+实战案例
+</h2><h3 id="stringbuilder--stringbuffer">
+<a class="header-anchor" href="#stringbuilder--stringbuffer"></a>
+StringBuilder / StringBuffer
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// JDK 中的建造者模式，逐步构建字符串</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">String</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">StringBuilder</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">append</span><span class="p">(</span><span class="s">&#34;SELECT * FROM users&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">append</span><span class="p">(</span><span class="s">&#34; WHERE age &gt; 18&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">append</span><span class="p">(</span><span class="s">&#34; ORDER BY name&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">toString</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div><h3 id="mybatis-的-sqlsessionfactorybuilder">
+<a class="header-anchor" href="#mybatis-%e7%9a%84-sqlsessionfactorybuilder"></a>
+MyBatis 的 SqlSessionFactoryBuilder
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">SqlSessionFactory</span><span class="w"> </span><span class="n">factory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SqlSessionFactoryBuilder</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">(</span><span class="n">inputStream</span><span class="p">);</span><span class="w">  </span><span class="c1">// 分步构建配置对象</span><span class="w">
+</span></span></span></code></pre></div><h3 id="okhttp-的-requestbuilder">
+<a class="header-anchor" href="#okhttp-%e7%9a%84-requestbuilder"></a>
+OkHttp 的 Request.Builder
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Request</span><span class="w"> </span><span class="n">request</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Request</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">url</span><span class="p">(</span><span class="s">&#34;https://api.example.com/data&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">&#34;Authorization&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;Bearer token&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">post</span><span class="p">(</span><span class="n">RequestBody</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">json</span><span class="p">,</span><span class="w"> </span><span class="n">MediaType</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">&#34;application/json&#34;</span><span class="p">)))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">build</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div><h3 id="spring-security-的-httpsecurity">
+<a class="header-anchor" href="#spring-security-%e7%9a%84-httpsecurity"></a>
+Spring Security 的 HttpSecurity
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Configuration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@EnableWebSecurity</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SecurityConfig</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Bean</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">SecurityFilterChain</span><span class="w"> </span><span class="nf">filterChain</span><span class="p">(</span><span class="n">HttpSecurity</span><span class="w"> </span><span class="n">http</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">http</span><span class="p">.</span><span class="na">authorizeHttpRequests</span><span class="p">(</span><span class="n">auth</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">auth</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">.</span><span class="na">requestMatchers</span><span class="p">(</span><span class="s">&#34;/public/**&#34;</span><span class="p">).</span><span class="na">permitAll</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">.</span><span class="na">anyRequest</span><span class="p">().</span><span class="na">authenticated</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">formLogin</span><span class="p">(</span><span class="n">form</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">form</span><span class="p">.</span><span class="na">loginPage</span><span class="p">(</span><span class="s">&#34;/login&#34;</span><span class="p">).</span><span class="na">permitAll</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">logout</span><span class="p">(</span><span class="n">logout</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">logout</span><span class="p">.</span><span class="na">logoutUrl</span><span class="p">(</span><span class="s">&#34;/logout&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">http</span><span class="p">.</span><span class="na">build</span><span class="p">();</span><span class="w">  </span><span class="c1">// 典型的建造者模式</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="总结">
+<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
+总结
+</h2><p>建造者模式是日常开发中使用频率极高的模式，尤其在构建 DTO、配置对象、请求/响应体时几乎无处不在。借助 Lombok <code>@Builder</code>，我们可以用极少的代码获得建造者模式的所有好处。</p>
+<p>核心原则：<strong>当一个对象的构建过程涉及多个可选参数时，优先考虑建造者模式</strong>。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/design-patterns/%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=%e5%bb%ba%e9%80%a0%e8%80%85%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="建造者模式详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/design-patterns/%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;title=%e5%bb%ba%e9%80%a0%e8%80%85%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;desc=%e9%93%be%e5%bc%8f%e8%b0%83%e7%94%a8%e3%80%81Lombok%20@Builder%20%e6%b3%a8%e8%a7%a3%e3%80%81%e4%b8%8e%e5%b7%a5%e5%8e%82%e6%a8%a1%e5%bc%8f%e7%9a%84%e5%af%b9%e6%af%94%e5%88%86%e6%9e%90&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="建造者模式详解">
@@ -334,7 +718,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
+              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
               data-sizes="auto"
               alt="策略模式详解"
               class="lazyload"
@@ -346,7 +730,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">策略模式详解</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
+              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
               data-sizes="auto"
               alt="工厂方法与抽象工厂模式"
               class="lazyload"
@@ -378,10 +762,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -431,7 +815,50 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+      </ul>
+    </li>
+    <li><a href="#为什么需要建造者模式">为什么需要建造者模式？</a>
+      <ul>
+        <li><a href="#问题重叠构造器模式telescoping-constructor">问题：重叠构造器模式（Telescoping Constructor）</a></li>
+        <li><a href="#问题javabean-模式setter-方法">问题：JavaBean 模式（Setter 方法）</a></li>
+        <li><a href="#解决方案建造者模式">解决方案：建造者模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#经典建造者模式实现">经典建造者模式实现</a>
+      <ul>
+        <li><a href="#完整的-director--builder-实现">完整的 Director + Builder 实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#lombok-builder-注解">Lombok @Builder 注解</a>
+      <ul>
+        <li><a href="#lombok-builder-的底层原理">Lombok @Builder 的底层原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#带参数校验的增强-builder">带参数校验的增强 Builder</a></li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#建造者模式-vs-工厂模式">建造者模式 vs 工厂模式</a></li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#stringbuilder--stringbuffer">StringBuilder / StringBuffer</a></li>
+        <li><a href="#mybatis-的-sqlsessionfactorybuilder">MyBatis 的 SqlSessionFactoryBuilder</a></li>
+        <li><a href="#okhttp-的-requestbuilder">OkHttp 的 Request.Builder</a></li>
+        <li><a href="#spring-security-的-httpsecurity">Spring Security 的 HttpSecurity</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -562,6 +989,105 @@
           description: "链式调用、Lombok @Builder 注解、与工厂模式的对比分析",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>动态规划经典问题</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>动态规划（Dynamic Programming，简称 DP）是一种解决复杂问题的高效算法思想。它通过将问题分解为子问题，利用子问题的解来构建原问题的解，从而避免重复计算。</p>
         
         <hr><p>本文2025-12-28首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-12-28</p>]]>
       </description>

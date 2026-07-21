@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>JVM调优与GC策略</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>JVM 调优是后端工程师的核心技能之一。一个配置不当的 JVM 可能导致频繁的 Full GC、内存泄漏、应用响应缓慢甚至 OOM（OutOfMemoryError）。理解 JVM 的内存模型、垃圾收集算法以及调优策略，是保障线上系统稳定性的关键。</p>
         
         <hr><p>本文2024-09-28首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-09-28</p>]]>
       </description>

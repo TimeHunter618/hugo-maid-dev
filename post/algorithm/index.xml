@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>动态规划经典问题</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>动态规划（Dynamic Programming，简称 DP）是一种解决复杂问题的高效算法思想。它通过将问题分解为子问题，利用子问题的解来构建原问题的解，从而避免重复计算。</p>
         
         <hr><p>本文2025-12-28首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-12-28</p>]]>
       </description>
@@ -50,7 +53,10 @@
       <description>
         <![CDATA[<h1>线段树SegmentTree 详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>线段树（Segment Tree）是一种高效的数据结构，用于处理区间查询和区间更新问题。它可以在 O(log n) 的时间复杂度内完成单点更新、区间查询、区间更新等操作，是算法竞赛和实际工程中常用的数据结构。</p>
         
         <hr><p>本文2024-10-25首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-10-25</p>]]>
       </description>
@@ -70,7 +76,10 @@
       <description>
         <![CDATA[<h1>哈希?HashMap 详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>哈希表（Hash Table）是一种高效的数据结构，通过哈希函数将键映射到数组索引，实现 O(1) 平均时间复杂度的查找、插入和删除操作。它是计算机科学中最重要的数据结构之一，广泛应用于缓存、数据库索引、编译器符号表等领域。</p>
         
         <hr><p>本文2023-01-26首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-01-26</p>]]>
       </description>
@@ -90,7 +99,10 @@
       <description>
         <![CDATA[<h1>位图 BitMap 详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>位图（BitMap）是一种高效的数据结构，它使用位（bit）来表示元素的存在状态。相比于传统的数据结构（如数组、链表），位图在空间效率上有着巨大的优势，特别适合处理大规模数据的去重、排序、查找等场景。</p>
         
         <hr><p>本文2022-10-17首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-10-17</p>]]>
       </description>
@@ -110,7 +122,10 @@
       <description>
         <![CDATA[<h1>排序算法详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>排序算法是计算机科学中最基础也是最重要的算法之一。无论是数据检索、数据统计还是数据展示，排序都是不可或缺的步骤。理解各种排序算法的原理、复杂度和适用场景，是每个程序员的必修课。</p>
         
         <hr><p>本文2022-09-29首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-09-29</p>]]>
       </description>
@@ -130,7 +145,10 @@
       <description>
         <![CDATA[<h1>图算法与最短路径详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>图是一种强大的数据结构，用于表示对象之间的关系。图算法在社交网络、地图导航、网络路由、推荐系统等领域有着广泛的应用。掌握图的遍历、最短路径、拓扑排序和最小生成树等核心算法，是解决复杂问题的关键。</p>
         
         <hr><p>本文2022-02-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-02-10</p>]]>
       </description>
@@ -150,7 +168,10 @@
       <description>
         <![CDATA[<h1>二叉树与遍历实战</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>树是计算机科学中最重要的数据结构之一，而二叉树是树结构的基础。二叉树不仅用于组织数据，还广泛应用于编译器设计、数据库索引、表达式求值等领域。掌握二叉树的遍历方式、查找算法以及平衡树的原理，是每个程序员必备的技能。</p>
         
         <hr><p>本文2021-02-24首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-02-24</p>]]>
       </description>

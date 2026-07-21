@@ -190,7 +190,57 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#二叉树基础概念">二叉树基础概念</a>
+      <ul>
+        <li><a href="#树的定义">树的定义</a></li>
+        <li><a href="#二叉树类型">二叉树类型</a></li>
+        <li><a href="#节点结构">节点结构</a></li>
+      </ul>
+    </li>
+    <li><a href="#二叉树遍历">二叉树遍历</a>
+      <ul>
+        <li><a href="#遍历方式对比">遍历方式对比</a></li>
+        <li><a href="#前序遍历">前序遍历</a></li>
+        <li><a href="#中序遍历">中序遍历</a></li>
+        <li><a href="#后序遍历">后序遍历</a></li>
+        <li><a href="#层序遍历">层序遍历</a></li>
+      </ul>
+    </li>
+    <li><a href="#二叉搜索树bst">二叉搜索树（BST）</a>
+      <ul>
+        <li><a href="#bst-特性">BST 特性</a></li>
+        <li><a href="#查找操作">查找操作</a></li>
+        <li><a href="#插入操作">插入操作</a></li>
+        <li><a href="#删除操作">删除操作</a></li>
+        <li><a href="#bst-验证">BST 验证</a></li>
+      </ul>
+    </li>
+    <li><a href="#avl-树">AVL 树</a>
+      <ul>
+        <li><a href="#avl-树特性">AVL 树特性</a></li>
+        <li><a href="#四种旋转操作">四种旋转操作</a></li>
+        <li><a href="#平衡因子计算">平衡因子计算</a></li>
+        <li><a href="#avl-插入">AVL 插入</a></li>
+      </ul>
+    </li>
+    <li><a href="#红黑树">红黑树</a>
+      <ul>
+        <li><a href="#红黑树特性">红黑树特性</a></li>
+        <li><a href="#avl-树-vs-红黑树">AVL 树 vs 红黑树</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +321,666 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>树是计算机科学中最重要的数据结构之一，而二叉树是树结构的基础。二叉树不仅用于组织数据，还广泛应用于编译器设计、数据库索引、表达式求值等领域。掌握二叉树的遍历方式、查找算法以及平衡树的原理，是每个程序员必备的技能。</p>
+<p>本文将系统讲解二叉树的基本概念、四种遍历方式（前序、中序、后序、层序）、二叉搜索树（BST）、AVL 树和红黑树的原理与实现。</p>
+<h2 id="二叉树基础概念">
+<a class="header-anchor" href="#%e4%ba%8c%e5%8f%89%e6%a0%91%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5"></a>
+二叉树基础概念
+</h2><h3 id="树的定义">
+<a class="header-anchor" href="#%e6%a0%91%e7%9a%84%e5%ae%9a%e4%b9%89"></a>
+树的定义
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "二叉树结构"
+        R["根节点 (Root)"]
+        L["左子树 (Left Subtree)"]
+        R2["右子树 (Right Subtree)"]
+        
+        R --> L
+        R --> R2
+        
+        L1["左子节点"]
+        L2["右子节点"]
+        L --> L1
+        L --> L2
+    end
+</pre><h3 id="二叉树类型">
+<a class="header-anchor" href="#%e4%ba%8c%e5%8f%89%e6%a0%91%e7%b1%bb%e5%9e%8b"></a>
+二叉树类型
+</h3><table>
+	<thead>
+			<tr>
+					<th>类型</th>
+					<th>说明</th>
+					<th>特点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>满二叉树</strong></td>
+					<td>每个节点都有两个子节点</td>
+					<td>第 k 层有 2^(k-1) 个节点</td>
+			</tr>
+			<tr>
+					<td><strong>完全二叉树</strong></td>
+					<td>除最后一层外，其余层均满</td>
+					<td>最后一层节点从左到右排列</td>
+			</tr>
+			<tr>
+					<td><strong>平衡二叉树</strong></td>
+					<td>左右子树高度差不超过 1</td>
+					<td>查找效率高</td>
+			</tr>
+			<tr>
+					<td><strong>二叉搜索树</strong></td>
+					<td>左子树 &lt; 根 &lt; 右子树</td>
+					<td>有序查找</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="节点结构">
+<a class="header-anchor" href="#%e8%8a%82%e7%82%b9%e7%bb%93%e6%9e%84"></a>
+节点结构
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TreeNode</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">left</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">right</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">TreeNode</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">TreeNode</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">val</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">TreeNode</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">,</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">left</span><span class="p">,</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">right</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">val</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">left</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">right</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="二叉树遍历">
+<a class="header-anchor" href="#%e4%ba%8c%e5%8f%89%e6%a0%91%e9%81%8d%e5%8e%86"></a>
+二叉树遍历
+</h2><h3 id="遍历方式对比">
+<a class="header-anchor" href="#%e9%81%8d%e5%8e%86%e6%96%b9%e5%bc%8f%e5%af%b9%e6%af%94"></a>
+遍历方式对比
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "示例二叉树"
+        A[1] --> B[2]
+        A --> C[3]
+        B --> D[4]
+        B --> E[5]
+        C --> F[6]
+        C --> G[7]
+    end
+
+    subgraph "前序遍历 (根-左-右)"
+        A1["1 → 2 → 4 → 5 → 3 → 6 → 7"]
+    end
+
+    subgraph "中序遍历 (左-根-右)"
+        A2["4 → 2 → 5 → 1 → 6 → 3 → 7"]
+    end
+
+    subgraph "后序遍历 (左-右-根)"
+        A3["4 → 5 → 2 → 6 → 7 → 3 → 1"]
+    end
+
+    subgraph "层序遍历"
+        A4["1 → 2 → 3 → 4 → 5 → 6 → 7"]
+    end
+</pre><h3 id="前序遍历">
+<a class="header-anchor" href="#%e5%89%8d%e5%ba%8f%e9%81%8d%e5%8e%86"></a>
+前序遍历
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 递归实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">preorder</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">print</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; &#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">preorder</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">preorder</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 迭代实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">preorderTraversal</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Stack</span><span class="o">&lt;</span><span class="n">TreeNode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Stack</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">stack</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">root</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">stack</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">.</span><span class="na">pop</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">stack</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">stack</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="中序遍历">
+<a class="header-anchor" href="#%e4%b8%ad%e5%ba%8f%e9%81%8d%e5%8e%86"></a>
+中序遍历
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 递归实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">inorder</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">inorder</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">print</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; &#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">inorder</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 迭代实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">inorderTraversal</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Stack</span><span class="o">&lt;</span><span class="n">TreeNode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Stack</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">curr</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">stack</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">curr</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">stack</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">curr</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr</span><span class="p">.</span><span class="na">left</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">.</span><span class="na">pop</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">curr</span><span class="p">.</span><span class="na">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr</span><span class="p">.</span><span class="na">right</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="后序遍历">
+<a class="header-anchor" href="#%e5%90%8e%e5%ba%8f%e9%81%8d%e5%8e%86"></a>
+后序遍历
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 递归实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">postorder</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">postorder</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">postorder</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">print</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; &#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 迭代实现（双栈法）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">postorderTraversal</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Stack</span><span class="o">&lt;</span><span class="n">TreeNode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stack1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Stack</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Stack</span><span class="o">&lt;</span><span class="n">TreeNode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stack2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Stack</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">stack1</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">root</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">stack1</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack1</span><span class="p">.</span><span class="na">pop</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">stack2</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">stack1</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">stack1</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">stack2</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">stack2</span><span class="p">.</span><span class="na">pop</span><span class="p">().</span><span class="na">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="层序遍历">
+<a class="header-anchor" href="#%e5%b1%82%e5%ba%8f%e9%81%8d%e5%8e%86"></a>
+层序遍历
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">levelOrder</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Queue</span><span class="o">&lt;</span><span class="n">TreeNode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">queue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">queue</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="n">root</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">queue</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">levelSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queue</span><span class="p">.</span><span class="na">size</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">currentLevel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">levelSize</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queue</span><span class="p">.</span><span class="na">poll</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">currentLevel</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">queue</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="n">queue</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">currentLevel</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="二叉搜索树bst">
+<a class="header-anchor" href="#%e4%ba%8c%e5%8f%89%e6%90%9c%e7%b4%a2%e6%a0%91bst"></a>
+二叉搜索树（BST）
+</h2><h3 id="bst-特性">
+<a class="header-anchor" href="#bst-%e7%89%b9%e6%80%a7"></a>
+BST 特性
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "二叉搜索树"
+        A[8] --> B[3]
+        A --> C[10]
+        B --> D[1]
+        B --> E[6]
+        E --> F[4]
+        E --> G[7]
+        C --> H[14]
+        H --> I[13]
+    end
+
+    style A fill:#FFD700
+    style B fill:#90EE90
+    style C fill:#FF6347
+</pre><p><strong>BST 性质</strong>：</p>
+<ul>
+<li>左子树所有节点的值 &lt; 根节点的值</li>
+<li>右子树所有节点的值 &gt; 根节点的值</li>
+<li>左右子树也都是二叉搜索树</li>
+</ul>
+<h3 id="查找操作">
+<a class="header-anchor" href="#%e6%9f%a5%e6%89%be%e6%93%8d%e4%bd%9c"></a>
+查找操作
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="nf">searchBST</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">root</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">val</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">searchBST</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">searchBST</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 迭代实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="nf">searchBSTIterative</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">val</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">root</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="插入操作">
+<a class="header-anchor" href="#%e6%8f%92%e5%85%a5%e6%93%8d%e4%bd%9c"></a>
+插入操作
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="nf">insertIntoBST</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TreeNode</span><span class="p">(</span><span class="n">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">val</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">insertIntoBST</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">insertIntoBST</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">root</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="删除操作">
+<a class="header-anchor" href="#%e5%88%a0%e9%99%a4%e6%93%8d%e4%bd%9c"></a>
+删除操作
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="nf">deleteNode</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">key</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">deleteNode</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">key</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">deleteNode</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 情况1：叶子节点</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 情况2：只有一个子节点</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">root</span><span class="p">.</span><span class="na">left</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 情况3：有两个子节点，找到后继节点</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">minNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">findMin</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">root</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">minNode</span><span class="p">.</span><span class="na">val</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">deleteNode</span><span class="p">(</span><span class="n">root</span><span class="p">.</span><span class="na">right</span><span class="p">,</span><span class="w"> </span><span class="n">minNode</span><span class="p">.</span><span class="na">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">root</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="nf">findMin</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">node</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="bst-验证">
+<a class="header-anchor" href="#bst-%e9%aa%8c%e8%af%81"></a>
+BST 验证
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isValidBST</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">isValidBST</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">MIN_VALUE</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isValidBST</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">lower</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">upper</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">lower</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">upper</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">isValidBST</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">,</span><span class="w"> </span><span class="n">lower</span><span class="p">,</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">isValidBST</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="p">,</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">val</span><span class="p">,</span><span class="w"> </span><span class="n">upper</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="avl-树">
+<a class="header-anchor" href="#avl-%e6%a0%91"></a>
+AVL 树
+</h2><h3 id="avl-树特性">
+<a class="header-anchor" href="#avl-%e6%a0%91%e7%89%b9%e6%80%a7"></a>
+AVL 树特性
+</h3><p>AVL 树是一种自平衡二叉搜索树，任意节点的左右子树高度差不超过 1。</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "AVL 树"
+        A[30] --> B[20]
+        A --> C[40]
+        B --> D[10]
+        C --> E[50]
+    end
+
+    subgraph "插入 5 后失衡"
+        A2[30] --> B2[20]
+        A2 --> C2[40]
+        B2 --> D2[10]
+        D2 --> F2[5]
+    end
+
+    subgraph "右旋后平衡"
+        B3[20] --> D3[10]
+        B3 --> A3[30]
+        D3 --> F3[5]
+        A3 --> C3[40]
+        A3 --> E3[50]
+    end
+</pre><h3 id="四种旋转操作">
+<a class="header-anchor" href="#%e5%9b%9b%e7%a7%8d%e6%97%8b%e8%bd%ac%e6%93%8d%e4%bd%9c"></a>
+四种旋转操作
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 左旋</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="nf">rotateLeft</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">rightChild</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">rightLeftChild</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rightChild</span><span class="p">.</span><span class="na">left</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">rightChild</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rightLeftChild</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">updateHeight</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">updateHeight</span><span class="p">(</span><span class="n">rightChild</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">rightChild</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 右旋</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="nf">rotateRight</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">leftChild</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">leftRightChild</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">leftChild</span><span class="p">.</span><span class="na">right</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">leftChild</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">leftRightChild</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">updateHeight</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">updateHeight</span><span class="p">(</span><span class="n">leftChild</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">leftChild</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 左右旋</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="nf">rotateLeftRight</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rotateLeft</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">rotateRight</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 右左旋</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="nf">rotateRightLeft</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rotateRight</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">rotateLeft</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="平衡因子计算">
+<a class="header-anchor" href="#%e5%b9%b3%e8%a1%a1%e5%9b%a0%e5%ad%90%e8%ae%a1%e7%ae%97"></a>
+平衡因子计算
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getHeight</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">height</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">updateHeight</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">node</span><span class="p">.</span><span class="na">height</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="n">getHeight</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">),</span><span class="w"> </span><span class="n">getHeight</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getBalanceFactor</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">getHeight</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">getHeight</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="avl-插入">
+<a class="header-anchor" href="#avl-%e6%8f%92%e5%85%a5"></a>
+AVL 插入
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">TreeNode</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 1. 执行标准 BST 插入</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TreeNode</span><span class="p">(</span><span class="n">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">val</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">insert</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">val</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">insert</span><span class="p">(</span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="p">,</span><span class="w"> </span><span class="n">val</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">node</span><span class="p">;</span><span class="w"> </span><span class="c1">// 重复值不插入</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 2. 更新高度</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">updateHeight</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 3. 获取平衡因子</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getBalanceFactor</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 4. 平衡调整</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// LL 情况</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">balance</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">rotateRight</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// RR 情况</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">balance</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="o">-</span><span class="n">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">rotateLeft</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// LR 情况</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">balance</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">left</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">rotateLeftRight</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// RL 情况</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">balance</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="o">-</span><span class="n">1</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">val</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">right</span><span class="p">.</span><span class="na">val</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">rotateRightLeft</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">node</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="红黑树">
+<a class="header-anchor" href="#%e7%ba%a2%e9%bb%91%e6%a0%91"></a>
+红黑树
+</h2><h3 id="红黑树特性">
+<a class="header-anchor" href="#%e7%ba%a2%e9%bb%91%e6%a0%91%e7%89%b9%e6%80%a7"></a>
+红黑树特性
+</h3><p>红黑树是一种自平衡二叉搜索树，满足以下性质：</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "红黑树"
+        A[B 30] --> B[R 20]
+        A --> C[B 40]
+        B --> D[B 10]
+        B --> E[B 25]
+        C --> F[R 35]
+        C --> G[B 50]
+    end
+
+    style A fill:#000000,color:#ffffff
+    style B fill:#FF6347
+    style C fill:#000000,color:#ffffff
+    style D fill:#000000,color:#ffffff
+    style E fill:#000000,color:#ffffff
+    style F fill:#FF6347
+    style G fill:#000000,color:#ffffff
+</pre><table>
+	<thead>
+			<tr>
+					<th>性质</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>1. 节点颜色</td>
+					<td>每个节点要么是红色，要么是黑色</td>
+			</tr>
+			<tr>
+					<td>2. 根节点</td>
+					<td>根节点必须是黑色</td>
+			</tr>
+			<tr>
+					<td>3. 叶子节点</td>
+					<td>所有叶子节点（NIL）都是黑色</td>
+			</tr>
+			<tr>
+					<td>4. 红色节点</td>
+					<td>红色节点的子节点必须是黑色（不能有连续红节点）</td>
+			</tr>
+			<tr>
+					<td>5. 路径性质</td>
+					<td>从任意节点到其后代叶子节点的所有路径包含相同数量的黑色节点</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="avl-树-vs-红黑树">
+<a class="header-anchor" href="#avl-%e6%a0%91-vs-%e7%ba%a2%e9%bb%91%e6%a0%91"></a>
+AVL 树 vs 红黑树
+</h3><table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>AVL 树</th>
+					<th>红黑树</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>平衡条件</strong></td>
+					<td>高度差 ≤ 1</td>
+					<td>弱平衡（红黑性质）</td>
+			</tr>
+			<tr>
+					<td><strong>查找效率</strong></td>
+					<td>O(log n)</td>
+					<td>O(log n)</td>
+			</tr>
+			<tr>
+					<td><strong>插入/删除</strong></td>
+					<td>最多旋转 1-2 次</td>
+					<td>最多旋转 3 次</td>
+			</tr>
+			<tr>
+					<td><strong>空间开销</strong></td>
+					<td>需要存储高度</td>
+					<td>需要存储颜色</td>
+			</tr>
+			<tr>
+					<td><strong>适用场景</strong></td>
+					<td>查询密集型</td>
+					<td>插入/删除密集型</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="实战题目">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e9%a2%98%e7%9b%ae"></a>
+实战题目
+</h2><h3 id="leetcode-相关题目">
+<a class="header-anchor" href="#leetcode-%e7%9b%b8%e5%85%b3%e9%a2%98%e7%9b%ae"></a>
+LeetCode 相关题目
+</h3><table>
+	<thead>
+			<tr>
+					<th>题目</th>
+					<th>难度</th>
+					<th>标签</th>
+					<th>链接</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>94. 二叉树的中序遍历</td>
+					<td>简单</td>
+					<td>树遍历</td>
+					<td><a href="https://leetcode.cn/problems/binary-tree-inorder-traversal/">https://leetcode.cn/problems/binary-tree-inorder-traversal/</a></td>
+			</tr>
+			<tr>
+					<td>102. 二叉树的层序遍历</td>
+					<td>中等</td>
+					<td>层序遍历</td>
+					<td><a href="https://leetcode.cn/problems/binary-tree-level-order-traversal/">https://leetcode.cn/problems/binary-tree-level-order-traversal/</a></td>
+			</tr>
+			<tr>
+					<td>104. 二叉树的最大深度</td>
+					<td>简单</td>
+					<td>递归</td>
+					<td><a href="https://leetcode.cn/problems/maximum-depth-of-binary-tree/">https://leetcode.cn/problems/maximum-depth-of-binary-tree/</a></td>
+			</tr>
+			<tr>
+					<td>108. 将有序数组转换为二叉搜索树</td>
+					<td>简单</td>
+					<td>BST</td>
+					<td><a href="https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/">https://leetcode.cn/problems/convert-sorted-array-to-binary-search-tree/</a></td>
+			</tr>
+			<tr>
+					<td>230. 二叉搜索树中第K小的元素</td>
+					<td>中等</td>
+					<td>BST</td>
+					<td><a href="https://leetcode.cn/problems/kth-smallest-element-in-a-bst/">https://leetcode.cn/problems/kth-smallest-element-in-a-bst/</a></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="题解示例">
+<a class="header-anchor" href="#%e9%a2%98%e8%a7%a3%e7%a4%ba%e4%be%8b"></a>
+题解示例
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// LeetCode 230: 二叉搜索树中第K小的元素</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">kthSmallest</span><span class="p">(</span><span class="n">TreeNode</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Stack</span><span class="o">&lt;</span><span class="n">TreeNode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Stack</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">TreeNode</span><span class="w"> </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">root</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">curr</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">stack</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">curr</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">stack</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">curr</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr</span><span class="p">.</span><span class="na">left</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">.</span><span class="na">pop</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">k</span><span class="o">--</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">k</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">curr</span><span class="p">.</span><span class="na">val</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr</span><span class="p">.</span><span class="na">right</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>二叉树是数据结构的核心，掌握二叉树的遍历方式是学习更复杂树结构的基础。</p>
+<p>核心要点：</p>
+<ul>
+<li><strong>遍历方式</strong>：前序（根-左-右）、中序（左-根-右）、后序（左-右-根）、层序</li>
+<li><strong>BST</strong>：利用有序性实现高效查找、插入、删除</li>
+<li><strong>AVL 树</strong>：严格平衡，适合查询密集场景</li>
+<li><strong>红黑树</strong>：弱平衡，适合插入/删除密集场景</li>
+</ul>
+<p>选择树结构时，需要根据查询和更新的频率来决定使用哪种数据结构。</p>
+<hr>
+<p><strong>延伸阅读</strong>：</p>
+<ol>
+<li><em>算法导论</em> - 树章节</li>
+<li>LeetCode 树专题 - <a href="https://leetcode.cn/tag/tree/">https://leetcode.cn/tag/tree/</a></li>
+<li>红黑树可视化 - <a href="https://www.cs.usfca.edu/~galles/visualization/RedBlack.html">https://www.cs.usfca.edu/~galles/visualization/RedBlack.html</a></li>
+</ol>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/algorithm/%E4%BA%8C%E5%8F%89%E6%A0%91%E4%B8%8E%E9%81%8D%E5%8E%86%E5%AE%9E%E6%88%98/&amp;appkey=&amp;title=%e4%ba%8c%e5%8f%89%e6%a0%91%e4%b8%8e%e9%81%8d%e5%8e%86%e5%ae%9e%e6%88%98&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="二叉树与遍历实战">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/algorithm/%E4%BA%8C%E5%8F%89%E6%A0%91%E4%B8%8E%E9%81%8D%E5%8E%86%E5%AE%9E%E6%88%98/&amp;title=%e4%ba%8c%e5%8f%89%e6%a0%91%e4%b8%8e%e9%81%8d%e5%8e%86%e5%ae%9e%e6%88%98&amp;desc=%e5%89%8d%e5%ba%8f/%e4%b8%ad%e5%ba%8f/%e5%90%8e%e5%ba%8f%e9%81%8d%e5%8e%86%e3%80%81%e5%b1%82%e5%ba%8f%e9%81%8d%e5%8e%86%e3%80%81BST%e3%80%81AVL%e6%a0%91%e3%80%81%e7%ba%a2%e9%bb%91%e6%a0%91%e5%8e%9f%e7%90%86%e4%b8%8e%e5%ae%9e%e7%8e%b0&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="二叉树与遍历实战">
@@ -348,7 +1057,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
+              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
               data-sizes="auto"
               alt="图算法与最短路径详解"
               class="lazyload"
@@ -360,7 +1069,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">图算法与最短路径详解</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
+              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
               data-sizes="auto"
               alt="排序算法详解"
               class="lazyload"
@@ -392,10 +1101,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -445,7 +1154,57 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#二叉树基础概念">二叉树基础概念</a>
+      <ul>
+        <li><a href="#树的定义">树的定义</a></li>
+        <li><a href="#二叉树类型">二叉树类型</a></li>
+        <li><a href="#节点结构">节点结构</a></li>
+      </ul>
+    </li>
+    <li><a href="#二叉树遍历">二叉树遍历</a>
+      <ul>
+        <li><a href="#遍历方式对比">遍历方式对比</a></li>
+        <li><a href="#前序遍历">前序遍历</a></li>
+        <li><a href="#中序遍历">中序遍历</a></li>
+        <li><a href="#后序遍历">后序遍历</a></li>
+        <li><a href="#层序遍历">层序遍历</a></li>
+      </ul>
+    </li>
+    <li><a href="#二叉搜索树bst">二叉搜索树（BST）</a>
+      <ul>
+        <li><a href="#bst-特性">BST 特性</a></li>
+        <li><a href="#查找操作">查找操作</a></li>
+        <li><a href="#插入操作">插入操作</a></li>
+        <li><a href="#删除操作">删除操作</a></li>
+        <li><a href="#bst-验证">BST 验证</a></li>
+      </ul>
+    </li>
+    <li><a href="#avl-树">AVL 树</a>
+      <ul>
+        <li><a href="#avl-树特性">AVL 树特性</a></li>
+        <li><a href="#四种旋转操作">四种旋转操作</a></li>
+        <li><a href="#平衡因子计算">平衡因子计算</a></li>
+        <li><a href="#avl-插入">AVL 插入</a></li>
+      </ul>
+    </li>
+    <li><a href="#红黑树">红黑树</a>
+      <ul>
+        <li><a href="#红黑树特性">红黑树特性</a></li>
+        <li><a href="#avl-树-vs-红黑树">AVL 树 vs 红黑树</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -576,6 +1335,105 @@
           description: "前序\/中序\/后序遍历、层序遍历、BST、AVL树、红黑树原理与实现",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

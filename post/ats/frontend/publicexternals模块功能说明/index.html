@@ -190,7 +190,92 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-模块概述">1. 模块概述</a></li>
+    <li><a href="#2-主要功能">2. 主要功能</a>
+      <ul>
+        <li><a href="#21-协议实现">2.1 协议实现</a></li>
+        <li><a href="#22-插件公共库">2.2 插件公共库</a></li>
+        <li><a href="#23-网络通信">2.3 网络通信</a></li>
+        <li><a href="#24-配置管理">2.4 配置管理</a></li>
+        <li><a href="#25-日志服务">2.5 日志服务</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-核心子模块">3. 核心子模块</a>
+      <ul>
+        <li><a href="#31-baseprotocol">3.1 BaseProtocol</a></li>
+        <li><a href="#32-ctrlcmdprotocol">3.2 CtrlCmdProtocol</a></li>
+        <li><a href="#33-dagprotocol">3.3 DagProtocol</a></li>
+        <li><a href="#34-diagramprotocol">3.4 DiagramProtocol</a></li>
+        <li><a href="#35-dispatchprotocol">3.5 DispatchProtocol</a></li>
+        <li><a href="#36-esl">3.6 ESL</a></li>
+        <li><a href="#37-hmitransprotocol">3.7 HmiTransProtocol</a></li>
+        <li><a href="#38-hmiviewplug">3.8 HmiViewPlug</a></li>
+        <li><a href="#39-indicationprotocol">3.9 IndicationProtocol</a></li>
+        <li><a href="#310-interfaceprotocol">3.10 InterfaceProtocol</a></li>
+        <li><a href="#311-netcomm">3.11 NetComm</a></li>
+        <li><a href="#312-parammtnprotocol">3.12 ParamMtnProtocol</a></li>
+        <li><a href="#313-plugincommon">3.13 PlugInCommon</a></li>
+        <li><a href="#314-publicconfig">3.14 PublicConfig</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-技术实现">4. 技术实现</a>
+      <ul>
+        <li><a href="#41-模块化设计">4.1 模块化设计</a></li>
+        <li><a href="#42-面向对象">4.2 面向对象</a></li>
+        <li><a href="#43-跨平台支持">4.3 跨平台支持</a></li>
+        <li><a href="#44-插件架构">4.4 插件架构</a></li>
+        <li><a href="#45-网络通信">4.5 网络通信</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-与其他模块的关系">5. 与其他模块的关系</a>
+      <ul>
+        <li><a href="#51-依赖关系">5.1 依赖关系</a></li>
+        <li><a href="#52-调用关系">5.2 调用关系</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-关键文件说明">6. 关键文件说明</a>
+      <ul>
+        <li><a href="#61-plugincommon">6.1 PlugInCommon</a></li>
+        <li><a href="#62-netcomm">6.2 NetComm</a></li>
+        <li><a href="#63-esl">6.3 ESL</a></li>
+        <li><a href="#64-baseprotocol">6.4 BaseProtocol</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-工作流程">7. 工作流程</a>
+      <ul>
+        <li><a href="#71-插件加载流程">7.1 插件加载流程</a></li>
+        <li><a href="#72-网络通信流程">7.2 网络通信流程</a></li>
+        <li><a href="#73-日志记录流程">7.3 日志记录流程</a></li>
+      </ul>
+    </li>
+    <li><a href="#8-技术特点">8. 技术特点</a></li>
+    <li><a href="#9-使用说明">9. 使用说明</a>
+      <ul>
+        <li><a href="#91-模块引用">9.1 模块引用</a></li>
+        <li><a href="#92-配置文件">9.2 配置文件</a></li>
+        <li><a href="#93-日志输出">9.3 日志输出</a></li>
+      </ul>
+    </li>
+    <li><a href="#10-维护与扩展">10. 维护与扩展</a>
+      <ul>
+        <li><a href="#101-功能扩展">10.1 功能扩展</a></li>
+        <li><a href="#102-性能优化">10.2 性能优化</a></li>
+        <li><a href="#103-调试与测试">10.3 调试与测试</a></li>
+      </ul>
+    </li>
+    <li><a href="#11-子模块详细说明">11. 子模块详细说明</a>
+      <ul>
+        <li><a href="#111-plugincommon">11.1 PlugInCommon</a></li>
+        <li><a href="#112-netcomm">11.2 NetComm</a></li>
+        <li><a href="#113-esl">11.3 ESL</a></li>
+        <li><a href="#114-baseprotocol">11.4 BaseProtocol</a></li>
+        <li><a href="#115-publicconfig">11.5 PublicConfig</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +356,400 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h1 id="publicexternals-模块功能说明">
+<a class="header-anchor" href="#publicexternals-%e6%a8%a1%e5%9d%97%e5%8a%9f%e8%83%bd%e8%af%b4%e6%98%8e"></a>
+PublicExternals 模块功能说明
+</h1><h2 id="1-模块概述">
+<a class="header-anchor" href="#1-%e6%a8%a1%e5%9d%97%e6%a6%82%e8%bf%b0"></a>
+1. 模块概述
+</h2><p>PublicExternals是系统的公共外部库模块，包含多个子模块，主要负责实现各种协议、插件公共库、网络通信库等核心功能。该模块为系统的其他模块提供基础支持，是系统的底层核心组件集合。</p>
+<h2 id="2-主要功能">
+<a class="header-anchor" href="#2-%e4%b8%bb%e8%a6%81%e5%8a%9f%e8%83%bd"></a>
+2. 主要功能
+</h2><h3 id="21-协议实现">
+<a class="header-anchor" href="#21-%e5%8d%8f%e8%ae%ae%e5%ae%9e%e7%8e%b0"></a>
+2.1 协议实现
+</h3><ul>
+<li>实现多种通信协议</li>
+<li>提供协议的编码和解码功能</li>
+<li>支持协议的注册和管理</li>
+</ul>
+<h3 id="22-插件公共库">
+<a class="header-anchor" href="#22-%e6%8f%92%e4%bb%b6%e5%85%ac%e5%85%b1%e5%ba%93"></a>
+2.2 插件公共库
+</h3><ul>
+<li>提供插件框架的公共接口</li>
+<li>实现插件管理器</li>
+<li>支持插件的加载、初始化和卸载</li>
+</ul>
+<h3 id="23-网络通信">
+<a class="header-anchor" href="#23-%e7%bd%91%e7%bb%9c%e9%80%9a%e4%bf%a1"></a>
+2.3 网络通信
+</h3><ul>
+<li>实现网络通信的基础功能</li>
+<li>支持客户端和服务器模式</li>
+<li>提供可靠的网络数据传输</li>
+</ul>
+<h3 id="24-配置管理">
+<a class="header-anchor" href="#24-%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86"></a>
+2.4 配置管理
+</h3><ul>
+<li>实现系统配置的加载和管理</li>
+<li>支持多种配置文件格式</li>
+<li>提供配置的查询和更新功能</li>
+</ul>
+<h3 id="25-日志服务">
+<a class="header-anchor" href="#25-%e6%97%a5%e5%bf%97%e6%9c%8d%e5%8a%a1"></a>
+2.5 日志服务
+</h3><ul>
+<li>实现日志记录功能</li>
+<li>支持不同级别的日志</li>
+<li>提供日志文件的管理</li>
+</ul>
+<h2 id="3-核心子模块">
+<a class="header-anchor" href="#3-%e6%a0%b8%e5%bf%83%e5%ad%90%e6%a8%a1%e5%9d%97"></a>
+3. 核心子模块
+</h2><h3 id="31-baseprotocol">
+<a class="header-anchor" href="#31-baseprotocol"></a>
+3.1 BaseProtocol
+</h3><ul>
+<li>基础协议库，实现协议的基础功能</li>
+<li>包含协议头、时间处理、引用计数等功能</li>
+<li>提供列车基础信息的实现</li>
+</ul>
+<h3 id="32-ctrlcmdprotocol">
+<a class="header-anchor" href="#32-ctrlcmdprotocol"></a>
+3.2 CtrlCmdProtocol
+</h3><ul>
+<li>控制命令协议库</li>
+<li>实现控制命令的编码和解码</li>
+<li>包含Vobc命令协议、Zc命令协议等</li>
+</ul>
+<h3 id="33-dagprotocol">
+<a class="header-anchor" href="#33-dagprotocol"></a>
+3.3 DagProtocol
+</h3><ul>
+<li>DAG（数据采集网关）协议库</li>
+<li>实现DAG相关的协议功能</li>
+</ul>
+<h3 id="34-diagramprotocol">
+<a class="header-anchor" href="#34-diagramprotocol"></a>
+3.4 DiagramProtocol
+</h3><ul>
+<li>图形协议库</li>
+<li>实现图形相关的协议功能</li>
+<li>包含地图协议、通知协议等</li>
+</ul>
+<h3 id="35-dispatchprotocol">
+<a class="header-anchor" href="#35-dispatchprotocol"></a>
+3.5 DispatchProtocol
+</h3><ul>
+<li>调度协议库</li>
+<li>实现调度相关的协议功能</li>
+<li>包含IOC计划协议等</li>
+</ul>
+<h3 id="36-esl">
+<a class="header-anchor" href="#36-esl"></a>
+3.6 ESL
+</h3><ul>
+<li>日志服务库</li>
+<li>实现日志记录和管理功能</li>
+<li>支持不同级别的日志输出</li>
+</ul>
+<h3 id="37-hmitransprotocol">
+<a class="header-anchor" href="#37-hmitransprotocol"></a>
+3.7 HmiTransProtocol
+</h3><ul>
+<li>HMI传输协议库</li>
+<li>实现HMI相关的协议功能</li>
+</ul>
+<h3 id="38-hmiviewplug">
+<a class="header-anchor" href="#38-hmiviewplug"></a>
+3.8 HmiViewPlug
+</h3><ul>
+<li>HMI视图插件</li>
+<li>实现HMI视图的显示和管理</li>
+<li>包含图形元素、场景管理等功能</li>
+</ul>
+<h3 id="39-indicationprotocol">
+<a class="header-anchor" href="#39-indicationprotocol"></a>
+3.9 IndicationProtocol
+</h3><ul>
+<li>指示协议库</li>
+<li>实现指示相关的协议功能</li>
+</ul>
+<h3 id="310-interfaceprotocol">
+<a class="header-anchor" href="#310-interfaceprotocol"></a>
+3.10 InterfaceProtocol
+</h3><ul>
+<li>接口协议库</li>
+<li>实现不同系统之间的接口协议</li>
+<li>包含ISCS信息协议等</li>
+</ul>
+<h3 id="311-netcomm">
+<a class="header-anchor" href="#311-netcomm"></a>
+3.11 NetComm
+</h3><ul>
+<li>网络通信库</li>
+<li>实现网络通信的基础功能</li>
+<li>支持客户端和服务器模式</li>
+<li>包含TCP/IP通信、消息队列等功能</li>
+</ul>
+<h3 id="312-parammtnprotocol">
+<a class="header-anchor" href="#312-parammtnprotocol"></a>
+3.12 ParamMtnProtocol
+</h3><ul>
+<li>参数维护协议库</li>
+<li>实现参数维护相关的协议功能</li>
+</ul>
+<h3 id="313-plugincommon">
+<a class="header-anchor" href="#313-plugincommon"></a>
+3.13 PlugInCommon
+</h3><ul>
+<li>插件公共库</li>
+<li>实现插件框架的公共接口</li>
+<li>包含插件管理器、插件接口定义等</li>
+</ul>
+<h3 id="314-publicconfig">
+<a class="header-anchor" href="#314-publicconfig"></a>
+3.14 PublicConfig
+</h3><ul>
+<li>公共配置库</li>
+<li>实现系统配置的加载和管理</li>
+<li>包含线路配置、站点配置、设备配置等</li>
+</ul>
+<h2 id="4-技术实现">
+<a class="header-anchor" href="#4-%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0"></a>
+4. 技术实现
+</h2><h3 id="41-模块化设计">
+<a class="header-anchor" href="#41-%e6%a8%a1%e5%9d%97%e5%8c%96%e8%ae%be%e8%ae%a1"></a>
+4.1 模块化设计
+</h3><ul>
+<li>采用模块化设计，每个子模块负责特定功能</li>
+<li>模块之间通过接口进行通信</li>
+<li>便于扩展和维护</li>
+</ul>
+<h3 id="42-面向对象">
+<a class="header-anchor" href="#42-%e9%9d%a2%e5%90%91%e5%af%b9%e8%b1%a1"></a>
+4.2 面向对象
+</h3><ul>
+<li>使用C++面向对象设计</li>
+<li>实现了丰富的类和接口</li>
+<li>支持继承、多态等面向对象特性</li>
+</ul>
+<h3 id="43-跨平台支持">
+<a class="header-anchor" href="#43-%e8%b7%a8%e5%b9%b3%e5%8f%b0%e6%94%af%e6%8c%81"></a>
+4.3 跨平台支持
+</h3><ul>
+<li>基于Qt框架实现</li>
+<li>支持Windows、Linux等多个平台</li>
+<li>使用CMake或qmake进行构建</li>
+</ul>
+<h3 id="44-插件架构">
+<a class="header-anchor" href="#44-%e6%8f%92%e4%bb%b6%e6%9e%b6%e6%9e%84"></a>
+4.4 插件架构
+</h3><ul>
+<li>实现了灵活的插件框架</li>
+<li>支持插件的动态加载和卸载</li>
+<li>提供插件的管理和生命周期管理</li>
+</ul>
+<h3 id="45-网络通信">
+<a class="header-anchor" href="#45-%e7%bd%91%e7%bb%9c%e9%80%9a%e4%bf%a1"></a>
+4.5 网络通信
+</h3><ul>
+<li>实现了可靠的网络通信</li>
+<li>支持TCP/IP协议</li>
+<li>实现了客户端和服务器模式</li>
+</ul>
+<h2 id="5-与其他模块的关系">
+<a class="header-anchor" href="#5-%e4%b8%8e%e5%85%b6%e4%bb%96%e6%a8%a1%e5%9d%97%e7%9a%84%e5%85%b3%e7%b3%bb"></a>
+5. 与其他模块的关系
+</h2><h3 id="51-依赖关系">
+<a class="header-anchor" href="#51-%e4%be%9d%e8%b5%96%e5%85%b3%e7%b3%bb"></a>
+5.1 依赖关系
+</h3><ul>
+<li>其他模块依赖PublicExternals提供的基础功能</li>
+<li>插件模块依赖PlugInCommon提供的插件框架</li>
+<li>通信模块依赖NetComm提供的网络通信功能</li>
+</ul>
+<h3 id="52-调用关系">
+<a class="header-anchor" href="#52-%e8%b0%83%e7%94%a8%e5%85%b3%e7%b3%bb"></a>
+5.2 调用关系
+</h3><ul>
+<li>其他模块通过PublicExternals提供的接口访问其功能</li>
+<li>PublicExternals不直接调用其他模块</li>
+</ul>
+<h2 id="6-关键文件说明">
+<a class="header-anchor" href="#6-%e5%85%b3%e9%94%ae%e6%96%87%e4%bb%b6%e8%af%b4%e6%98%8e"></a>
+6. 关键文件说明
+</h2><h3 id="61-plugincommon">
+<a class="header-anchor" href="#61-plugincommon"></a>
+6.1 PlugInCommon
+</h3><ul>
+<li><strong>PlugInManager.h/cpp</strong>：插件管理器，负责插件的加载、初始化和卸载</li>
+<li><strong>PlugInInterfaceDef.h</strong>：插件接口定义，定义插件的标准接口</li>
+<li><strong>QATSMessageObject.h/cpp</strong>：消息对象，实现模块间的消息传递</li>
+</ul>
+<h3 id="62-netcomm">
+<a class="header-anchor" href="#62-netcomm"></a>
+6.2 NetComm
+</h3><ul>
+<li><strong>ClientBase.h/cpp</strong>：客户端基础类，实现客户端通信功能</li>
+<li><strong>ServerBase.h/cpp</strong>：服务器基础类，实现服务器通信功能</li>
+<li><strong>CommInterface.h/cpp</strong>：通信接口，定义通信的标准接口</li>
+</ul>
+<h3 id="63-esl">
+<a class="header-anchor" href="#63-esl"></a>
+6.3 ESL
+</h3><ul>
+<li><strong>ExLogService.h/cpp</strong>：扩展日志服务，实现日志记录功能</li>
+<li><strong>LogFile.h/cpp</strong>：日志文件类，负责日志文件的管理</li>
+</ul>
+<h3 id="64-baseprotocol">
+<a class="header-anchor" href="#64-baseprotocol"></a>
+6.4 BaseProtocol
+</h3><ul>
+<li><strong>BaseProtocol.h</strong>：基础协议定义</li>
+<li><strong>ProtocolHead.cpp/cpp</strong>：协议头处理</li>
+<li><strong>ProtocolTime.cpp/cpp</strong>：协议时间处理</li>
+</ul>
+<h2 id="7-工作流程">
+<a class="header-anchor" href="#7-%e5%b7%a5%e4%bd%9c%e6%b5%81%e7%a8%8b"></a>
+7. 工作流程
+</h2><h3 id="71-插件加载流程">
+<a class="header-anchor" href="#71-%e6%8f%92%e4%bb%b6%e5%8a%a0%e8%bd%bd%e6%b5%81%e7%a8%8b"></a>
+7.1 插件加载流程
+</h3><ol>
+<li>系统启动，初始化插件管理器</li>
+<li>插件管理器加载插件配置文件</li>
+<li>插件管理器加载所有插件</li>
+<li>插件管理器初始化每个插件</li>
+<li>插件向系统注册自己的功能</li>
+</ol>
+<h3 id="72-网络通信流程">
+<a class="header-anchor" href="#72-%e7%bd%91%e7%bb%9c%e9%80%9a%e4%bf%a1%e6%b5%81%e7%a8%8b"></a>
+7.2 网络通信流程
+</h3><ol>
+<li>初始化网络服务</li>
+<li>创建客户端或服务器对象</li>
+<li>建立网络连接</li>
+<li>发送或接收数据</li>
+<li>处理网络事件</li>
+<li>关闭网络连接</li>
+</ol>
+<h3 id="73-日志记录流程">
+<a class="header-anchor" href="#73-%e6%97%a5%e5%bf%97%e8%ae%b0%e5%bd%95%e6%b5%81%e7%a8%8b"></a>
+7.3 日志记录流程
+</h3><ol>
+<li>初始化日志服务</li>
+<li>设置日志级别和输出方式</li>
+<li>记录日志信息</li>
+<li>管理日志文件</li>
+</ol>
+<h2 id="8-技术特点">
+<a class="header-anchor" href="#8-%e6%8a%80%e6%9c%af%e7%89%b9%e7%82%b9"></a>
+8. 技术特点
+</h2><ul>
+<li><strong>模块化设计</strong>：采用模块化设计，便于扩展和维护</li>
+<li><strong>跨平台支持</strong>：支持Windows、Linux等多个平台</li>
+<li><strong>插件架构</strong>：实现了灵活的插件框架</li>
+<li><strong>可靠的网络通信</strong>：提供可靠的网络数据传输</li>
+<li><strong>全面的协议支持</strong>：支持多种通信协议</li>
+<li><strong>完善的日志服务</strong>：提供全面的日志记录功能</li>
+</ul>
+<h2 id="9-使用说明">
+<a class="header-anchor" href="#9-%e4%bd%bf%e7%94%a8%e8%af%b4%e6%98%8e"></a>
+9. 使用说明
+</h2><h3 id="91-模块引用">
+<a class="header-anchor" href="#91-%e6%a8%a1%e5%9d%97%e5%bc%95%e7%94%a8"></a>
+9.1 模块引用
+</h3><ul>
+<li>其他模块通过包含相应的头文件引用PublicExternals的功能</li>
+<li>链接相应的库文件</li>
+</ul>
+<h3 id="92-配置文件">
+<a class="header-anchor" href="#92-%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6"></a>
+9.2 配置文件
+</h3><ul>
+<li>各子模块使用自己的配置文件</li>
+<li>配置文件通常位于系统的配置目录</li>
+</ul>
+<h3 id="93-日志输出">
+<a class="header-anchor" href="#93-%e6%97%a5%e5%bf%97%e8%be%93%e5%87%ba"></a>
+9.3 日志输出
+</h3><ul>
+<li>日志文件通常位于系统的日志目录</li>
+<li>日志级别可通过配置文件调整</li>
+</ul>
+<h2 id="10-维护与扩展">
+<a class="header-anchor" href="#10-%e7%bb%b4%e6%8a%a4%e4%b8%8e%e6%89%a9%e5%b1%95"></a>
+10. 维护与扩展
+</h2><h3 id="101-功能扩展">
+<a class="header-anchor" href="#101-%e5%8a%9f%e8%83%bd%e6%89%a9%e5%b1%95"></a>
+10.1 功能扩展
+</h3><ul>
+<li>可添加新的协议实现</li>
+<li>可扩展网络通信功能</li>
+<li>可添加新的配置管理功能</li>
+</ul>
+<h3 id="102-性能优化">
+<a class="header-anchor" href="#102-%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96"></a>
+10.2 性能优化
+</h3><ul>
+<li>优化网络通信性能</li>
+<li>优化协议处理速度</li>
+<li>优化配置加载效率</li>
+</ul>
+<h3 id="103-调试与测试">
+<a class="header-anchor" href="#103-%e8%b0%83%e8%af%95%e4%b8%8e%e6%b5%8b%e8%af%95"></a>
+10.3 调试与测试
+</h3><ul>
+<li>可通过日志查看系统运行状态</li>
+<li>可使用测试工具验证功能</li>
+</ul>
+<h2 id="11-子模块详细说明">
+<a class="header-anchor" href="#11-%e5%ad%90%e6%a8%a1%e5%9d%97%e8%af%a6%e7%bb%86%e8%af%b4%e6%98%8e"></a>
+11. 子模块详细说明
+</h2><h3 id="111-plugincommon">
+<a class="header-anchor" href="#111-plugincommon"></a>
+11.1 PlugInCommon
+</h3><ul>
+<li><strong>PlugInManager</strong>：插件管理器，负责插件的加载、初始化和卸载</li>
+<li><strong>PlugInInterfaceDef</strong>：定义插件的标准接口</li>
+<li><strong>QATSMessageObject</strong>：实现模块间的消息传递</li>
+</ul>
+<h3 id="112-netcomm">
+<a class="header-anchor" href="#112-netcomm"></a>
+11.2 NetComm
+</h3><ul>
+<li><strong>ClientBase</strong>：客户端通信基础类</li>
+<li><strong>ServerBase</strong>：服务器通信基础类</li>
+<li><strong>CommInterface</strong>：通信接口定义</li>
+</ul>
+<h3 id="113-esl">
+<a class="header-anchor" href="#113-esl"></a>
+11.3 ESL
+</h3><ul>
+<li><strong>ExLogService</strong>：扩展日志服务</li>
+<li><strong>LogFile</strong>：日志文件管理</li>
+</ul>
+<h3 id="114-baseprotocol">
+<a class="header-anchor" href="#114-baseprotocol"></a>
+11.4 BaseProtocol
+</h3><ul>
+<li><strong>ProtocolHead</strong>：协议头处理</li>
+<li><strong>ProtocolTime</strong>：协议时间处理</li>
+<li><strong>TrainInfoBase</strong>：列车基础信息</li>
+</ul>
+<h3 id="115-publicconfig">
+<a class="header-anchor" href="#115-publicconfig"></a>
+11.5 PublicConfig
+</h3><ul>
+<li><strong>LayoutConf</strong>：布局配置管理</li>
+<li><strong>StationsConf</strong>：站点配置管理</li>
+<li><strong>LinesConf</strong>：线路配置管理</li>
+</ul>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/ats/frontend/publicexternals%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/&amp;appkey=&amp;title=PublicExternals%20%e5%85%ac%e5%85%b1%e5%a4%96%e9%83%a8?&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="PublicExternals 公共外部?">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/ats/frontend/publicexternals%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/&amp;title=PublicExternals%20%e5%85%ac%e5%85%b1%e5%a4%96%e9%83%a8?&amp;desc=%e7%b3%bb%e7%bb%9f%e5%ba%95%e5%b1%82%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6%e9%9b%86%e5%90%88%ef%bc%8c%e6%8f%90%e4%be%9b%e5%8d%8f%e8%ae%ae%e5%ae%9e%e7%8e%b0%e3%80%81%e6%8f%92%e4%bb%b6%e5%85%ac%e5%85%b1%e5%ba%93%e5%92%8c%e7%bd%91%e7%bb%9c%e9%80%9a%e4%bf%a1%e5%8a%9f%e8%83%bd&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="PublicExternals 公共外部?">
@@ -348,7 +826,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
+              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
               data-sizes="auto"
               alt="CmCtrlCmdProcPlug 控制命令处理插件"
               class="lazyload"
@@ -360,7 +838,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">CmCtrlCmdProcPlug 控制命令处理插件</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
+              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
               data-sizes="auto"
               alt="ControlMonitor 主程序模"
               class="lazyload"
@@ -392,10 +870,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -445,7 +923,92 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-模块概述">1. 模块概述</a></li>
+    <li><a href="#2-主要功能">2. 主要功能</a>
+      <ul>
+        <li><a href="#21-协议实现">2.1 协议实现</a></li>
+        <li><a href="#22-插件公共库">2.2 插件公共库</a></li>
+        <li><a href="#23-网络通信">2.3 网络通信</a></li>
+        <li><a href="#24-配置管理">2.4 配置管理</a></li>
+        <li><a href="#25-日志服务">2.5 日志服务</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-核心子模块">3. 核心子模块</a>
+      <ul>
+        <li><a href="#31-baseprotocol">3.1 BaseProtocol</a></li>
+        <li><a href="#32-ctrlcmdprotocol">3.2 CtrlCmdProtocol</a></li>
+        <li><a href="#33-dagprotocol">3.3 DagProtocol</a></li>
+        <li><a href="#34-diagramprotocol">3.4 DiagramProtocol</a></li>
+        <li><a href="#35-dispatchprotocol">3.5 DispatchProtocol</a></li>
+        <li><a href="#36-esl">3.6 ESL</a></li>
+        <li><a href="#37-hmitransprotocol">3.7 HmiTransProtocol</a></li>
+        <li><a href="#38-hmiviewplug">3.8 HmiViewPlug</a></li>
+        <li><a href="#39-indicationprotocol">3.9 IndicationProtocol</a></li>
+        <li><a href="#310-interfaceprotocol">3.10 InterfaceProtocol</a></li>
+        <li><a href="#311-netcomm">3.11 NetComm</a></li>
+        <li><a href="#312-parammtnprotocol">3.12 ParamMtnProtocol</a></li>
+        <li><a href="#313-plugincommon">3.13 PlugInCommon</a></li>
+        <li><a href="#314-publicconfig">3.14 PublicConfig</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-技术实现">4. 技术实现</a>
+      <ul>
+        <li><a href="#41-模块化设计">4.1 模块化设计</a></li>
+        <li><a href="#42-面向对象">4.2 面向对象</a></li>
+        <li><a href="#43-跨平台支持">4.3 跨平台支持</a></li>
+        <li><a href="#44-插件架构">4.4 插件架构</a></li>
+        <li><a href="#45-网络通信">4.5 网络通信</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-与其他模块的关系">5. 与其他模块的关系</a>
+      <ul>
+        <li><a href="#51-依赖关系">5.1 依赖关系</a></li>
+        <li><a href="#52-调用关系">5.2 调用关系</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-关键文件说明">6. 关键文件说明</a>
+      <ul>
+        <li><a href="#61-plugincommon">6.1 PlugInCommon</a></li>
+        <li><a href="#62-netcomm">6.2 NetComm</a></li>
+        <li><a href="#63-esl">6.3 ESL</a></li>
+        <li><a href="#64-baseprotocol">6.4 BaseProtocol</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-工作流程">7. 工作流程</a>
+      <ul>
+        <li><a href="#71-插件加载流程">7.1 插件加载流程</a></li>
+        <li><a href="#72-网络通信流程">7.2 网络通信流程</a></li>
+        <li><a href="#73-日志记录流程">7.3 日志记录流程</a></li>
+      </ul>
+    </li>
+    <li><a href="#8-技术特点">8. 技术特点</a></li>
+    <li><a href="#9-使用说明">9. 使用说明</a>
+      <ul>
+        <li><a href="#91-模块引用">9.1 模块引用</a></li>
+        <li><a href="#92-配置文件">9.2 配置文件</a></li>
+        <li><a href="#93-日志输出">9.3 日志输出</a></li>
+      </ul>
+    </li>
+    <li><a href="#10-维护与扩展">10. 维护与扩展</a>
+      <ul>
+        <li><a href="#101-功能扩展">10.1 功能扩展</a></li>
+        <li><a href="#102-性能优化">10.2 性能优化</a></li>
+        <li><a href="#103-调试与测试">10.3 调试与测试</a></li>
+      </ul>
+    </li>
+    <li><a href="#11-子模块详细说明">11. 子模块详细说明</a>
+      <ul>
+        <li><a href="#111-plugincommon">11.1 PlugInCommon</a></li>
+        <li><a href="#112-netcomm">11.2 NetComm</a></li>
+        <li><a href="#113-esl">11.3 ESL</a></li>
+        <li><a href="#114-baseprotocol">11.4 BaseProtocol</a></li>
+        <li><a href="#115-publicconfig">11.5 PublicConfig</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img

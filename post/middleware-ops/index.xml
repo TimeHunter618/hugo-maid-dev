@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>Kafka高吞吐消息流处理</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Kafka 是 LinkedIn 开源的分布式流处理平台，最初设计用于日志收集，如今已成为大数据领域最核心的消息系统。与 RabbitMQ 的&quot;消息投递&quot;模型不同，Kafka 采用&quot;日志追加&quot;模型——消息不是消费后删除，而是按序持久化在分区日志中，支持多次回放。</p>
         
         <hr><p>本文2026-02-21首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-02-21</p>]]>
       </description>
@@ -50,7 +53,10 @@
       <description>
         <![CDATA[<h1>Nginx反向代理与负载均</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Nginx 是目前最流行的 Web 服务器和反向代理服务器，以高并发、低内存消耗和灵活的配置系统著称。无论是静态资源服务、API 网关、负载均衡还是 SSL 终端，Nginx 都能胜任。本文将系统讲解 Nginx 的核心配置、负载均衡策略、限流机制和 HTTPS 配置。</p>
         
         <hr><p>本文2025-04-27首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-04-27</p>]]>
       </description>
@@ -70,7 +76,10 @@
       <description>
         <![CDATA[<h1>Elasticsearch全文搜索引擎</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Elasticsearch（简称 ES）是基于 Apache Lucene 构建的分布式搜索引擎，能够近实时地对海量数据进行全文检索、结构化搜索和分析。它不仅是搜索引擎，更是一个分布式的数据分析引擎，被广泛应用于电商商品搜索、日志分析（ELK 体系）、监控指标存储等场景。</p>
         
         <hr><p>本文2024-12-06首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-12-06</p>]]>
       </description>
@@ -90,7 +99,10 @@
       <description>
         <![CDATA[<h1>JVM调优与GC策略</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>JVM 调优是后端工程师的核心技能之一。一个配置不当的 JVM 可能导致频繁的 Full GC、内存泄漏、应用响应缓慢甚至 OOM（OutOfMemoryError）。理解 JVM 的内存模型、垃圾收集算法以及调优策略，是保障线上系统稳定性的关键。</p>
         
         <hr><p>本文2024-09-28首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-09-28</p>]]>
       </description>
@@ -110,7 +122,10 @@
       <description>
         <![CDATA[<h1>RabbitMQ消息队列详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在现代分布式系统中，消息队列是解耦应用、削峰填谷、异步处理的核心基础设施。RabbitMQ 作为最流行的开源消息代理之一，凭借其可靠性、灵活的路由模型和丰富的客户端生态，被广泛应用于订单处理、任务分发、日志收集等场景。</p>
         
         <hr><p>本文2024-05-29首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-05-29</p>]]>
       </description>
@@ -130,7 +145,10 @@
       <description>
         <![CDATA[<h1>Redis Stream消息队列与发布订阅实</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Redis 从 5.0 版本开始引入了 Stream 数据结构，它是一种全新的消息队列实现，弥补了 List 作为消息队列的诸多不足。Stream 支持多消费者组、消息确认、消息持久化、消息回溯等企业级特性，成为 Redis 在消息队列领域的旗舰方案。</p>
         
         <hr><p>本文2023-12-16首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-12-16</p>]]>
       </description>
@@ -150,7 +168,10 @@
       <description>
         <![CDATA[<h1>ZooKeeper分布式协</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在分布式系统中，协调（Coordination）是一个基础而关键的问题——如何选主、如何同步配置、如何实现分布式锁、如何感知服务上下线？ZooKeeper 最初由 Yahoo 开发，用于解决 Hadoop 生态的协调问题，如今已成为最经典的分布式协调框架。Kafka、HBase、Dubbo 等知名系统都依赖 ZooKeeper 作为协调中心。</p>
         
         <hr><p>本文2023-01-20首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-01-20</p>]]>
       </description>
@@ -170,7 +191,10 @@
       <description>
         <![CDATA[<h1>Redis核心原理与实</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Redis 是目前最流行的内存数据存储系统，它不仅是缓存，更是支撑高并发架构的核心中间件。从简单的 key-value 缓存到分布式锁、限流器、排行榜、消息队列，Redis 的数据结构和单线程模型赋予了它极强的多面性。</p>
         
         <hr><p>本文2021-06-07首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-06-07</p>]]>
       </description>
@@ -190,7 +214,10 @@
       <description>
         <![CDATA[<h1>Kafka Streams流处理实</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Kafka Streams 是 Kafka 提供的轻量级流处理库，它允许你在应用中直接处理 Kafka 消息，无需额外部署大型流处理框架（如 Flink、Spark Streaming）。Kafka Streams 提供了两种 API：DSL API（声明式，适合大多数场景）和 Processor API（命令式，适合复杂场景）。</p>
         
         <hr><p>本文2021-05-12首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-05-12</p>]]>
       </description>
@@ -210,7 +237,10 @@
       <description>
         <![CDATA[<h1>Nginx Lua脚本扩展与API网关实践</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Nginx 的原生配置虽然强大，但面对复杂的业务逻辑（如动态路由、请求鉴权、限流熔断、灰度发布）时显得力不从心。OpenResty 的出现改变了这一切——它将 Nginx 与 LuaJIT 深度集成，让我们可以用 Lua 脚本编写高性能的 HTTP 处理逻辑。</p>
         
         <hr><p>本文2021-03-13首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-03-13</p>]]>
       </description>

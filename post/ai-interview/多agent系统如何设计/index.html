@@ -200,6 +200,7 @@
         <li><a href="#3-冲突解决">3. 冲突解决</a></li>
       </ul>
     </li>
+    <li><a href="#面试回答框架">面试回答框架</a></li>
     <li><a href="#总结">总结</a></li>
   </ul>
 </nav>
@@ -289,13 +290,21 @@
 </h2><blockquote>
 <p><strong>面试场景</strong>：设计一个多Agent协作系统，需要考虑哪些关键问题？</p>
 </blockquote>
+<p>多Agent系统是指由多个自主Agent组成的系统，它们通过协作完成复杂任务。常见的应用场景包括：智能客服、代码生成、数据分析等。</p>
 <h2 id="协作模式">
 <a class="header-anchor" href="#%e5%8d%8f%e4%bd%9c%e6%a8%a1%e5%bc%8f"></a>
 协作模式
 </h2><h3 id="1-任务分配">
 <a class="header-anchor" href="#1-%e4%bb%bb%e5%8a%a1%e5%88%86%e9%85%8d"></a>
 1. 任务分配
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TaskAllocator</span><span class="w"> </span><span class="p">{</span><span class="w">
+</h3><p><strong>面试思路</strong>：如何将复杂任务合理分配给各个Agent？需要考虑Agent的能力、当前负载和任务优先级。</p>
+<p><strong>分配策略</strong>：</p>
+<ul>
+<li><strong>能力匹配</strong>：根据Agent的专长分配任务</li>
+<li><strong>负载均衡</strong>：避免某个Agent过载</li>
+<li><strong>优先级调度</strong>：高优先级任务优先分配</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TaskAllocator</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Agent</span><span class="o">&gt;</span><span class="w"> </span><span class="n">agents</span><span class="p">;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Agent</span><span class="w"> </span><span class="nf">allocateTask</span><span class="p">(</span><span class="n">Task</span><span class="w"> </span><span class="n">task</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
@@ -304,10 +313,19 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">orElse</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><h3 id="2-通信协议">
+</span></span></span></code></pre></div><p><strong>关键点</strong>：任务分配需要动态调整，根据Agent的实时状态进行调度。</p>
+<h3 id="2-通信协议">
 <a class="header-anchor" href="#2-%e9%80%9a%e4%bf%a1%e5%8d%8f%e8%ae%ae"></a>
 2. 通信协议
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">Message</span><span class="w"> </span><span class="p">{</span><span class="w">
+</h3><p><strong>面试思路</strong>：Agent之间如何高效通信？需要定义统一的消息格式和通信协议。</p>
+<p><strong>消息类型</strong>：</p>
+<ul>
+<li><strong>任务分配</strong>：管理者向执行者分配任务</li>
+<li><strong>任务完成</strong>：执行者向管理者报告任务完成</li>
+<li><strong>状态更新</strong>：Agent向系统报告自身状态</li>
+<li><strong>错误报告</strong>：Agent报告异常情况</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">Message</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="nf">getSender</span><span class="p">();</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="nf">getReceiver</span><span class="p">();</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">MessageType</span><span class="w"> </span><span class="nf">getType</span><span class="p">();</span><span class="w">
@@ -320,10 +338,23 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">STATUS_UPDATE</span><span class="p">,</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">ERROR_REPORT</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><h3 id="3-冲突解决">
+</span></span></span></code></pre></div><p><strong>通信模式</strong>：</p>
+<ul>
+<li><strong>同步通信</strong>：请求-响应模式</li>
+<li><strong>异步通信</strong>：发布-订阅模式</li>
+<li><strong>点对点通信</strong>：直接消息传递</li>
+</ul>
+<h3 id="3-冲突解决">
 <a class="header-anchor" href="#3-%e5%86%b2%e7%aa%81%e8%a7%a3%e5%86%b3"></a>
 3. 冲突解决
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ConflictResolver</span><span class="w"> </span><span class="p">{</span><span class="w">
+</h3><p><strong>面试思路</strong>：当多个Agent竞争同一资源或目标冲突时，如何解决？</p>
+<p><strong>冲突类型</strong>：</p>
+<ul>
+<li><strong>资源冲突</strong>：多个Agent需要同一资源</li>
+<li><strong>目标冲突</strong>：Agent的目标相互矛盾</li>
+<li><strong>通信冲突</strong>：消息传递顺序导致不一致</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ConflictResolver</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Resolution</span><span class="w"> </span><span class="nf">resolve</span><span class="p">(</span><span class="n">Conflict</span><span class="w"> </span><span class="n">conflict</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">conflict</span><span class="p">.</span><span class="na">getType</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">case</span><span class="w"> </span><span class="n">RESOURCE_CONFLICT</span><span class="p">:</span><span class="w">
@@ -335,10 +366,28 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><h2 id="总结">
+</span></span></span></code></pre></div><p><strong>解决策略</strong>：</p>
+<ul>
+<li><strong>优先级策略</strong>：根据优先级决定资源分配</li>
+<li><strong>协商策略</strong>：Agent之间协商解决</li>
+<li><strong>仲裁策略</strong>：由中央管理者决定</li>
+</ul>
+<h2 id="面试回答框架">
+<a class="header-anchor" href="#%e9%9d%a2%e8%af%95%e5%9b%9e%e7%ad%94%e6%a1%86%e6%9e%b6"></a>
+面试回答框架
+</h2><p>当面试官问到这个问题时，可以按照以下框架回答：</p>
+<ol>
+<li><strong>系统架构</strong>：分层架构、角色分工</li>
+<li><strong>任务分配</strong>：能力匹配、负载均衡、优先级</li>
+<li><strong>通信机制</strong>：消息格式、通信模式、协议设计</li>
+<li><strong>冲突解决</strong>：冲突类型识别、解决策略</li>
+<li><strong>监控与协调</strong>：全局状态管理、异常处理</li>
+<li><strong>扩展性</strong>：如何添加新Agent、如何扩展系统</li>
+</ol>
+<h2 id="总结">
 <a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
 总结
-</h2><p>多Agent系统设计需要考虑任务分配、通信机制和冲突解决等关键问题。</p>
+</h2><p>多Agent系统设计需要考虑任务分配、通信机制和冲突解决等关键问题。一个良好设计的系统应该具备灵活性、可扩展性和容错能力，能够适应不同的业务场景和需求变化。</p>
 </div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/ai-interview/%E5%A4%9Aagent%E7%B3%BB%E7%BB%9F%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1/&amp;appkey=&amp;title=%e5%a4%9aAgent%e7%b3%bb%e7%bb%9f%e5%a6%82%e4%bd%95%e8%ae%be%e8%ae%a1&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="多Agent系统如何设计">
       <div class="share-icon icon icon-weibo"></div>
@@ -416,7 +465,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
+              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
               data-sizes="auto"
               alt="如何做模型微调与数据集准备"
               class="lazyload"
@@ -428,7 +477,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">如何做模型微调与数据集准备</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
               data-sizes="auto"
               alt="SpringAI如何接入多种模型"
               class="lazyload"
@@ -460,10 +509,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -523,6 +572,7 @@
         <li><a href="#3-冲突解决">3. 冲突解决</a></li>
       </ul>
     </li>
+    <li><a href="#面试回答框架">面试回答框架</a></li>
     <li><a href="#总结">总结</a></li>
   </ul>
 </nav>

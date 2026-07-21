@@ -30,7 +30,13 @@
       <description>
         <![CDATA[<h1>PublicExternals 公共外部?</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h1 id="publicexternals-模块功能说明">
+<a class="header-anchor" href="#publicexternals-%e6%a8%a1%e5%9d%97%e5%8a%9f%e8%83%bd%e8%af%b4%e6%98%8e"></a>
+PublicExternals 模块功能说明
+</h1><h2 id="1-模块概述">
+<a class="header-anchor" href="#1-%e6%a8%a1%e5%9d%97%e6%a6%82%e8%bf%b0"></a>
+1. 模块概述
+</h2><p>PublicExternals是系统的公共外部库模块，包含多个子模块，主要负责实现各种协议、插件公共库、网络通信库等核心功能。该模块为系统的其他模块提供基础支持，是系统的底层核心组件集合。</p>
         
         <hr><p>本文2023-09-23首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-09-23</p>]]>
       </description>

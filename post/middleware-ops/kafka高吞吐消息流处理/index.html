@@ -190,7 +190,65 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#核心架构">核心架构</a>
+      <ul>
+        <li><a href="#整体架构">整体架构</a></li>
+        <li><a href="#核心概念">核心概念</a></li>
+      </ul>
+    </li>
+    <li><a href="#分区机制">分区机制</a>
+      <ul>
+        <li><a href="#为什么需要分区">为什么需要分区</a></li>
+        <li><a href="#分区策略">分区策略</a></li>
+        <li><a href="#分区数量规划">分区数量规划</a></li>
+      </ul>
+    </li>
+    <li><a href="#消费者组">消费者组</a>
+      <ul>
+        <li><a href="#消费者组模型">消费者组模型</a></li>
+        <li><a href="#rebalance-机制">Rebalance 机制</a></li>
+        <li><a href="#rebalance-问题与优化">Rebalance 问题与优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#消息有序性">消息有序性</a>
+      <ul>
+        <li><a href="#分区内有序">分区内有序</a></li>
+        <li><a href="#保证全局有序的方案">保证全局有序的方案</a></li>
+      </ul>
+    </li>
+    <li><a href="#exactly-once-语义">Exactly-Once 语义</a>
+      <ul>
+        <li><a href="#三种消息投递语义">三种消息投递语义</a></li>
+        <li><a href="#kafka-事务实现-exactly-once">Kafka 事务实现 Exactly-Once</a></li>
+      </ul>
+    </li>
+    <li><a href="#生产者核心机制">生产者核心机制</a>
+      <ul>
+        <li><a href="#消息发送模式">消息发送模式</a></li>
+        <li><a href="#acks-参数详解">acks 参数详解</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能调优">性能调优</a>
+      <ul>
+        <li><a href="#生产者调优">生产者调优</a></li>
+        <li><a href="#消费者调优">消费者调优</a></li>
+        <li><a href="#broker-端调优">Broker 端调优</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题排查">常见问题排查</a>
+      <ul>
+        <li><a href="#问题-1消费者-lag消费延迟">问题 1：消费者 Lag（消费延迟）</a></li>
+        <li><a href="#问题-2消息丢失">问题 2：消息丢失</a></li>
+        <li><a href="#问题-3频繁-rebalance">问题 3：频繁 Rebalance</a></li>
+      </ul>
+    </li>
+    <li><a href="#kafka-vs-rabbitmq-选型对比">Kafka vs RabbitMQ 选型对比</a></li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +329,687 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Kafka 是 LinkedIn 开源的分布式流处理平台，最初设计用于日志收集，如今已成为大数据领域最核心的消息系统。与 RabbitMQ 的&quot;消息投递&quot;模型不同，Kafka 采用&quot;日志追加&quot;模型——消息不是消费后删除，而是按序持久化在分区日志中，支持多次回放。</p>
+<p>这种设计使得 Kafka 能够实现<strong>百万级 TPS</strong> 的吞吐量，同时支持消息回溯、流式处理和事件溯源。</p>
+<h2 id="核心架构">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e6%9e%b6%e6%9e%84"></a>
+核心架构
+</h2><h3 id="整体架构">
+<a class="header-anchor" href="#%e6%95%b4%e4%bd%93%e6%9e%b6%e6%9e%84"></a>
+整体架构
+</h3><pre class="mermaid">
+  graph TB
+    subgraph Producers
+        P1[Producer 1]
+        P2[Producer 2]
+        P3[Producer 3]
+    end
+
+    subgraph Kafka Cluster
+        subgraph Broker1
+            T0L[Topic-A Partition0 Leader]
+            T1F[Topic-A Partition1 Follower]
+        end
+        subgraph Broker2
+            T0F[Topic-A Partition0 Follower]
+            T1L[Topic-A Partition1 Leader]
+        end
+        subgraph Broker3
+            T2L[Topic-A Partition2 Leader]
+        end
+    end
+
+    subgraph Consumer Group A
+        C1[Consumer 1]
+        C2[Consumer 2]
+    end
+
+    subgraph Consumer Group B
+        C3[Consumer 3]
+        C4[Consumer 4]
+        C5[Consumer 5]
+    end
+
+    P1 --> T0L
+    P2 --> T1L
+    P3 --> T2L
+    T0L -.->|同步| T0F
+    T1L -.->|同步| T1F
+
+    T0L --> C1
+    T1L --> C2
+    T2L --> C2
+
+    T0L --> C3
+    T1L --> C4
+    T2L --> C5
+</pre><h3 id="核心概念">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5"></a>
+核心概念
+</h3><table>
+	<thead>
+			<tr>
+					<th>概念</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Broker</strong></td>
+					<td>Kafka 集群中的一个服务节点</td>
+			</tr>
+			<tr>
+					<td><strong>Topic</strong></td>
+					<td>消息主题，逻辑分类（类似数据库表）</td>
+			</tr>
+			<tr>
+					<td><strong>Partition</strong></td>
+					<td>分区，Topic 的物理分片，是并行度的基本单位</td>
+			</tr>
+			<tr>
+					<td><strong>Offset</strong></td>
+					<td>分区内消息的唯一序号，消费者通过 offset 标记消费位置</td>
+			</tr>
+			<tr>
+					<td><strong>Replica</strong></td>
+					<td>副本，每个分区有一个 Leader 和多个 Follower</td>
+			</tr>
+			<tr>
+					<td><strong>Consumer Group</strong></td>
+					<td>消费者组，组内消费者共同消费所有分区，互不重叠</td>
+			</tr>
+			<tr>
+					<td><strong>ISR</strong></td>
+					<td>In-Sync Replicas，与 Leader 保持同步的副本集合</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="分区机制">
+<a class="header-anchor" href="#%e5%88%86%e5%8c%ba%e6%9c%ba%e5%88%b6"></a>
+分区机制
+</h2><h3 id="为什么需要分区">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e5%88%86%e5%8c%ba"></a>
+为什么需要分区
+</h3><p>分区是 Kafka 实现高吞吐的核心机制：</p>
+<pre class="mermaid">
+  graph LR
+    subgraph "Topic: orders (3 Partitions)"
+        P0["Partition 0<br/>msg0, msg3, msg6, msg9..."]
+        P1["Partition 1<br/>msg1, msg4, msg7, msg10..."]
+        P2["Partition 2<br/>msg2, msg5, msg8, msg11..."]
+    end
+
+    Producer -->|"key=order-001"| P0
+    Producer -->|"key=order-002"| P1
+    Producer -->|"key=order-003"| P2
+</pre><ul>
+<li><strong>水平扩展</strong>：多个分区分布在不同 Broker 上，实现并行写入</li>
+<li><strong>负载均衡</strong>：消费者组中的消费者各自消费不同分区</li>
+<li><strong>顺序保证</strong>：同一分区内的消息严格有序</li>
+</ul>
+<h3 id="分区策略">
+<a class="header-anchor" href="#%e5%88%86%e5%8c%ba%e7%ad%96%e7%95%a5"></a>
+分区策略
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 自定义分区器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrderPartitioner</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Partitioner</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">partition</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">topic</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">keyBytes</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                         </span><span class="n">Object</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">valueBytes</span><span class="p">,</span><span class="w"> </span><span class="n">Cluster</span><span class="w"> </span><span class="n">cluster</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 策略1: 按 key 哈希分区（保证同一 key 始终进入同一分区）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">keyBytes</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">abs</span><span class="p">(</span><span class="n">Utils</span><span class="p">.</span><span class="na">murmur2</span><span class="p">(</span><span class="n">keyBytes</span><span class="p">))</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">cluster</span><span class="p">.</span><span class="na">partitionCountForTopic</span><span class="p">(</span><span class="n">topic</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 策略2: 按业务字段分区（如按用户ID取模）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">OrderMessage</span><span class="w"> </span><span class="n">order</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">abs</span><span class="p">(</span><span class="n">order</span><span class="p">.</span><span class="na">getUserId</span><span class="p">().</span><span class="na">hashCode</span><span class="p">())</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">cluster</span><span class="p">.</span><span class="na">partitionCountForTopic</span><span class="p">(</span><span class="n">topic</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 策略3: 轮询（无 key 时默认策略）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">ThreadLocalRandom</span><span class="p">.</span><span class="na">current</span><span class="p">().</span><span class="na">nextInt</span><span class="p">(</span><span class="n">cluster</span><span class="p">.</span><span class="na">partitionCountForTopic</span><span class="p">(</span><span class="n">topic</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="分区数量规划">
+<a class="header-anchor" href="#%e5%88%86%e5%8c%ba%e6%95%b0%e9%87%8f%e8%a7%84%e5%88%92"></a>
+分区数量规划
+</h3>$$
+\text{推荐分区数} = \max(\text{目标吞吐量} / \text{单分区吞吐量}, \text{消费者数量})
+$$<table>
+	<thead>
+			<tr>
+					<th>因素</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>吞吐量</td>
+					<td>单分区约 10-20 MB/s，目标吞吐 / 单分区吞吐 = 分区数下限</td>
+			</tr>
+			<tr>
+					<td>消费者数</td>
+					<td>分区数 ≥ 消费者数，否则有消费者空闲</td>
+			</tr>
+			<tr>
+					<td>Broker 数</td>
+					<td>单 Broker 分区数不宜超过 4000（影响 leader 选举）</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="消费者组">
+<a class="header-anchor" href="#%e6%b6%88%e8%b4%b9%e8%80%85%e7%bb%84"></a>
+消费者组
+</h2><h3 id="消费者组模型">
+<a class="header-anchor" href="#%e6%b6%88%e8%b4%b9%e8%80%85%e7%bb%84%e6%a8%a1%e5%9e%8b"></a>
+消费者组模型
+</h3><pre class="mermaid">
+  graph TB
+    subgraph "Topic: events (6 Partitions)"
+        direction LR
+        P0[P0]
+        P1[P1]
+        P2[P2]
+        P3[P3]
+        P4[P4]
+        P5[P5]
+    end
+
+    subgraph "Consumer Group: A"
+        CA1["Consumer A1<br/>消费 P0, P1"]
+        CA2["Consumer A2<br/>消费 P2, P3"]
+        CA3["Consumer A3<br/>消费 P4, P5"]
+    end
+
+    subgraph "Consumer Group: B"
+        CB1["Consumer B1<br/>消费 P0, P1, P2"]
+        CB2["Consumer B2<br/>消费 P3, P4, P5"]
+    end
+
+    P0 --> CA1
+    P1 --> CA1
+    P2 --> CA2
+    P3 --> CA2
+    P4 --> CA3
+    P5 --> CA3
+
+    P0 --> CB1
+    P1 --> CB1
+    P2 --> CB1
+    P3 --> CB2
+    P4 --> CB2
+    P5 --> CB2
+</pre><p><strong>核心规则</strong>：</p>
+<ul>
+<li>同一消费者组内，一个分区只能被一个消费者消费</li>
+<li>不同消费者组之间互不影响，各自消费全量消息</li>
+<li>消费者数 &gt; 分区数时，多余的消费者空闲</li>
+</ul>
+<h3 id="rebalance-机制">
+<a class="header-anchor" href="#rebalance-%e6%9c%ba%e5%88%b6"></a>
+Rebalance 机制
+</h3><p>当消费者加入或离开组时，触发 Rebalance 重新分配分区：</p>
+<pre class="mermaid">
+  sequenceDiagram
+    participant C1 as Consumer 1
+    participant C2 as Consumer 2
+    participant CL as Group Coordinator
+    participant L as Leader Consumer
+
+    Note over C1,C2: 初始: C1={P0,P1}, C2={P2,P3}
+    C2->>CL: 心跳超时，C2 宕机
+    CL->>L: 触发 Rebalance
+    L->>L: 重新分配: C1={P0,P1,P2,P3}
+    L->>CL: 提交分配方案
+    CL->>C1: 同步新分配: {P0,P1,P2,P3}
+    Note over C1: C1 消费全部 4 个分区
+</pre><h3 id="rebalance-问题与优化">
+<a class="header-anchor" href="#rebalance-%e9%97%ae%e9%a2%98%e4%b8%8e%e4%bc%98%e5%8c%96"></a>
+Rebalance 问题与优化
+</h3><p><strong>Stop-the-World 问题</strong>：Rebalance 期间所有消费者停止消费，可能导致消费延迟。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Spring Boot 消费者配置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">KafkaConsumerConfig</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Bean</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ConsumerFactory</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">consumerFactory</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">props</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 基础配置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ConsumerConfig</span><span class="p">.</span><span class="na">BOOTSTRAP_SERVERS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;localhost:9092&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ConsumerConfig</span><span class="p">.</span><span class="na">GROUP_ID_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;order-consumer-group&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ConsumerConfig</span><span class="p">.</span><span class="na">KEY_DESERIALIZER_CLASS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">StringDeserializer</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ConsumerConfig</span><span class="p">.</span><span class="na">VALUE_DESERIALIZER_CLASS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">StringDeserializer</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Rebalance 优化</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 1. 静态成员资格——避免短暂断连导致 Rebalance</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ConsumerConfig</span><span class="p">.</span><span class="na">GROUP_INSTANCE_ID_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;consumer-1&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 2. 会话超时与心跳</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ConsumerConfig</span><span class="p">.</span><span class="na">SESSION_TIMEOUT_MS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">30000</span><span class="p">);</span><span class="w">  </span><span class="c1">// 30s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ConsumerConfig</span><span class="p">.</span><span class="na">HEARTBEAT_INTERVAL_MS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">10000</span><span class="p">);</span><span class="w"> </span><span class="c1">// 10s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 3. 最大轮询间隔——消费处理时间不能超过此值</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ConsumerConfig</span><span class="p">.</span><span class="na">MAX_POLL_INTERVAL_MS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">300000</span><span class="p">);</span><span class="w"> </span><span class="c1">// 5 分钟</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ConsumerConfig</span><span class="p">.</span><span class="na">MAX_POLL_RECORDS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">500</span><span class="p">);</span><span class="w">        </span><span class="c1">// 单次拉取最多 500 条</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 4. 自动提交关闭，手动提交</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ConsumerConfig</span><span class="p">.</span><span class="na">ENABLE_AUTO_COMMIT_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DefaultKafkaConsumerFactory</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">props</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="消息有序性">
+<a class="header-anchor" href="#%e6%b6%88%e6%81%af%e6%9c%89%e5%ba%8f%e6%80%a7"></a>
+消息有序性
+</h2><h3 id="分区内有序">
+<a class="header-anchor" href="#%e5%88%86%e5%8c%ba%e5%86%85%e6%9c%89%e5%ba%8f"></a>
+分区内有序
+</h3><p>Kafka <strong>只保证单分区内消息有序</strong>，跨分区不保证顺序：</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "保证有序"
+        P0["Partition 0<br/>msg1→msg2→msg3<br/>(严格有序)"]
+    end
+    subgraph "不保证有序"
+        P1["Partition 1<br/>msg4→msg5"]
+        P2["Partition 2<br/>msg6→msg7"]
+    end
+    Note1["全局顺序不保证<br/>P1 和 P2 的消息可能交错"] -.-> P2
+</pre><h3 id="保证全局有序的方案">
+<a class="header-anchor" href="#%e4%bf%9d%e8%af%81%e5%85%a8%e5%b1%80%e6%9c%89%e5%ba%8f%e7%9a%84%e6%96%b9%e6%a1%88"></a>
+保证全局有序的方案
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 方案1: 单分区 Topic（牺牲并行度）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 所有消息写入一个分区，严格全局有序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Properties</span><span class="w"> </span><span class="n">props</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Properties</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&#34;num.partitions&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;1&#34;</span><span class="p">);</span><span class="w"> </span><span class="c1">// 只有一个分区</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 方案2: 按业务 Key 分区（保证同一实体的消息有序）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 同一订单的事件始终进入同一分区</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">ProducerRecord</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">record</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ProducerRecord</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="s">&#34;order-events&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">orderId</span><span class="p">,</span><span class="w">     </span><span class="c1">// key = orderId，保证同一订单的事件有序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">eventJson</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">producer</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">record</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><pre class="mermaid">
+  graph LR
+    subgraph "订单A的事件流"
+        A1["create<br/>P0"] --> A2["pay<br/>P0"] --> A3["ship<br/>P0"]
+    end
+    subgraph "订单B的事件流"
+        B1["create<br/>P1"] --> B2["pay<br/>P1"] --> B3["ship<br/>P1"]
+    end
+    Note1["同一订单的事件始终在同一分区<br/>保证事件顺序"] -.-> A2
+</pre><h2 id="exactly-once-语义">
+<a class="header-anchor" href="#exactly-once-%e8%af%ad%e4%b9%89"></a>
+Exactly-Once 语义
+</h2><h3 id="三种消息投递语义">
+<a class="header-anchor" href="#%e4%b8%89%e7%a7%8d%e6%b6%88%e6%81%af%e6%8a%95%e9%80%92%e8%af%ad%e4%b9%89"></a>
+三种消息投递语义
+</h3><table>
+	<thead>
+			<tr>
+					<th>语义</th>
+					<th>说明</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>At-Most-Once</strong></td>
+					<td>最多一次，可能丢消息</td>
+					<td>日志采集（可接受少量丢失）</td>
+			</tr>
+			<tr>
+					<td><strong>At-Least-Once</strong></td>
+					<td>至少一次，可能重复</td>
+					<td>大多数业务场景（配合幂等）</td>
+			</tr>
+			<tr>
+					<td><strong>Exactly-Once</strong></td>
+					<td>精确一次，不丢不重</td>
+					<td>金融交易、计费系统</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="kafka-事务实现-exactly-once">
+<a class="header-anchor" href="#kafka-%e4%ba%8b%e5%8a%a1%e5%ae%9e%e7%8e%b0-exactly-once"></a>
+Kafka 事务实现 Exactly-Once
+</h3><pre class="mermaid">
+  sequenceDiagram
+    participant P as Producer (事务)
+    participant T1 as Topic: input
+    participant T2 as Topic: output
+    participant TC as Transaction Coordinator
+
+    P->>TC: initTransactions()
+    P->>TC: beginTransaction()
+    P->>T1: Consume messages (offset=100)
+    P->>T2: Produce processed results
+    P->>TC: sendOffsetsToTransaction(offset=100)
+    P->>TC: commitTransaction()
+    TC->>T2: 使消息可见
+    TC->>T1: 标记 offset=100 已提交
+    Note over P,TC: 消费-处理-生产原子完成
+</pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Kafka Streams 配置 Exactly-Once</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Properties</span><span class="w"> </span><span class="n">props</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Properties</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">APPLICATION_ID_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;exactly-once-app&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">BOOTSTRAP_SERVERS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;localhost:9092&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 事务级别配置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">PROCESSING_GUARANTEE_CONFIG</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">EXACTLY_ONCE_V2</span><span class="p">);</span><span class="w">  </span><span class="c1">// 幂等 + 事务</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 生产者配置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">ENABLE_IDEMPOTENCE_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span><span class="w">     </span><span class="c1">// 幂等生产</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">TRANSACTIONAL_ID_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;tx-id-1&#34;</span><span class="p">);</span><span class="w">  </span><span class="c1">// 事务 ID</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">ACKS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;all&#34;</span><span class="p">);</span><span class="w">                  </span><span class="c1">// 所有副本确认</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Producer 事务示例</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KafkaProducer</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">producer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">KafkaProducer</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">props</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 初始化事务</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">producer</span><span class="p">.</span><span class="na">initTransactions</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">producer</span><span class="p">.</span><span class="na">beginTransaction</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 在事务中发送多条消息</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">producer</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ProducerRecord</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="s">&#34;topic-a&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;key1&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;value1&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">producer</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ProducerRecord</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="s">&#34;topic-b&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;key2&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;value2&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 提交消费者 offset（消费-处理-生产在同一事务中）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">producer</span><span class="p">.</span><span class="na">sendOffsetsToTransaction</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonMap</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">TopicPartition</span><span class="p">(</span><span class="s">&#34;input-topic&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">OffsetAndMetadata</span><span class="p">(</span><span class="n">lastConsumedOffset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s">&#34;consumer-group-id&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">producer</span><span class="p">.</span><span class="na">commitTransaction</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">producer</span><span class="p">.</span><span class="na">abortTransaction</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="生产者核心机制">
+<a class="header-anchor" href="#%e7%94%9f%e4%ba%a7%e8%80%85%e6%a0%b8%e5%bf%83%e6%9c%ba%e5%88%b6"></a>
+生产者核心机制
+</h2><h3 id="消息发送模式">
+<a class="header-anchor" href="#%e6%b6%88%e6%81%af%e5%8f%91%e9%80%81%e6%a8%a1%e5%bc%8f"></a>
+消息发送模式
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Configuration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">KafkaProducerConfig</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Bean</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">ProducerFactory</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">producerFactory</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">props</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">BOOTSTRAP_SERVERS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;localhost:9092&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">KEY_SERIALIZER_CLASS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">StringSerializer</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">VALUE_SERIALIZER_CLASS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">StringSerializer</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 可靠性配置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">ACKS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;all&#34;</span><span class="p">);</span><span class="w">              </span><span class="c1">// 所有 ISR 确认</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">ENABLE_IDEMPOTENCE_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span><span class="w"> </span><span class="c1">// 幂等生产</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">RETRIES_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span><span class="w"> </span><span class="c1">// 无限重试</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION</span><span class="p">,</span><span class="w"> </span><span class="n">5</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 批量配置（提升吞吐）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">BATCH_SIZE_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">16384</span><span class="p">);</span><span class="w">        </span><span class="c1">// 批量大小 16KB</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">LINGER_MS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">10</span><span class="p">);</span><span class="w">            </span><span class="c1">// 最多等待 10ms 凑批</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">COMPRESSION_TYPE_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;lz4&#34;</span><span class="p">);</span><span class="w">  </span><span class="c1">// 压缩</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 缓冲区</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">props</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">BUFFER_MEMORY_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">33554432</span><span class="p">);</span><span class="w">  </span><span class="c1">// 32MB</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DefaultKafkaProducerFactory</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">props</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="acks-参数详解">
+<a class="header-anchor" href="#acks-%e5%8f%82%e6%95%b0%e8%af%a6%e8%a7%a3"></a>
+acks 参数详解
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "acks=0"
+        A0[Producer] -->|发送后不等确认| B0[Broker]
+        Note0["不保证持久化<br/>吞吐最高"] -.-> B0
+    end
+
+    subgraph "acks=1"
+        A1[Producer] -->|等待 Leader 确认| B1[Leader]
+        B1 --> B1F[Follower]
+        Note1["Leader 确认即返回<br/>Leader 宕机可能丢失"] -.-> B1
+    end
+
+    subgraph "acks=all (-1)"
+        A2[Producer] -->|等待所有 ISR 确认| B2[Leader]
+        B2 --> B2F1[Follower 1]
+        B2 --> B2F2[Follower 2]
+        B2 -->|全部确认后返回| A2
+        Note2["最安全<br/>吞吐最低"] -.-> A2
+    end
+</pre><h2 id="性能调优">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e8%b0%83%e4%bc%98"></a>
+性能调优
+</h2><h3 id="生产者调优">
+<a class="header-anchor" href="#%e7%94%9f%e4%ba%a7%e8%80%85%e8%b0%83%e4%bc%98"></a>
+生产者调优
+</h3><table>
+	<thead>
+			<tr>
+					<th>参数</th>
+					<th>推荐值</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>batch.size</code></td>
+					<td>16384-65536</td>
+					<td>批量大小，越大吞吐越高</td>
+			</tr>
+			<tr>
+					<td><code>linger.ms</code></td>
+					<td>5-20</td>
+					<td>凑批等待时间，平衡延迟与吞吐</td>
+			</tr>
+			<tr>
+					<td><code>compression.type</code></td>
+					<td>lz4 / zstd</td>
+					<td>压缩减少网络传输</td>
+			</tr>
+			<tr>
+					<td><code>buffer.memory</code></td>
+					<td>33554432</td>
+					<td>发送缓冲区大小</td>
+			</tr>
+			<tr>
+					<td><code>max.in.flight.requests.per.connection</code></td>
+					<td>≤5</td>
+					<td>幂等模式下不能超过 5</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="消费者调优">
+<a class="header-anchor" href="#%e6%b6%88%e8%b4%b9%e8%80%85%e8%b0%83%e4%bc%98"></a>
+消费者调优
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Bean</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">ConcurrentKafkaListenerContainerFactory</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">factory</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ConsumerFactory</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cf</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">ConcurrentKafkaListenerContainerFactory</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">factory</span><span class="w"> </span><span class="o">=</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">ConcurrentKafkaListenerContainerFactory</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">factory</span><span class="p">.</span><span class="na">setConsumerFactory</span><span class="p">(</span><span class="n">cf</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 并发度 = 消费线程数（不超过分区数）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">factory</span><span class="p">.</span><span class="na">setConcurrency</span><span class="p">(</span><span class="n">3</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 批量消费</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">factory</span><span class="p">.</span><span class="na">setBatchListener</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 手动提交 offset</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">factory</span><span class="p">.</span><span class="na">getContainerProperties</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">setAckMode</span><span class="p">(</span><span class="n">ContainerProperties</span><span class="p">.</span><span class="na">AckMode</span><span class="p">.</span><span class="na">MANUAL_IMMEDIATE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">factory</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 批量消费者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@KafkaListener</span><span class="p">(</span><span class="n">topics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;events&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">groupId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;event-processor&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">batchConsume</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">ConsumerRecord</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">records</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Acknowledgment</span><span class="w"> </span><span class="n">ack</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&#34;批量消费 {} 条消息&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">records</span><span class="p">.</span><span class="na">size</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 批量处理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Event</span><span class="o">&gt;</span><span class="w"> </span><span class="n">events</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">records</span><span class="p">.</span><span class="na">stream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">parseEvent</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="na">value</span><span class="p">()))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">toList</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">batchSave</span><span class="p">(</span><span class="n">events</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 手动提交</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">ack</span><span class="p">.</span><span class="na">acknowledge</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="broker-端调优">
+<a class="header-anchor" href="#broker-%e7%ab%af%e8%b0%83%e4%bc%98"></a>
+Broker 端调优
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-properties" data-lang="properties"><span class="line"><span class="cl"><span class="c1"># server.properties</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 日志刷盘策略</span>
+</span></span><span class="line"><span class="cl"><span class="na">log.flush.interval.messages</span><span class="o">=</span><span class="s">10000     # 每 10000 条刷盘</span>
+</span></span><span class="line"><span class="cl"><span class="na">log.flush.interval.ms</span><span class="o">=</span><span class="s">1000            # 或每秒刷盘</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 日志保留策略</span>
+</span></span><span class="line"><span class="cl"><span class="na">log.retention.hours</span><span class="o">=</span><span class="s">168               # 保留 7 天</span>
+</span></span><span class="line"><span class="cl"><span class="na">log.retention.bytes</span><span class="o">=</span><span class="s">10737418240       # 或 10GB</span>
+</span></span><span class="line"><span class="cl"><span class="na">log.segment.bytes</span><span class="o">=</span><span class="s">1073741824          # 单个日志段 1GB</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 副本配置</span>
+</span></span><span class="line"><span class="cl"><span class="na">num.replica.fetchers</span><span class="o">=</span><span class="s">4                # 副本拉取线程数</span>
+</span></span><span class="line"><span class="cl"><span class="na">replica.fetch.max.bytes</span><span class="o">=</span><span class="s">1048576       # 副本拉取最大字节数</span>
+</span></span></code></pre></div><h2 id="常见问题排查">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e6%8e%92%e6%9f%a5"></a>
+常见问题排查
+</h2><h3 id="问题-1消费者-lag消费延迟">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98-1%e6%b6%88%e8%b4%b9%e8%80%85-lag%e6%b6%88%e8%b4%b9%e5%bb%b6%e8%bf%9f"></a>
+问题 1：消费者 Lag（消费延迟）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看 Consumer Group 的 Lag</span>
+</span></span><span class="line"><span class="cl">kafka-consumer-groups.sh <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --bootstrap-server localhost:9092 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --describe <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --group order-consumer-group
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># TOPIC    PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG  CONSUMER-ID</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># orders   0          95000           100000          5000 consumer-1</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># orders   1          98000           100000          2000 consumer-2</span>
+</span></span></code></pre></div><p><strong>Lag 过大的排查流程</strong>：</p>
+<pre class="mermaid">
+  graph TD
+    A[Lag 持续增大] --> B{消费者在运行吗?}
+    B -->|否| C[启动消费者]
+    B -->|是| D{消费速度 < 生产速度?}
+    D -->|是| E[增加分区数 + 消费者数]
+    D -->|否| F{频繁 Rebalance?}
+    F -->|是| G[增大 max.poll.interval.ms]
+    F -->|否| H[检查消费者处理逻辑性能]
+    H --> I[优化处理逻辑/批量处理/异步化]
+</pre><h3 id="问题-2消息丢失">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98-2%e6%b6%88%e6%81%af%e4%b8%a2%e5%a4%b1"></a>
+问题 2：消息丢失
+</h3><pre class="mermaid">
+  graph TD
+    A[消息丢失] --> B{丢失环节?}
+    B -->|生产端| C[检查 acks 配置]
+    C --> C1["acks=all 确保所有副本确认"]
+    C --> C2[检查 retries 是否足够]
+    B -->|Broker| D[检查副本因子]
+    D --> D1["replication.factor >= 3"]
+    D --> D2["min.insync.replicas >= 2"]
+    B -->|消费端| E[检查 offset 提交时机]
+    E --> E1[先处理再提交 offset]
+    E --> E2[禁用 auto.commit]
+</pre><h3 id="问题-3频繁-rebalance">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98-3%e9%a2%91%e7%b9%81-rebalance"></a>
+问题 3：频繁 Rebalance
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看消费者组状态</span>
+</span></span><span class="line"><span class="cl">kafka-consumer-groups.sh <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --bootstrap-server localhost:9092 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --describe <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --group my-group <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --state
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看是否有消费者频繁加入退出</span>
+</span></span><span class="line"><span class="cl">kafka-consumer-groups.sh <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --bootstrap-server localhost:9092 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --describe <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --group my-group <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --members --verbose
+</span></span></code></pre></div><p><strong>常见原因与解决</strong>：</p>
+<ul>
+<li>消费处理时间 &gt; <code>max.poll.interval.ms</code> → 增大该值或减少 <code>max.poll.records</code></li>
+<li>消费者 GC 停顿过长 → 调优 JVM</li>
+<li>网络抖动导致心跳超时 → 增大 <code>session.timeout.ms</code></li>
+</ul>
+<h2 id="kafka-vs-rabbitmq-选型对比">
+<a class="header-anchor" href="#kafka-vs-rabbitmq-%e9%80%89%e5%9e%8b%e5%af%b9%e6%af%94"></a>
+Kafka vs RabbitMQ 选型对比
+</h2><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>Kafka</th>
+					<th>RabbitMQ</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>吞吐量</strong></td>
+					<td>百万级 TPS</td>
+					<td>万级 TPS</td>
+			</tr>
+			<tr>
+					<td><strong>延迟</strong></td>
+					<td>毫秒级</td>
+					<td>微秒级</td>
+			</tr>
+			<tr>
+					<td><strong>消息模型</strong></td>
+					<td>Pull（拉取）</td>
+					<td>Push（推送）</td>
+			</tr>
+			<tr>
+					<td><strong>消息保留</strong></td>
+					<td>按时间/大小保留，可回放</td>
+					<td>消费后删除</td>
+			</tr>
+			<tr>
+					<td><strong>消息顺序</strong></td>
+					<td>分区内有序</td>
+					<td>队列内有序</td>
+			</tr>
+			<tr>
+					<td><strong>路由</strong></td>
+					<td>按 Key 分区</td>
+					<td>灵活的 Exchange 路由</td>
+			</tr>
+			<tr>
+					<td><strong>适用场景</strong></td>
+					<td>日志、事件溯源、流处理</td>
+					<td>任务分发、RPC、通知</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>Kafka 的设计哲学是<strong>以日志为中心</strong>——消息不是&quot;投递后删除&quot;，而是&quot;追加后保留&quot;，这种设计带来了三个核心优势：超高吞吐、消息回溯和流处理能力。</p>
+<p>理解分区、消费者组、Offset 三个核心概念，就掌握了 Kafka 的运行骨架。在此基础上，通过 <code>acks=all</code> + 幂等生产 + 事务，可以实现 Exactly-Once 语义；通过合理的分区数、批量发送和压缩，可以实现极致的吞吐性能。</p>
+<p>下一篇我们将转向缓存领域，深入 Redis 的核心原理与实战。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/middleware-ops/kafka%E9%AB%98%E5%90%9E%E5%90%90%E6%B6%88%E6%81%AF%E6%B5%81%E5%A4%84%E7%90%86/&amp;appkey=&amp;title=Kafka%e9%ab%98%e5%90%9e%e5%90%90%e6%b6%88%e6%81%af%e6%b5%81%e5%a4%84%e7%90%86&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="Kafka高吞吐消息流处理">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/middleware-ops/kafka%E9%AB%98%E5%90%9E%E5%90%90%E6%B6%88%E6%81%AF%E6%B5%81%E5%A4%84%E7%90%86/&amp;title=Kafka%e9%ab%98%e5%90%9e%e5%90%90%e6%b6%88%e6%81%af%e6%b5%81%e5%a4%84%e7%90%86&amp;desc=%e5%88%86%e5%8c%ba%e6%9c%ba%e5%88%b6%e3%80%81%e6%b6%88%e8%b4%b9%e8%80%85%e7%bb%84%e3%80%81%e6%b6%88%e6%81%af%e6%9c%89%e5%ba%8f%e6%80%a7%e3%80%81Exactly-Once%e8%af%ad%e4%b9%89%e4%b8%8e%e6%80%a7%e8%83%bd%e8%b0%83%e4%bc%98&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="Kafka高吞吐消息流处理">
@@ -341,7 +1079,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
+              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
               data-sizes="auto"
               alt="Redis核心原理与实"
               class="lazyload"
@@ -353,7 +1091,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">Redis核心原理与实</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
+              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
               data-sizes="auto"
               alt="RabbitMQ消息队列详解"
               class="lazyload"
@@ -385,10 +1123,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -438,7 +1176,65 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#核心架构">核心架构</a>
+      <ul>
+        <li><a href="#整体架构">整体架构</a></li>
+        <li><a href="#核心概念">核心概念</a></li>
+      </ul>
+    </li>
+    <li><a href="#分区机制">分区机制</a>
+      <ul>
+        <li><a href="#为什么需要分区">为什么需要分区</a></li>
+        <li><a href="#分区策略">分区策略</a></li>
+        <li><a href="#分区数量规划">分区数量规划</a></li>
+      </ul>
+    </li>
+    <li><a href="#消费者组">消费者组</a>
+      <ul>
+        <li><a href="#消费者组模型">消费者组模型</a></li>
+        <li><a href="#rebalance-机制">Rebalance 机制</a></li>
+        <li><a href="#rebalance-问题与优化">Rebalance 问题与优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#消息有序性">消息有序性</a>
+      <ul>
+        <li><a href="#分区内有序">分区内有序</a></li>
+        <li><a href="#保证全局有序的方案">保证全局有序的方案</a></li>
+      </ul>
+    </li>
+    <li><a href="#exactly-once-语义">Exactly-Once 语义</a>
+      <ul>
+        <li><a href="#三种消息投递语义">三种消息投递语义</a></li>
+        <li><a href="#kafka-事务实现-exactly-once">Kafka 事务实现 Exactly-Once</a></li>
+      </ul>
+    </li>
+    <li><a href="#生产者核心机制">生产者核心机制</a>
+      <ul>
+        <li><a href="#消息发送模式">消息发送模式</a></li>
+        <li><a href="#acks-参数详解">acks 参数详解</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能调优">性能调优</a>
+      <ul>
+        <li><a href="#生产者调优">生产者调优</a></li>
+        <li><a href="#消费者调优">消费者调优</a></li>
+        <li><a href="#broker-端调优">Broker 端调优</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题排查">常见问题排查</a>
+      <ul>
+        <li><a href="#问题-1消费者-lag消费延迟">问题 1：消费者 Lag（消费延迟）</a></li>
+        <li><a href="#问题-2消息丢失">问题 2：消息丢失</a></li>
+        <li><a href="#问题-3频繁-rebalance">问题 3：频繁 Rebalance</a></li>
+      </ul>
+    </li>
+    <li><a href="#kafka-vs-rabbitmq-选型对比">Kafka vs RabbitMQ 选型对比</a></li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -569,6 +1365,105 @@
           description: "分区机制、消费者组、消息有序性、Exactly-Once语义与性能调优",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

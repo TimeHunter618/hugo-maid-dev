@@ -36,46 +36,7 @@
 </h2><blockquote>
 <p><strong>面试场景</strong>：如何使用SpringAI同时接入OpenAI、DeepSeek和GLM等多种模型？</p>
 </blockquote>
-<h2 id="配置方式">
-<a class="header-anchor" href="#%e9%85%8d%e7%bd%ae%e6%96%b9%e5%bc%8f"></a>
-配置方式
-</h2><h3 id="1-maven依赖">
-<a class="header-anchor" href="#1-maven%e4%be%9d%e8%b5%96"></a>
-1. Maven依赖
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.springframework.ai<span class="nt">&lt;/groupId&gt;</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>spring-ai-openai-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>org.springframework.ai<span class="nt">&lt;/groupId&gt;</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>spring-ai-ollama-spring-boot-starter<span class="nt">&lt;/artifactId&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
-</span></span></code></pre></div><h3 id="2-配置文件">
-<a class="header-anchor" href="#2-%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6"></a>
-2. 配置文件
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ai</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">openai</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">api-key</span><span class="p">:</span><span class="w"> </span><span class="l">${OPENAI_API_KEY}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ollama</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">base-url</span><span class="p">:</span><span class="w"> </span><span class="l">http://localhost:11434</span><span class="w">
-</span></span></span></code></pre></div><h3 id="3-模型切换">
-<a class="header-anchor" href="#3-%e6%a8%a1%e5%9e%8b%e5%88%87%e6%8d%a2"></a>
-3. 模型切换
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Autowired</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="n">ChatClient</span><span class="w"> </span><span class="n">chatClient</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="nd">@Autowired</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="n">ModelRegistry</span><span class="w"> </span><span class="n">modelRegistry</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">chatWithModel</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">modelName</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">prompt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Model</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">modelRegistry</span><span class="p">.</span><span class="na">getModel</span><span class="p">(</span><span class="n">modelName</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">chatClient</span><span class="p">.</span><span class="na">withModel</span><span class="p">(</span><span class="n">model</span><span class="p">).</span><span class="na">prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">).</span><span class="na">call</span><span class="p">().</span><span class="na">getContent</span><span class="p">();</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><h2 id="总结">
-<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
-总结
-</h2><p>SpringAI通过统一的API抽象，使得接入多种AI模型变得简单高效。</p>
+<p>在实际项目中，通常需要接入多种AI模型以应对不同的业务需求。SpringAI提供了统一的API抽象，使得多模型接入变得简单。</p>
         
         <hr><p>本文2023-08-20首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-08-20</p>]]>
       </description>

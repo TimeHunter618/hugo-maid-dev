@@ -53,7 +53,10 @@
       <description>
         <![CDATA[<h1>Kafka高吞吐消息流处理</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Kafka 是 LinkedIn 开源的分布式流处理平台，最初设计用于日志收集，如今已成为大数据领域最核心的消息系统。与 RabbitMQ 的&quot;消息投递&quot;模型不同，Kafka 采用&quot;日志追加&quot;模型——消息不是消费后删除，而是按序持久化在分区日志中，支持多次回放。</p>
         
         <hr><p>本文2026-02-21首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-02-21</p>]]>
       </description>
@@ -73,7 +76,10 @@
       <description>
         <![CDATA[<h1>RabbitMQ消息队列详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在现代分布式系统中，消息队列是解耦应用、削峰填谷、异步处理的核心基础设施。RabbitMQ 作为最流行的开源消息代理之一，凭借其可靠性、灵活的路由模型和丰富的客户端生态，被广泛应用于订单处理、任务分发、日志收集等场景。</p>
         
         <hr><p>本文2024-05-29首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-05-29</p>]]>
       </description>
@@ -93,7 +99,10 @@
       <description>
         <![CDATA[<h1>Redis Stream消息队列与发布订阅实</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Redis 从 5.0 版本开始引入了 Stream 数据结构，它是一种全新的消息队列实现，弥补了 List 作为消息队列的诸多不足。Stream 支持多消费者组、消息确认、消息持久化、消息回溯等企业级特性，成为 Redis 在消息队列领域的旗舰方案。</p>
         
         <hr><p>本文2023-12-16首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-12-16</p>]]>
       </description>

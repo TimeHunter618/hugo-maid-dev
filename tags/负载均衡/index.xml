@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>Nginx反向代理与负载均</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Nginx 是目前最流行的 Web 服务器和反向代理服务器，以高并发、低内存消耗和灵活的配置系统著称。无论是静态资源服务、API 网关、负载均衡还是 SSL 终端，Nginx 都能胜任。本文将系统讲解 Nginx 的核心配置、负载均衡策略、限流机制和 HTTPS 配置。</p>
         
         <hr><p>本文2025-04-27首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-04-27</p>]]>
       </description>

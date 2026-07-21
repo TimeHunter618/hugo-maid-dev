@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>二叉树与遍历实战</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>树是计算机科学中最重要的数据结构之一，而二叉树是树结构的基础。二叉树不仅用于组织数据，还广泛应用于编译器设计、数据库索引、表达式求值等领域。掌握二叉树的遍历方式、查找算法以及平衡树的原理，是每个程序员必备的技能。</p>
         
         <hr><p>本文2021-02-24首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-02-24</p>]]>
       </description>

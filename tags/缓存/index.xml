@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>Redis核心原理与实</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Redis 是目前最流行的内存数据存储系统，它不仅是缓存，更是支撑高并发架构的核心中间件。从简单的 key-value 缓存到分布式锁、限流器、排行榜、消息队列，Redis 的数据结构和单线程模型赋予了它极强的多面性。</p>
         
         <hr><p>本文2021-06-07首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-06-07</p>]]>
       </description>

@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>Kafka Streams流处理实</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Kafka Streams 是 Kafka 提供的轻量级流处理库，它允许你在应用中直接处理 Kafka 消息，无需额外部署大型流处理框架（如 Flink、Spark Streaming）。Kafka Streams 提供了两种 API：DSL API（声明式，适合大多数场景）和 Processor API（命令式，适合复杂场景）。</p>
         
         <hr><p>本文2021-05-12首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-05-12</p>]]>
       </description>

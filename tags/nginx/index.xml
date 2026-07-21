@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>Nginx反向代理与负载均</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Nginx 是目前最流行的 Web 服务器和反向代理服务器，以高并发、低内存消耗和灵活的配置系统著称。无论是静态资源服务、API 网关、负载均衡还是 SSL 终端，Nginx 都能胜任。本文将系统讲解 Nginx 的核心配置、负载均衡策略、限流机制和 HTTPS 配置。</p>
         
         <hr><p>本文2025-04-27首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-04-27</p>]]>
       </description>
@@ -50,7 +53,10 @@
       <description>
         <![CDATA[<h1>Nginx Lua脚本扩展与API网关实践</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Nginx 的原生配置虽然强大，但面对复杂的业务逻辑（如动态路由、请求鉴权、限流熔断、灰度发布）时显得力不从心。OpenResty 的出现改变了这一切——它将 Nginx 与 LuaJIT 深度集成，让我们可以用 Lua 脚本编写高性能的 HTTP 处理逻辑。</p>
         
         <hr><p>本文2021-03-13首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-03-13</p>]]>
       </description>

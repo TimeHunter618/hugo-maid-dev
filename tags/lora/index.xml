@@ -59,50 +59,7 @@
 </h2><blockquote>
 <p><strong>面试场景</strong>：如何准备高质量的微调数据集？LoRA和QLoRA有什么区别？</p>
 </blockquote>
-<h2 id="数据集准备">
-<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e9%9b%86%e5%87%86%e5%a4%87"></a>
-数据集准备
-</h2><h3 id="1-数据格式">
-<a class="header-anchor" href="#1-%e6%95%b0%e6%8d%ae%e6%a0%bc%e5%bc%8f"></a>
-1. 数据格式
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;instruction&#34;</span><span class="p">:</span> <span class="s2">&#34;解释什么是机器学习&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;response&#34;</span><span class="p">:</span> <span class="s2">&#34;机器学习是一种人工智能技术...&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;history&#34;</span><span class="p">:</span> <span class="p">[]</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h3 id="2-数据清洗">
-<a class="header-anchor" href="#2-%e6%95%b0%e6%8d%ae%e6%b8%85%e6%b4%97"></a>
-2. 数据清洗
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">clean_dataset</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="n">cleaned</span> <span class="o">=</span> <span class="p">[]</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">2000</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">            <span class="n">cleaned</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    
-</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">cleaned</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-</span></span></code></pre></div><h3 id="3-lora微调配置">
-<a class="header-anchor" href="#3-lora%e5%be%ae%e8%b0%83%e9%85%8d%e7%bd%ae"></a>
-3. LoRA微调配置
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">peft</span> <span class="kn">import</span> <span class="n">LoraConfig</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">lora_config</span> <span class="o">=</span> <span class="n">LoraConfig</span><span class="p">(</span>
-</span></span><span class="line"><span class="cl">    <span class="n">r</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">lora_alpha</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">target_modules</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;q_proj&#34;</span><span class="p">,</span> <span class="s2">&#34;v_proj&#34;</span><span class="p">],</span>
-</span></span><span class="line"><span class="cl">    <span class="n">lora_dropout</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">bias</span><span class="o">=</span><span class="s2">&#34;none&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">task_type</span><span class="o">=</span><span class="s2">&#34;CAUSAL_LM&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="p">)</span>
-</span></span></code></pre></div><h2 id="总结">
-<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
-总结
-</h2><p>模型微调需要高质量的数据集和合适的参数配置，LoRA是目前最常用的高效微调方法。</p>
+<p>模型微调是将预训练模型适配到特定任务的过程。数据集质量直接影响微调效果，而选择合适的微调方法可以显著降低资源消耗。</p>
         
         <hr><p>本文2024-07-12首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-07-12</p>]]>
       </description>

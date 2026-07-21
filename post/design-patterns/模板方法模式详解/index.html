@@ -190,7 +190,47 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+        <li><a href="#核心概念">核心概念</a></li>
+      </ul>
+    </li>
+    <li><a href="#手写模板方法模式">手写模板方法模式</a>
+      <ul>
+        <li><a href="#经典示例制作饮料">经典示例：制作饮料</a></li>
+      </ul>
+    </li>
+    <li><a href="#钩子方法详解">钩子方法详解</a></li>
+    <li><a href="#实战案例数据库查询模板">实战案例：数据库查询模板</a>
+      <ul>
+        <li><a href="#未使用模板方法的痛点">未使用模板方法的痛点</a></li>
+        <li><a href="#使用模板方法重构">使用模板方法重构</a></li>
+        <li><a href="#客户端使用">客户端使用</a></li>
+      </ul>
+    </li>
+    <li><a href="#模板方法--lambda回调模式">模板方法 + Lambda（回调模式）</a></li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#spring-jdbctemplate">Spring JdbcTemplate</a></li>
+        <li><a href="#servlet-的-httpservlet">Servlet 的 HttpServlet</a></li>
+        <li><a href="#spring-abstractapplicationcontext">Spring AbstractApplicationContext</a></li>
+        <li><a href="#mybatis-的-sqlsessiontemplate">MyBatis 的 SqlSessionTemplate</a></li>
+      </ul>
+    </li>
+    <li><a href="#模板方法-vs-策略模式">模板方法 vs 策略模式</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +311,469 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>模板方法模式（Template Method Pattern）在一个方法中定义一个算法的骨架，而将一些步骤延迟到子类中实现。模板方法使得子类可以在不改变算法结构的情况下，重新定义算法中的某些特定步骤。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：定义一个操作中的算法骨架，而将一些步骤延迟到子类中。模板方法使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤。</p>
+</blockquote>
+<p>通俗地说：<strong>父类定义流程&quot;做什么&quot;和&quot;按什么顺序做&quot;，子类定义每一步&quot;怎么做&quot;</strong>。</p>
+<h3 id="类图">
+<a class="header-anchor" href="#%e7%b1%bb%e5%9b%be"></a>
+类图
+</h3><pre class="mermaid">
+  classDiagram
+    class AbstractClass {
+        <<abstract>>
+        +templateMethod()*
+        #primitiveOperation1()*
+        #primitiveOperation2()*
+        #hook()*
+    }
+    class ConcreteClassA {
+        #primitiveOperation1()
+        #primitiveOperation2()
+    }
+    class ConcreteClassB {
+        #primitiveOperation1()
+        #primitiveOperation2()
+    }
+    AbstractClass <|-- ConcreteClassA
+    AbstractClass <|-- ConcreteClassB
+</pre><h3 id="核心概念">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5"></a>
+核心概念
+</h3><ul>
+<li><strong>模板方法</strong>：定义算法骨架的具体方法（通常为 <code>final</code>，防止子类覆盖）</li>
+<li><strong>基本方法（抽象方法）</strong>：由子类实现的步骤</li>
+<li><strong>钩子方法（Hook Method）</strong>：父类提供默认实现（空方法或返回布尔值），子类可选择覆盖</li>
+</ul>
+<h2 id="手写模板方法模式">
+<a class="header-anchor" href="#%e6%89%8b%e5%86%99%e6%a8%a1%e6%9d%bf%e6%96%b9%e6%b3%95%e6%a8%a1%e5%bc%8f"></a>
+手写模板方法模式
+</h2><h3 id="经典示例制作饮料">
+<a class="header-anchor" href="#%e7%bb%8f%e5%85%b8%e7%a4%ba%e4%be%8b%e5%88%b6%e4%bd%9c%e9%a5%ae%e6%96%99"></a>
+经典示例：制作饮料
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 抽象模板类</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">abstract</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Beverage</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 模板方法：定义为 final，防止子类修改流程</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">prepareRecipe</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">boilWater</span><span class="p">();</span><span class="w">          </span><span class="c1">// 烧水</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">brew</span><span class="p">();</span><span class="w">               </span><span class="c1">// 冲泡（抽象方法，子类实现）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">pourInCup</span><span class="p">();</span><span class="w">          </span><span class="c1">// 倒入杯中</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">customerWantsCondiments</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// 钩子方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">addCondiments</span><span class="p">();</span><span class="w">  </span><span class="c1">// 加调料（抽象方法，子类实现）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 具体方法（所有子类共用，不需要覆盖）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">boilWater</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;将水煮沸&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">pourInCup</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;将饮料倒入杯中&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 抽象方法：子类必须实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">abstract</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">brew</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">abstract</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addCondiments</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 钩子方法：子类可以选择覆盖（默认返回 true）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">customerWantsCondiments</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 咖啡</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Coffee</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Beverage</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">brew</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;用沸水冲泡咖啡粉&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addCondiments</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;加入糖和牛奶&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 茶</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Tea</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Beverage</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">brew</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;用 80°C 热水浸泡茶叶&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addCondiments</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;加入柠檬片&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 覆盖钩子方法：不加调料</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">customerWantsCondiments</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 客户端</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Client</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;=== 制作咖啡 ===&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Beverage</span><span class="w"> </span><span class="n">coffee</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Coffee</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">coffee</span><span class="p">.</span><span class="na">prepareRecipe</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;\n=== 制作茶 ===&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Beverage</span><span class="w"> </span><span class="n">tea</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Tea</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">tea</span><span class="p">.</span><span class="na">prepareRecipe</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>输出：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">=== 制作咖啡 ===
+</span></span><span class="line"><span class="cl">将水煮沸
+</span></span><span class="line"><span class="cl">用沸水冲泡咖啡粉
+</span></span><span class="line"><span class="cl">将饮料倒入杯中
+</span></span><span class="line"><span class="cl">加入糖和牛奶
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">=== 制作茶 ===
+</span></span><span class="line"><span class="cl">将水煮沸
+</span></span><span class="line"><span class="cl">用 80°C 热水浸泡茶叶
+</span></span><span class="line"><span class="cl">将饮料倒入杯中
+</span></span><span class="line"><span class="cl">（不加调料，钩子返回 false）
+</span></span></code></pre></div><h2 id="钩子方法详解">
+<a class="header-anchor" href="#%e9%92%a9%e5%ad%90%e6%96%b9%e6%b3%95%e8%af%a6%e8%a7%a3"></a>
+钩子方法详解
+</h2><p>钩子方法让子类有能力<strong>影响模板方法的流程</strong>，而不需要改变算法结构：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 钩子方法类型一：控制流程（返回 boolean）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">protected</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">shouldExecuteStep</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w"> </span><span class="c1">// 默认执行</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 钩子方法类型二：空实现（子类可选覆盖）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">beforeProcess</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 默认什么都不做</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">afterProcess</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 默认什么都不做</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="实战案例数据库查询模板">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8b%e6%95%b0%e6%8d%ae%e5%ba%93%e6%9f%a5%e8%af%a2%e6%a8%a1%e6%9d%bf"></a>
+实战案例：数据库查询模板
+</h2><h3 id="未使用模板方法的痛点">
+<a class="header-anchor" href="#%e6%9c%aa%e4%bd%bf%e7%94%a8%e6%a8%a1%e6%9d%bf%e6%96%b9%e6%b3%95%e7%9a%84%e7%97%9b%e7%82%b9"></a>
+未使用模板方法的痛点
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 重复代码地狱</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Connection</span><span class="w"> </span><span class="n">conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">PreparedStatement</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">ResultSet</span><span class="w"> </span><span class="n">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dataSource</span><span class="p">.</span><span class="na">getConnection</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">conn</span><span class="p">.</span><span class="na">prepareStatement</span><span class="p">(</span><span class="s">&#34;SELECT * FROM users WHERE id = ?&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ps</span><span class="p">.</span><span class="na">setLong</span><span class="p">(</span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ps</span><span class="p">.</span><span class="na">executeQuery</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rs</span><span class="p">.</span><span class="na">next</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">User</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">user</span><span class="p">.</span><span class="na">setId</span><span class="p">(</span><span class="n">rs</span><span class="p">.</span><span class="na">getLong</span><span class="p">(</span><span class="s">&#34;id&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">user</span><span class="p">.</span><span class="na">setName</span><span class="p">(</span><span class="n">rs</span><span class="p">.</span><span class="na">getString</span><span class="p">(</span><span class="s">&#34;name&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">user</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">SQLException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 关闭资源的重复代码...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">close</span><span class="p">(</span><span class="n">rs</span><span class="p">,</span><span class="w"> </span><span class="n">ps</span><span class="p">,</span><span class="w"> </span><span class="n">conn</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 每个查询方法都要重复连接管理、异常处理、资源关闭的逻辑</span><span class="w">
+</span></span></span></code></pre></div><h3 id="使用模板方法重构">
+<a class="header-anchor" href="#%e4%bd%bf%e7%94%a8%e6%a8%a1%e6%9d%bf%e6%96%b9%e6%b3%95%e9%87%8d%e6%9e%84"></a>
+使用模板方法重构
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 抽象模板</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">abstract</span><span class="w"> </span><span class="kd">class</span> <span class="nc">JdbcTemplate</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 模板方法：封装不变的流程</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">sql</span><span class="p">,</span><span class="w"> </span><span class="n">PreparedStatementSetter</span><span class="w"> </span><span class="n">pss</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="n">ResultSetExtractor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rse</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Connection</span><span class="w"> </span><span class="n">conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">PreparedStatement</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ResultSet</span><span class="w"> </span><span class="n">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getConnection</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">ps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">conn</span><span class="p">.</span><span class="na">prepareStatement</span><span class="p">(</span><span class="n">sql</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pss</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">pss</span><span class="p">.</span><span class="na">setValues</span><span class="p">(</span><span class="n">ps</span><span class="p">);</span><span class="w">  </span><span class="c1">// 变化点：参数设置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ps</span><span class="p">.</span><span class="na">executeQuery</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">rse</span><span class="p">.</span><span class="na">extractData</span><span class="p">(</span><span class="n">rs</span><span class="p">);</span><span class="w">  </span><span class="c1">// 变化点：结果映射</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">SQLException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="s">&#34;数据库操作失败&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">close</span><span class="p">(</span><span class="n">rs</span><span class="p">,</span><span class="w"> </span><span class="n">ps</span><span class="p">,</span><span class="w"> </span><span class="n">conn</span><span class="p">);</span><span class="w">  </span><span class="c1">// 不变的资源清理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 由子类或配置提供连接</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kd">abstract</span><span class="w"> </span><span class="n">Connection</span><span class="w"> </span><span class="nf">getConnection</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">SQLException</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 不变的方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="n">AutoCloseable</span><span class="p">...</span><span class="w"> </span><span class="n">closeables</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">AutoCloseable</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">closeables</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">c</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">c</span><span class="p">.</span><span class="na">close</span><span class="p">();</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">ignored</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 回调接口（基本方法）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@FunctionalInterface</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">PreparedStatementSetter</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">setValues</span><span class="p">(</span><span class="n">PreparedStatement</span><span class="w"> </span><span class="n">ps</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">SQLException</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@FunctionalInterface</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">ResultSetExtractor</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="nf">extractData</span><span class="p">(</span><span class="n">ResultSet</span><span class="w"> </span><span class="n">rs</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">SQLException</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="客户端使用">
+<a class="header-anchor" href="#%e5%ae%a2%e6%88%b7%e7%ab%af%e4%bd%bf%e7%94%a8"></a>
+客户端使用
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">JdbcTemplate</span><span class="w"> </span><span class="n">jdbc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MyJdbcTemplate</span><span class="p">(</span><span class="n">dataSource</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 查询用户</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">jdbc</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="s">&#34;SELECT * FROM users WHERE id = ?&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">ps</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ps</span><span class="p">.</span><span class="na">setLong</span><span class="p">(</span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">1L</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">rs</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rs</span><span class="p">.</span><span class="na">next</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">User</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">User</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">u</span><span class="p">.</span><span class="na">setId</span><span class="p">(</span><span class="n">rs</span><span class="p">.</span><span class="na">getLong</span><span class="p">(</span><span class="s">&#34;id&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">u</span><span class="p">.</span><span class="na">setName</span><span class="p">(</span><span class="n">rs</span><span class="p">.</span><span class="na">getString</span><span class="p">(</span><span class="s">&#34;name&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">u</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h2 id="模板方法--lambda回调模式">
+<a class="header-anchor" href="#%e6%a8%a1%e6%9d%bf%e6%96%b9%e6%b3%95--lambda%e5%9b%9e%e8%b0%83%e6%a8%a1%e5%bc%8f"></a>
+模板方法 + Lambda（回调模式）
+</h2><p>在 Java 8 之后，模板方法模式经常用 <strong>Lambda + 函数式接口</strong> 替代继承，更加灵活：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 用函数式接口替代抽象方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">QueryTemplate</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">sql</span><span class="p">,</span><span class="w"> </span><span class="n">StatementSetter</span><span class="w"> </span><span class="n">setter</span><span class="p">,</span><span class="w"> </span><span class="n">RowMapper</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mapper</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 不变的骨架逻辑</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Connection</span><span class="w"> </span><span class="n">conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// ...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">conn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getConnection</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">PreparedStatement</span><span class="w"> </span><span class="n">ps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">conn</span><span class="p">.</span><span class="na">prepareStatement</span><span class="p">(</span><span class="n">sql</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">setter</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">ps</span><span class="p">);</span><span class="w">      </span><span class="c1">// 传入 Lambda</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">ResultSet</span><span class="w"> </span><span class="n">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ps</span><span class="p">.</span><span class="na">executeQuery</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">rs</span><span class="p">.</span><span class="na">next</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">results</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">mapper</span><span class="p">.</span><span class="na">map</span><span class="p">(</span><span class="n">rs</span><span class="p">));</span><span class="w">  </span><span class="c1">// 传入 Lambda</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">0</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">SQLException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 清理资源</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 使用</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queryTemplate</span><span class="p">.</span><span class="na">query</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="s">&#34;SELECT * FROM users WHERE id = ?&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">ps</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">ps</span><span class="p">.</span><span class="na">setLong</span><span class="p">(</span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">rs</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">User</span><span class="p">(</span><span class="n">rs</span><span class="p">.</span><span class="na">getLong</span><span class="p">(</span><span class="s">&#34;id&#34;</span><span class="p">),</span><span class="w"> </span><span class="n">rs</span><span class="p">.</span><span class="na">getString</span><span class="p">(</span><span class="s">&#34;name&#34;</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h2 id="适用场景">
+<a class="header-anchor" href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+适用场景
+</h2><ol>
+<li><strong>固定流程，可变步骤</strong>：算法骨架固定，某些步骤的实现可变</li>
+<li><strong>消除重复代码</strong>：多个子类有相似流程，提取到父类</li>
+<li><strong>框架扩展点</strong>：框架定义流程，用户实现扩展点</li>
+<li><strong>生命周期钩子</strong>：Spring Bean 的生命周期方法</li>
+</ol>
+<h2 id="优缺点">
+<a class="header-anchor" href="#%e4%bc%98%e7%bc%ba%e7%82%b9"></a>
+优缺点
+</h2><h3 id="优点">
+<a class="header-anchor" href="#%e4%bc%98%e7%82%b9"></a>
+优点
+</h3><ol>
+<li><strong>消除重复代码</strong>：不变的部分集中在父类</li>
+<li><strong>扩展方便</strong>：新增子类即可扩展行为，符合开闭原则</li>
+<li><strong>流程可控</strong>：父类通过 <code>final</code> 控制流程不被篡改</li>
+</ol>
+<h3 id="缺点">
+<a class="header-anchor" href="#%e7%bc%ba%e7%82%b9"></a>
+缺点
+</h3><ol>
+<li><strong>类数量增多</strong>：每个变体都需要一个子类</li>
+<li><strong>继承耦合</strong>：依赖继承体系，子类受父类约束</li>
+<li><strong>修改困难</strong>：修改模板方法需要修改父类，影响所有子类</li>
+</ol>
+<h2 id="实战案例">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8b"></a>
+实战案例
+</h2><h3 id="spring-jdbctemplate">
+<a class="header-anchor" href="#spring-jdbctemplate"></a>
+Spring JdbcTemplate
+</h3><p>Spring 的 <code>JdbcTemplate</code> 是模板方法模式的最佳实践，它将 JDBC 的样板代码封装在模板中：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Repository</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UserDao</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">JdbcTemplate</span><span class="w"> </span><span class="n">jdbcTemplate</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">jdbcTemplate</span><span class="p">.</span><span class="na">queryForObject</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;SELECT id, name, email FROM users WHERE id = ?&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="p">{</span><span class="n">id</span><span class="p">},</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">(</span><span class="n">rs</span><span class="p">,</span><span class="w"> </span><span class="n">rowNum</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// RowMapper Lambda</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">User</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">user</span><span class="p">.</span><span class="na">setId</span><span class="p">(</span><span class="n">rs</span><span class="p">.</span><span class="na">getLong</span><span class="p">(</span><span class="s">&#34;id&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">user</span><span class="p">.</span><span class="na">setName</span><span class="p">(</span><span class="n">rs</span><span class="p">.</span><span class="na">getString</span><span class="p">(</span><span class="s">&#34;name&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">user</span><span class="p">.</span><span class="na">setEmail</span><span class="p">(</span><span class="n">rs</span><span class="p">.</span><span class="na">getString</span><span class="p">(</span><span class="s">&#34;email&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">user</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>Spring 还提供了多个模板类：</p>
+<table>
+	<thead>
+			<tr>
+					<th>模板类</th>
+					<th>封装的内容</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>JdbcTemplate</code></td>
+					<td>JDBC 操作</td>
+			</tr>
+			<tr>
+					<td><code>RedisTemplate</code></td>
+					<td>Redis 操作</td>
+			</tr>
+			<tr>
+					<td><code>RestTemplate</code></td>
+					<td>HTTP 请求</td>
+			</tr>
+			<tr>
+					<td><code>TransactionTemplate</code></td>
+					<td>事务管理</td>
+			</tr>
+			<tr>
+					<td><code>KafkaTemplate</code></td>
+					<td>Kafka 消息发送</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="servlet-的-httpservlet">
+<a class="header-anchor" href="#servlet-%e7%9a%84-httpservlet"></a>
+Servlet 的 HttpServlet
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// HttpServlet 就是模板方法模式</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// service() 方法根据请求类型分发到 doGet/doPost 等方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MyServlet</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">HttpServlet</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">doGet</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">req</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">resp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 实现 GET 请求处理逻辑</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">doPost</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">req</span><span class="p">,</span><span class="w"> </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">resp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 实现 POST 请求处理逻辑</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="spring-abstractapplicationcontext">
+<a class="header-anchor" href="#spring-abstractapplicationcontext"></a>
+Spring AbstractApplicationContext
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Spring 容器刷新流程 refresh() 就是模板方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">refresh</span><span class="p">()</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">BeansException</span><span class="p">,</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">prepareRefresh</span><span class="p">();</span><span class="w">                    </span><span class="c1">// 准备刷新</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">obtainFreshBeanFactory</span><span class="p">();</span><span class="w">            </span><span class="c1">// 获取 BeanFactory</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">prepareBeanFactory</span><span class="p">();</span><span class="w">                </span><span class="c1">// 准备 BeanFactory</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">postProcessBeanFactory</span><span class="p">(</span><span class="n">beanFactory</span><span class="p">);</span><span class="w"> </span><span class="c1">// 钩子方法：子类扩展</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">invokeBeanFactoryPostProcessors</span><span class="p">();</span><span class="w">   </span><span class="c1">// 执行后置处理器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">registerBeanPostProcessors</span><span class="p">();</span><span class="w">        </span><span class="c1">// 注册后置处理器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">initMessageSource</span><span class="p">();</span><span class="w">                 </span><span class="c1">// 初始化消息源</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">initApplicationEventMulticaster</span><span class="p">();</span><span class="w">   </span><span class="c1">// 初始化事件广播器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">onRefresh</span><span class="p">();</span><span class="w">                         </span><span class="c1">// 钩子方法：子类初始化特殊 Bean</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">registerListeners</span><span class="p">();</span><span class="w">                 </span><span class="c1">// 注册监听器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">finishBeanFactoryInitialization</span><span class="p">();</span><span class="w">   </span><span class="c1">// 完成 Bean 初始化</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">finishRefresh</span><span class="p">();</span><span class="w">                     </span><span class="c1">// 完成刷新</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="mybatis-的-sqlsessiontemplate">
+<a class="header-anchor" href="#mybatis-%e7%9a%84-sqlsessiontemplate"></a>
+MyBatis 的 SqlSessionTemplate
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// MyBatis 中执行 SQL 的模板方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">sqlSessionTemplate</span><span class="p">.</span><span class="na">selectList</span><span class="p">(</span><span class="s">&#34;com.example.UserMapper.selectAll&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 内部封装了 SqlSession 的获取、执行、提交、关闭等流程</span><span class="w">
+</span></span></span></code></pre></div><h2 id="模板方法-vs-策略模式">
+<a class="header-anchor" href="#%e6%a8%a1%e6%9d%bf%e6%96%b9%e6%b3%95-vs-%e7%ad%96%e7%95%a5%e6%a8%a1%e5%bc%8f"></a>
+模板方法 vs 策略模式
+</h2><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>模板方法模式</th>
+					<th>策略模式</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>实现方式</td>
+					<td>继承（is-a）</td>
+					<td>组合（has-a）</td>
+			</tr>
+			<tr>
+					<td>控制权</td>
+					<td>父类控制流程</td>
+					<td>客户端控制选择</td>
+			</tr>
+			<tr>
+					<td>变化点</td>
+					<td>部分步骤可变</td>
+					<td>整个算法可替换</td>
+			</tr>
+			<tr>
+					<td>灵活性</td>
+					<td>受限于继承层次</td>
+					<td>更灵活</td>
+			</tr>
+			<tr>
+					<td>原则</td>
+					<td>依赖继承</td>
+					<td>优先组合</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>设计原则建议<strong>优先使用组合而非继承</strong>，因此 Java 8+ 推荐用 Lambda 回调的方式实现模板方法。</p>
+</blockquote>
+<h2 id="总结">
+<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
+总结
+</h2><p>模板方法模式是最自然、最常用的设计模式之一。它的核心思想是：</p>
+<blockquote>
+<p><strong>将不变的流程封装为模板，将变化的步骤延迟到子类或回调中实现。</strong></p>
+</blockquote>
+<p>我们在使用 Spring 的 <code>JdbcTemplate</code>、<code>RestTemplate</code> 时，其实就是在使用模板方法模式——框架帮我们处理了繁琐的样板代码，我们只需关注业务逻辑。</p>
+<p>理解了模板方法模式，就能理解&quot;<strong>控制反转</strong>&quot;（IoC）的雏形——框架掌控流程，开发者只负责填空。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/design-patterns/%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=%e6%a8%a1%e6%9d%bf%e6%96%b9%e6%b3%95%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="模板方法模式详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/design-patterns/%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;title=%e6%a8%a1%e6%9d%bf%e6%96%b9%e6%b3%95%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;desc=%e9%aa%a8%e6%9e%b6%e5%ae%9a%e4%b9%89%e3%80%81%e9%92%a9%e5%ad%90%e6%96%b9%e6%b3%95%e3%80%81Spring%20JdbcTemplate%20%e4%b8%ad%e7%9a%84%e6%a8%a1%e6%9d%bf%e6%96%b9%e6%b3%95%e5%ba%94%e7%94%a8&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="模板方法模式详解">
@@ -334,7 +836,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
               data-sizes="auto"
               alt="装饰器模式详解"
               class="lazyload"
@@ -346,7 +848,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">装饰器模式详解</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
+              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
               data-sizes="auto"
               alt="责任链模式详解"
               class="lazyload"
@@ -378,10 +880,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -431,7 +933,47 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+        <li><a href="#核心概念">核心概念</a></li>
+      </ul>
+    </li>
+    <li><a href="#手写模板方法模式">手写模板方法模式</a>
+      <ul>
+        <li><a href="#经典示例制作饮料">经典示例：制作饮料</a></li>
+      </ul>
+    </li>
+    <li><a href="#钩子方法详解">钩子方法详解</a></li>
+    <li><a href="#实战案例数据库查询模板">实战案例：数据库查询模板</a>
+      <ul>
+        <li><a href="#未使用模板方法的痛点">未使用模板方法的痛点</a></li>
+        <li><a href="#使用模板方法重构">使用模板方法重构</a></li>
+        <li><a href="#客户端使用">客户端使用</a></li>
+      </ul>
+    </li>
+    <li><a href="#模板方法--lambda回调模式">模板方法 + Lambda（回调模式）</a></li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#spring-jdbctemplate">Spring JdbcTemplate</a></li>
+        <li><a href="#servlet-的-httpservlet">Servlet 的 HttpServlet</a></li>
+        <li><a href="#spring-abstractapplicationcontext">Spring AbstractApplicationContext</a></li>
+        <li><a href="#mybatis-的-sqlsessiontemplate">MyBatis 的 SqlSessionTemplate</a></li>
+      </ul>
+    </li>
+    <li><a href="#模板方法-vs-策略模式">模板方法 vs 策略模式</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -562,6 +1104,105 @@
           description: "骨架定义、钩子方法、Spring JdbcTemplate 中的模板方法应用",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>Redis Stream消息队列与发布订阅实</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Redis 从 5.0 版本开始引入了 Stream 数据结构，它是一种全新的消息队列实现，弥补了 List 作为消息队列的诸多不足。Stream 支持多消费者组、消息确认、消息持久化、消息回溯等企业级特性，成为 Redis 在消息队列领域的旗舰方案。</p>
         
         <hr><p>本文2023-12-16首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-12-16</p>]]>
       </description>

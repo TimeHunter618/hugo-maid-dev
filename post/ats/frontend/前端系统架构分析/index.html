@@ -190,7 +190,91 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-系统总体架构">1. 系统总体架构</a></li>
+    <li><a href="#2-核心模块详细说明">2. 核心模块详细说明</a>
+      <ul>
+        <li><a href="#21-主程序入口controlmonitor">2.1 主程序入口（ControlMonitor）</a></li>
+        <li><a href="#22-数据中心cmdatacenter">2.2 数据中心（CmDataCenter）</a></li>
+        <li><a href="#23-插件管理系统pluginmanager">2.3 插件管理系统（PlugInManager）</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-主要功能插件">3. 主要功能插件</a>
+      <ul>
+        <li><a href="#31-列车调度插件cmtraindispatchplug">3.1 列车调度插件（CmTrainDispatchPlug）</a></li>
+        <li><a href="#32-信号显示插件cmsignaldisplayplug">3.2 信号显示插件（CmSignalDisplayPlug）</a></li>
+        <li><a href="#33-hmi显示插件hmidisplayplug">3.3 HMI显示插件（HmiDisplayPlug）</a></li>
+        <li><a href="#34-回放插件cmreplayplug">3.4 回放插件（CmReplayPlug）</a></li>
+        <li><a href="#35-用户管理插件userplug">3.5 用户管理插件（UserPlug）</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-公共组件库publicexternals">4. 公共组件库（PublicExternals）</a>
+      <ul>
+        <li><a href="#41-esl日志服务">4.1 ESL（日志服务）</a></li>
+        <li><a href="#42-swec安全认证">4.2 Swec（安全认证）</a></li>
+        <li><a href="#43-task任务管理">4.3 Task（任务管理）</a></li>
+        <li><a href="#44-devicelib设备定义">4.4 devicelib（设备定义）</a></li>
+        <li><a href="#45-xmlxml解析">4.5 xml（XML解析）</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-用户管理模块">5. 用户管理模块</a>
+      <ul>
+        <li><a href="#51-userattestplug">5.1 UserAttestPlug</a></li>
+        <li><a href="#52-usermanagerplug">5.2 UserManagerPlug</a></li>
+        <li><a href="#53-userplug">5.3 UserPlug</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-网络通信架构">6. 网络通信架构</a>
+      <ul>
+        <li><a href="#61-通信层次">6.1 通信层次</a></li>
+        <li><a href="#62-通信模式">6.2 通信模式</a></li>
+        <li><a href="#63-通信组件">6.3 通信组件</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-插件化架构设计">7. 插件化架构设计</a>
+      <ul>
+        <li><a href="#71-设计原则">7.1 设计原则</a></li>
+        <li><a href="#72-插件加载流程">7.2 插件加载流程</a></li>
+        <li><a href="#73-插件通信机制">7.3 插件通信机制</a></li>
+      </ul>
+    </li>
+    <li><a href="#8-系统部署模式">8. 系统部署模式</a>
+      <ul>
+        <li><a href="#81-终端类型">8.1 终端类型</a></li>
+        <li><a href="#82-网络部署">8.2 网络部署</a></li>
+      </ul>
+    </li>
+    <li><a href="#9-系统安全设计">9. 系统安全设计</a>
+      <ul>
+        <li><a href="#91-认证机制">9.1 认证机制</a></li>
+        <li><a href="#92-授权机制">9.2 授权机制</a></li>
+        <li><a href="#93-数据安全">9.3 数据安全</a></li>
+      </ul>
+    </li>
+    <li><a href="#10-系统监控与维护">10. 系统监控与维护</a>
+      <ul>
+        <li><a href="#101-系统监控">10.1 系统监控</a></li>
+        <li><a href="#102-日志管理">10.2 日志管理</a></li>
+        <li><a href="#103-维护工具">10.3 维护工具</a></li>
+      </ul>
+    </li>
+    <li><a href="#11-技术栈与框架">11. 技术栈与框架</a>
+      <ul>
+        <li><a href="#111-开发语言">11.1 开发语言</a></li>
+        <li><a href="#112-第三方库">11.2 第三方库</a></li>
+        <li><a href="#113-设计模式">11.3 设计模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#12-系统扩展与演进">12. 系统扩展与演进</a>
+      <ul>
+        <li><a href="#121-扩展性设计">12.1 扩展性设计</a></li>
+        <li><a href="#122-演进方向">12.2 演进方向</a></li>
+      </ul>
+    </li>
+    <li><a href="#13-总结">13. 总结</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +355,563 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h1 id="系统架构与功能模块分析">
+<a class="header-anchor" href="#%e7%b3%bb%e7%bb%9f%e6%9e%b6%e6%9e%84%e4%b8%8e%e5%8a%9f%e8%83%bd%e6%a8%a1%e5%9d%97%e5%88%86%e6%9e%90"></a>
+系统架构与功能模块分析
+</h1><h2 id="1-系统总体架构">
+<a class="header-anchor" href="#1-%e7%b3%bb%e7%bb%9f%e6%80%bb%e4%bd%93%e6%9e%b6%e6%9e%84"></a>
+1. 系统总体架构
+</h2><p>该项目是一个基于Qt框架的轨道交通控制监控系统（ControlMonitor），采用插件化架构设计，主要由以下核心组件组成：</p>
+<ul>
+<li><strong>主程序入口（ControlMonitor）</strong>：系统启动和核心控制模块</li>
+<li><strong>数据中心（CmDataCenter）</strong>：统一数据管理和访问中心</li>
+<li><strong>插件管理系统（PlugInManager）</strong>：插件加载、初始化和管理</li>
+<li><strong>功能插件</strong>：各种业务功能实现模块</li>
+<li><strong>公共组件库（PublicExternals）</strong>：通用功能和工具库</li>
+<li><strong>用户管理模块</strong>：用户认证和权限管理</li>
+</ul>
+<h2 id="2-核心模块详细说明">
+<a class="header-anchor" href="#2-%e6%a0%b8%e5%bf%83%e6%a8%a1%e5%9d%97%e8%af%a6%e7%bb%86%e8%af%b4%e6%98%8e"></a>
+2. 核心模块详细说明
+</h2><h3 id="21-主程序入口controlmonitor">
+<a class="header-anchor" href="#21-%e4%b8%bb%e7%a8%8b%e5%ba%8f%e5%85%a5%e5%8f%a3controlmonitor"></a>
+2.1 主程序入口（ControlMonitor）
+</h3><h4 id="211-核心功能">
+<a class="header-anchor" href="#211-%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd"></a>
+2.1.1 核心功能
+</h4><ul>
+<li><strong>系统启动与初始化</strong>：应用程序初始化、数据中心创建、单实例控制</li>
+<li><strong>插件管理</strong>：加载插件配置、初始化插件、管理插件生命周期</li>
+<li><strong>窗口管理</strong>：多屏幕支持、全屏/窗口模式切换、窗口布局管理</li>
+<li><strong>网络通信</strong>：与实时服务器、存储服务器的连接管理</li>
+<li><strong>消息处理</strong>：消息分发、插件间通信</li>
+<li><strong>终端部署</strong>：主从网络部署管理</li>
+<li><strong>IPC通信</strong>：与外部进程的通信</li>
+</ul>
+<h4 id="212-主要流程">
+<a class="header-anchor" href="#212-%e4%b8%bb%e8%a6%81%e6%b5%81%e7%a8%8b"></a>
+2.1.2 主要流程
+</h4><ol>
+<li>初始化应用程序环境和资源</li>
+<li>创建数据中心实例</li>
+<li>检查单实例运行状态</li>
+<li>加载插件配置和插件库</li>
+<li>初始化所有插件</li>
+<li>添加菜单、工具栏和状态栏</li>
+<li>建立网络连接</li>
+<li>启动消息循环</li>
+</ol>
+<h4 id="213-关键组件">
+<a class="header-anchor" href="#213-%e5%85%b3%e9%94%ae%e7%bb%84%e4%bb%b6"></a>
+2.1.3 关键组件
+</h4><ul>
+<li><strong>m_NetSession</strong>：网络会话管理，负责与服务器的通信</li>
+<li><strong>m_MessageControl</strong>：消息控制，负责消息分发和处理</li>
+<li><strong>m_terminalDeploy</strong>：终端部署管理，支持主从网络部署</li>
+<li><strong>client</strong>：IPC客户端，负责与外部进程通信</li>
+</ul>
+<h3 id="22-数据中心cmdatacenter">
+<a class="header-anchor" href="#22-%e6%95%b0%e6%8d%ae%e4%b8%ad%e5%bf%83cmdatacenter"></a>
+2.2 数据中心（CmDataCenter）
+</h3><h4 id="221-核心功能">
+<a class="header-anchor" href="#221-%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd"></a>
+2.2.1 核心功能
+</h4><ul>
+<li><strong>统一数据管理</strong>：系统核心数据的存储和访问接口</li>
+<li><strong>数据持久化</strong>：数据的加载和保存</li>
+<li><strong>数据同步</strong>：确保数据在不同模块间的一致性</li>
+<li><strong>状态管理</strong>：设备状态、列车状态、通信状态等的管理</li>
+</ul>
+<h4 id="222-核心组件">
+<a class="header-anchor" href="#222-%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6"></a>
+2.2.2 核心组件
+</h4><table>
+	<thead>
+			<tr>
+					<th>组件名称</th>
+					<th>功能描述</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>CBasicProperty</td>
+					<td>基本属性管理，包含终端类型、设备信息等</td>
+			</tr>
+			<tr>
+					<td>CStations</td>
+					<td>车站管理，包含车站信息、设备信息等</td>
+			</tr>
+			<tr>
+					<td>CTrainIDMgr</td>
+					<td>列车ID管理，处理列车身份识别</td>
+			</tr>
+			<tr>
+					<td>CPlatformStateMgr</td>
+					<td>站台状态管理，监控站台设备状态</td>
+			</tr>
+			<tr>
+					<td>CStaticRoutes</td>
+					<td>静态路由管理，管理信号系统路由</td>
+			</tr>
+			<tr>
+					<td>CStaCommStateMgr</td>
+					<td>车站通信状态管理，监控车站通信</td>
+			</tr>
+			<tr>
+					<td>CZCStateMgr</td>
+					<td>ZC状态管理，处理ZC防护区域信息</td>
+			</tr>
+			<tr>
+					<td>CStaStopTimeMgr</td>
+					<td>站台停车时间管理</td>
+			</tr>
+			<tr>
+					<td>CFieldRunTimeMgr</td>
+					<td>现场运行时间管理</td>
+			</tr>
+			<tr>
+					<td>CTsrInfoMgr</td>
+					<td>TSR信息管理，处理临时限速信息</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="223-数据流转">
+<a class="header-anchor" href="#223-%e6%95%b0%e6%8d%ae%e6%b5%81%e8%bd%ac"></a>
+2.2.3 数据流转
+</h4><ol>
+<li>数据中心从外部系统接收数据</li>
+<li>数据经过处理后存储到相应的管理组件中</li>
+<li>各插件通过数据中心提供的接口获取所需数据</li>
+<li>用户操作通过插件传递到数据中心，更新数据状态</li>
+<li>数据中心将状态变化通知到相关插件</li>
+</ol>
+<h3 id="23-插件管理系统pluginmanager">
+<a class="header-anchor" href="#23-%e6%8f%92%e4%bb%b6%e7%ae%a1%e7%90%86%e7%b3%bb%e7%bb%9fpluginmanager"></a>
+2.3 插件管理系统（PlugInManager）
+</h3><h4 id="231-核心功能">
+<a class="header-anchor" href="#231-%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd"></a>
+2.3.1 核心功能
+</h4><ul>
+<li><strong>插件加载</strong>：从指定目录加载插件库</li>
+<li><strong>插件初始化</strong>：调用插件的初始化接口</li>
+<li><strong>插件管理</strong>：管理插件的生命周期</li>
+<li><strong>插件通信</strong>：提供插件间通信机制</li>
+</ul>
+<h4 id="232-插件类型">
+<a class="header-anchor" href="#232-%e6%8f%92%e4%bb%b6%e7%b1%bb%e5%9e%8b"></a>
+2.3.2 插件类型
+</h4><ul>
+<li><strong>普通插件</strong>：常规业务功能插件</li>
+<li><strong>图表插件（Td）</strong>：图表显示相关插件</li>
+<li><strong>计划插件（Dp）</strong>：计划处理相关插件</li>
+</ul>
+<h4 id="233-插件接口">
+<a class="header-anchor" href="#233-%e6%8f%92%e4%bb%b6%e6%8e%a5%e5%8f%a3"></a>
+2.3.3 插件接口
+</h4><table>
+	<thead>
+			<tr>
+					<th>接口名称</th>
+					<th>功能描述</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Initialize</td>
+					<td>初始化插件</td>
+			</tr>
+			<tr>
+					<td>Release</td>
+					<td>释放插件资源</td>
+			</tr>
+			<tr>
+					<td>AddMenu</td>
+					<td>添加菜单到主界面</td>
+			</tr>
+			<tr>
+					<td>AddToolBar</td>
+					<td>添加工具栏到主界面</td>
+			</tr>
+			<tr>
+					<td>AddStatusBar</td>
+					<td>添加状态栏到主界面</td>
+			</tr>
+			<tr>
+					<td>AddToolBarItems</td>
+					<td>添加工具栏项</td>
+			</tr>
+			<tr>
+					<td>ExtractMenu</td>
+					<td>提取菜单</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="3-主要功能插件">
+<a class="header-anchor" href="#3-%e4%b8%bb%e8%a6%81%e5%8a%9f%e8%83%bd%e6%8f%92%e4%bb%b6"></a>
+3. 主要功能插件
+</h2><h3 id="31-列车调度插件cmtraindispatchplug">
+<a class="header-anchor" href="#31-%e5%88%97%e8%bd%a6%e8%b0%83%e5%ba%a6%e6%8f%92%e4%bb%b6cmtraindispatchplug"></a>
+3.1 列车调度插件（CmTrainDispatchPlug）
+</h3><h4 id="311-核心功能">
+<a class="header-anchor" href="#311-%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd"></a>
+3.1.1 核心功能
+</h4><ul>
+<li>列车调度命令处理</li>
+<li>自动请求功能</li>
+<li>信号命令管理</li>
+<li>列车运行控制</li>
+</ul>
+<h4 id="312-主要特性">
+<a class="header-anchor" href="#312-%e4%b8%bb%e8%a6%81%e7%89%b9%e6%80%a7"></a>
+3.1.2 主要特性
+</h4><ul>
+<li>CAM状态显示和原因提示</li>
+<li>列车自动运行控制</li>
+<li>PIS目的地信息和换乘信息处理</li>
+<li>自动折返功能</li>
+<li>列车唤醒失败原因管理</li>
+</ul>
+<h3 id="32-信号显示插件cmsignaldisplayplug">
+<a class="header-anchor" href="#32-%e4%bf%a1%e5%8f%b7%e6%98%be%e7%a4%ba%e6%8f%92%e4%bb%b6cmsignaldisplayplug"></a>
+3.2 信号显示插件（CmSignalDisplayPlug）
+</h3><h4 id="321-核心功能">
+<a class="header-anchor" href="#321-%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd"></a>
+3.2.1 核心功能
+</h4><ul>
+<li>信号设备状态显示</li>
+<li>列车信息显示</li>
+<li>ZC防护区域显示</li>
+<li>设备状态弹窗</li>
+</ul>
+<h4 id="322-主要特性">
+<a class="header-anchor" href="#322-%e4%b8%bb%e8%a6%81%e7%89%b9%e6%80%a7"></a>
+3.2.2 主要特性
+</h4><ul>
+<li>信号设备状态实时显示</li>
+<li>列车位置和状态可视化</li>
+<li>ATP模式显示</li>
+<li>ZC防护区域动态显示</li>
+<li>设备状态弹窗提示</li>
+<li>车站设备锁状态显示</li>
+<li>列车ID显示参数配置</li>
+</ul>
+<h3 id="33-hmi显示插件hmidisplayplug">
+<a class="header-anchor" href="#33-hmi%e6%98%be%e7%a4%ba%e6%8f%92%e4%bb%b6hmidisplayplug"></a>
+3.3 HMI显示插件（HmiDisplayPlug）
+</h3><h4 id="331-核心功能">
+<a class="header-anchor" href="#331-%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd"></a>
+3.3.1 核心功能
+</h4><ul>
+<li>HMI界面显示</li>
+<li>设备交互操作</li>
+<li>图形化场景管理</li>
+</ul>
+<h4 id="332-主要特性">
+<a class="header-anchor" href="#332-%e4%b8%bb%e8%a6%81%e7%89%b9%e6%80%a7"></a>
+3.3.2 主要特性
+</h4><ul>
+<li>图形化场景显示</li>
+<li>设备交互操作支持</li>
+<li>缩放和平移功能</li>
+<li>车站定位功能</li>
+<li>设备显示参数配置</li>
+<li>多屏幕显示支持</li>
+</ul>
+<h3 id="34-回放插件cmreplayplug">
+<a class="header-anchor" href="#34-%e5%9b%9e%e6%94%be%e6%8f%92%e4%bb%b6cmreplayplug"></a>
+3.4 回放插件（CmReplayPlug）
+</h3><h4 id="341-核心功能">
+<a class="header-anchor" href="#341-%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd"></a>
+3.4.1 核心功能
+</h4><ul>
+<li>历史数据回放</li>
+<li>回放控制</li>
+<li>数据导出</li>
+</ul>
+<h4 id="342-主要特性">
+<a class="header-anchor" href="#342-%e4%b8%bb%e8%a6%81%e7%89%b9%e6%80%a7"></a>
+3.4.2 主要特性
+</h4><ul>
+<li>支持多种数据类型回放</li>
+<li>回放速度控制</li>
+<li>回放数据导出</li>
+<li>回放进度显示</li>
+</ul>
+<h3 id="35-用户管理插件userplug">
+<a class="header-anchor" href="#35-%e7%94%a8%e6%88%b7%e7%ae%a1%e7%90%86%e6%8f%92%e4%bb%b6userplug"></a>
+3.5 用户管理插件（UserPlug）
+</h3><h4 id="351-核心功能">
+<a class="header-anchor" href="#351-%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd"></a>
+3.5.1 核心功能
+</h4><ul>
+<li>用户信息管理</li>
+<li>角色权限管理</li>
+<li>用户组管理</li>
+</ul>
+<h4 id="352-主要特性">
+<a class="header-anchor" href="#352-%e4%b8%bb%e8%a6%81%e7%89%b9%e6%80%a7"></a>
+3.5.2 主要特性
+</h4><ul>
+<li>用户添加、删除、编辑</li>
+<li>角色分配和权限设置</li>
+<li>用户组管理</li>
+<li>用户信息导入导出</li>
+<li>用户登录记录查询</li>
+</ul>
+<h2 id="4-公共组件库publicexternals">
+<a class="header-anchor" href="#4-%e5%85%ac%e5%85%b1%e7%bb%84%e4%bb%b6%e5%ba%93publicexternals"></a>
+4. 公共组件库（PublicExternals）
+</h2><h3 id="41-esl日志服务">
+<a class="header-anchor" href="#41-esl%e6%97%a5%e5%bf%97%e6%9c%8d%e5%8a%a1"></a>
+4.1 ESL（日志服务）
+</h3><ul>
+<li><strong>功能</strong>：提供系统日志记录功能</li>
+<li><strong>特性</strong>：支持不同级别日志、日志文件管理、日志统计</li>
+</ul>
+<h3 id="42-swec安全认证">
+<a class="header-anchor" href="#42-swec%e5%ae%89%e5%85%a8%e8%ae%a4%e8%af%81"></a>
+4.2 Swec（安全认证）
+</h3><ul>
+<li><strong>功能</strong>：提供安全认证和加密功能</li>
+<li><strong>特性</strong>：用户认证、权限验证、数据加密</li>
+</ul>
+<h3 id="43-task任务管理">
+<a class="header-anchor" href="#43-task%e4%bb%bb%e5%8a%a1%e7%ae%a1%e7%90%86"></a>
+4.3 Task（任务管理）
+</h3><ul>
+<li><strong>功能</strong>：任务管理框架</li>
+<li><strong>特性</strong>：任务创建、任务分发、任务管理</li>
+</ul>
+<h3 id="44-devicelib设备定义">
+<a class="header-anchor" href="#44-devicelib%e8%ae%be%e5%a4%87%e5%ae%9a%e4%b9%89"></a>
+4.4 devicelib（设备定义）
+</h3><ul>
+<li><strong>功能</strong>：设备相关定义</li>
+<li><strong>特性</strong>：设备类型定义、设备接口定义、设备状态定义</li>
+</ul>
+<h3 id="45-xmlxml解析">
+<a class="header-anchor" href="#45-xmlxml%e8%a7%a3%e6%9e%90"></a>
+4.5 xml（XML解析）
+</h3><ul>
+<li><strong>功能</strong>：XML文件解析和处理</li>
+<li><strong>特性</strong>：XML读写、DOM解析、SAX解析</li>
+</ul>
+<h2 id="5-用户管理模块">
+<a class="header-anchor" href="#5-%e7%94%a8%e6%88%b7%e7%ae%a1%e7%90%86%e6%a8%a1%e5%9d%97"></a>
+5. 用户管理模块
+</h2><h3 id="51-userattestplug">
+<a class="header-anchor" href="#51-userattestplug"></a>
+5.1 UserAttestPlug
+</h3><ul>
+<li><strong>功能</strong>：用户认证和登录验证</li>
+<li><strong>特性</strong>：用户名密码验证、权限检查、登录状态管理</li>
+</ul>
+<h3 id="52-usermanagerplug">
+<a class="header-anchor" href="#52-usermanagerplug"></a>
+5.2 UserManagerPlug
+</h3><ul>
+<li><strong>功能</strong>：用户管理界面</li>
+<li><strong>特性</strong>：用户列表显示、用户编辑、角色管理</li>
+</ul>
+<h3 id="53-userplug">
+<a class="header-anchor" href="#53-userplug"></a>
+5.3 UserPlug
+</h3><ul>
+<li><strong>功能</strong>：用户管理核心功能</li>
+<li><strong>特性</strong>：用户信息管理、权限分配、用户组管理</li>
+</ul>
+<h2 id="6-网络通信架构">
+<a class="header-anchor" href="#6-%e7%bd%91%e7%bb%9c%e9%80%9a%e4%bf%a1%e6%9e%b6%e6%9e%84"></a>
+6. 网络通信架构
+</h2><h3 id="61-通信层次">
+<a class="header-anchor" href="#61-%e9%80%9a%e4%bf%a1%e5%b1%82%e6%ac%a1"></a>
+6.1 通信层次
+</h3><ul>
+<li><strong>应用层</strong>：业务逻辑处理</li>
+<li><strong>协议层</strong>：数据协议转换</li>
+<li><strong>传输层</strong>：TCP/IP通信</li>
+<li><strong>网络层</strong>：网络连接管理</li>
+</ul>
+<h3 id="62-通信模式">
+<a class="header-anchor" href="#62-%e9%80%9a%e4%bf%a1%e6%a8%a1%e5%bc%8f"></a>
+6.2 通信模式
+</h3><ul>
+<li><strong>客户端-服务器模式</strong>：终端作为客户端连接到服务器</li>
+<li><strong>主从模式</strong>：支持主从网络部署</li>
+<li><strong>冗余通信</strong>：支持双链路冗余通信</li>
+</ul>
+<h3 id="63-通信组件">
+<a class="header-anchor" href="#63-%e9%80%9a%e4%bf%a1%e7%bb%84%e4%bb%b6"></a>
+6.3 通信组件
+</h3><ul>
+<li><strong>CNetSession</strong>：网络会话管理</li>
+<li><strong>CMessageControl</strong>：消息控制和分发</li>
+<li><strong>CBufTo418Protocol</strong>：协议转换</li>
+<li><strong>CSendNetState</strong>：网络状态发送</li>
+</ul>
+<h2 id="7-插件化架构设计">
+<a class="header-anchor" href="#7-%e6%8f%92%e4%bb%b6%e5%8c%96%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1"></a>
+7. 插件化架构设计
+</h2><h3 id="71-设计原则">
+<a class="header-anchor" href="#71-%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99"></a>
+7.1 设计原则
+</h3><ul>
+<li><strong>模块化</strong>：各功能模块独立开发和维护</li>
+<li><strong>松耦合</strong>：插件间通过数据中心和消息机制通信</li>
+<li><strong>可扩展性</strong>：支持动态添加新插件</li>
+<li><strong>可测试性</strong>：各插件可独立测试</li>
+</ul>
+<h3 id="72-插件加载流程">
+<a class="header-anchor" href="#72-%e6%8f%92%e4%bb%b6%e5%8a%a0%e8%bd%bd%e6%b5%81%e7%a8%8b"></a>
+7.2 插件加载流程
+</h3><ol>
+<li>读取插件配置文件（PlugIn.xml）</li>
+<li>从指定目录加载插件库</li>
+<li>解析插件接口</li>
+<li>初始化插件</li>
+<li>调用插件的初始化函数</li>
+<li>添加插件菜单和工具栏</li>
+</ol>
+<h3 id="73-插件通信机制">
+<a class="header-anchor" href="#73-%e6%8f%92%e4%bb%b6%e9%80%9a%e4%bf%a1%e6%9c%ba%e5%88%b6"></a>
+7.3 插件通信机制
+</h3><ul>
+<li><strong>消息传递</strong>：通过消息队列传递消息</li>
+<li><strong>数据共享</strong>：通过数据中心共享数据</li>
+<li><strong>函数调用</strong>：通过插件接口调用插件功能</li>
+</ul>
+<h2 id="8-系统部署模式">
+<a class="header-anchor" href="#8-%e7%b3%bb%e7%bb%9f%e9%83%a8%e7%bd%b2%e6%a8%a1%e5%bc%8f"></a>
+8. 系统部署模式
+</h2><h3 id="81-终端类型">
+<a class="header-anchor" href="#81-%e7%bb%88%e7%ab%af%e7%b1%bb%e5%9e%8b"></a>
+8.1 终端类型
+</h3><ul>
+<li><strong>中心调度终端</strong>：中心调度人员使用</li>
+<li><strong>中心总调终端</strong>：中心总调度人员使用</li>
+<li><strong>停车场调度终端</strong>：停车场调度人员使用</li>
+<li><strong>车站控制终端</strong>：车站控制人员使用</li>
+<li><strong>计划终端</strong>：计划编制人员使用</li>
+<li><strong>监控终端</strong>：系统监控人员使用</li>
+<li><strong>历史回放终端</strong>：历史数据回放使用</li>
+<li><strong>联锁终端</strong>：联锁系统终端</li>
+</ul>
+<h3 id="82-网络部署">
+<a class="header-anchor" href="#82-%e7%bd%91%e7%bb%9c%e9%83%a8%e7%bd%b2"></a>
+8.2 网络部署
+</h3><ul>
+<li><strong>单终端部署</strong>：独立运行的终端</li>
+<li><strong>主从部署</strong>：主终端和从终端协同工作</li>
+<li><strong>分布式部署</strong>：多个终端分布在不同位置</li>
+</ul>
+<h2 id="9-系统安全设计">
+<a class="header-anchor" href="#9-%e7%b3%bb%e7%bb%9f%e5%ae%89%e5%85%a8%e8%ae%be%e8%ae%a1"></a>
+9. 系统安全设计
+</h2><h3 id="91-认证机制">
+<a class="header-anchor" href="#91-%e8%ae%a4%e8%af%81%e6%9c%ba%e5%88%b6"></a>
+9.1 认证机制
+</h3><ul>
+<li><strong>用户认证</strong>：用户名密码验证</li>
+<li><strong>设备认证</strong>：设备身份验证</li>
+<li><strong>通信认证</strong>：通信数据完整性验证</li>
+</ul>
+<h3 id="92-授权机制">
+<a class="header-anchor" href="#92-%e6%8e%88%e6%9d%83%e6%9c%ba%e5%88%b6"></a>
+9.2 授权机制
+</h3><ul>
+<li><strong>基于角色的访问控制</strong>：根据角色分配权限</li>
+<li><strong>细粒度权限控制</strong>：对不同功能模块的精细权限控制</li>
+<li><strong>操作审计</strong>：记录用户操作日志</li>
+</ul>
+<h3 id="93-数据安全">
+<a class="header-anchor" href="#93-%e6%95%b0%e6%8d%ae%e5%ae%89%e5%85%a8"></a>
+9.3 数据安全
+</h3><ul>
+<li><strong>数据加密</strong>：敏感数据加密存储和传输</li>
+<li><strong>数据备份</strong>：定期数据备份</li>
+<li><strong>数据恢复</strong>：支持数据恢复功能</li>
+</ul>
+<h2 id="10-系统监控与维护">
+<a class="header-anchor" href="#10-%e7%b3%bb%e7%bb%9f%e7%9b%91%e6%8e%a7%e4%b8%8e%e7%bb%b4%e6%8a%a4"></a>
+10. 系统监控与维护
+</h2><h3 id="101-系统监控">
+<a class="header-anchor" href="#101-%e7%b3%bb%e7%bb%9f%e7%9b%91%e6%8e%a7"></a>
+10.1 系统监控
+</h3><ul>
+<li><strong>运行状态监控</strong>：监控系统运行状态</li>
+<li><strong>通信状态监控</strong>：监控网络通信状态</li>
+<li><strong>设备状态监控</strong>：监控设备运行状态</li>
+</ul>
+<h3 id="102-日志管理">
+<a class="header-anchor" href="#102-%e6%97%a5%e5%bf%97%e7%ae%a1%e7%90%86"></a>
+10.2 日志管理
+</h3><ul>
+<li><strong>运行日志</strong>：记录系统运行情况</li>
+<li><strong>操作日志</strong>：记录用户操作</li>
+<li><strong>错误日志</strong>：记录系统错误</li>
+</ul>
+<h3 id="103-维护工具">
+<a class="header-anchor" href="#103-%e7%bb%b4%e6%8a%a4%e5%b7%a5%e5%85%b7"></a>
+10.3 维护工具
+</h3><ul>
+<li><strong>数据导入导出</strong>：支持数据的导入导出</li>
+<li><strong>系统配置</strong>：支持系统配置管理</li>
+<li><strong>诊断工具</strong>：提供系统诊断功能</li>
+</ul>
+<h2 id="11-技术栈与框架">
+<a class="header-anchor" href="#11-%e6%8a%80%e6%9c%af%e6%a0%88%e4%b8%8e%e6%a1%86%e6%9e%b6"></a>
+11. 技术栈与框架
+</h2><h3 id="111-开发语言">
+<a class="header-anchor" href="#111-%e5%bc%80%e5%8f%91%e8%af%ad%e8%a8%80"></a>
+11.1 开发语言
+</h3><ul>
+<li><strong>C++</strong>：核心功能开发</li>
+<li><strong>Qt</strong>：GUI框架和跨平台支持</li>
+</ul>
+<h3 id="112-第三方库">
+<a class="header-anchor" href="#112-%e7%ac%ac%e4%b8%89%e6%96%b9%e5%ba%93"></a>
+11.2 第三方库
+</h3><ul>
+<li><strong>TinyXML</strong>：XML解析</li>
+<li><strong>Qt Network</strong>：网络通信</li>
+<li><strong>Qt GUI</strong>：图形界面</li>
+</ul>
+<h3 id="113-设计模式">
+<a class="header-anchor" href="#113-%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f"></a>
+11.3 设计模式
+</h3><ul>
+<li><strong>单例模式</strong>：数据中心、插件管理器等核心组件</li>
+<li><strong>观察者模式</strong>：数据变化通知</li>
+<li><strong>工厂模式</strong>：插件创建</li>
+<li><strong>策略模式</strong>：不同终端类型的处理</li>
+</ul>
+<h2 id="12-系统扩展与演进">
+<a class="header-anchor" href="#12-%e7%b3%bb%e7%bb%9f%e6%89%a9%e5%b1%95%e4%b8%8e%e6%bc%94%e8%bf%9b"></a>
+12. 系统扩展与演进
+</h2><h3 id="121-扩展性设计">
+<a class="header-anchor" href="#121-%e6%89%a9%e5%b1%95%e6%80%a7%e8%ae%be%e8%ae%a1"></a>
+12.1 扩展性设计
+</h3><ul>
+<li><strong>插件化架构</strong>：支持动态添加新功能</li>
+<li><strong>标准化接口</strong>：定义标准化的插件接口</li>
+<li><strong>模块化设计</strong>：功能模块独立，便于扩展</li>
+</ul>
+<h3 id="122-演进方向">
+<a class="header-anchor" href="#122-%e6%bc%94%e8%bf%9b%e6%96%b9%e5%90%91"></a>
+12.2 演进方向
+</h3><ul>
+<li><strong>云原生支持</strong>：支持云部署和管理</li>
+<li><strong>大数据集成</strong>：集成大数据分析功能</li>
+<li><strong>AI智能决策</strong>：引入AI技术支持智能决策</li>
+<li><strong>移动应用支持</strong>：支持移动终端访问</li>
+</ul>
+<h2 id="13-总结">
+<a class="header-anchor" href="#13-%e6%80%bb%e7%bb%93"></a>
+13. 总结
+</h2><p>该轨道交通控制监控系统采用了插件化架构设计，具有良好的模块化、可扩展性和可维护性。系统通过数据中心实现了统一的数据管理，通过插件管理系统实现了功能的灵活扩展，通过网络通信实现了与外部系统的交互。</p>
+<p>系统支持多种终端类型和部署模式，能够适应不同的应用场景。同时，系统还具备完善的安全设计和监控维护机制，确保系统的稳定运行和数据安全。</p>
+<p>未来，系统可以通过引入云原生技术、大数据分析和AI智能决策等技术，进一步提升系统的性能和智能化水平，为轨道交通运营提供更加强大的支持。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/ats/frontend/%E5%89%8D%E7%AB%AF%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/&amp;appkey=&amp;title=%e5%89%8d%e7%ab%af%e7%b3%bb%e7%bb%9f%e6%9e%b6%e6%9e%84%e4%b8%8e%e5%8a%9f%e8%83%bd%e6%a8%a1%e5%9d%97%e5%88%86&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="前端系统架构与功能模块分">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/ats/frontend/%E5%89%8D%E7%AB%AF%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%88%86%E6%9E%90/&amp;title=%e5%89%8d%e7%ab%af%e7%b3%bb%e7%bb%9f%e6%9e%b6%e6%9e%84%e4%b8%8e%e5%8a%9f%e8%83%bd%e6%a8%a1%e5%9d%97%e5%88%86&amp;desc=%e5%9f%ba%e4%ba%8e%20Qt%20%e6%a1%86%e6%9e%b6ControlMonitor%20%e6%8f%92%e4%bb%b6%e5%8c%96%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1%e4%b8%8e%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6%e8%a7%a3%e6%9e%90&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="前端系统架构与功能模块分">
@@ -348,7 +988,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
+              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
               data-sizes="auto"
               alt="ControlMonitor 主程序模"
               class="lazyload"
@@ -380,10 +1020,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -433,7 +1073,91 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-系统总体架构">1. 系统总体架构</a></li>
+    <li><a href="#2-核心模块详细说明">2. 核心模块详细说明</a>
+      <ul>
+        <li><a href="#21-主程序入口controlmonitor">2.1 主程序入口（ControlMonitor）</a></li>
+        <li><a href="#22-数据中心cmdatacenter">2.2 数据中心（CmDataCenter）</a></li>
+        <li><a href="#23-插件管理系统pluginmanager">2.3 插件管理系统（PlugInManager）</a></li>
+      </ul>
+    </li>
+    <li><a href="#3-主要功能插件">3. 主要功能插件</a>
+      <ul>
+        <li><a href="#31-列车调度插件cmtraindispatchplug">3.1 列车调度插件（CmTrainDispatchPlug）</a></li>
+        <li><a href="#32-信号显示插件cmsignaldisplayplug">3.2 信号显示插件（CmSignalDisplayPlug）</a></li>
+        <li><a href="#33-hmi显示插件hmidisplayplug">3.3 HMI显示插件（HmiDisplayPlug）</a></li>
+        <li><a href="#34-回放插件cmreplayplug">3.4 回放插件（CmReplayPlug）</a></li>
+        <li><a href="#35-用户管理插件userplug">3.5 用户管理插件（UserPlug）</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-公共组件库publicexternals">4. 公共组件库（PublicExternals）</a>
+      <ul>
+        <li><a href="#41-esl日志服务">4.1 ESL（日志服务）</a></li>
+        <li><a href="#42-swec安全认证">4.2 Swec（安全认证）</a></li>
+        <li><a href="#43-task任务管理">4.3 Task（任务管理）</a></li>
+        <li><a href="#44-devicelib设备定义">4.4 devicelib（设备定义）</a></li>
+        <li><a href="#45-xmlxml解析">4.5 xml（XML解析）</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-用户管理模块">5. 用户管理模块</a>
+      <ul>
+        <li><a href="#51-userattestplug">5.1 UserAttestPlug</a></li>
+        <li><a href="#52-usermanagerplug">5.2 UserManagerPlug</a></li>
+        <li><a href="#53-userplug">5.3 UserPlug</a></li>
+      </ul>
+    </li>
+    <li><a href="#6-网络通信架构">6. 网络通信架构</a>
+      <ul>
+        <li><a href="#61-通信层次">6.1 通信层次</a></li>
+        <li><a href="#62-通信模式">6.2 通信模式</a></li>
+        <li><a href="#63-通信组件">6.3 通信组件</a></li>
+      </ul>
+    </li>
+    <li><a href="#7-插件化架构设计">7. 插件化架构设计</a>
+      <ul>
+        <li><a href="#71-设计原则">7.1 设计原则</a></li>
+        <li><a href="#72-插件加载流程">7.2 插件加载流程</a></li>
+        <li><a href="#73-插件通信机制">7.3 插件通信机制</a></li>
+      </ul>
+    </li>
+    <li><a href="#8-系统部署模式">8. 系统部署模式</a>
+      <ul>
+        <li><a href="#81-终端类型">8.1 终端类型</a></li>
+        <li><a href="#82-网络部署">8.2 网络部署</a></li>
+      </ul>
+    </li>
+    <li><a href="#9-系统安全设计">9. 系统安全设计</a>
+      <ul>
+        <li><a href="#91-认证机制">9.1 认证机制</a></li>
+        <li><a href="#92-授权机制">9.2 授权机制</a></li>
+        <li><a href="#93-数据安全">9.3 数据安全</a></li>
+      </ul>
+    </li>
+    <li><a href="#10-系统监控与维护">10. 系统监控与维护</a>
+      <ul>
+        <li><a href="#101-系统监控">10.1 系统监控</a></li>
+        <li><a href="#102-日志管理">10.2 日志管理</a></li>
+        <li><a href="#103-维护工具">10.3 维护工具</a></li>
+      </ul>
+    </li>
+    <li><a href="#11-技术栈与框架">11. 技术栈与框架</a>
+      <ul>
+        <li><a href="#111-开发语言">11.1 开发语言</a></li>
+        <li><a href="#112-第三方库">11.2 第三方库</a></li>
+        <li><a href="#113-设计模式">11.3 设计模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#12-系统扩展与演进">12. 系统扩展与演进</a>
+      <ul>
+        <li><a href="#121-扩展性设计">12.1 扩展性设计</a></li>
+        <li><a href="#122-演进方向">12.2 演进方向</a></li>
+      </ul>
+    </li>
+    <li><a href="#13-总结">13. 总结</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img

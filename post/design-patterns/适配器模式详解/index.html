@@ -190,7 +190,45 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+      </ul>
+    </li>
+    <li><a href="#两种实现方式">两种实现方式</a>
+      <ul>
+        <li><a href="#一类适配器class-adapter">一、类适配器（Class Adapter）</a></li>
+        <li><a href="#二对象适配器object-adapter-推荐">二、对象适配器（Object Adapter）—— 推荐</a></li>
+        <li><a href="#两种方式对比">两种方式对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#案例一日志框架适配">案例一：日志框架适配</a></li>
+        <li><a href="#案例二支付网关适配">案例二：支付网关适配</a></li>
+        <li><a href="#案例三默认适配器接口适配器">案例三：默认适配器（接口适配器）</a></li>
+      </ul>
+    </li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例-1">实战案例</a>
+      <ul>
+        <li><a href="#jdk-中的适配器">JDK 中的适配器</a></li>
+        <li><a href="#spring-mvc-的-handleradapter">Spring MVC 的 HandlerAdapter</a></li>
+        <li><a href="#spring-aop-的-advisoradapter">Spring AOP 的 AdvisorAdapter</a></li>
+      </ul>
+    </li>
+    <li><a href="#适配器模式-vs-装饰器模式-vs-代理模式-vs-外观模式">适配器模式 vs 装饰器模式 vs 代理模式 vs 外观模式</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +309,440 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>适配器模式（Adapter Pattern）将一个类的接口转换成客户端期望的另一个接口。适配器模式让原本接口不兼容的类可以一起工作。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：将一个类的接口转换成客户希望的另外一个接口。适配器模式使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。</p>
+</blockquote>
+<p>通俗地说：<strong>适配器模式就是&quot;转接头&quot;</strong>。就像 Type-C 转 USB 的转换器，让旧设备能连上新接口。</p>
+<h3 id="类图">
+<a class="header-anchor" href="#%e7%b1%bb%e5%9b%be"></a>
+类图
+</h3><h4 id="类适配器通过继承实现">
+<a class="header-anchor" href="#%e7%b1%bb%e9%80%82%e9%85%8d%e5%99%a8%e9%80%9a%e8%bf%87%e7%bb%a7%e6%89%bf%e5%ae%9e%e7%8e%b0"></a>
+类适配器（通过继承实现）
+</h4><pre class="mermaid">
+  classDiagram
+    class Target {
+        <<interface>>
+        +request()
+    }
+    class Adaptee {
+        +specificRequest()
+    }
+    class ClassAdapter {
+        +request()
+    }
+    Target <|.. ClassAdapter
+    Adaptee <|-- ClassAdapter
+    ClassAdapter ..> Adaptee : 调用
+</pre><h4 id="对象适配器通过组合实现">
+<a class="header-anchor" href="#%e5%af%b9%e8%b1%a1%e9%80%82%e9%85%8d%e5%99%a8%e9%80%9a%e8%bf%87%e7%bb%84%e5%90%88%e5%ae%9e%e7%8e%b0"></a>
+对象适配器（通过组合实现）
+</h4><pre class="mermaid">
+  classDiagram
+    class Target {
+        <<interface>>
+        +request()
+    }
+    class Adaptee {
+        +specificRequest()
+    }
+    class ObjectAdapter {
+        -Adaptee adaptee
+        +request()
+    }
+    Target <|.. ObjectAdapter
+    ObjectAdapter --> Adaptee : 持有引用
+</pre><h2 id="两种实现方式">
+<a class="header-anchor" href="#%e4%b8%a4%e7%a7%8d%e5%ae%9e%e7%8e%b0%e6%96%b9%e5%bc%8f"></a>
+两种实现方式
+</h2><h3 id="一类适配器class-adapter">
+<a class="header-anchor" href="#%e4%b8%80%e7%b1%bb%e9%80%82%e9%85%8d%e5%99%a8class-adapter"></a>
+一、类适配器（Class Adapter）
+</h3><p>类适配器通过<strong>继承</strong>被适配类并实现目标接口：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 目标接口（客户端期望的接口）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">Target</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">request</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 被适配者（已有类，接口不兼容）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Adaptee</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">specificRequest</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;被适配者的特殊方法被调用&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 类适配器：继承 Adaptee + 实现 Target</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ClassAdapter</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">Adaptee</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Target</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">request</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 将 Target.request() 转换为 Adaptee.specificRequest()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">super</span><span class="p">.</span><span class="na">specificRequest</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 客户端</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Client</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Target</span><span class="w"> </span><span class="n">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ClassAdapter</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">target</span><span class="p">.</span><span class="na">request</span><span class="p">();</span><span class="w"> </span><span class="c1">// 客户端调用 request()，实际执行 specificRequest()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p><strong>限制</strong>：Java 不支持多重继承，如果 Target 是类而非接口，类适配器将无法使用。</p>
+<h3 id="二对象适配器object-adapter-推荐">
+<a class="header-anchor" href="#%e4%ba%8c%e5%af%b9%e8%b1%a1%e9%80%82%e9%85%8d%e5%99%a8object-adapter-%e6%8e%a8%e8%8d%90"></a>
+二、对象适配器（Object Adapter）—— 推荐
+</h3><p>对象适配器通过<strong>组合</strong>被适配对象：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 对象适配器：实现 Target + 持有 Adaptee 引用</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ObjectAdapter</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Target</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Adaptee</span><span class="w"> </span><span class="n">adaptee</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">ObjectAdapter</span><span class="p">(</span><span class="n">Adaptee</span><span class="w"> </span><span class="n">adaptee</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">adaptee</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">adaptee</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">request</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">adaptee</span><span class="p">.</span><span class="na">specificRequest</span><span class="p">();</span><span class="w"> </span><span class="c1">// 委托给被适配对象</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 客户端</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Client</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Adaptee</span><span class="w"> </span><span class="n">adaptee</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Adaptee</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Target</span><span class="w"> </span><span class="n">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectAdapter</span><span class="p">(</span><span class="n">adaptee</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">target</span><span class="p">.</span><span class="na">request</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="两种方式对比">
+<a class="header-anchor" href="#%e4%b8%a4%e7%a7%8d%e6%96%b9%e5%bc%8f%e5%af%b9%e6%af%94"></a>
+两种方式对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>类适配器</th>
+					<th>对象适配器</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>实现方式</td>
+					<td>继承 Adaptee</td>
+					<td>组合 Adaptee</td>
+			</tr>
+			<tr>
+					<td>灵活性</td>
+					<td>低（Java 单继承限制）</td>
+					<td>高（推荐使用）</td>
+			</tr>
+			<tr>
+					<td>适配子类</td>
+					<td>可以直接继承覆盖</td>
+					<td>需要传入不同实例</td>
+			</tr>
+			<tr>
+					<td>设计原则</td>
+					<td>违背合成复用原则</td>
+					<td>符合合成复用原则</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p><strong>结论：优先使用对象适配器</strong>，它更灵活、更符合&quot;多用组合少用继承&quot;的设计原则。</p>
+</blockquote>
+<h2 id="实战案例">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8b"></a>
+实战案例
+</h2><h3 id="案例一日志框架适配">
+<a class="header-anchor" href="#%e6%a1%88%e4%be%8b%e4%b8%80%e6%97%a5%e5%bf%97%e6%a1%86%e6%9e%b6%e9%80%82%e9%85%8d"></a>
+案例一：日志框架适配
+</h3><p>系统中已有自定义日志接口，但想切换到 Log4j2：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 目标接口：系统定义的日志接口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">LogService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">debug</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">t</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 被适配者：Log4j2 的 Logger（接口不兼容）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.logging.log4j.Logger</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.logging.log4j.LogManager</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 适配器：将 Log4j2 适配为系统日志接口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Log4j2Adapter</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">LogService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Logger</span><span class="w"> </span><span class="n">logger</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">Log4j2Adapter</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LogManager</span><span class="p">.</span><span class="na">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">debug</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">logger</span><span class="p">.</span><span class="na">debug</span><span class="p">(</span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">logger</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">logger</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 使用：系统代码无需修改，只需切换适配器实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">LogService</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Log4j2Adapter</span><span class="p">(</span><span class="s">&#34;MyApp&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&#34;系统启动成功&#34;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h3 id="案例二支付网关适配">
+<a class="header-anchor" href="#%e6%a1%88%e4%be%8b%e4%ba%8c%e6%94%af%e4%bb%98%e7%bd%91%e5%85%b3%e9%80%82%e9%85%8d"></a>
+案例二：支付网关适配
+</h3><p>对接第三方支付系统，各家接口不同：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 统一支付接口（目标接口）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">PaymentGateway</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">PaymentResult</span><span class="w"> </span><span class="nf">pay</span><span class="p">(</span><span class="n">PaymentRequest</span><span class="w"> </span><span class="n">request</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">PaymentResult</span><span class="w"> </span><span class="nf">refund</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">amount</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 被适配者 A：微信支付 SDK（接口不兼容）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">WeChatPayClient</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">WeChatPayResponse</span><span class="w"> </span><span class="nf">doUnifiedPay</span><span class="p">(</span><span class="n">WeChatPayRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 微信支付逻辑...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">WeChatPayResponse</span><span class="p">(</span><span class="s">&#34;SUCCESS&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;wx_&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getOutTradeNo</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 被适配者 B：支付宝 SDK</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AlipayClient</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">AlipayResult</span><span class="w"> </span><span class="nf">tradePay</span><span class="p">(</span><span class="n">AlipayParam</span><span class="w"> </span><span class="n">param</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 支付宝逻辑...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AlipayResult</span><span class="p">(</span><span class="s">&#34;success&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;ali_&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">param</span><span class="p">.</span><span class="na">getTradeNo</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 微信支付适配器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">WeChatPayAdapter</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">PaymentGateway</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">WeChatPayClient</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">WeChatPayClient</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">PaymentResult</span><span class="w"> </span><span class="nf">pay</span><span class="p">(</span><span class="n">PaymentRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 转换参数</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">WeChatPayRequest</span><span class="w"> </span><span class="n">wxRequest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">WeChatPayRequest</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">wxRequest</span><span class="p">.</span><span class="na">setOutTradeNo</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getOrderId</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">wxRequest</span><span class="p">.</span><span class="na">setTotalFee</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getAmount</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 调用被适配者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">WeChatPayResponse</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">client</span><span class="p">.</span><span class="na">doUnifiedPay</span><span class="p">(</span><span class="n">wxRequest</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 转换结果</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PaymentResult</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;SUCCESS&#34;</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="na">getCode</span><span class="p">()),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">response</span><span class="p">.</span><span class="na">getTransactionId</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">PaymentResult</span><span class="w"> </span><span class="nf">refund</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// ...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 支付宝适配器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AlipayAdapter</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">PaymentGateway</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AlipayClient</span><span class="w"> </span><span class="n">client</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AlipayClient</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">PaymentResult</span><span class="w"> </span><span class="nf">pay</span><span class="p">(</span><span class="n">PaymentRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">AlipayParam</span><span class="w"> </span><span class="n">param</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">AlipayParam</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">param</span><span class="p">.</span><span class="na">setTradeNo</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getOrderId</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">param</span><span class="p">.</span><span class="na">setAmount</span><span class="p">(</span><span class="n">request</span><span class="p">.</span><span class="na">getAmount</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">AlipayResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">client</span><span class="p">.</span><span class="na">tradePay</span><span class="p">(</span><span class="n">param</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PaymentResult</span><span class="p">(</span><span class="s">&#34;success&#34;</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">result</span><span class="p">.</span><span class="na">getStatus</span><span class="p">()),</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">getTradeNo</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">PaymentResult</span><span class="w"> </span><span class="nf">refund</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// ...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 客户端：面向统一接口编程，不关心底层实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrderService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">PaymentGateway</span><span class="w"> </span><span class="n">gateway</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setGateway</span><span class="p">(</span><span class="n">PaymentGateway</span><span class="w"> </span><span class="n">gateway</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">gateway</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gateway</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">processPayment</span><span class="p">(</span><span class="n">PaymentRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">PaymentResult</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gateway</span><span class="p">.</span><span class="na">pay</span><span class="p">(</span><span class="n">request</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 统一处理支付结果</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="案例三默认适配器接口适配器">
+<a class="header-anchor" href="#%e6%a1%88%e4%be%8b%e4%b8%89%e9%bb%98%e8%ae%a4%e9%80%82%e9%85%8d%e5%99%a8%e6%8e%a5%e5%8f%a3%e9%80%82%e9%85%8d%e5%99%a8"></a>
+案例三：默认适配器（接口适配器）
+</h3><p>当一个接口有很多方法，而实现类只需要其中几个时，可以使用<strong>默认适配器</strong>（抽象类提供空实现）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 大接口：有很多方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">LifecycleListener</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">onStart</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">onStop</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">onPause</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">onResume</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">onDestroy</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 默认适配器：所有方法提供空实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">abstract</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LifecycleAdapter</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">LifecycleListener</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onStart</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onStop</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onPause</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onResume</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w"> </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onDestroy</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 只关心 onStart 和 onDestroy，其他不用实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MyListener</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">LifecycleAdapter</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onStart</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;应用启动&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onDestroy</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;应用销毁&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 不需要实现 onPause/onResume/onStop</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="适用场景">
+<a class="header-anchor" href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+适用场景
+</h2><ol>
+<li><strong>接口不兼容</strong>：已有类的接口与系统要求的接口不匹配</li>
+<li><strong>第三方库适配</strong>：封装第三方 SDK，统一接口</li>
+<li><strong>遗留系统集成</strong>：旧系统接口适配到新架构</li>
+<li><strong>接口瘦身</strong>：大接口只需要部分方法时使用默认适配器</li>
+<li><strong>多数据源/多支付</strong>：统一不同实现的调用方式</li>
+</ol>
+<h2 id="优缺点">
+<a class="header-anchor" href="#%e4%bc%98%e7%bc%ba%e7%82%b9"></a>
+优缺点
+</h2><h3 id="优点">
+<a class="header-anchor" href="#%e4%bc%98%e7%82%b9"></a>
+优点
+</h3><ol>
+<li><strong>开闭原则</strong>：不修改原有类，通过适配器接入</li>
+<li><strong>解耦</strong>：客户端与被适配者通过适配器间接关联</li>
+<li><strong>复用性</strong>：让不兼容的类重新发挥作用</li>
+<li><strong>灵活性</strong>：可以为被适配者创建多个适配器</li>
+</ol>
+<h3 id="缺点">
+<a class="header-anchor" href="#%e7%bc%ba%e7%82%b9"></a>
+缺点
+</h3><ol>
+<li><strong>增加复杂度</strong>：多了适配器类，系统类数量增加</li>
+<li><strong>过度使用</strong>：如果可以直接重构接口，不应滥用适配器</li>
+<li><strong>性能损耗</strong>：多了一层方法调用</li>
+</ol>
+<h2 id="实战案例-1">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8b-1"></a>
+实战案例
+</h2><h3 id="jdk-中的适配器">
+<a class="header-anchor" href="#jdk-%e4%b8%ad%e7%9a%84%e9%80%82%e9%85%8d%e5%99%a8"></a>
+JDK 中的适配器
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// InputStreamReader：字节流 → 字符流的适配器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">InputStream</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">FileInputStream</span><span class="p">(</span><span class="s">&#34;file.txt&#34;</span><span class="p">);</span><span class="w">  </span><span class="c1">// 字节流</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Reader</span><span class="w"> </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">InputStreamReader</span><span class="p">(</span><span class="n">is</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;UTF-8&#34;</span><span class="p">);</span><span class="w">  </span><span class="c1">// 适配为字符流</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// OutputStreamWriter：字符流 → 字节流的适配器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Writer</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OutputStreamWriter</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">FileOutputStream</span><span class="p">(</span><span class="s">&#34;out.txt&#34;</span><span class="p">),</span><span class="w"> </span><span class="s">&#34;UTF-8&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Arrays.asList()：数组 → List 的适配器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">list</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span><span class="s">&#34;a&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;b&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;c&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Collections.enumeration()：Collection → Enumeration 的适配器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Enumeration</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Collections</span><span class="p">.</span><span class="na">enumeration</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">());</span><span class="w">
+</span></span></span></code></pre></div><h3 id="spring-mvc-的-handleradapter">
+<a class="header-anchor" href="#spring-mvc-%e7%9a%84-handleradapter"></a>
+Spring MVC 的 HandlerAdapter
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Spring MVC 用适配器模式支持多种处理器类型</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// Controller、HttpRequestHandler、HandlerMethod 等接口各不相同</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// HandlerAdapter 将它们统一适配为可执行的处理器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">HandlerAdapter</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">supports</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">handler</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">ModelAndView</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">req</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">resp</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">handler</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// RequestMappingHandlerAdapter 适配 @RequestMapping 方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// SimpleControllerHandlerAdapter 适配 Controller 接口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// HttpRequestHandlerAdapter 适配 HttpRequestHandler 接口</span><span class="w">
+</span></span></span></code></pre></div><h3 id="spring-aop-的-advisoradapter">
+<a class="header-anchor" href="#spring-aop-%e7%9a%84-advisoradapter"></a>
+Spring AOP 的 AdvisorAdapter
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Spring AOP 将不同类型的 Advice 适配为统一的拦截器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// MethodBeforeAdviceAdapter → 将 BeforeAdvice 适配为拦截器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// AfterReturningAdviceAdapter → 将 AfterAdvice 适配为拦截器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// ThrowsAdviceAdapter → 将 ThrowsAdvice 适配为拦截器</span><span class="w">
+</span></span></span></code></pre></div><h2 id="适配器模式-vs-装饰器模式-vs-代理模式-vs-外观模式">
+<a class="header-anchor" href="#%e9%80%82%e9%85%8d%e5%99%a8%e6%a8%a1%e5%bc%8f-vs-%e8%a3%85%e9%a5%b0%e5%99%a8%e6%a8%a1%e5%bc%8f-vs-%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f-vs-%e5%a4%96%e8%a7%82%e6%a8%a1%e5%bc%8f"></a>
+适配器模式 vs 装饰器模式 vs 代理模式 vs 外观模式
+</h2><p>这四种结构型模式容易混淆，关键在于<strong>意图</strong>：</p>
+<table>
+	<thead>
+			<tr>
+					<th>模式</th>
+					<th>意图</th>
+					<th>类比</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>适配器</strong></td>
+					<td>转换接口，让不兼容的类协作</td>
+					<td>Type-C 转 USB 转接头</td>
+			</tr>
+			<tr>
+					<td><strong>装饰器</strong></td>
+					<td>增强功能，不改接口</td>
+					<td>给手机加保护壳</td>
+			</tr>
+			<tr>
+					<td><strong>代理</strong></td>
+					<td>控制访问，不改接口</td>
+					<td>明星经纪人</td>
+			</tr>
+			<tr>
+					<td><strong>外观</strong></td>
+					<td>简化接口，提供一个统一入口</td>
+					<td>一键启动按钮</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>判断技巧：</p>
+<ul>
+<li>接口<strong>变了</strong> → 适配器</li>
+<li>功能<strong>多了</strong> → 装饰器</li>
+<li>访问<strong>受限</strong> → 代理</li>
+<li>接口<strong>简化了</strong> → 外观</li>
+</ul>
+</blockquote>
+<h2 id="总结">
+<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
+总结
+</h2><p>适配器模式是<strong>解决接口不兼容问题</strong>的利器。在系统集成、第三方对接、遗留代码迁移等场景中，适配器模式让我们无需修改原有代码就能接入新系统。</p>
+<p>核心思想：<strong>不改变已有的类，通过中间层转换接口</strong>。</p>
+<p>在 Java 中，优先使用<strong>对象适配器</strong>（组合优于继承），这样既能适配类也能适配接口，更加灵活。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/design-patterns/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=%e9%80%82%e9%85%8d%e5%99%a8%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="适配器模式详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/design-patterns/%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;title=%e9%80%82%e9%85%8d%e5%99%a8%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;desc=%e6%8e%a5%e5%8f%a3%e8%bd%ac%e6%8d%a2%e3%80%81%e7%b1%bb%e9%80%82%e9%85%8d%e5%99%a8%e4%b8%8e%e5%af%b9%e8%b1%a1%e9%80%82%e9%85%8d%e5%99%a8%e7%9a%84%e5%8c%ba%e5%88%ab%e4%b8%8e%e9%80%89%e6%8b%a9&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="适配器模式详解">
@@ -334,7 +805,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
+              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
               data-sizes="auto"
               alt="代理模式详解"
               class="lazyload"
@@ -346,7 +817,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">代理模式详解</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
+              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
               data-sizes="auto"
               alt="装饰器模式详解"
               class="lazyload"
@@ -378,10 +849,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -431,7 +902,45 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+      </ul>
+    </li>
+    <li><a href="#两种实现方式">两种实现方式</a>
+      <ul>
+        <li><a href="#一类适配器class-adapter">一、类适配器（Class Adapter）</a></li>
+        <li><a href="#二对象适配器object-adapter-推荐">二、对象适配器（Object Adapter）—— 推荐</a></li>
+        <li><a href="#两种方式对比">两种方式对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#案例一日志框架适配">案例一：日志框架适配</a></li>
+        <li><a href="#案例二支付网关适配">案例二：支付网关适配</a></li>
+        <li><a href="#案例三默认适配器接口适配器">案例三：默认适配器（接口适配器）</a></li>
+      </ul>
+    </li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例-1">实战案例</a>
+      <ul>
+        <li><a href="#jdk-中的适配器">JDK 中的适配器</a></li>
+        <li><a href="#spring-mvc-的-handleradapter">Spring MVC 的 HandlerAdapter</a></li>
+        <li><a href="#spring-aop-的-advisoradapter">Spring AOP 的 AdvisorAdapter</a></li>
+      </ul>
+    </li>
+    <li><a href="#适配器模式-vs-装饰器模式-vs-代理模式-vs-外观模式">适配器模式 vs 装饰器模式 vs 代理模式 vs 外观模式</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -562,6 +1071,105 @@
           description: "接口转换、类适配器与对象适配器的区别与选择",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

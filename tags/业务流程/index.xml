@@ -30,7 +30,13 @@
       <description>
         <![CDATA[<h1>后台业务信息流分析</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h1 id="hfs1-业务信息流分析">
+<a class="header-anchor" href="#hfs1-%e4%b8%9a%e5%8a%a1%e4%bf%a1%e6%81%af%e6%b5%81%e5%88%86%e6%9e%90"></a>
+HFS1 业务信息流分析
+</h1><h2 id="1-业务信息流概述">
+<a class="header-anchor" href="#1-%e4%b8%9a%e5%8a%a1%e4%bf%a1%e6%81%af%e6%b5%81%e6%a6%82%e8%bf%b0"></a>
+1. 业务信息流概述
+</h2><p>HFS1 轨道交通列车自动监控系统采用&quot;调度-进路-车载-显示&quot;的典型业务信息流模式。各业务功能涉及多个模块协作，通过消息总线、Redis共享内存、协议转换等多种方式实现信息流转。</p>
         
         <hr><p>本文2022-11-20首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-11-20</p>]]>
       </description>

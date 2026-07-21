@@ -30,7 +30,13 @@
       <description>
         <![CDATA[<h1>CmTrainNumProcPlug 列车号处理插件</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h1 id="cmtrainnumprocplug-模块功能说明">
+<a class="header-anchor" href="#cmtrainnumprocplug-%e6%a8%a1%e5%9d%97%e5%8a%9f%e8%83%bd%e8%af%b4%e6%98%8e"></a>
+CmTrainNumProcPlug 模块功能说明
+</h1><h2 id="1-模块概述">
+<a class="header-anchor" href="#1-%e6%a8%a1%e5%9d%97%e6%a6%82%e8%bf%b0"></a>
+1. 模块概述
+</h2><p>CmTrainNumProcPlug是列车号处理插件，负责处理系统中的列车号相关功能。该模块主要实现列车号的管理、显示和处理，提供列车信息的列表显示和交互功能。</p>
         
         <hr><p>本文2023-01-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-01-10</p>]]>
       </description>

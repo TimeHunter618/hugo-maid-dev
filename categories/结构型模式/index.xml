@@ -30,7 +30,12 @@
       <description>
         <![CDATA[<h1>代理模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>代理模式（Proxy Pattern）为其他对象提供一种代理以控制对这个对象的访问。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：为其他对象提供一种代理以控制对这个对象的访问。</p>
         
         <hr><p>本文2024-10-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-10-05</p>]]>
       </description>
@@ -50,7 +55,12 @@
       <description>
         <![CDATA[<h1>适配器模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>适配器模式（Adapter Pattern）将一个类的接口转换成客户端期望的另一个接口。适配器模式让原本接口不兼容的类可以一起工作。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：将一个类的接口转换成客户希望的另外一个接口。适配器模式使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。</p>
         
         <hr><p>本文2022-03-04首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-03-04</p>]]>
       </description>
@@ -70,7 +80,10 @@
       <description>
         <![CDATA[<h1>装饰器模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>装饰器模式（Decorator Pattern）动态地给一个对象添加一些额外的职责，就增加功能而言，装饰器模式比生成子类（继承）更加灵活。</p>
         
         <hr><p>本文2021-05-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-05-19</p>]]>
       </description>

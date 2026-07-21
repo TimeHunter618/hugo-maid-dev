@@ -190,7 +190,70 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#docker-核心概念">Docker 核心概念</a>
+      <ul>
+        <li><a href="#镜像与容器的关系">镜像与容器的关系</a></li>
+        <li><a href="#镜像分层原理">镜像分层原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#dockerfile-最佳实践">Dockerfile 最佳实践</a>
+      <ul>
+        <li><a href="#基础镜像选择">基础镜像选择</a></li>
+        <li><a href="#多阶段构建multi-stage-build">多阶段构建（Multi-stage Build）</a></li>
+        <li><a href="#减少镜像层数">减少镜像层数</a></li>
+        <li><a href="#利用构建缓存">利用构建缓存</a></li>
+        <li><a href="#设置健康检查">设置健康检查</a></li>
+        <li><a href="#完整-dockerfile-示例">完整 Dockerfile 示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#docker-网络模式">Docker 网络模式</a>
+      <ul>
+        <li><a href="#四种网络模式">四种网络模式</a></li>
+        <li><a href="#自定义网络">自定义网络</a></li>
+        <li><a href="#端口映射">端口映射</a></li>
+      </ul>
+    </li>
+    <li><a href="#数据持久化">数据持久化</a>
+      <ul>
+        <li><a href="#三种数据存储方式">三种数据存储方式</a></li>
+        <li><a href="#数据卷操作">数据卷操作</a></li>
+        <li><a href="#绑定挂载">绑定挂载</a></li>
+      </ul>
+    </li>
+    <li><a href="#docker-compose-编排">Docker Compose 编排</a>
+      <ul>
+        <li><a href="#compose-文件结构">Compose 文件结构</a></li>
+        <li><a href="#compose-常用命令">Compose 常用命令</a></li>
+        <li><a href="#多环境配置">多环境配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#镜像优化策略">镜像优化策略</a>
+      <ul>
+        <li><a href="#优化前后对比">优化前后对比</a></li>
+        <li><a href="#镜像大小分析">镜像大小分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#生产环境最佳实践">生产环境最佳实践</a>
+      <ul>
+        <li><a href="#安全配置">安全配置</a></li>
+        <li><a href="#资源限制">资源限制</a></li>
+        <li><a href="#日志管理">日志管理</a></li>
+        <li><a href="#监控与告警">监控与告警</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题排查">常见问题排查</a>
+      <ul>
+        <li><a href="#容器启动失败">容器启动失败</a></li>
+        <li><a href="#网络不通">网络不通</a></li>
+        <li><a href="#数据丢失">数据丢失</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +334,641 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1516414746402-935ce3621729?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1516414746402-935ce3621729?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Docker 彻底改变了应用部署的方式。它通过容器技术将应用及其依赖打包成标准化的镜像，实现了&quot;一次构建，到处运行&quot;的梦想。从开发环境到测试环境再到生产环境，Docker 保证了应用行为的一致性，极大地降低了运维复杂度。</p>
+<p>本文将从 Dockerfile 编写、镜像优化、网络配置、数据持久化到 Docker Compose 编排，系统梳理容器化部署的核心知识。</p>
+<h2 id="docker-核心概念">
+<a class="header-anchor" href="#docker-%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5"></a>
+Docker 核心概念
+</h2><h3 id="镜像与容器的关系">
+<a class="header-anchor" href="#%e9%95%9c%e5%83%8f%e4%b8%8e%e5%ae%b9%e5%99%a8%e7%9a%84%e5%85%b3%e7%b3%bb"></a>
+镜像与容器的关系
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "镜像 (Image)"
+        IMG["分层文件系统<br/>只读模板"]
+        L1["base: centos"]
+        L2["layer: java"]
+        L3["layer: app"]
+        L4["layer: config"]
+        L1 --> L2 --> L3 --> L4
+    end
+
+    subgraph "容器 (Container)"
+        CON["运行时实例<br/>可读写层"]
+        RW["读写层 (Copy-on-Write)"]
+    end
+
+    IMG -->|"docker run"| CON
+    CON -->|"基于镜像"| IMG
+    IMG -.->|"只读"| CON
+    CON -->|"可写"| RW
+</pre><table>
+	<thead>
+			<tr>
+					<th>概念</th>
+					<th>说明</th>
+					<th>类比</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>镜像 (Image)</strong></td>
+					<td>只读的文件系统快照，包含应用及其依赖</td>
+					<td>程序安装包</td>
+			</tr>
+			<tr>
+					<td><strong>容器 (Container)</strong></td>
+					<td>镜像的运行时实例，有独立的网络和文件系统</td>
+					<td>正在运行的程序</td>
+			</tr>
+			<tr>
+					<td><strong>仓库 (Registry)</strong></td>
+					<td>存储和分发镜像的服务器</td>
+					<td>Maven 仓库</td>
+			</tr>
+			<tr>
+					<td><strong>Dockerfile</strong></td>
+					<td>定义镜像构建过程的文本文件</td>
+					<td>菜谱</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="镜像分层原理">
+<a class="header-anchor" href="#%e9%95%9c%e5%83%8f%e5%88%86%e5%b1%82%e5%8e%9f%e7%90%86"></a>
+镜像分层原理
+</h3><p>Docker 采用 <strong>UnionFS（联合文件系统）</strong>，镜像由多个只读层叠加而成：</p>
+<pre class="mermaid">
+  graph LR
+    subgraph "镜像层 (只读)"
+        L0["Layer 0: 基础镜像<br/>ubuntu:22.04"]
+        L1["Layer 1: RUN apt-get update"]
+        L2["Layer 2: COPY app.jar ."]
+        L3["Layer 3: CMD java -jar app.jar"]
+    end
+
+    subgraph "容器层 (可写)"
+        L4["Container Layer<br/>运行时写入"]
+    end
+
+    L0 --> L1 --> L2 --> L3 --> L4
+</pre><p><strong>分层的优势</strong>：</p>
+<ul>
+<li><strong>复用</strong>：多个镜像共享基础层，节省存储空间</li>
+<li><strong>缓存</strong>：构建时只重新构建变更的层，加速构建</li>
+<li><strong>分发</strong>：推送/拉取时只传输差异层</li>
+</ul>
+<h2 id="dockerfile-最佳实践">
+<a class="header-anchor" href="#dockerfile-%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5"></a>
+Dockerfile 最佳实践
+</h2><h3 id="基础镜像选择">
+<a class="header-anchor" href="#%e5%9f%ba%e7%a1%80%e9%95%9c%e5%83%8f%e9%80%89%e6%8b%a9"></a>
+基础镜像选择
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># ❌ 不好：使用最新版本，可能导致构建不稳定</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="s">ubuntu:latest</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># ❌ 不好：镜像太大，包含不必要的依赖</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="s">ubuntu:22.04</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># ✅ 推荐：使用官方轻量镜像</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="s">openjdk:21-jdk-slim-bullseye</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># ✅ 最佳：使用 distroless 或 scratch（无操作系统）</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="s">gcr.io/distroless/java21-debian12</span><span class="err">
+</span></span></span></code></pre></div><h3 id="多阶段构建multi-stage-build">
+<a class="header-anchor" href="#%e5%a4%9a%e9%98%b6%e6%ae%b5%e6%9e%84%e5%bb%bamulti-stage-build"></a>
+多阶段构建（Multi-stage Build）
+</h3><p>多阶段构建是优化镜像大小的核心技巧：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># 阶段1：构建阶段（大镜像）</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="s">maven:3.9-eclipse-temurin-21</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="s">builder</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">COPY</span> pom.xml .<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">COPY</span> src ./src<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 只下载依赖（利用缓存）</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> mvn dependency:go-offline<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 编译打包</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> mvn clean package -DskipTests<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 阶段2：运行阶段（小镜像）</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="s">eclipse-temurin:21-jdk-slim</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 从构建阶段复制产物</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">COPY</span> --from<span class="o">=</span>builder /app/target/myapp.jar .<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 创建非 root 用户</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> useradd -m appuser <span class="o">&amp;&amp;</span> chown -R appuser:appuser /app<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">USER</span><span class="w"> </span><span class="s">appuser</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">EXPOSE</span><span class="w"> </span><span class="s">8080</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;java&#34;</span><span class="p">,</span> <span class="s2">&#34;-jar&#34;</span><span class="p">,</span> <span class="s2">&#34;myapp.jar&#34;</span><span class="p">]</span><span class="err">
+</span></span></span></code></pre></div><p><strong>效果对比</strong>：</p>
+<ul>
+<li>单阶段构建：~800MB</li>
+<li>多阶段构建：~250MB（减少 68%）</li>
+</ul>
+<h3 id="减少镜像层数">
+<a class="header-anchor" href="#%e5%87%8f%e5%b0%91%e9%95%9c%e5%83%8f%e5%b1%82%e6%95%b0"></a>
+减少镜像层数
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># ❌ 不好：每条 RUN 指令创建一层</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> apt-get update<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> apt-get install -y nginx<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> rm -rf /var/lib/apt/lists/*<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># ✅ 推荐：合并为一条指令，减少层数</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> apt-get update <span class="se">\
+</span></span></span><span class="line"><span class="cl">    <span class="o">&amp;&amp;</span> apt-get install -y nginx <span class="se">\
+</span></span></span><span class="line"><span class="cl">    <span class="o">&amp;&amp;</span> rm -rf /var/lib/apt/lists/*<span class="err">
+</span></span></span></code></pre></div><h3 id="利用构建缓存">
+<a class="header-anchor" href="#%e5%88%a9%e7%94%a8%e6%9e%84%e5%bb%ba%e7%bc%93%e5%ad%98"></a>
+利用构建缓存
+</h3><p>Dockerfile 按顺序执行，变更的指令之后的所有层都会重新构建：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># 1. 先复制依赖文件（变更频率低）</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">COPY</span> pom.xml .<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> mvn dependency:go-offline<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 2. 再复制源码（变更频率高）</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">COPY</span> src ./src<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> mvn clean package<span class="err">
+</span></span></span></code></pre></div><h3 id="设置健康检查">
+<a class="header-anchor" href="#%e8%ae%be%e7%bd%ae%e5%81%a5%e5%ba%b7%e6%a3%80%e6%9f%a5"></a>
+设置健康检查
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="k">HEALTHCHECK</span> --interval<span class="o">=</span>30s --timeout<span class="o">=</span>3s --retries<span class="o">=</span><span class="m">3</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    <span class="k">CMD</span> curl -f http://localhost:8080/actuator/health <span class="o">||</span> <span class="nb">exit</span> <span class="m">1</span><span class="err">
+</span></span></span></code></pre></div><h3 id="完整-dockerfile-示例">
+<a class="header-anchor" href="#%e5%ae%8c%e6%95%b4-dockerfile-%e7%a4%ba%e4%be%8b"></a>
+完整 Dockerfile 示例
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># 基于官方轻量镜像</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">FROM</span><span class="w"> </span><span class="s">eclipse-temurin:21-jdk-slim</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 设置工作目录</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 安装必要工具（可选）</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> apt-get update <span class="se">\
+</span></span></span><span class="line"><span class="cl">    <span class="o">&amp;&amp;</span> apt-get install -y --no-install-recommends curl <span class="se">\
+</span></span></span><span class="line"><span class="cl">    <span class="o">&amp;&amp;</span> rm -rf /var/lib/apt/lists/*<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 复制应用程序</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">COPY</span> target/myapp.jar .<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 创建非 root 用户（安全最佳实践）</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> groupadd -r appgroup <span class="o">&amp;&amp;</span> useradd -r -g appgroup appuser <span class="se">\
+</span></span></span><span class="line"><span class="cl">    <span class="o">&amp;&amp;</span> chown -R appuser:appgroup /app<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 切换到非 root 用户</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">USER</span><span class="w"> </span><span class="s">appuser</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 暴露端口</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">EXPOSE</span><span class="w"> </span><span class="s">8080</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 设置环境变量</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">ENV</span> <span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s2">&#34;-Xms512m -Xmx1024m -XX:+UseG1GC&#34;</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 启动命令</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">ENTRYPOINT</span> <span class="p">[</span><span class="s2">&#34;sh&#34;</span><span class="p">,</span> <span class="s2">&#34;-c&#34;</span><span class="p">,</span> <span class="s2">&#34;java $JAVA_OPTS -jar myapp.jar&#34;</span><span class="p">]</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 健康检查</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">HEALTHCHECK</span> --interval<span class="o">=</span>30s --timeout<span class="o">=</span>5s --retries<span class="o">=</span><span class="m">3</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">    <span class="k">CMD</span> curl -fs http://localhost:8080/api/health <span class="o">||</span> <span class="nb">exit</span> <span class="m">1</span><span class="err">
+</span></span></span></code></pre></div><h2 id="docker-网络模式">
+<a class="header-anchor" href="#docker-%e7%bd%91%e7%bb%9c%e6%a8%a1%e5%bc%8f"></a>
+Docker 网络模式
+</h2><h3 id="四种网络模式">
+<a class="header-anchor" href="#%e5%9b%9b%e7%a7%8d%e7%bd%91%e7%bb%9c%e6%a8%a1%e5%bc%8f"></a>
+四种网络模式
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "Docker 网络模式"
+        BR["bridge（桥接）<br/>默认模式，容器间隔离"]
+        H["host（主机）<br/>共享宿主机网络"]
+        N["none（无网络）<br/>完全隔离"]
+        C["container:name<br/>共享其他容器网络"]
+    end
+
+    BR -->|"docker run --net=bridge"| Default
+    H -->|"docker run --net=host"| Performance
+    N -->|"docker run --net=none"| Security
+    C -->|"docker run --net=container:mysql"| Share
+</pre><table>
+	<thead>
+			<tr>
+					<th>模式</th>
+					<th>说明</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>bridge</strong></td>
+					<td>默认，容器间通过虚拟网桥通信</td>
+					<td>多容器应用，需要网络隔离</td>
+			</tr>
+			<tr>
+					<td><strong>host</strong></td>
+					<td>容器共享宿主机网络栈</td>
+					<td>高性能场景，无需端口映射</td>
+			</tr>
+			<tr>
+					<td><strong>none</strong></td>
+					<td>容器无网络接口</td>
+					<td>安全隔离，仅本地处理</td>
+			</tr>
+			<tr>
+					<td><strong>container</strong></td>
+					<td>共享另一个容器的网络命名空间</td>
+					<td>调试，或需要共享网络配置</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="自定义网络">
+<a class="header-anchor" href="#%e8%87%aa%e5%ae%9a%e4%b9%89%e7%bd%91%e7%bb%9c"></a>
+自定义网络
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 创建自定义桥接网络</span>
+</span></span><span class="line"><span class="cl">docker network create --driver bridge --subnet 172.20.0.0/16 mynetwork
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 连接容器到网络</span>
+</span></span><span class="line"><span class="cl">docker run --network<span class="o">=</span>mynetwork --name<span class="o">=</span>mysql mysql:8.0
+</span></span><span class="line"><span class="cl">docker run --network<span class="o">=</span>mynetwork --name<span class="o">=</span>app myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 容器间可通过容器名直接通信</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># app 容器内可以 ping mysql</span>
+</span></span></code></pre></div><h3 id="端口映射">
+<a class="header-anchor" href="#%e7%ab%af%e5%8f%a3%e6%98%a0%e5%b0%84"></a>
+端口映射
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 将容器端口映射到宿主机</span>
+</span></span><span class="line"><span class="cl">docker run -p 8080:8080 myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 指定宿主机端口范围</span>
+</span></span><span class="line"><span class="cl">docker run -p 8080-8085:8080 myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 随机分配宿主机端口</span>
+</span></span><span class="line"><span class="cl">docker run -P myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 绑定到特定 IP</span>
+</span></span><span class="line"><span class="cl">docker run -p 127.0.0.1:8080:8080 myapp
+</span></span></code></pre></div><h2 id="数据持久化">
+<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e6%8c%81%e4%b9%85%e5%8c%96"></a>
+数据持久化
+</h2><h3 id="三种数据存储方式">
+<a class="header-anchor" href="#%e4%b8%89%e7%a7%8d%e6%95%b0%e6%8d%ae%e5%ad%98%e5%82%a8%e6%96%b9%e5%bc%8f"></a>
+三种数据存储方式
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "容器内文件系统"
+        A["容器层 (Container Layer)<br/>容器删除即丢失"]
+    end
+
+    subgraph "持久化存储"
+        B["数据卷 (Volume)<br/>由 Docker 管理"]
+        C["绑定挂载 (Bind Mount)<br/>挂载宿主机目录"]
+        D["tmpfs 挂载 (tmpfs mount)<br/>内存中的临时文件"]
+    end
+
+    A -->|"docker run -v /data"| B
+    A -->|"docker run -v /host/path:/container/path"| C
+    A -->|"docker run --tmpfs /tmp"| D
+</pre><table>
+	<thead>
+			<tr>
+					<th>方式</th>
+					<th>优点</th>
+					<th>缺点</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Volume</strong></td>
+					<td>由 Docker 管理，跨容器共享</td>
+					<td>访问需通过 Docker CLI</td>
+					<td>数据库数据、配置文件</td>
+			</tr>
+			<tr>
+					<td><strong>Bind Mount</strong></td>
+					<td>直接访问宿主机文件</td>
+					<td>依赖宿主机路径</td>
+					<td>开发环境、日志输出</td>
+			</tr>
+			<tr>
+					<td><strong>tmpfs</strong></td>
+					<td>高性能，容器删除自动清理</td>
+					<td>不持久化到磁盘</td>
+					<td>临时文件、敏感数据</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="数据卷操作">
+<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e5%8d%b7%e6%93%8d%e4%bd%9c"></a>
+数据卷操作
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 创建数据卷</span>
+</span></span><span class="line"><span class="cl">docker volume create mysql-data
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看数据卷</span>
+</span></span><span class="line"><span class="cl">docker volume ls
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看数据卷详情</span>
+</span></span><span class="line"><span class="cl">docker volume inspect mysql-data
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 使用数据卷</span>
+</span></span><span class="line"><span class="cl">docker run -v mysql-data:/var/lib/mysql mysql:8.0
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 删除未使用的数据卷</span>
+</span></span><span class="line"><span class="cl">docker volume prune
+</span></span></code></pre></div><h3 id="绑定挂载">
+<a class="header-anchor" href="#%e7%bb%91%e5%ae%9a%e6%8c%82%e8%bd%bd"></a>
+绑定挂载
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 将宿主机目录挂载到容器</span>
+</span></span><span class="line"><span class="cl">docker run -v /host/app:/container/app myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 只读挂载</span>
+</span></span><span class="line"><span class="cl">docker run -v /host/config:/container/config:ro myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 传递文件</span>
+</span></span><span class="line"><span class="cl">docker run -v /host/my.conf:/container/my.conf myapp
+</span></span></code></pre></div><h2 id="docker-compose-编排">
+<a class="header-anchor" href="#docker-compose-%e7%bc%96%e6%8e%92"></a>
+Docker Compose 编排
+</h2><h3 id="compose-文件结构">
+<a class="header-anchor" href="#compose-%e6%96%87%e4%bb%b6%e7%bb%93%e6%9e%84"></a>
+Compose 文件结构
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3.8&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># MySQL 数据库</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">mysql</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">mysql:8.0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">mysql</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">MYSQL_ROOT_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l">root</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">MYSQL_DATABASE</span><span class="p">:</span><span class="w"> </span><span class="l">mydb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">MYSQL_USER</span><span class="p">:</span><span class="w"> </span><span class="l">app</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">MYSQL_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l">password</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">mysql-data:/var/lib/mysql</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">./init.sql:/docker-entrypoint-initdb.d/init.sql</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s2">&#34;3306:3306&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">networks</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">mynetwork</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">healthcheck</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;CMD&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;mysqladmin&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;ping&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;-h&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;localhost&#34;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l">10s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l">5s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">retries</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">unless-stopped</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># Redis 缓存</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">redis</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">redis:7-alpine</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">redis</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">redis-data:/data</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">networks</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">mynetwork</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">unless-stopped</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># 应用服务</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">app</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l">Dockerfile</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="l">myapp</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">SPRING_DATASOURCE_URL</span><span class="p">:</span><span class="w"> </span><span class="l">jdbc:mysql://mysql:3306/mydb</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">SPRING_DATASOURCE_USERNAME</span><span class="p">:</span><span class="w"> </span><span class="l">app</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">SPRING_DATASOURCE_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l">password</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">SPRING_REDIS_HOST</span><span class="p">:</span><span class="w"> </span><span class="l">redis</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s2">&#34;8080:8080&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">networks</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">mynetwork</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">mysql</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l">service_healthy</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">redis</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">condition</span><span class="p">:</span><span class="w"> </span><span class="l">service_started</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="l">unless-stopped</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">mysql-data</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">redis-data</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">networks</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">mynetwork</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">driver</span><span class="p">:</span><span class="w"> </span><span class="l">bridge</span><span class="w">
+</span></span></span></code></pre></div><h3 id="compose-常用命令">
+<a class="header-anchor" href="#compose-%e5%b8%b8%e7%94%a8%e5%91%bd%e4%bb%a4"></a>
+Compose 常用命令
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 启动所有服务（后台运行）</span>
+</span></span><span class="line"><span class="cl">docker-compose up -d
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动指定服务</span>
+</span></span><span class="line"><span class="cl">docker-compose up -d app
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看日志</span>
+</span></span><span class="line"><span class="cl">docker-compose logs
+</span></span><span class="line"><span class="cl">docker-compose logs -f app
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看运行状态</span>
+</span></span><span class="line"><span class="cl">docker-compose ps
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 停止服务</span>
+</span></span><span class="line"><span class="cl">docker-compose stop
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 停止并删除容器</span>
+</span></span><span class="line"><span class="cl">docker-compose down
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 重新构建并启动</span>
+</span></span><span class="line"><span class="cl">docker-compose up -d --build
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 进入容器</span>
+</span></span><span class="line"><span class="cl">docker-compose <span class="nb">exec</span> app bash
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看服务依赖</span>
+</span></span><span class="line"><span class="cl">docker-compose top
+</span></span></code></pre></div><h3 id="多环境配置">
+<a class="header-anchor" href="#%e5%a4%9a%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae"></a>
+多环境配置
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># docker-compose.yml - 基础配置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3.8&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">app</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">myapp:latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">ENV</span><span class="p">:</span><span class="w"> </span><span class="l">${ENV:-production}</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># docker-compose.override.yml - 开发环境覆盖</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3.8&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">app</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">.:/app</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">ENV</span><span class="p">:</span><span class="w"> </span><span class="l">development</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">DEBUG</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 开发环境（自动合并 override）</span>
+</span></span><span class="line"><span class="cl">docker-compose up -d
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 生产环境（指定文件）</span>
+</span></span><span class="line"><span class="cl">docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+</span></span></code></pre></div><h2 id="镜像优化策略">
+<a class="header-anchor" href="#%e9%95%9c%e5%83%8f%e4%bc%98%e5%8c%96%e7%ad%96%e7%95%a5"></a>
+镜像优化策略
+</h2><h3 id="优化前后对比">
+<a class="header-anchor" href="#%e4%bc%98%e5%8c%96%e5%89%8d%e5%90%8e%e5%af%b9%e6%af%94"></a>
+优化前后对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>优化项</th>
+					<th>优化前</th>
+					<th>优化后</th>
+					<th>收益</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>基础镜像</td>
+					<td>ubuntu:22.04</td>
+					<td>openjdk:21-jdk-slim</td>
+					<td>减少 60%</td>
+			</tr>
+			<tr>
+					<td>构建方式</td>
+					<td>单阶段</td>
+					<td>多阶段构建</td>
+					<td>减少 50%</td>
+			</tr>
+			<tr>
+					<td>依赖清理</td>
+					<td>保留 apt 缓存</td>
+					<td>rm -rf /var/lib/apt/lists/*</td>
+					<td>减少 20%</td>
+			</tr>
+			<tr>
+					<td>安装方式</td>
+					<td>apt-get install</td>
+					<td>合并为一条指令</td>
+					<td>减少层数</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="镜像大小分析">
+<a class="header-anchor" href="#%e9%95%9c%e5%83%8f%e5%a4%a7%e5%b0%8f%e5%88%86%e6%9e%90"></a>
+镜像大小分析
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看镜像分层大小</span>
+</span></span><span class="line"><span class="cl">docker <span class="nb">history</span> myapp:latest
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 分析镜像内容</span>
+</span></span><span class="line"><span class="cl">docker run --rm -v /var/run/docker.sock:/var/run/docker.sock <span class="se">\
+</span></span></span><span class="line"><span class="cl">    wagoodman/dive myapp:latest
+</span></span></code></pre></div><h2 id="生产环境最佳实践">
+<a class="header-anchor" href="#%e7%94%9f%e4%ba%a7%e7%8e%af%e5%a2%83%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5"></a>
+生产环境最佳实践
+</h2><h3 id="安全配置">
+<a class="header-anchor" href="#%e5%ae%89%e5%85%a8%e9%85%8d%e7%bd%ae"></a>
+安全配置
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c"># ✅ 创建非 root 用户</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> groupadd -r appgroup <span class="o">&amp;&amp;</span> useradd -r -g appgroup appuser<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">USER</span><span class="w"> </span><span class="s">appuser</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># ✅ 设置只读文件系统</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> mkdir -p /app/logs /app/temp<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">VOLUME</span> <span class="p">[</span><span class="s2">&#34;/app/logs&#34;</span><span class="p">,</span> <span class="s2">&#34;/app/temp&#34;</span><span class="p">]</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">RUN</span> chown appuser:appgroup /app/logs /app/temp<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="c"># ✅ 设置合理的权限</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="k">COPY</span> --chown<span class="o">=</span>appuser:appgroup target/myapp.jar .<span class="err">
+</span></span></span></code></pre></div><h3 id="资源限制">
+<a class="header-anchor" href="#%e8%b5%84%e6%ba%90%e9%99%90%e5%88%b6"></a>
+资源限制
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># CPU 限制</span>
+</span></span><span class="line"><span class="cl">docker run --cpus<span class="o">=</span><span class="s2">&#34;2.0&#34;</span> --cpu-shares<span class="o">=</span><span class="m">512</span> myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 内存限制</span>
+</span></span><span class="line"><span class="cl">docker run --memory<span class="o">=</span><span class="s2">&#34;1g&#34;</span> --memory-swap<span class="o">=</span><span class="s2">&#34;2g&#34;</span> myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 磁盘 IO 限制</span>
+</span></span><span class="line"><span class="cl">docker run --blkio-weight<span class="o">=</span><span class="m">500</span> myapp
+</span></span></code></pre></div><h3 id="日志管理">
+<a class="header-anchor" href="#%e6%97%a5%e5%bf%97%e7%ae%a1%e7%90%86"></a>
+日志管理
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># JSON 日志驱动（默认）</span>
+</span></span><span class="line"><span class="cl">docker run --log-driver<span class="o">=</span>json-file --log-opt max-size<span class="o">=</span>10m --log-opt max-file<span class="o">=</span><span class="m">5</span> myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 配置日志轮转</span>
+</span></span><span class="line"><span class="cl">docker run --log-opt max-size<span class="o">=</span>100m --log-opt max-file<span class="o">=</span><span class="m">10</span> myapp
+</span></span></code></pre></div><h3 id="监控与告警">
+<a class="header-anchor" href="#%e7%9b%91%e6%8e%a7%e4%b8%8e%e5%91%8a%e8%ad%a6"></a>
+监控与告警
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看容器资源使用</span>
+</span></span><span class="line"><span class="cl">docker stats
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看容器进程</span>
+</span></span><span class="line"><span class="cl">docker top myapp
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看容器详情</span>
+</span></span><span class="line"><span class="cl">docker inspect myapp
+</span></span></code></pre></div><h2 id="常见问题排查">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e6%8e%92%e6%9f%a5"></a>
+常见问题排查
+</h2><h3 id="容器启动失败">
+<a class="header-anchor" href="#%e5%ae%b9%e5%99%a8%e5%90%af%e5%8a%a8%e5%a4%b1%e8%b4%a5"></a>
+容器启动失败
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看容器日志</span>
+</span></span><span class="line"><span class="cl">docker logs &lt;container-id&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 进入容器排查</span>
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> -it &lt;container-id&gt; bash
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看容器状态</span>
+</span></span><span class="line"><span class="cl">docker ps -a
+</span></span></code></pre></div><h3 id="网络不通">
+<a class="header-anchor" href="#%e7%bd%91%e7%bb%9c%e4%b8%8d%e9%80%9a"></a>
+网络不通
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 检查容器网络配置</span>
+</span></span><span class="line"><span class="cl">docker inspect &lt;container-id&gt; <span class="p">|</span> grep -A <span class="m">10</span> Networks
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 测试容器间连通性</span>
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> &lt;container-id&gt; ping &lt;other-container-name&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 检查端口映射</span>
+</span></span><span class="line"><span class="cl">docker port &lt;container-id&gt;
+</span></span></code></pre></div><h3 id="数据丢失">
+<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e4%b8%a2%e5%a4%b1"></a>
+数据丢失
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 检查数据卷是否正确挂载</span>
+</span></span><span class="line"><span class="cl">docker inspect &lt;container-id&gt; <span class="p">|</span> grep -A <span class="m">10</span> Mounts
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 检查文件权限</span>
+</span></span><span class="line"><span class="cl">docker <span class="nb">exec</span> &lt;container-id&gt; ls -la /data
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 备份数据卷</span>
+</span></span><span class="line"><span class="cl">docker run --rm -v mysql-data:/data -v <span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/backup busybox tar -czvf /backup/mysql-backup.tar.gz /data
+</span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>Docker 容器化不仅仅是技术，更是一种<strong>运维思想</strong>的转变。它将应用从底层基础设施中解耦出来，让开发和运维的协作更加顺畅。</p>
+<p>掌握 Dockerfile 的最佳实践、多阶段构建、网络配置和数据持久化，是容器化部署的基础。在此基础上，配合 Docker Compose 进行多容器编排，可以轻松管理复杂的微服务架构。</p>
+<p>从开发到生产，容器化的核心理念始终是：<strong>标准化、可复用、可移植</strong>。</p>
+<hr>
+<p><strong>延伸阅读</strong>：</p>
+<ol>
+<li>Docker 官方文档 - <a href="https://docs.docker.com/">https://docs.docker.com/</a></li>
+<li>Best practices for writing Dockerfiles - <a href="https://docs.docker.com/develop/develop-images/dockerfile_best-practices/">https://docs.docker.com/develop/develop-images/dockerfile_best-practices/</a></li>
+<li>Docker Compose 文档 - <a href="https://docs.docker.com/compose/">https://docs.docker.com/compose/</a></li>
+</ol>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/middleware-ops/docker%E5%AE%B9%E5%99%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E8%B7%B5/&amp;appkey=&amp;title=Docker%e5%ae%b9%e5%99%a8%e5%8c%96%e9%83%a8%e7%bd%b2%e5%ae%9e%e8%b7%b5&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="Docker容器化部署实践">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/middleware-ops/docker%E5%AE%B9%E5%99%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E8%B7%B5/&amp;title=Docker%e5%ae%b9%e5%99%a8%e5%8c%96%e9%83%a8%e7%bd%b2%e5%ae%9e%e8%b7%b5&amp;desc=Dockerfile%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e3%80%81%e5%a4%9a%e9%98%b6%e6%ae%b5%e6%9e%84%e5%bb%ba%e3%80%81%e7%bd%91%e7%bb%9c%e6%a8%a1%e5%bc%8f%e3%80%81%e6%95%b0%e6%8d%ae%e5%8d%b7%e3%80%81Compose%e7%bc%96%e6%8e%92&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="Docker容器化部署实践">
@@ -360,7 +1057,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">JVM调优与GC策略</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
+              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
               data-sizes="auto"
               alt="ZooKeeper分布式协"
               class="lazyload"
@@ -392,10 +1089,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -445,7 +1142,70 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#docker-核心概念">Docker 核心概念</a>
+      <ul>
+        <li><a href="#镜像与容器的关系">镜像与容器的关系</a></li>
+        <li><a href="#镜像分层原理">镜像分层原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#dockerfile-最佳实践">Dockerfile 最佳实践</a>
+      <ul>
+        <li><a href="#基础镜像选择">基础镜像选择</a></li>
+        <li><a href="#多阶段构建multi-stage-build">多阶段构建（Multi-stage Build）</a></li>
+        <li><a href="#减少镜像层数">减少镜像层数</a></li>
+        <li><a href="#利用构建缓存">利用构建缓存</a></li>
+        <li><a href="#设置健康检查">设置健康检查</a></li>
+        <li><a href="#完整-dockerfile-示例">完整 Dockerfile 示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#docker-网络模式">Docker 网络模式</a>
+      <ul>
+        <li><a href="#四种网络模式">四种网络模式</a></li>
+        <li><a href="#自定义网络">自定义网络</a></li>
+        <li><a href="#端口映射">端口映射</a></li>
+      </ul>
+    </li>
+    <li><a href="#数据持久化">数据持久化</a>
+      <ul>
+        <li><a href="#三种数据存储方式">三种数据存储方式</a></li>
+        <li><a href="#数据卷操作">数据卷操作</a></li>
+        <li><a href="#绑定挂载">绑定挂载</a></li>
+      </ul>
+    </li>
+    <li><a href="#docker-compose-编排">Docker Compose 编排</a>
+      <ul>
+        <li><a href="#compose-文件结构">Compose 文件结构</a></li>
+        <li><a href="#compose-常用命令">Compose 常用命令</a></li>
+        <li><a href="#多环境配置">多环境配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#镜像优化策略">镜像优化策略</a>
+      <ul>
+        <li><a href="#优化前后对比">优化前后对比</a></li>
+        <li><a href="#镜像大小分析">镜像大小分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#生产环境最佳实践">生产环境最佳实践</a>
+      <ul>
+        <li><a href="#安全配置">安全配置</a></li>
+        <li><a href="#资源限制">资源限制</a></li>
+        <li><a href="#日志管理">日志管理</a></li>
+        <li><a href="#监控与告警">监控与告警</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题排查">常见问题排查</a>
+      <ul>
+        <li><a href="#容器启动失败">容器启动失败</a></li>
+        <li><a href="#网络不通">网络不通</a></li>
+        <li><a href="#数据丢失">数据丢失</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -576,6 +1336,105 @@
           description: "Dockerfile最佳实践、多阶段构建、网络模式、数据卷、Compose编排",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

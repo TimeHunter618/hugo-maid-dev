@@ -30,7 +30,13 @@
       <description>
         <![CDATA[<h1>CmSignalProcPlug 信号处理插件</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h1 id="cmsignalprocplug-模块功能说明">
+<a class="header-anchor" href="#cmsignalprocplug-%e6%a8%a1%e5%9d%97%e5%8a%9f%e8%83%bd%e8%af%b4%e6%98%8e"></a>
+CmSignalProcPlug 模块功能说明
+</h1><h2 id="1-模块概述">
+<a class="header-anchor" href="#1-%e6%a8%a1%e5%9d%97%e6%a6%82%e8%bf%b0"></a>
+1. 模块概述
+</h2><p>CmSignalProcPlug是信号处理插件，负责处理系统中的各种信号信息。该模块主要实现信号的接收、处理和分发，确保系统各部分能够及时获取和响应信号状态变化。</p>
         
         <hr><p>本文2022-05-02首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-05-02</p>]]>
       </description>

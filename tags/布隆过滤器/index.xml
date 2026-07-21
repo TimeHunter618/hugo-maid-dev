@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>位图 BitMap 详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>位图（BitMap）是一种高效的数据结构，它使用位（bit）来表示元素的存在状态。相比于传统的数据结构（如数组、链表），位图在空间效率上有着巨大的优势，特别适合处理大规模数据的去重、排序、查找等场景。</p>
         
         <hr><p>本文2022-10-17首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-10-17</p>]]>
       </description>

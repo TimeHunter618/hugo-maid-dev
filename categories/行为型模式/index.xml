@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>模板方法模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>模板方法模式（Template Method Pattern）在一个方法中定义一个算法的骨架，而将一些步骤延迟到子类中实现。模板方法使得子类可以在不改变算法结构的情况下，重新定义算法中的某些特定步骤。</p>
         
         <hr><p>本文2025-09-12首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-09-12</p>]]>
       </description>
@@ -50,7 +53,10 @@
       <description>
         <![CDATA[<h1>观察者模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>观察者模式（Observer Pattern）定义了对象之间的一对多依赖关系，当一个对象的状态发生变化时，所有依赖于它的对象都会得到通知并自动更新。</p>
         
         <hr><p>本文2024-08-08首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-08-08</p>]]>
       </description>
@@ -70,7 +76,10 @@
       <description>
         <![CDATA[<h1>责任链模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>责任链模式（Chain of Responsibility Pattern）为请求创建一个接收者对象的链。每个接收者都包含对另一个接收者的引用，如果一个对象不能处理该请求，它就会把请求传递给链中的下一个接收者，依此类推。</p>
         
         <hr><p>本文2023-11-09首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-11-09</p>]]>
       </description>
@@ -90,7 +99,10 @@
       <description>
         <![CDATA[<h1>策略模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>策略模式（Strategy Pattern）定义了一系列算法，将每一个算法封装起来，并使它们可以互相替换。策略模式让算法的变化不会影响到使用算法的客户端。</p>
         
         <hr><p>本文2023-08-26首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-08-26</p>]]>
       </description>

@@ -36,53 +36,7 @@
 </h2><blockquote>
 <p><strong>面试场景</strong>：Chrome插件中存储和使用AI API Key存在哪些安全风险？如何防范？</p>
 </blockquote>
-<h2 id="安全策略">
-<a class="header-anchor" href="#%e5%ae%89%e5%85%a8%e7%ad%96%e7%95%a5"></a>
-安全策略
-</h2><h3 id="1-api-key保护">
-<a class="header-anchor" href="#1-api-key%e4%bf%9d%e6%8a%a4"></a>
-1. API Key保护
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">chrome</span><span class="p">.</span><span class="nx">storage</span><span class="p">.</span><span class="nx">local</span><span class="p">.</span><span class="nx">get</span><span class="p">([</span><span class="s1">&#39;apiKey&#39;</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">apiKey</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">chrome</span><span class="p">.</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">sendMessage</span><span class="p">({</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;CALL_AI&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">apiKey</span><span class="o">:</span> <span class="nx">result</span><span class="p">.</span><span class="nx">apiKey</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">prompt</span><span class="o">:</span> <span class="nx">userInput</span>
-</span></span><span class="line"><span class="cl">        <span class="p">});</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></div><h3 id="2-后台脚本隔离">
-<a class="header-anchor" href="#2-%e5%90%8e%e5%8f%b0%e8%84%9a%e6%9c%ac%e9%9a%94%e7%a6%bb"></a>
-2. 后台脚本隔离
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">chrome</span><span class="p">.</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">onMessage</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">sender</span><span class="p">,</span> <span class="nx">sendResponse</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;CALL_AI&#39;</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;https://api.example.com/ai&#39;</span><span class="p">,</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">headers</span><span class="o">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="s1">&#39;Authorization&#39;</span><span class="o">:</span> <span class="s1">&#39;Bearer &#39;</span> <span class="o">+</span> <span class="nx">request</span><span class="p">.</span><span class="nx">apiKey</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                <span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span> <span class="s1">&#39;application/json&#39;</span>
-</span></span><span class="line"><span class="cl">            <span class="p">},</span>
-</span></span><span class="line"><span class="cl">            <span class="nx">body</span><span class="o">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span> <span class="nx">prompt</span><span class="o">:</span> <span class="nx">request</span><span class="p">.</span><span class="nx">prompt</span> <span class="p">})</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">response</span> <span class="p">=&gt;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">())</span>
-</span></span><span class="line"><span class="cl">          <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">data</span> <span class="p">=&gt;</span> <span class="nx">sendResponse</span><span class="p">(</span><span class="nx">data</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">          <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">error</span> <span class="p">=&gt;</span> <span class="nx">sendResponse</span><span class="p">({</span> <span class="nx">error</span><span class="o">:</span> <span class="nx">error</span><span class="p">.</span><span class="nx">message</span> <span class="p">}));</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></div><h3 id="3-权限最小化">
-<a class="header-anchor" href="#3-%e6%9d%83%e9%99%90%e6%9c%80%e5%b0%8f%e5%8c%96"></a>
-3. 权限最小化
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;permissions&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">        <span class="s2">&#34;storage&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">        <span class="s2">&#34;activeTab&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">        <span class="s2">&#34;https://api.example.com/*&#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">]</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h2 id="总结">
-<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
-总结
-</h2><p>Chrome插件调用AI时需要注意API Key的安全存储、后台脚本隔离和权限最小化。</p>
+<p>Chrome插件的安全问题尤为重要，因为插件可以访问用户的浏览数据。如果API Key泄露，可能导致：API费用被滥用、用户数据被泄露、服务被恶意调用等问题。</p>
         
         <hr><p>本文2025-02-03首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-02-03</p>]]>
       </description>

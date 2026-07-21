@@ -36,58 +36,7 @@
 </h2><blockquote>
 <p><strong>面试场景</strong>：当调用AI API遇到429错误时，有哪些解决方案？</p>
 </blockquote>
-<h2 id="解决方案">
-<a class="header-anchor" href="#%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88"></a>
-解决方案
-</h2><h3 id="1-令牌桶限流">
-<a class="header-anchor" href="#1-%e4%bb%a4%e7%89%8c%e6%a1%b6%e9%99%90%e6%b5%81"></a>
-1. 令牌桶限流
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TokenBucket</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">refillRate</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">tokens</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">lastRefillTime</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">TokenBucket</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">refillRate</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">capacity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">refillRate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">refillRate</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">tokens</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">lastRefillTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">();</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">synchronized</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">tryAcquire</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">refill</span><span class="p">();</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tokens</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tokens</span><span class="o">--</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">refill</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">now</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">();</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">double</span><span class="w"> </span><span class="n">elapsed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">now</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lastRefillTime</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">1000</span><span class="p">.</span><span class="na">0</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">tokens</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="n">capacity</span><span class="p">,</span><span class="w"> </span><span class="n">tokens</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">elapsed</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">refillRate</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">lastRefillTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><h3 id="2-多key轮询">
-<a class="header-anchor" href="#2-%e5%a4%9akey%e8%bd%ae%e8%af%a2"></a>
-2. 多Key轮询
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ApiKeyRotator</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">apiKeys</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">currentIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">synchronized</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getNextKey</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">apiKeys</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">currentIndex</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">currentIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">currentIndex</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">apiKeys</span><span class="p">.</span><span class="na">size</span><span class="p">();</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">key</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><h2 id="总结">
-<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
-总结
-</h2><p>解决429速率限制需要结合限流、重试和多Key轮询等策略。</p>
+<p>429错误表示请求过于频繁，超出了API的速率限制。这是API调用中常见的问题，需要合理的策略来应对。</p>
         
         <hr><p>本文2023-07-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-07-10</p>]]>
       </description>

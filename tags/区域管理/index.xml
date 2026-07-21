@@ -30,7 +30,13 @@
       <description>
         <![CDATA[<h1>CmOperAreaManagePlug 操作区域管理插件</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h1 id="cmoperareamanageplug-模块功能说明">
+<a class="header-anchor" href="#cmoperareamanageplug-%e6%a8%a1%e5%9d%97%e5%8a%9f%e8%83%bd%e8%af%b4%e6%98%8e"></a>
+CmOperAreaManagePlug 模块功能说明
+</h1><h2 id="1-模块概述">
+<a class="header-anchor" href="#1-%e6%a8%a1%e5%9d%97%e6%a6%82%e8%bf%b0"></a>
+1. 模块概述
+</h2><p>CmOperAreaManagePlug是操作区域管理插件，负责处理系统中的操作区域管理功能，包括接收外部数据和定时器事件处理。</p>
         
         <hr><p>本文2024-04-30首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-04-30</p>]]>
       </description>

@@ -190,7 +190,70 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#哈希表原理">哈希表原理</a>
+      <ul>
+        <li><a href="#基本概念">基本概念</a></li>
+        <li><a href="#工作流程">工作流程</a></li>
+        <li><a href="#核心要素">核心要素</a></li>
+      </ul>
+    </li>
+    <li><a href="#哈希函数设计">哈希函数设计</a>
+      <ul>
+        <li><a href="#设计原则">设计原则</a></li>
+        <li><a href="#常见哈希函数">常见哈希函数</a></li>
+        <li><a href="#java-string-哈希函数">Java String 哈希函数</a></li>
+      </ul>
+    </li>
+    <li><a href="#冲突处理">冲突处理</a>
+      <ul>
+        <li><a href="#链式地址法">链式地址法</a></li>
+        <li><a href="#开放寻址法">开放寻址法</a></li>
+        <li><a href="#再哈希法">再哈希法</a></li>
+        <li><a href="#冲突处理对比">冲突处理对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#java-hashmap-实现">Java HashMap 实现</a>
+      <ul>
+        <li><a href="#内部结构">内部结构</a></li>
+        <li><a href="#核心字段">核心字段</a></li>
+        <li><a href="#get-方法">get 方法</a></li>
+        <li><a href="#put-方法">put 方法</a></li>
+        <li><a href="#扩容机制">扩容机制</a></li>
+      </ul>
+    </li>
+    <li><a href="#concurrenthashmap">ConcurrentHashMap</a>
+      <ul>
+        <li><a href="#并发安全机制">并发安全机制</a></li>
+        <li><a href="#关键改进">关键改进</a></li>
+        <li><a href="#java-8-优化">Java 8 优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#哈希表应用">哈希表应用</a>
+      <ul>
+        <li><a href="#缓存实现">缓存实现</a></li>
+        <li><a href="#去重统计">去重统计</a></li>
+        <li><a href="#两数之和">两数之和</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能分析">性能分析</a>
+      <ul>
+        <li><a href="#时间复杂度">时间复杂度</a></li>
+        <li><a href="#影响因素">影响因素</a></li>
+        <li><a href="#负载因子选择">负载因子选择</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +334,820 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>哈希表（Hash Table）是一种高效的数据结构，通过哈希函数将键映射到数组索引，实现 O(1) 平均时间复杂度的查找、插入和删除操作。它是计算机科学中最重要的数据结构之一，广泛应用于缓存、数据库索引、编译器符号表等领域。</p>
+<p>本文将深入讲解哈希表的原理、哈希函数设计、冲突处理策略、Java HashMap 的实现细节，以及 ConcurrentHashMap 的并发安全机制。</p>
+<h2 id="哈希表原理">
+<a class="header-anchor" href="#%e5%93%88%e5%b8%8c%e8%a1%a8%e5%8e%9f%e7%90%86"></a>
+哈希表原理
+</h2><h3 id="基本概念">
+<a class="header-anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5"></a>
+基本概念
+</h3><p>哈希表的核心思想是通过哈希函数将键转换为数组索引，从而实现快速访问。</p>
+<pre class="mermaid">
+  graph LR
+    A["Key"] --> B["哈希函数"]
+    B --> C["数组索引"]
+    C --> D["数组槽位"]
+    D --> E["Value"]
+</pre><h3 id="工作流程">
+<a class="header-anchor" href="#%e5%b7%a5%e4%bd%9c%e6%b5%81%e7%a8%8b"></a>
+工作流程
+</h3><pre class="mermaid">
+  flowchart TD
+    A["插入 (Key, Value)"] --> B["计算哈希值"]
+    B --> C["取模得到索引"]
+    C --> D{"槽位是否为空?"}
+    D -->|是| E["直接存储"]
+    D -->|否| F["处理冲突"]
+    F --> G["链式存储 或 开放寻址"]
+</pre><h3 id="核心要素">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e8%a6%81%e7%b4%a0"></a>
+核心要素
+</h3><table>
+	<thead>
+			<tr>
+					<th>要素</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>哈希函数</strong></td>
+					<td>将 Key 转换为整数索引</td>
+			</tr>
+			<tr>
+					<td><strong>数组</strong></td>
+					<td>存储数据的主结构</td>
+			</tr>
+			<tr>
+					<td><strong>冲突处理</strong></td>
+					<td>解决不同 Key 映射到同一索引的问题</td>
+			</tr>
+			<tr>
+					<td><strong>负载因子</strong></td>
+					<td>控制扩容时机</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="哈希函数设计">
+<a class="header-anchor" href="#%e5%93%88%e5%b8%8c%e5%87%bd%e6%95%b0%e8%ae%be%e8%ae%a1"></a>
+哈希函数设计
+</h2><h3 id="设计原则">
+<a class="header-anchor" href="#%e8%ae%be%e8%ae%a1%e5%8e%9f%e5%88%99"></a>
+设计原则
+</h3><ol>
+<li><strong>均匀分布</strong>：哈希值应均匀分布在数组范围内</li>
+<li><strong>快速计算</strong>：哈希函数应简单高效</li>
+<li><strong>确定性</strong>：相同的 Key 应产生相同的哈希值</li>
+</ol>
+<h3 id="常见哈希函数">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e5%93%88%e5%b8%8c%e5%87%bd%e6%95%b0"></a>
+常见哈希函数
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">HashFunctions</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">simpleHash</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">key</span><span class="p">.</span><span class="na">toCharArray</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">31</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">abs</span><span class="p">(</span><span class="n">hash</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">polynomialHash</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">911382629</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">key</span><span class="p">.</span><span class="na">toCharArray</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">hash</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">abs</span><span class="p">(</span><span class="n">hash</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">fnvHash</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0x811C9DC5</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">key</span><span class="p">.</span><span class="na">toCharArray</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">hash</span><span class="w"> </span><span class="o">^=</span><span class="w"> </span><span class="n">c</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">hash</span><span class="w"> </span><span class="o">*=</span><span class="w"> </span><span class="n">0x01000193</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">abs</span><span class="p">(</span><span class="n">hash</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="java-string-哈希函数">
+<a class="header-anchor" href="#java-string-%e5%93%88%e5%b8%8c%e5%87%bd%e6%95%b0"></a>
+Java String 哈希函数
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">hashCode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hash</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">h</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">char</span><span class="w"> </span><span class="n">val</span><span class="o">[]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">h</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">31</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">h</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">val</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">h</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">h</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>选择 31 的原因：</p>
+<ul>
+<li>31 是质数，能减少哈希冲突</li>
+<li>31 * h = (h &laquo; 5) - h，计算效率高</li>
+</ul>
+<h2 id="冲突处理">
+<a class="header-anchor" href="#%e5%86%b2%e7%aa%81%e5%a4%84%e7%90%86"></a>
+冲突处理
+</h2><h3 id="链式地址法">
+<a class="header-anchor" href="#%e9%93%be%e5%bc%8f%e5%9c%b0%e5%9d%80%e6%b3%95"></a>
+链式地址法
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "数组"
+        A["索引0"] --> B["链表头"]
+        B --> C["Entry1"]
+        C --> D["Entry2"]
+        D --> E["null"]
+        
+        F["索引1"] --> G["链表头"]
+        G --> H["null"]
+        
+        I["索引2"] --> J["链表头"]
+        J --> K["Entry3"]
+        K --> L["Entry4"]
+        L --> M["Entry5"]
+        M --> N["null"]
+    end
+</pre><h3 id="开放寻址法">
+<a class="header-anchor" href="#%e5%bc%80%e6%94%be%e5%af%bb%e5%9d%80%e6%b3%95"></a>
+开放寻址法
+</h3><pre class="mermaid">
+  graph TD
+    A["索引0: Entry1"]
+    B["索引1: Entry2"]
+    C["索引2: 空"]
+    D["索引3: Entry3"]
+    E["索引4: Entry4 (冲突后探测)"]
+    
+    style C fill:#f9f
+</pre><h3 id="再哈希法">
+<a class="header-anchor" href="#%e5%86%8d%e5%93%88%e5%b8%8c%e6%b3%95"></a>
+再哈希法
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DoubleHashing</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">PRIMES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">7</span><span class="p">,</span><span class="w"> </span><span class="n">13</span><span class="p">,</span><span class="w"> </span><span class="n">17</span><span class="p">,</span><span class="w"> </span><span class="n">31</span><span class="p">,</span><span class="w"> </span><span class="n">61</span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">hash1</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">abs</span><span class="p">(</span><span class="n">key</span><span class="p">.</span><span class="na">hashCode</span><span class="p">())</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">hash2</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">key</span><span class="p">.</span><span class="na">toCharArray</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">37</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">PRIMES</span><span class="o">[</span><span class="n">hash</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">PRIMES</span><span class="p">.</span><span class="na">length</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">findSlot</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">table</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hash1</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">capacity</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hash2</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">capacity</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">table</span><span class="o">[</span><span class="n">slot</span><span class="o">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">slot</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">step</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">slot</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="冲突处理对比">
+<a class="header-anchor" href="#%e5%86%b2%e7%aa%81%e5%a4%84%e7%90%86%e5%af%b9%e6%af%94"></a>
+冲突处理对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>方法</th>
+					<th>优点</th>
+					<th>缺点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>链式地址法</strong></td>
+					<td>实现简单，支持删除</td>
+					<td>额外空间开销，缓存友好性差</td>
+			</tr>
+			<tr>
+					<td><strong>开放寻址法</strong></td>
+					<td>缓存友好，无额外空间</td>
+					<td>删除复杂，容易聚集</td>
+			</tr>
+			<tr>
+					<td><strong>再哈希法</strong></td>
+					<td>减少聚集</td>
+					<td>计算开销大</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="java-hashmap-实现">
+<a class="header-anchor" href="#java-hashmap-%e5%ae%9e%e7%8e%b0"></a>
+Java HashMap 实现
+</h2><h3 id="内部结构">
+<a class="header-anchor" href="#%e5%86%85%e9%83%a8%e7%bb%93%e6%9e%84"></a>
+内部结构
+</h3><pre class="mermaid">
+  graph TD
+    A["HashMap"] --> B["Node[] table"]
+    B --> C["Node1"]
+    B --> D["Node2"]
+    B --> E["TreeNode"]
+    
+    C --> F["hash"]
+    C --> G["key"]
+    C --> H["value"]
+    C --> I["next"]
+    
+    E --> J["hash"]
+    E --> K["key"]
+    E --> L["value"]
+    E --> M["next"]
+    E --> N["left"]
+    E --> O["right"]
+    E --> P["parent"]
+</pre><h3 id="核心字段">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e5%ad%97%e6%ae%b5"></a>
+核心字段
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">HashMap</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">AbstractMap</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">implements</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">Cloneable</span><span class="p">,</span><span class="w"> </span><span class="n">Serializable</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">DEFAULT_INITIAL_CAPACITY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">4</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">MAXIMUM_CAPACITY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">30</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">DEFAULT_LOAD_FACTOR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">.</span><span class="na">75f</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">TREEIFY_THRESHOLD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">8</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">UNTREEIFY_THRESHOLD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">6</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">MIN_TREEIFY_CAPACITY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">64</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">transient</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;[]</span><span class="w"> </span><span class="n">table</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">transient</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">Map</span><span class="p">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">entrySet</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">transient</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">transient</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">modCount</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">threshold</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">final</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">loadFactor</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="get-方法">
+<a class="header-anchor" href="#get-%e6%96%b9%e6%b3%95"></a>
+get 方法
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getNode</span><span class="p">(</span><span class="n">hash</span><span class="p">(</span><span class="n">key</span><span class="p">),</span><span class="w"> </span><span class="n">key</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">final</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getNode</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">hash</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;[]</span><span class="w"> </span><span class="n">tab</span><span class="p">;</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">K</span><span class="w"> </span><span class="n">k</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">tab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">table</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tab</span><span class="p">.</span><span class="na">length</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">(</span><span class="n">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tab</span><span class="o">[</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">hash</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">first</span><span class="p">.</span><span class="na">hash</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">((</span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">first</span><span class="p">.</span><span class="na">key</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">key</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">key</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">k</span><span class="p">))))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">first</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">first</span><span class="p">.</span><span class="na">next</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">first</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">TreeNode</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="p">((</span><span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">)</span><span class="n">first</span><span class="p">).</span><span class="na">getTreeNode</span><span class="p">(</span><span class="n">hash</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">do</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="na">hash</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">((</span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">key</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">key</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">key</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">k</span><span class="p">))))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">((</span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">next</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="put-方法">
+<a class="header-anchor" href="#put-%e6%96%b9%e6%b3%95"></a>
+put 方法
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">putVal</span><span class="p">(</span><span class="n">hash</span><span class="p">(</span><span class="n">key</span><span class="p">),</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">final</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="nf">putVal</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">hash</span><span class="p">,</span><span class="w"> </span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">onlyIfAbsent</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">               </span><span class="kt">boolean</span><span class="w"> </span><span class="n">evict</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;[]</span><span class="w"> </span><span class="n">tab</span><span class="p">;</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">p</span><span class="p">;</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">tab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">table</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tab</span><span class="p">.</span><span class="na">length</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">tab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">resize</span><span class="p">()).</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tab</span><span class="o">[</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">hash</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">tab</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newNode</span><span class="p">(</span><span class="n">hash</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w"> </span><span class="n">K</span><span class="w"> </span><span class="n">k</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="na">hash</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">((</span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="na">key</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">key</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">key</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">k</span><span class="p">))))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">TreeNode</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">)</span><span class="n">p</span><span class="p">).</span><span class="na">putTreeVal</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">tab</span><span class="p">,</span><span class="w"> </span><span class="n">hash</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">binCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">binCount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="na">next</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">p</span><span class="p">.</span><span class="na">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newNode</span><span class="p">(</span><span class="n">hash</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">binCount</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">TREEIFY_THRESHOLD</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">treeifyBin</span><span class="p">(</span><span class="n">tab</span><span class="p">,</span><span class="w"> </span><span class="n">hash</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">break</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="na">hash</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">((</span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">key</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">key</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">key</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">k</span><span class="p">))))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">break</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">V</span><span class="w"> </span><span class="n">oldValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">onlyIfAbsent</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">oldValue</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">e</span><span class="p">.</span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">afterNodeAccess</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">oldValue</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="o">++</span><span class="n">modCount</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">++</span><span class="n">size</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">threshold</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">resize</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">afterNodeInsertion</span><span class="p">(</span><span class="n">evict</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="扩容机制">
+<a class="header-anchor" href="#%e6%89%a9%e5%ae%b9%e6%9c%ba%e5%88%b6"></a>
+扩容机制
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">final</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;[]</span><span class="w"> </span><span class="nf">resize</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;[]</span><span class="w"> </span><span class="n">oldTab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">table</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">oldCap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">oldTab</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">0</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">oldTab</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">oldThr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">threshold</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">newCap</span><span class="p">,</span><span class="w"> </span><span class="n">newThr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldCap</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldCap</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">MAXIMUM_CAPACITY</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">oldTab</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">newCap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">oldCap</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">MAXIMUM_CAPACITY</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                 </span><span class="n">oldCap</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">DEFAULT_INITIAL_CAPACITY</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">newThr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">oldThr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldThr</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">newCap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">oldThr</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">newCap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DEFAULT_INITIAL_CAPACITY</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">newThr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">DEFAULT_LOAD_FACTOR</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">DEFAULT_INITIAL_CAPACITY</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">newThr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">ft</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">newCap</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">loadFactor</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">newThr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">newCap</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">MAXIMUM_CAPACITY</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">ft</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">MAXIMUM_CAPACITY</span><span class="w"> </span><span class="o">?</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                  </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">ft</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newThr</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@SuppressWarnings</span><span class="p">({</span><span class="s">&#34;rawtypes&#34;</span><span class="p">,</span><span class="s">&#34;unchecked&#34;</span><span class="p">})</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;[]</span><span class="w"> </span><span class="n">newTab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;[]</span><span class="p">)</span><span class="k">new</span><span class="w"> </span><span class="n">Node</span><span class="o">[</span><span class="n">newCap</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">newTab</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldTab</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">oldCap</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">oldTab</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">oldTab</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="na">next</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">newTab</span><span class="o">[</span><span class="n">e</span><span class="p">.</span><span class="na">hash</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">newCap</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">TreeNode</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">((</span><span class="n">TreeNode</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">)</span><span class="n">e</span><span class="p">).</span><span class="na">split</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">newTab</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">oldCap</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">loHead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="n">loTail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">hiHead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="n">hiTail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">next</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">do</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">next</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">e</span><span class="p">.</span><span class="na">hash</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">oldCap</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">loTail</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="n">loHead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="k">else</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="n">loTail</span><span class="p">.</span><span class="na">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="n">loTail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">hiTail</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="n">hiHead</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="k">else</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="n">hiTail</span><span class="p">.</span><span class="na">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="n">hiTail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">}</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="p">((</span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">next</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">loTail</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">loTail</span><span class="p">.</span><span class="na">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">newTab</span><span class="o">[</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">loHead</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">hiTail</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">hiTail</span><span class="p">.</span><span class="na">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">newTab</span><span class="o">[</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">oldCap</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hiHead</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">newTab</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="concurrenthashmap">
+<a class="header-anchor" href="#concurrenthashmap"></a>
+ConcurrentHashMap
+</h2><h3 id="并发安全机制">
+<a class="header-anchor" href="#%e5%b9%b6%e5%8f%91%e5%ae%89%e5%85%a8%e6%9c%ba%e5%88%b6"></a>
+并发安全机制
+</h3><pre class="mermaid">
+  graph TD
+    A["ConcurrentHashMap"] --> B["Segment[] segments"]
+    B --> C["Segment1"]
+    B --> D["Segment2"]
+    B --> E["Segment16"]
+    
+    C --> F["ReentrantLock lock"]
+    C --> G["HashEntry[] table"]
+</pre><h3 id="关键改进">
+<a class="header-anchor" href="#%e5%85%b3%e9%94%ae%e6%94%b9%e8%bf%9b"></a>
+关键改进
+</h3><table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>HashMap</th>
+					<th>ConcurrentHashMap</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>线程安全</strong></td>
+					<td>非线程安全</td>
+					<td>线程安全</td>
+			</tr>
+			<tr>
+					<td><strong>锁机制</strong></td>
+					<td>无</td>
+					<td>分段锁/CAS</td>
+			</tr>
+			<tr>
+					<td><strong>迭代器</strong></td>
+					<td>快速失败</td>
+					<td>弱一致性</td>
+			</tr>
+			<tr>
+					<td><strong>性能</strong></td>
+					<td>高</td>
+					<td>较高（并发场景）</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="java-8-优化">
+<a class="header-anchor" href="#java-8-%e4%bc%98%e5%8c%96"></a>
+Java 8 优化
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Java 8 使用 synchronized + CAS</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">putVal</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">final</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="nf">putVal</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">onlyIfAbsent</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">key</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NullPointerException</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">spread</span><span class="p">(</span><span class="n">key</span><span class="p">.</span><span class="na">hashCode</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">binCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;[]</span><span class="w"> </span><span class="n">tab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">table</span><span class="p">;;)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">f</span><span class="p">;</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">fh</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tab</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tab</span><span class="p">.</span><span class="na">length</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">initTable</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tabAt</span><span class="p">(</span><span class="n">tab</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">hash</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">casTabAt</span><span class="p">(</span><span class="n">tab</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                         </span><span class="k">new</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">(</span><span class="n">hash</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">)))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">break</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">fh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">.</span><span class="na">hash</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">MOVED</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">tab</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">helpTransfer</span><span class="p">(</span><span class="n">tab</span><span class="p">,</span><span class="w"> </span><span class="n">f</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">V</span><span class="w"> </span><span class="n">oldVal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tabAt</span><span class="p">(</span><span class="n">tab</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">f</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">fh</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">binCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">f</span><span class="p">;;</span><span class="w"> </span><span class="o">++</span><span class="n">binCount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="n">K</span><span class="w"> </span><span class="n">ek</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="na">hash</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="p">((</span><span class="n">ek</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">key</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">||</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                 </span><span class="p">(</span><span class="n">ek</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">key</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">ek</span><span class="p">))))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="n">oldVal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">val</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">onlyIfAbsent</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                    </span><span class="n">e</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="k">break</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">next</span><span class="p">)</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="n">pred</span><span class="p">.</span><span class="na">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">(</span><span class="n">hash</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                                          </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="kc">null</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="k">break</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">f</span><span class="w"> </span><span class="k">instanceof</span><span class="w"> </span><span class="n">TreeBin</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">p</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">binCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">p</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="n">TreeBin</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="n">V</span><span class="o">&gt;</span><span class="p">)</span><span class="n">f</span><span class="p">).</span><span class="na">putTreeVal</span><span class="p">(</span><span class="n">hash</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                                       </span><span class="n">value</span><span class="p">))</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="n">oldVal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">p</span><span class="p">.</span><span class="na">val</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">onlyIfAbsent</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="n">p</span><span class="p">.</span><span class="na">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">binCount</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">binCount</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">TREEIFY_THRESHOLD</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">treeifyBin</span><span class="p">(</span><span class="n">tab</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">oldVal</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">oldVal</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">break</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">addCount</span><span class="p">(</span><span class="n">1L</span><span class="p">,</span><span class="w"> </span><span class="n">binCount</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="哈希表应用">
+<a class="header-anchor" href="#%e5%93%88%e5%b8%8c%e8%a1%a8%e5%ba%94%e7%94%a8"></a>
+哈希表应用
+</h2><h3 id="缓存实现">
+<a class="header-anchor" href="#%e7%bc%93%e5%ad%98%e5%ae%9e%e7%8e%b0"></a>
+缓存实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LRUCache</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">map</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">head</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tail</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">LRUCache</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">capacity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">head</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">tail</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">head</span><span class="p">.</span><span class="na">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tail</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">tail</span><span class="p">.</span><span class="na">prev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">head</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">addToHead</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">node</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">node</span><span class="p">.</span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">addToHead</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">newNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Node</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">map</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">newNode</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">addToHead</span><span class="p">(</span><span class="n">newNode</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="p">.</span><span class="na">size</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">capacity</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tailNode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tail</span><span class="p">.</span><span class="na">prev</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">remove</span><span class="p">(</span><span class="n">tailNode</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">map</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">tailNode</span><span class="p">.</span><span class="na">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">remove</span><span class="p">(</span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">node</span><span class="p">.</span><span class="na">prev</span><span class="p">.</span><span class="na">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">next</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">node</span><span class="p">.</span><span class="na">next</span><span class="p">.</span><span class="na">prev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">.</span><span class="na">prev</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addToHead</span><span class="p">(</span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">node</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">node</span><span class="p">.</span><span class="na">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">head</span><span class="p">.</span><span class="na">next</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">node</span><span class="p">.</span><span class="na">prev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">head</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">head</span><span class="p">.</span><span class="na">next</span><span class="p">.</span><span class="na">prev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">head</span><span class="p">.</span><span class="na">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">node</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">V</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">prev</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Node</span><span class="o">&lt;</span><span class="n">K</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">&gt;</span><span class="w"> </span><span class="n">next</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Node</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Node</span><span class="p">(</span><span class="n">K</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">key</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">this</span><span class="p">.</span><span class="na">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="去重统计">
+<a class="header-anchor" href="#%e5%8e%bb%e9%87%8d%e7%bb%9f%e8%ae%a1"></a>
+去重统计
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DeduplicationCounter</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">counter</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">DeduplicationCounter</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">item</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">counter</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="w"> </span><span class="n">counter</span><span class="p">.</span><span class="na">getOrDefault</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getCount</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">item</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">counter</span><span class="p">.</span><span class="na">getOrDefault</span><span class="p">(</span><span class="n">item</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">getUniqueItems</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">counter</span><span class="p">.</span><span class="na">keySet</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getUniqueCount</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">counter</span><span class="p">.</span><span class="na">size</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="两数之和">
+<a class="header-anchor" href="#%e4%b8%a4%e6%95%b0%e4%b9%8b%e5%92%8c"></a>
+两数之和
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="nf">twoSum</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">nums</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">target</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Integer</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">nums</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">complement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">map</span><span class="p">.</span><span class="na">containsKey</span><span class="p">(</span><span class="n">complement</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="n">map</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">complement</span><span class="p">),</span><span class="w"> </span><span class="n">i</span><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">map</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s">&#34;No two sum solution&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="性能分析">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e5%88%86%e6%9e%90"></a>
+性能分析
+</h2><h3 id="时间复杂度">
+<a class="header-anchor" href="#%e6%97%b6%e9%97%b4%e5%a4%8d%e6%9d%82%e5%ba%a6"></a>
+时间复杂度
+</h3><table>
+	<thead>
+			<tr>
+					<th>操作</th>
+					<th>平均情况</th>
+					<th>最坏情况</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>查找</strong></td>
+					<td>O(1)</td>
+					<td>O(n)</td>
+			</tr>
+			<tr>
+					<td><strong>插入</strong></td>
+					<td>O(1)</td>
+					<td>O(n)</td>
+			</tr>
+			<tr>
+					<td><strong>删除</strong></td>
+					<td>O(1)</td>
+					<td>O(n)</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="影响因素">
+<a class="header-anchor" href="#%e5%bd%b1%e5%93%8d%e5%9b%a0%e7%b4%a0"></a>
+影响因素
+</h3><table>
+	<thead>
+			<tr>
+					<th>因素</th>
+					<th>影响</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>哈希函数</strong></td>
+					<td>决定分布均匀性</td>
+			</tr>
+			<tr>
+					<td><strong>负载因子</strong></td>
+					<td>影响冲突概率</td>
+			</tr>
+			<tr>
+					<td><strong>冲突处理</strong></td>
+					<td>影响最坏情况性能</td>
+			</tr>
+			<tr>
+					<td><strong>扩容策略</strong></td>
+					<td>影响插入性能</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="负载因子选择">
+<a class="header-anchor" href="#%e8%b4%9f%e8%bd%bd%e5%9b%a0%e5%ad%90%e9%80%89%e6%8b%a9"></a>
+负载因子选择
+</h3><pre class="mermaid">
+  graph TD
+    A["负载因子"] --> B["0.5"]
+    A --> C["0.75 (默认)"]
+    A --> D["0.9"]
+    
+    B --> E["空间浪费大"]
+    B --> F["冲突概率低"]
+    
+    C --> G["平衡空间与时间"]
+    
+    D --> H["空间利用率高"]
+    D --> I["冲突概率高"]
+</pre><h2 id="实战题目">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e9%a2%98%e7%9b%ae"></a>
+实战题目
+</h2><h3 id="leetcode-相关题目">
+<a class="header-anchor" href="#leetcode-%e7%9b%b8%e5%85%b3%e9%a2%98%e7%9b%ae"></a>
+LeetCode 相关题目
+</h3><table>
+	<thead>
+			<tr>
+					<th>题目</th>
+					<th>难度</th>
+					<th>标签</th>
+					<th>链接</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>1. 两数之和</td>
+					<td>简单</td>
+					<td>哈希表</td>
+					<td><a href="https://leetcode.cn/problems/two-sum/">https://leetcode.cn/problems/two-sum/</a></td>
+			</tr>
+			<tr>
+					<td>49. 字母异位词分组</td>
+					<td>中等</td>
+					<td>哈希表</td>
+					<td><a href="https://leetcode.cn/problems/group-anagrams/">https://leetcode.cn/problems/group-anagrams/</a></td>
+			</tr>
+			<tr>
+					<td>3. 无重复字符的最长子串</td>
+					<td>中等</td>
+					<td>哈希表</td>
+					<td><a href="https://leetcode.cn/problems/longest-substring-without-repeating-characters/">https://leetcode.cn/problems/longest-substring-without-repeating-characters/</a></td>
+			</tr>
+			<tr>
+					<td>128. 最长连续序列</td>
+					<td>困难</td>
+					<td>哈希表</td>
+					<td><a href="https://leetcode.cn/problems/longest-consecutive-sequence/">https://leetcode.cn/problems/longest-consecutive-sequence/</a></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="题解示例">
+<a class="header-anchor" href="#%e9%a2%98%e8%a7%a3%e7%a4%ba%e4%be%8b"></a>
+题解示例
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// LeetCode 49: 字母异位词分组</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">groupAnagrams</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">strs</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">map</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">strs</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">char</span><span class="o">[]</span><span class="w"> </span><span class="n">chars</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">str</span><span class="p">.</span><span class="na">toCharArray</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Arrays</span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">chars</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="p">(</span><span class="n">chars</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">map</span><span class="p">.</span><span class="na">computeIfAbsent</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">()).</span><span class="na">add</span><span class="p">(</span><span class="n">str</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">map</span><span class="p">.</span><span class="na">values</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>哈希表是一种高效的数据结构，在计算机科学中有着广泛的应用。</p>
+<p>核心要点：</p>
+<ul>
+<li><strong>O(1) 平均复杂度</strong>：哈希函数直接定位，访问速度快</li>
+<li><strong>冲突处理</strong>：链式地址法和开放寻址法是两种主要策略</li>
+<li><strong>Java HashMap</strong>：使用链式地址法，链表转红黑树优化</li>
+<li><strong>ConcurrentHashMap</strong>：线程安全的哈希表实现</li>
+</ul>
+<p>选择哈希表时需要注意：</p>
+<ol>
+<li>Key 需要正确实现 hashCode() 和 equals() 方法</li>
+<li>负载因子的选择影响性能和空间</li>
+<li>并发场景需要使用 ConcurrentHashMap</li>
+</ol>
+<p>掌握哈希表的原理和实现，对于理解 Java 集合框架和解决实际问题都非常重要。</p>
+<hr>
+<p><strong>延伸阅读</strong>：</p>
+<ol>
+<li><em>算法导论</em> - 哈希表章节</li>
+<li>Java HashMap 源码分析</li>
+<li>ConcurrentHashMap 源码分析</li>
+</ol>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/algorithm/%E5%93%88%E5%B8%8C%E8%A1%A8hashmap%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=%e5%93%88%e5%b8%8c?HashMap%20%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="哈希?HashMap 详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/algorithm/%E5%93%88%E5%B8%8C%E8%A1%A8hashmap%E8%AF%A6%E8%A7%A3/&amp;title=%e5%93%88%e5%b8%8c?HashMap%20%e8%af%a6%e8%a7%a3&amp;desc=%e5%93%88%e5%b8%8c%e8%a1%a8%e5%8e%9f%e7%90%86%e3%80%81%e5%93%88%e5%b8%8c%e5%87%bd%e6%95%b0%e3%80%81%e5%86%b2%e7%aa%81%e5%a4%84%e7%90%86%e3%80%81Java%20HashMap%e5%ae%9e%e7%8e%b0%e5%8f%8aConcurrentHashMap&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="哈希?HashMap 详解">
@@ -348,7 +1224,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
+              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
               data-sizes="auto"
               alt="线段树SegmentTree 详解"
               class="lazyload"
@@ -380,10 +1256,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -433,7 +1309,70 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#哈希表原理">哈希表原理</a>
+      <ul>
+        <li><a href="#基本概念">基本概念</a></li>
+        <li><a href="#工作流程">工作流程</a></li>
+        <li><a href="#核心要素">核心要素</a></li>
+      </ul>
+    </li>
+    <li><a href="#哈希函数设计">哈希函数设计</a>
+      <ul>
+        <li><a href="#设计原则">设计原则</a></li>
+        <li><a href="#常见哈希函数">常见哈希函数</a></li>
+        <li><a href="#java-string-哈希函数">Java String 哈希函数</a></li>
+      </ul>
+    </li>
+    <li><a href="#冲突处理">冲突处理</a>
+      <ul>
+        <li><a href="#链式地址法">链式地址法</a></li>
+        <li><a href="#开放寻址法">开放寻址法</a></li>
+        <li><a href="#再哈希法">再哈希法</a></li>
+        <li><a href="#冲突处理对比">冲突处理对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#java-hashmap-实现">Java HashMap 实现</a>
+      <ul>
+        <li><a href="#内部结构">内部结构</a></li>
+        <li><a href="#核心字段">核心字段</a></li>
+        <li><a href="#get-方法">get 方法</a></li>
+        <li><a href="#put-方法">put 方法</a></li>
+        <li><a href="#扩容机制">扩容机制</a></li>
+      </ul>
+    </li>
+    <li><a href="#concurrenthashmap">ConcurrentHashMap</a>
+      <ul>
+        <li><a href="#并发安全机制">并发安全机制</a></li>
+        <li><a href="#关键改进">关键改进</a></li>
+        <li><a href="#java-8-优化">Java 8 优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#哈希表应用">哈希表应用</a>
+      <ul>
+        <li><a href="#缓存实现">缓存实现</a></li>
+        <li><a href="#去重统计">去重统计</a></li>
+        <li><a href="#两数之和">两数之和</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能分析">性能分析</a>
+      <ul>
+        <li><a href="#时间复杂度">时间复杂度</a></li>
+        <li><a href="#影响因素">影响因素</a></li>
+        <li><a href="#负载因子选择">负载因子选择</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -564,6 +1503,105 @@
           description: "哈希表原理、哈希函数、冲突处理、Java HashMap实现及ConcurrentHashMap",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

@@ -30,7 +30,13 @@
       <description>
         <![CDATA[<h1>前端系统架构与功能模块分</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h1 id="系统架构与功能模块分析">
+<a class="header-anchor" href="#%e7%b3%bb%e7%bb%9f%e6%9e%b6%e6%9e%84%e4%b8%8e%e5%8a%9f%e8%83%bd%e6%a8%a1%e5%9d%97%e5%88%86%e6%9e%90"></a>
+系统架构与功能模块分析
+</h1><h2 id="1-系统总体架构">
+<a class="header-anchor" href="#1-%e7%b3%bb%e7%bb%9f%e6%80%bb%e4%bd%93%e6%9e%b6%e6%9e%84"></a>
+1. 系统总体架构
+</h2><p>该项目是一个基于Qt框架的轨道交通控制监控系统（ControlMonitor），采用插件化架构设计，主要由以下核心组件组成：</p>
         
         <hr><p>本文2024-11-20首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-11-20</p>]]>
       </description>

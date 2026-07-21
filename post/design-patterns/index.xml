@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>模板方法模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>模板方法模式（Template Method Pattern）在一个方法中定义一个算法的骨架，而将一些步骤延迟到子类中实现。模板方法使得子类可以在不改变算法结构的情况下，重新定义算法中的某些特定步骤。</p>
         
         <hr><p>本文2025-09-12首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-09-12</p>]]>
       </description>
@@ -50,7 +53,12 @@
       <description>
         <![CDATA[<h1>代理模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>代理模式（Proxy Pattern）为其他对象提供一种代理以控制对这个对象的访问。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：为其他对象提供一种代理以控制对这个对象的访问。</p>
         
         <hr><p>本文2024-10-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-10-05</p>]]>
       </description>
@@ -70,7 +78,10 @@
       <description>
         <![CDATA[<h1>观察者模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>观察者模式（Observer Pattern）定义了对象之间的一对多依赖关系，当一个对象的状态发生变化时，所有依赖于它的对象都会得到通知并自动更新。</p>
         
         <hr><p>本文2024-08-08首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-08-08</p>]]>
       </description>
@@ -90,7 +101,10 @@
       <description>
         <![CDATA[<h1>工厂方法与抽象工厂模式</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>工厂模式是创建型模式中最重要的一种，其核心思想是<strong>将对象的创建过程封装起来，让客户端无需关心对象的创建细节</strong>，只需要告诉工厂需要什么对象即可。</p>
         
         <hr><p>本文2024-06-04首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-06-04</p>]]>
       </description>
@@ -110,7 +124,12 @@
       <description>
         <![CDATA[<h1>建造者模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>建造者模式（Builder Pattern）将一个复杂对象的构建过程与它的表示分离，使得同样的构建过程可以创建不同的表示。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。</p>
         
         <hr><p>本文2024-02-03首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-02-03</p>]]>
       </description>
@@ -130,7 +149,10 @@
       <description>
         <![CDATA[<h1>单例模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>单例模式（Singleton Pattern）是最简单也是最常用的设计模式之一。它保证一个类在内存中只有一个实例，并提供一个全局访问点来获取该实例。</p>
         
         <hr><p>本文2023-11-16首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-11-16</p>]]>
       </description>
@@ -150,7 +172,10 @@
       <description>
         <![CDATA[<h1>责任链模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>责任链模式（Chain of Responsibility Pattern）为请求创建一个接收者对象的链。每个接收者都包含对另一个接收者的引用，如果一个对象不能处理该请求，它就会把请求传递给链中的下一个接收者，依此类推。</p>
         
         <hr><p>本文2023-11-09首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-11-09</p>]]>
       </description>
@@ -170,7 +195,10 @@
       <description>
         <![CDATA[<h1>策略模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>策略模式（Strategy Pattern）定义了一系列算法，将每一个算法封装起来，并使它们可以互相替换。策略模式让算法的变化不会影响到使用算法的客户端。</p>
         
         <hr><p>本文2023-08-26首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-08-26</p>]]>
       </description>
@@ -190,7 +218,12 @@
       <description>
         <![CDATA[<h1>适配器模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>适配器模式（Adapter Pattern）将一个类的接口转换成客户端期望的另一个接口。适配器模式让原本接口不兼容的类可以一起工作。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：将一个类的接口转换成客户希望的另外一个接口。适配器模式使得原本由于接口不兼容而不能一起工作的那些类可以一起工作。</p>
         
         <hr><p>本文2022-03-04首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-03-04</p>]]>
       </description>
@@ -210,7 +243,10 @@
       <description>
         <![CDATA[<h1>装饰器模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>装饰器模式（Decorator Pattern）动态地给一个对象添加一些额外的职责，就增加功能而言，装饰器模式比生成子类（继承）更加灵活。</p>
         
         <hr><p>本文2021-05-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-05-19</p>]]>
       </description>

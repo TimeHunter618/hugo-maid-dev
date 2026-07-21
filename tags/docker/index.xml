@@ -53,7 +53,10 @@
       <description>
         <![CDATA[<h1>Docker容器化部署实践</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Docker 彻底改变了应用部署的方式。它通过容器技术将应用及其依赖打包成标准化的镜像，实现了&quot;一次构建，到处运行&quot;的梦想。从开发环境到测试环境再到生产环境，Docker 保证了应用行为的一致性，极大地降低了运维复杂度。</p>
         
         <hr><p>本文2021-01-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-01-05</p>]]>
       </description>

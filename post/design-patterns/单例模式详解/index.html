@@ -190,7 +190,45 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+      </ul>
+    </li>
+    <li><a href="#五种实现方式">五种实现方式</a>
+      <ul>
+        <li><a href="#1-饿汉式eager-initialization">1. 饿汉式（Eager Initialization）</a></li>
+        <li><a href="#2-懒汉式lazy-initialization">2. 懒汉式（Lazy Initialization）</a></li>
+        <li><a href="#3-双重检查锁double-checked-locking-dcl">3. 双重检查锁（Double-Checked Locking, DCL）</a></li>
+        <li><a href="#4-静态内部类initialization-on-demand-holder">4. 静态内部类（Initialization-on-demand Holder）</a></li>
+        <li><a href="#5-枚举实现enum-singleton">5. 枚举实现（Enum Singleton）</a></li>
+      </ul>
+    </li>
+    <li><a href="#单例的破坏与防御">单例的破坏与防御</a>
+      <ul>
+        <li><a href="#反射攻击">反射攻击</a></li>
+        <li><a href="#序列化破坏">序列化破坏</a></li>
+      </ul>
+    </li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例jdk-与框架中的单例">实战案例：JDK 与框架中的单例</a>
+      <ul>
+        <li><a href="#javalangruntime">java.lang.Runtime</a></li>
+        <li><a href="#spring-中的单例">Spring 中的单例</a></li>
+      </ul>
+    </li>
+    <li><a href="#五种实现对比">五种实现对比</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +309,327 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>单例模式（Singleton Pattern）是最简单也是最常用的设计模式之一。它保证一个类在内存中只有一个实例，并提供一个全局访问点来获取该实例。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：确保一个类只有一个实例，并提供一个全局访问点。</p>
+</blockquote>
+<p>单例模式的三个核心要素：</p>
+<ol>
+<li><strong>私有构造方法</strong>：防止外部通过 <code>new</code> 创建实例</li>
+<li><strong>类内部持有唯一实例</strong>：以静态变量形式保存</li>
+<li><strong>提供静态获取方法</strong>：向外界返回该唯一实例</li>
+</ol>
+<h3 id="类图">
+<a class="header-anchor" href="#%e7%b1%bb%e5%9b%be"></a>
+类图
+</h3><pre class="mermaid">
+  classDiagram
+    class Singleton {
+        -Singleton instance
+        -Singleton()
+        +getInstance() Singleton
+    }
+    Singleton --> Singleton : 持有唯一引用
+</pre><h2 id="五种实现方式">
+<a class="header-anchor" href="#%e4%ba%94%e7%a7%8d%e5%ae%9e%e7%8e%b0%e6%96%b9%e5%bc%8f"></a>
+五种实现方式
+</h2><h3 id="1-饿汉式eager-initialization">
+<a class="header-anchor" href="#1-%e9%a5%bf%e6%b1%89%e5%bc%8feager-initialization"></a>
+1. 饿汉式（Eager Initialization）
+</h3><p>饿汉式在类加载时就完成实例化，天生线程安全。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Singleton</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 类加载时即创建实例</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Singleton</span><span class="w"> </span><span class="n">INSTANCE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Singleton</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 私有构造</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">Singleton</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 防止通过反射破坏单例（可选）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">INSTANCE</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="p">(</span><span class="s">&#34;单例已存在，禁止反射创建&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Singleton</span><span class="w"> </span><span class="nf">getInstance</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">INSTANCE</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p><strong>线程安全分析</strong>：JVM 类加载阶段会通过 <code>ClassLoader</code> 的锁机制保证类的初始化只执行一次，因此饿汉式<strong>天生线程安全</strong>。</p>
+<p><strong>优点</strong>：实现简单，线程安全，调用效率高<br>
+<strong>缺点</strong>：类加载时就创建实例，若该实例从未使用则会造成资源浪费；不支持延迟加载</p>
+<h3 id="2-懒汉式lazy-initialization">
+<a class="header-anchor" href="#2-%e6%87%92%e6%b1%89%e5%bc%8flazy-initialization"></a>
+2. 懒汉式（Lazy Initialization）
+</h3><p>懒汉式在第一次调用 <code>getInstance()</code> 时才创建实例，实现延迟加载。</p>
+<h4 id="21-线程不安全的懒汉式">
+<a class="header-anchor" href="#21-%e7%ba%bf%e7%a8%8b%e4%b8%8d%e5%ae%89%e5%85%a8%e7%9a%84%e6%87%92%e6%b1%89%e5%bc%8f"></a>
+2.1 线程不安全的懒汉式
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Singleton</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Singleton</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">Singleton</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Singleton</span><span class="w"> </span><span class="nf">getInstance</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">instance</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">         </span><span class="c1">// ① 多线程下可能同时判断为 null</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Singleton</span><span class="p">();</span><span class="w"> </span><span class="c1">// ② 多个线程各创建一个实例</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p><strong>线程安全分析</strong>：在多线程环境下，两个线程可能同时执行到 ① 处判断为 <code>null</code>，随后各自创建实例，<strong>破坏单例</strong>。</p>
+<h4 id="22-线程安全的懒汉式同步方法">
+<a class="header-anchor" href="#22-%e7%ba%bf%e7%a8%8b%e5%ae%89%e5%85%a8%e7%9a%84%e6%87%92%e6%b1%89%e5%bc%8f%e5%90%8c%e6%ad%a5%e6%96%b9%e6%b3%95"></a>
+2.2 线程安全的懒汉式（同步方法）
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">synchronized</span><span class="w"> </span><span class="n">Singleton</span><span class="w"> </span><span class="nf">getInstance</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">instance</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Singleton</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p><strong>缺点</strong>：每次获取实例都要加锁，性能开销大。实际上只有第一次创建时才需要同步。</p>
+<h3 id="3-双重检查锁double-checked-locking-dcl">
+<a class="header-anchor" href="#3-%e5%8f%8c%e9%87%8d%e6%a3%80%e6%9f%a5%e9%94%81double-checked-locking-dcl"></a>
+3. 双重检查锁（Double-Checked Locking, DCL）
+</h3><p>双重检查锁是懒汉式的优化版本，兼顾了延迟加载和性能。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Singleton</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// volatile 防止指令重排序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">volatile</span><span class="w"> </span><span class="n">Singleton</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">Singleton</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Singleton</span><span class="w"> </span><span class="nf">getInstance</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">instance</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">                 </span><span class="c1">// 第一次检查，避免不必要的加锁</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kd">synchronized</span><span class="w"> </span><span class="p">(</span><span class="n">Singleton</span><span class="p">.</span><span class="na">class</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">instance</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">         </span><span class="c1">// 第二次检查，防止重复创建</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Singleton</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">instance</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h4 id="为什么必须加-volatile">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e5%bf%85%e9%a1%bb%e5%8a%a0-volatile"></a>
+为什么必须加 volatile？
+</h4><p><code>instance = new Singleton()</code> 并非原子操作，它分为三步：</p>
+<ol>
+<li>分配对象内存空间</li>
+<li>初始化对象（调用构造方法）</li>
+<li>将 <code>instance</code> 引用指向内存地址</li>
+</ol>
+<p>如果不加 <code>volatile</code>，JVM 可能将步骤重排序为 1 → 3 → 2。此时另一个线程在第一次检查时发现 <code>instance != null</code>（步骤 3 已执行），直接返回一个<strong>尚未初始化完成</strong>的对象，导致 NPE。</p>
+<p><code>volatile</code> 通过内存屏障禁止了这种重排序，保证了对象的完整可见性。</p>
+<p><strong>优点</strong>：延迟加载、性能高、线程安全<br>
+<strong>缺点</strong>：实现相对复杂，依赖 <code>volatile</code> 语义</p>
+<h3 id="4-静态内部类initialization-on-demand-holder">
+<a class="header-anchor" href="#4-%e9%9d%99%e6%80%81%e5%86%85%e9%83%a8%e7%b1%bbinitialization-on-demand-holder"></a>
+4. 静态内部类（Initialization-on-demand Holder）
+</h3><p>静态内部类方式利用了 JVM 的类加载机制来保证线程安全，同时实现了延迟加载。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Singleton</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">Singleton</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 静态内部类，只有在 getInstance() 被调用时才会被加载</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Holder</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Singleton</span><span class="w"> </span><span class="n">INSTANCE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Singleton</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Singleton</span><span class="w"> </span><span class="nf">getInstance</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Holder</span><span class="p">.</span><span class="na">INSTANCE</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p><strong>线程安全分析</strong>：<code>Holder</code> 类在 <code>getInstance()</code> 首次被调用时才会触发类加载。JVM 在类初始化阶段（执行 <code>&lt;clinit&gt;()</code> 方法）会加锁，保证 <code>Holder.INSTANCE</code> 只被创建一次。</p>
+<p><strong>优点</strong>：延迟加载、线程安全、无需同步锁、实现优雅<br>
+<strong>缺点</strong>：无法通过传参进行初始化</p>
+<blockquote>
+<p>这是<strong>推荐使用</strong>的单例实现方式之一。</p>
+</blockquote>
+<h3 id="5-枚举实现enum-singleton">
+<a class="header-anchor" href="#5-%e6%9e%9a%e4%b8%be%e5%ae%9e%e7%8e%b0enum-singleton"></a>
+5. 枚举实现（Enum Singleton）
+</h3><p>Effective Java 作者 Joshua Bloch 强烈推荐的方式：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">enum</span><span class="w"> </span><span class="n">Singleton</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">INSTANCE</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 可以添加属性和方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">doSomething</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;枚举单例工作正常&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getValue</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 使用方式</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Singleton</span><span class="w"> </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Singleton</span><span class="p">.</span><span class="na">INSTANCE</span><span class="p">;</span><span class="w">
+</span></span></span></code></pre></div><p><strong>优点</strong>：</p>
+<ul>
+<li><strong>天生线程安全</strong>：枚举实例的创建由 JVM 保证</li>
+<li><strong>天然防反射攻击</strong>：JVM 禁止通过反射创建枚举对象</li>
+<li><strong>天然防序列化破坏</strong>：枚举的序列化机制保证了反序列化后仍是同一实例</li>
+<li>代码最简洁</li>
+</ul>
+<p><strong>缺点</strong>：不能延迟加载；枚举类不能继承其他类</p>
+<h2 id="单例的破坏与防御">
+<a class="header-anchor" href="#%e5%8d%95%e4%be%8b%e7%9a%84%e7%a0%b4%e5%9d%8f%e4%b8%8e%e9%98%b2%e5%be%a1"></a>
+单例的破坏与防御
+</h2><h3 id="反射攻击">
+<a class="header-anchor" href="#%e5%8f%8d%e5%b0%84%e6%94%bb%e5%87%bb"></a>
+反射攻击
+</h3><p>通过反射可以调用私有构造方法创建新实例，破坏单例。防御方式是在构造方法中抛出异常：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="nf">Singleton</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Holder</span><span class="p">.</span><span class="na">INSTANCE</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalStateException</span><span class="p">(</span><span class="s">&#34;单例已存在，禁止反射创建&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><blockquote>
+<p>枚举实现天然免疫反射攻击，这是其一大优势。</p>
+</blockquote>
+<h3 id="序列化破坏">
+<a class="header-anchor" href="#%e5%ba%8f%e5%88%97%e5%8c%96%e7%a0%b4%e5%9d%8f"></a>
+序列化破坏
+</h3><p>反序列化时会创建新对象，破坏单例。防御方式是实现 <code>readResolve()</code> 方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Singleton</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Serializable</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">serialVersionUID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1L</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">readResolve</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">getInstance</span><span class="p">();</span><span class="w"> </span><span class="c1">// 返回已有实例，而非新建</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="适用场景">
+<a class="header-anchor" href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+适用场景
+</h2><ul>
+<li><strong>配置管理</strong>：系统全局配置只需要一份</li>
+<li><strong>日志管理</strong>：日志写入器需保证全局唯一</li>
+<li><strong>数据库连接池</strong>：连接池作为共享资源应唯一</li>
+<li><strong>线程池</strong>：全局线程池管理</li>
+<li><strong>Windows 任务管理器</strong>：经典案例，不能打开两个</li>
+<li><strong>Runtime 类</strong>：JDK 中 <code>Runtime.getRuntime()</code> 就是饿汉式单例</li>
+</ul>
+<h2 id="优缺点">
+<a class="header-anchor" href="#%e4%bc%98%e7%bc%ba%e7%82%b9"></a>
+优缺点
+</h2><h3 id="优点">
+<a class="header-anchor" href="#%e4%bc%98%e7%82%b9"></a>
+优点
+</h3><ol>
+<li><strong>保证唯一实例</strong>：避免对资源的多重占用</li>
+<li><strong>全局访问点</strong>：方便共享状态管理</li>
+<li><strong>延迟加载</strong>：部分实现支持按需创建</li>
+</ol>
+<h3 id="缺点">
+<a class="header-anchor" href="#%e7%bc%ba%e7%82%b9"></a>
+缺点
+</h3><ol>
+<li><strong>扩展困难</strong>：没有接口，难以扩展（枚举除外）</li>
+<li><strong>职责过重</strong>：既管创建又管业务，违背单一职责原则</li>
+<li><strong>测试困难</strong>：单例的全局状态不利于单元测试</li>
+<li><strong>滥用风险</strong>：过度使用相当于面向过程编程</li>
+</ol>
+<h2 id="实战案例jdk-与框架中的单例">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8bjdk-%e4%b8%8e%e6%a1%86%e6%9e%b6%e4%b8%ad%e7%9a%84%e5%8d%95%e4%be%8b"></a>
+实战案例：JDK 与框架中的单例
+</h2><h3 id="javalangruntime">
+<a class="header-anchor" href="#javalangruntime"></a>
+java.lang.Runtime
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// JDK 源码中的饿汉式单例</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Runtime</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Runtime</span><span class="w"> </span><span class="n">currentRuntime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Runtime</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">Runtime</span><span class="w"> </span><span class="nf">getRuntime</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">currentRuntime</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="nf">Runtime</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="spring-中的单例">
+<a class="header-anchor" href="#spring-%e4%b8%ad%e7%9a%84%e5%8d%95%e4%be%8b"></a>
+Spring 中的单例
+</h3><p>Spring 容器管理的 Bean 默认就是单例的（单例作用域），但 Spring 的单例与 GoF 单例不同——它是<strong>每个 IoC 容器一个实例</strong>，而非每个 ClassLoader 一个实例。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Component</span><span class="w"> </span><span class="c1">// 默认 scope = singleton</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UserService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// Spring 容器保证全局唯一</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="五种实现对比">
+<a class="header-anchor" href="#%e4%ba%94%e7%a7%8d%e5%ae%9e%e7%8e%b0%e5%af%b9%e6%af%94"></a>
+五种实现对比
+</h2><table>
+	<thead>
+			<tr>
+					<th>实现方式</th>
+					<th style="text-align: center">线程安全</th>
+					<th style="text-align: center">延迟加载</th>
+					<th style="text-align: center">性能</th>
+					<th style="text-align: center">防反射</th>
+					<th style="text-align: center">防序列化</th>
+					<th style="text-align: center">推荐度</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>饿汉式</td>
+					<td style="text-align: center">✅</td>
+					<td style="text-align: center">❌</td>
+					<td style="text-align: center">高</td>
+					<td style="text-align: center">❌</td>
+					<td style="text-align: center">❌</td>
+					<td style="text-align: center">⭐⭐⭐</td>
+			</tr>
+			<tr>
+					<td>懒汉式（同步）</td>
+					<td style="text-align: center">✅</td>
+					<td style="text-align: center">✅</td>
+					<td style="text-align: center">低</td>
+					<td style="text-align: center">❌</td>
+					<td style="text-align: center">❌</td>
+					<td style="text-align: center">⭐</td>
+			</tr>
+			<tr>
+					<td>双重检查锁</td>
+					<td style="text-align: center">✅</td>
+					<td style="text-align: center">✅</td>
+					<td style="text-align: center">高</td>
+					<td style="text-align: center">❌</td>
+					<td style="text-align: center">❌</td>
+					<td style="text-align: center">⭐⭐⭐⭐</td>
+			</tr>
+			<tr>
+					<td>静态内部类</td>
+					<td style="text-align: center">✅</td>
+					<td style="text-align: center">✅</td>
+					<td style="text-align: center">高</td>
+					<td style="text-align: center">❌</td>
+					<td style="text-align: center">❌</td>
+					<td style="text-align: center">⭐⭐⭐⭐⭐</td>
+			</tr>
+			<tr>
+					<td>枚举</td>
+					<td style="text-align: center">✅</td>
+					<td style="text-align: center">❌</td>
+					<td style="text-align: center">高</td>
+					<td style="text-align: center">✅</td>
+					<td style="text-align: center">✅</td>
+					<td style="text-align: center">⭐⭐⭐⭐⭐</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="总结">
+<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
+总结
+</h2><p>单例模式虽小，但其中涉及的并发编程知识（指令重排序、volatile、类加载机制、内存可见性）却非常深入。选择实现方式时：</p>
+<ul>
+<li><strong>首选枚举</strong>：最简洁、最安全，Effective Java 力荐</li>
+<li><strong>次选静态内部类</strong>：需要延迟加载时的最佳选择</li>
+<li><strong>双重检查锁</strong>：适用于需要传参初始化的场景</li>
+</ul>
+<p>理解单例背后的原理，比记住五种写法更重要。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/design-patterns/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=%e5%8d%95%e4%be%8b%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="单例模式详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/design-patterns/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;title=%e5%8d%95%e4%be%8b%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;desc=%e9%a5%bf%e6%b1%89%e5%bc%8f%e3%80%81%e6%87%92%e6%b1%89%e5%bc%8f%e3%80%81%e5%8f%8c%e9%87%8d%e6%a3%80%e6%9f%a5%e9%94%81%e3%80%81%e9%9d%99%e6%80%81%e5%86%85%e9%83%a8%e7%b1%bb%e3%80%81%e6%9e%9a%e4%b8%be%e4%ba%94%e7%a7%8d%e5%ae%9e%e7%8e%b0%e6%96%b9%e5%bc%8f%e5%8f%8a%e7%ba%bf%e6%ae%b5%e6%a0%91%e7%a8%8b%e5%ae%89%e5%85%a8%e5%88%86%e6%9e%90&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="单例模式详解">
@@ -334,7 +692,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
               data-sizes="auto"
               alt="工厂方法与抽象工厂模式"
               class="lazyload"
@@ -366,10 +724,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -419,7 +777,45 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+      </ul>
+    </li>
+    <li><a href="#五种实现方式">五种实现方式</a>
+      <ul>
+        <li><a href="#1-饿汉式eager-initialization">1. 饿汉式（Eager Initialization）</a></li>
+        <li><a href="#2-懒汉式lazy-initialization">2. 懒汉式（Lazy Initialization）</a></li>
+        <li><a href="#3-双重检查锁double-checked-locking-dcl">3. 双重检查锁（Double-Checked Locking, DCL）</a></li>
+        <li><a href="#4-静态内部类initialization-on-demand-holder">4. 静态内部类（Initialization-on-demand Holder）</a></li>
+        <li><a href="#5-枚举实现enum-singleton">5. 枚举实现（Enum Singleton）</a></li>
+      </ul>
+    </li>
+    <li><a href="#单例的破坏与防御">单例的破坏与防御</a>
+      <ul>
+        <li><a href="#反射攻击">反射攻击</a></li>
+        <li><a href="#序列化破坏">序列化破坏</a></li>
+      </ul>
+    </li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例jdk-与框架中的单例">实战案例：JDK 与框架中的单例</a>
+      <ul>
+        <li><a href="#javalangruntime">java.lang.Runtime</a></li>
+        <li><a href="#spring-中的单例">Spring 中的单例</a></li>
+      </ul>
+    </li>
+    <li><a href="#五种实现对比">五种实现对比</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -550,6 +946,105 @@
           description: "饿汉式、懒汉式、双重检查锁、静态内部类、枚举五种实现方式及线段树程安全分析",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

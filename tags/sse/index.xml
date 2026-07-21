@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>WebSocket与实时通信</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在 Web 开发中，实时通信是一个常见需求，比如在线聊天室、实时通知、股票行情、协作编辑等。传统的 HTTP 协议是基于请求-响应模式的，服务端无法主动向客户端推送数据。为了解决这个问题，人们发明了各种技术方案，而 WebSocket 是目前最成熟、最高效的解决方案。</p>
         
         <hr><p>本文2026-03-01首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-03-01</p>]]>
       </description>

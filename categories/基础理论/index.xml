@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>网络分层模型与数据封装</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="为什么需要分层">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e5%88%86%e5%b1%82"></a>
+为什么需要分层
+</h2><p>计算机网络是一个极其复杂的系统，涉及信号传输、路由选择、错误恢复、数据加密等众多功能。如果将所有功能揉在一起，系统将变得难以理解、难以实现、难以维护。<strong>分层架构</strong>（Layered Architecture）通过将复杂问题分解为若干独立的层次，每层只负责特定功能，并为上层提供服务，从而实现了：</p>
         
         <hr><p>本文2021-12-16首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-12-16</p>]]>
       </description>

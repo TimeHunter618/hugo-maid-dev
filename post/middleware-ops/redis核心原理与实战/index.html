@@ -190,7 +190,62 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#核心数据结构与底层实现">核心数据结构与底层实现</a>
+      <ul>
+        <li><a href="#数据类型与底层编码">数据类型与底层编码</a></li>
+        <li><a href="#跳表skiplistzset-的核心">跳表（SkipList）——ZSet 的核心</a></li>
+        <li><a href="#常用数据结构应用场景">常用数据结构应用场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#持久化机制">持久化机制</a>
+      <ul>
+        <li><a href="#rdbredis-database">RDB（Redis Database）</a></li>
+        <li><a href="#aofappend-only-file">AOF（Append Only File）</a></li>
+        <li><a href="#aof-重写">AOF 重写</a></li>
+        <li><a href="#rdb-vs-aof-对比">RDB vs AOF 对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#高可用架构">高可用架构</a>
+      <ul>
+        <li><a href="#主从复制">主从复制</a></li>
+        <li><a href="#哨兵sentinel模式">哨兵（Sentinel）模式</a></li>
+        <li><a href="#cluster-集群">Cluster 集群</a></li>
+      </ul>
+    </li>
+    <li><a href="#缓存三大问题">缓存三大问题</a>
+      <ul>
+        <li><a href="#1-缓存穿透cache-penetration">1. 缓存穿透（Cache Penetration）</a></li>
+        <li><a href="#2-缓存击穿cache-breakdown">2. 缓存击穿（Cache Breakdown）</a></li>
+        <li><a href="#3-缓存雪崩cache-avalanche">3. 缓存雪崩（Cache Avalanche）</a></li>
+        <li><a href="#三大问题对比">三大问题对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#分布式锁">分布式锁</a>
+      <ul>
+        <li><a href="#基于-redis-的分布式锁演进">基于 Redis 的分布式锁演进</a></li>
+        <li><a href="#redisson-分布式锁">Redisson 分布式锁</a></li>
+        <li><a href="#redisson-看门狗机制">Redisson 看门狗机制</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能优化">性能优化</a>
+      <ul>
+        <li><a href="#内存优化">内存优化</a></li>
+        <li><a href="#pipeline-批量操作">Pipeline 批量操作</a></li>
+        <li><a href="#大-key-优化">大 key 优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题排查">常见问题排查</a>
+      <ul>
+        <li><a href="#慢查询排查">慢查询排查</a></li>
+        <li><a href="#内存碎片">内存碎片</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +326,815 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Redis 是目前最流行的内存数据存储系统，它不仅是缓存，更是支撑高并发架构的核心中间件。从简单的 key-value 缓存到分布式锁、限流器、排行榜、消息队列，Redis 的数据结构和单线程模型赋予了它极强的多面性。</p>
+<p>本文将从 Redis 的底层数据结构出发，逐步深入持久化机制、高可用架构、缓存三大经典问题以及分布式锁的实现。</p>
+<h2 id="核心数据结构与底层实现">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e4%b8%8e%e5%ba%95%e5%b1%82%e5%ae%9e%e7%8e%b0"></a>
+核心数据结构与底层实现
+</h2><h3 id="数据类型与底层编码">
+<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e7%b1%bb%e5%9e%8b%e4%b8%8e%e5%ba%95%e5%b1%82%e7%bc%96%e7%a0%81"></a>
+数据类型与底层编码
+</h3><p>Redis 对外提供五种基本数据类型，但每种类型在底层根据数据量大小使用不同的编码方式：</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "对外数据类型"
+        STR[String]
+        LST[List]
+        SET[Set]
+        ZSET[ZSet]
+        HSH[Hash]
+    end
+
+    subgraph "底层编码"
+        E1[int / embstr / raw]
+        E2[ziplist / quicklist / listpack]
+        E3[intset / hashtable]
+        E4[ziplist / skiplist + hashtable]
+        E5[ziplist / hashtable]
+    end
+
+    STR --> E1
+    LST --> E2
+    SET --> E3
+    ZSET --> E4
+    HSH --> E5
+</pre><h3 id="跳表skiplistzset-的核心">
+<a class="header-anchor" href="#%e8%b7%b3%e8%a1%a8skiplistzset-%e7%9a%84%e6%a0%b8%e5%bf%83"></a>
+跳表（SkipList）——ZSet 的核心
+</h3><p>ZSet 的有序性来自于跳表结构，它通过多级索引实现 $O(\log n)$ 的查找和插入：</p>
+<pre class="mermaid">
+  graph LR
+    subgraph "SkipList 结构"
+        L3["Level 3: HEAD ─────────────────────→ 30 ──→ NIL"]
+        L2["Level 2: HEAD ──────→ 10 ──────────→ 30 ──→ NIL"]
+        L1["Level 1: HEAD → 5 → 10 → 20 ──────→ 30 ──→ NIL"]
+        L0["Level 0: HEAD → 5 → 10 → 15 → 20 → 25 → 30 → NIL"]
+    end
+</pre><p><strong>跳表 vs B+树 vs 红黑树</strong>：</p>
+<table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>SkipList</th>
+					<th>B+Tree</th>
+					<th>Red-Black Tree</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>查找复杂度</td>
+					<td>$O(\log n)$</td>
+					<td>$O(\log n)$</td>
+					<td>$O(\log n)$</td>
+			</tr>
+			<tr>
+					<td>范围查询</td>
+					<td>快（链表遍历）</td>
+					<td>快（叶子链表）</td>
+					<td>慢</td>
+			</tr>
+			<tr>
+					<td>实现复杂度</td>
+					<td>简单</td>
+					<td>复杂</td>
+					<td>复杂</td>
+			</tr>
+			<tr>
+					<td>并发友好</td>
+					<td>高（局部锁）</td>
+					<td>中</td>
+					<td>低（旋转多）</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="常用数据结构应用场景">
+<a class="header-anchor" href="#%e5%b8%b8%e7%94%a8%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+常用数据结构应用场景
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Spring Boot Redis 配置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">RedisConfig</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Bean</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">RedisTemplate</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">redisTemplate</span><span class="p">(</span><span class="n">RedisConnectionFactory</span><span class="w"> </span><span class="n">factory</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">RedisTemplate</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">template</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RedisTemplate</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">template</span><span class="p">.</span><span class="na">setConnectionFactory</span><span class="p">(</span><span class="n">factory</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">template</span><span class="p">.</span><span class="na">setKeySerializer</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">StringRedisSerializer</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">template</span><span class="p">.</span><span class="na">setValueSerializer</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">GenericJackson2JsonRedisSerializer</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">template</span><span class="p">.</span><span class="na">setHashKeySerializer</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">StringRedisSerializer</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">template</span><span class="p">.</span><span class="na">setHashValueSerializer</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">GenericJackson2JsonRedisSerializer</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">template</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><table>
+	<thead>
+			<tr>
+					<th>数据类型</th>
+					<th>典型场景</th>
+					<th>核心命令</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>String</strong></td>
+					<td>缓存、计数器、分布式锁</td>
+					<td>SET, GET, INCR, SETNX</td>
+			</tr>
+			<tr>
+					<td><strong>List</strong></td>
+					<td>消息队列、最新列表</td>
+					<td>LPUSH, RPOP, LRANGE</td>
+			</tr>
+			<tr>
+					<td><strong>Set</strong></td>
+					<td>去重、标签、共同好友</td>
+					<td>SADD, SINTER, SUNION</td>
+			</tr>
+			<tr>
+					<td><strong>ZSet</strong></td>
+					<td>排行榜、延迟队列</td>
+					<td>ZADD, ZRANGEBYSCORE</td>
+			</tr>
+			<tr>
+					<td><strong>Hash</strong></td>
+					<td>对象存储、购物车</td>
+					<td>HSET, HGET, HGETALL</td>
+			</tr>
+	</tbody>
+</table>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 排行榜实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LeaderboardService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">StringRedisTemplate</span><span class="w"> </span><span class="n">redis</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;game:leaderboard&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 添加分数</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addScore</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">playerId</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">score</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForZSet</span><span class="p">().</span><span class="na">add</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span><span class="w"> </span><span class="n">playerId</span><span class="p">,</span><span class="w"> </span><span class="n">score</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 增加分数</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">incrementScore</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">playerId</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">delta</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForZSet</span><span class="p">().</span><span class="na">incrementScore</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span><span class="w"> </span><span class="n">playerId</span><span class="p">,</span><span class="w"> </span><span class="n">delta</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 获取 Top N</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Set</span><span class="o">&lt;</span><span class="n">ZSetOperations</span><span class="p">.</span><span class="na">TypedTuple</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="nf">getTopN</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForZSet</span><span class="p">().</span><span class="na">reverseRangeWithScores</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 获取玩家排名</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="nf">getRank</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">playerId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForZSet</span><span class="p">().</span><span class="na">reverseRank</span><span class="p">(</span><span class="n">KEY</span><span class="p">,</span><span class="w"> </span><span class="n">playerId</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="持久化机制">
+<a class="header-anchor" href="#%e6%8c%81%e4%b9%85%e5%8c%96%e6%9c%ba%e5%88%b6"></a>
+持久化机制
+</h2><h3 id="rdbredis-database">
+<a class="header-anchor" href="#rdbredis-database"></a>
+RDB（Redis Database）
+</h3><p>RDB 是 Redis 的内存快照持久化方式：</p>
+<pre class="mermaid">
+  sequenceDiagram
+    participant C as Client
+    participant R as Redis Main
+    participant F as Fork Child
+    participant D as Disk
+
+    C->>R: BGSAVE
+    R->>F: fork() 创建子进程
+    Note over R: 主进程继续处理请求
+    F->>F: 遍历所有数据生成快照
+    F->>D: 写入 dump.rdb
+    F->>R: 通知完成
+    R->>C: 持久化完成
+</pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-properties" data-lang="properties"><span class="line"><span class="cl"><span class="c1"># redis.conf RDB 配置</span>
+</span></span><span class="line"><span class="cl"><span class="na">save</span> <span class="s">900 1      # 900秒内至少1次修改触发快照</span>
+</span></span><span class="line"><span class="cl"><span class="na">save</span> <span class="s">300 10     # 300秒内至少10次修改</span>
+</span></span><span class="line"><span class="cl"><span class="na">save</span> <span class="s">60 10000   # 60秒内至少10000次修改</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="na">dbfilename</span> <span class="s">dump.rdb</span>
+</span></span><span class="line"><span class="cl"><span class="na">dir</span> <span class="s">/data/redis</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="na">rdbcompression</span> <span class="s">yes      # 压缩</span>
+</span></span><span class="line"><span class="cl"><span class="na">rdbchecksum</span> <span class="s">yes         # 校验</span>
+</span></span><span class="line"><span class="cl"><span class="na">stop-writes-on-bgsave-error</span> <span class="s">yes  # 快照失败时拒绝写入</span>
+</span></span></code></pre></div><h3 id="aofappend-only-file">
+<a class="header-anchor" href="#aofappend-only-file"></a>
+AOF（Append Only File）
+</h3><p>AOF 以追加方式记录每条写命令：</p>
+<pre class="mermaid">
+  graph TD
+    C[Client: SET key value] --> R[Redis]
+    R -->|"1. 执行命令"| MEM[(内存)]
+    R -->|"2. 追加到 AOF 缓冲"| BUF[AOF Buffer]
+    BUF -->|"3. 同步策略"| FS[aof 文件]
+
+    subgraph "AOF 同步策略"
+        S1["always: 每条命令同步<br/>最安全，性能最差"]
+        S2["everysec: 每秒同步<br/>平衡选择（默认）"]
+        S3["no: 由操作系统决定<br/>性能最好，可能丢数据"]
+    end
+</pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-properties" data-lang="properties"><span class="line"><span class="cl"><span class="c1"># redis.conf AOF 配置</span>
+</span></span><span class="line"><span class="cl"><span class="na">appendonly</span> <span class="s">yes</span>
+</span></span><span class="line"><span class="cl"><span class="na">appendfilename</span> <span class="s">&#34;appendonly.aof&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="na">appendfsync</span> <span class="s">everysec     # 每秒同步一次</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># AOF 重写：压缩 AOF 文件</span>
+</span></span><span class="line"><span class="cl"><span class="na">auto-aof-rewrite-percentage</span> <span class="s">100  # 文件大小翻倍时重写</span>
+</span></span><span class="line"><span class="cl"><span class="na">auto-aof-rewrite-min-size</span> <span class="s">64mb   # 最小重写大小</span>
+</span></span></code></pre></div><h3 id="aof-重写">
+<a class="header-anchor" href="#aof-%e9%87%8d%e5%86%99"></a>
+AOF 重写
+</h3><pre class="mermaid">
+  graph LR
+    subgraph "重写前（AOF 文件 200MB）"
+        A1["SET key1 v1"]
+        A2["SET key1 v2"]
+        A3["SET key1 v3"]
+        A4["DEL key1"]
+        A5["SET key2 v1"]
+        A6["SET key2 v2"]
+    end
+    subgraph "重写后（AOF 文件 100B）"
+        B1["SET key2 v2"]
+    end
+</pre><h3 id="rdb-vs-aof-对比">
+<a class="header-anchor" href="#rdb-vs-aof-%e5%af%b9%e6%af%94"></a>
+RDB vs AOF 对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>RDB</th>
+					<th>AOF</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>数据安全</strong></td>
+					<td>可能丢失最近一次快照后的数据</td>
+					<td>最多丢失 1 秒数据（everysec）</td>
+			</tr>
+			<tr>
+					<td><strong>文件大小</strong></td>
+					<td>小（压缩二进制）</td>
+					<td>大（文本命令）</td>
+			</tr>
+			<tr>
+					<td><strong>恢复速度</strong></td>
+					<td>快（直接加载二进制）</td>
+					<td>慢（重放命令）</td>
+			</tr>
+			<tr>
+					<td><strong>性能影响</strong></td>
+					<td>fork 时有短暂暂停</td>
+					<td>追加写入持续开销</td>
+			</tr>
+			<tr>
+					<td><strong>可读性</strong></td>
+					<td>不可读</td>
+					<td>文本可读</td>
+			</tr>
+	</tbody>
+</table>
+<p><strong>生产建议</strong>：同时开启 RDB + AOF。Redis 4.0+ 支持混合持久化（RDB 做全量 + AOF 做增量）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-properties" data-lang="properties"><span class="line"><span class="cl"><span class="na">aof-use-rdb-preamble</span> <span class="s">yes  # 混合持久化</span>
+</span></span></code></pre></div><h2 id="高可用架构">
+<a class="header-anchor" href="#%e9%ab%98%e5%8f%af%e7%94%a8%e6%9e%b6%e6%9e%84"></a>
+高可用架构
+</h2><h3 id="主从复制">
+<a class="header-anchor" href="#%e4%b8%bb%e4%bb%8e%e5%a4%8d%e5%88%b6"></a>
+主从复制
+</h3><pre class="mermaid">
+  graph TD
+    M[Master<br/>读写] -->|同步| R1[Replica 1<br/>只读]
+    M -->|同步| R2[Replica 2<br/>只读]
+
+    subgraph "全量同步流程"
+        S1["Slave 发送 PSYNC"] --> S2["Master 执行 BGSAVE"]
+        S2 --> S3["Master 发送 RDB"]
+        S3 --> S4["Slave 加载 RDB"]
+        S4 --> S5["Master 发送缓冲区命令"]
+        S5 --> S6["进入增量同步"]
+    end
+</pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 在 Replica 节点配置</span>
+</span></span><span class="line"><span class="cl">replicaof 192.168.1.100 <span class="m">6379</span>
+</span></span><span class="line"><span class="cl">replica-read-only yes
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Master 认证</span>
+</span></span><span class="line"><span class="cl">masterauth yourpassword
+</span></span></code></pre></div><h3 id="哨兵sentinel模式">
+<a class="header-anchor" href="#%e5%93%a8%e5%85%b5sentinel%e6%a8%a1%e5%bc%8f"></a>
+哨兵（Sentinel）模式
+</h3><p>哨兵负责监控 Master/Slave 状态，并在 Master 故障时自动选举新 Master：</p>
+<pre class="mermaid">
+  graph TD
+    subgraph Sentinel 集群
+        SE1[Sentinel 1]
+        SE2[Sentinel 2]
+        SE3[Sentinel 3]
+    end
+
+    subgraph Redis 节点
+        M[Master ✗ 宕机]
+        R1[Replica 1]
+        R2[Replica 2]
+    end
+
+    SE1 -->|监控| M
+    SE2 -->|监控| M
+    SE3 -->|监控| M
+
+    SE1 -->|主观下线| M
+    SE2 -->|确认客观下线| M
+    SE3 -->|选举 R1 为新 Master| R1
+    R1 -->|提升为 Master| R1N[Master ✓]
+    R2 -->|重新指向| R1N
+</pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-properties" data-lang="properties"><span class="line"><span class="cl"><span class="c1"># sentinel.conf</span>
+</span></span><span class="line"><span class="cl"><span class="na">port</span> <span class="s">26379</span>
+</span></span><span class="line"><span class="cl"><span class="na">sentinel</span> <span class="s">monitor mymaster 192.168.1.100 6379 2</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 2 个 Sentinel 确认才判定 Master 下线</span>
+</span></span><span class="line"><span class="cl"><span class="na">sentinel</span> <span class="s">down-after-milliseconds mymaster 5000</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 5 秒无响应判定下线</span>
+</span></span><span class="line"><span class="cl"><span class="na">sentinel</span> <span class="s">failover-timeout mymaster 60000</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 故障转移超时</span>
+</span></span><span class="line"><span class="cl"><span class="na">sentinel</span> <span class="s">parallel-syncs mymaster 1</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 每次只有一个 Slave 做同步</span>
+</span></span></code></pre></div><h3 id="cluster-集群">
+<a class="header-anchor" href="#cluster-%e9%9b%86%e7%be%a4"></a>
+Cluster 集群
+</h3><p>Redis Cluster 通过**哈希槽（Hash Slot）**实现数据分片：</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "Redis Cluster (16384 Slots)"
+        subgraph "Node A"
+            NA_M[Master A<br/>Slots 0-5460]
+            NA_S[Slave A']
+        end
+        subgraph "Node B"
+            NB_M[Master B<br/>Slots 5461-10922]
+            NB_S[Slave B']
+        end
+        subgraph "Node C"
+            NC_M[Master C<br/>Slots 10923-16383]
+            NC_S[Slave C']
+        end
+    end
+
+    Client -->|"SET key value<br/>CRC16(key) % 16384"| NA_M
+</pre>$$
+\text{slot} = \text{CRC16}(\text{key}) \mod 16384
+$$<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 创建集群（3主3从）</span>
+</span></span><span class="line"><span class="cl">redis-cli --cluster create <span class="se">\
+</span></span></span><span class="line"><span class="cl">  192.168.1.101:6379 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  192.168.1.102:6379 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  192.168.1.103:6379 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  192.168.1.104:6379 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  192.168.1.105:6379 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  192.168.1.106:6379 <span class="se">\
+</span></span></span><span class="line"><span class="cl">  --cluster-replicas <span class="m">1</span>
+</span></span></code></pre></div><table>
+	<thead>
+			<tr>
+					<th>架构</th>
+					<th>数据分片</th>
+					<th>自动故障转移</th>
+					<th>适用规模</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>主从</td>
+					<td>否</td>
+					<td>否（需手动）</td>
+					<td>小规模读写分离</td>
+			</tr>
+			<tr>
+					<td>哨兵</td>
+					<td>否</td>
+					<td>是</td>
+					<td>中小规模高可用</td>
+			</tr>
+			<tr>
+					<td>Cluster</td>
+					<td>是（哈希槽）</td>
+					<td>是</td>
+					<td>大规模高并发</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="缓存三大问题">
+<a class="header-anchor" href="#%e7%bc%93%e5%ad%98%e4%b8%89%e5%a4%a7%e9%97%ae%e9%a2%98"></a>
+缓存三大问题
+</h2><h3 id="1-缓存穿透cache-penetration">
+<a class="header-anchor" href="#1-%e7%bc%93%e5%ad%98%e7%a9%bf%e9%80%8fcache-penetration"></a>
+1. 缓存穿透（Cache Penetration）
+</h3><p><strong>现象</strong>：大量请求查询<strong>不存在的数据</strong>，缓存和数据库都没有，直接打到数据库。</p>
+<pre class="mermaid">
+  graph LR
+    C[Client] -->|"GET user:99999<br/>(不存在)"| Cache[(Redis)]
+    Cache -.->|"MISS"| DB[(MySQL)]
+    DB -.->|"NULL"| Cache
+    Cache -.->|"NULL"| C
+    Note1["大量不存在的 key<br/>每次都打到 DB"] -.-> DB
+</pre><p><strong>解决方案</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 方案1: 缓存空值</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UserService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">UserMapper</span><span class="w"> </span><span class="n">userMapper</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">StringRedisTemplate</span><span class="w"> </span><span class="n">redis</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="nf">getUserById</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;user:&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">cached</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 命中缓存</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cached</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="s">&#34;NULL&#34;</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">cached</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w"> </span><span class="c1">// 缓存的空值</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">JSON</span><span class="p">.</span><span class="na">parseObject</span><span class="p">(</span><span class="n">cached</span><span class="p">,</span><span class="w"> </span><span class="n">User</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 查询数据库</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">User</span><span class="w"> </span><span class="n">user</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userMapper</span><span class="p">.</span><span class="na">selectById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">user</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">JSON</span><span class="p">.</span><span class="na">toJSONString</span><span class="p">(</span><span class="n">user</span><span class="p">),</span><span class="w"> </span><span class="n">30</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="p">.</span><span class="na">MINUTES</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 缓存空值，短 TTL</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;NULL&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">5</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="p">.</span><span class="na">MINUTES</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">user</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 方案2: 布隆过滤器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">BloomFilterService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">RedisTemplate</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">redis</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">BLOOM_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;user:bloom&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 初始化：将所有存在的 ID 加入布隆过滤器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">initBloomFilter</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">allIds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userMapper</span><span class="p">.</span><span class="na">selectAllIds</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">allIds</span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">getOperations</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">execute</span><span class="p">((</span><span class="n">RedisCallback</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="n">connection</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">connection</span><span class="p">.</span><span class="na">bfAdd</span><span class="p">(</span><span class="n">BLOOM_KEY</span><span class="p">.</span><span class="na">getBytes</span><span class="p">(),</span><span class="w"> </span><span class="n">id</span><span class="p">.</span><span class="na">toString</span><span class="p">().</span><span class="na">getBytes</span><span class="p">())));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="nf">getUserWithBloom</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 布隆过滤器前置检查</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Boolean</span><span class="w"> </span><span class="n">exists</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">getOperations</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">execute</span><span class="p">((</span><span class="n">RedisCallback</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="n">connection</span><span class="w"> </span><span class="o">-&gt;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">connection</span><span class="p">.</span><span class="na">bfExists</span><span class="p">(</span><span class="n">BLOOM_KEY</span><span class="p">.</span><span class="na">getBytes</span><span class="p">(),</span><span class="w"> </span><span class="n">id</span><span class="p">.</span><span class="na">toString</span><span class="p">().</span><span class="na">getBytes</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Boolean</span><span class="p">.</span><span class="na">FALSE</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">exists</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 布隆过滤器说不存在，一定不存在</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 布隆过滤器说可能存在，继续查缓存和DB</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">getUserById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="2-缓存击穿cache-breakdown">
+<a class="header-anchor" href="#2-%e7%bc%93%e5%ad%98%e5%87%bb%e7%a9%bfcache-breakdown"></a>
+2. 缓存击穿（Cache Breakdown）
+</h3><p><strong>现象</strong>：<strong>热点 key 过期</strong>瞬间，大量并发请求直接打到数据库。</p>
+<pre class="mermaid">
+  graph TD
+    A[热点Key过期] --> B[大量并发请求]
+    B --> C[同时查询DB]
+    C --> D[DB 压力瞬间暴增]
+</pre><p><strong>解决方案——互斥锁</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">HotKeyService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">StringRedisTemplate</span><span class="w"> </span><span class="n">redis</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getHotData</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 获取分布式锁（只允许一个线程查DB）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">lockKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;lock:&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">key</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">lockValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UUID</span><span class="p">.</span><span class="na">randomUUID</span><span class="p">().</span><span class="na">toString</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Boolean</span><span class="w"> </span><span class="n">locked</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">.</span><span class="na">setIfAbsent</span><span class="p">(</span><span class="n">lockKey</span><span class="p">,</span><span class="w"> </span><span class="n">lockValue</span><span class="p">,</span><span class="w"> </span><span class="n">10</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="p">.</span><span class="na">SECONDS</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Boolean</span><span class="p">.</span><span class="na">TRUE</span><span class="p">.</span><span class="na">equals</span><span class="p">(</span><span class="n">locked</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="c1">// 双重检查</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="c1">// 查询数据库</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queryFromDatabase</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="c1">// 写入缓存</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">30</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="p">.</span><span class="na">MINUTES</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="c1">// 等待后重试</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="n">50</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">getHotData</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InterruptedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">interrupt</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 释放锁（Lua 保证原子性）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">releaseLock</span><span class="p">(</span><span class="n">lockKey</span><span class="p">,</span><span class="w"> </span><span class="n">lockValue</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">releaseLock</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">luaScript</span><span class="w"> </span><span class="o">=</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;if redis.call(&#39;get&#39;, KEYS[1]) == ARGV[1] then &#34;</span><span class="w"> </span><span class="o">+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;  return redis.call(&#39;del&#39;, KEYS[1]) &#34;</span><span class="w"> </span><span class="o">+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;else &#34;</span><span class="w"> </span><span class="o">+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;  return 0 &#34;</span><span class="w"> </span><span class="o">+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;end&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">redis</span><span class="p">.</span><span class="na">execute</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">DefaultRedisScript</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">luaScript</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">class</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">Collections</span><span class="p">.</span><span class="na">singletonList</span><span class="p">(</span><span class="n">key</span><span class="p">),</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="3-缓存雪崩cache-avalanche">
+<a class="header-anchor" href="#3-%e7%bc%93%e5%ad%98%e9%9b%aa%e5%b4%a9cache-avalanche"></a>
+3. 缓存雪崩（Cache Avalanche）
+</h3><p><strong>现象</strong>：<strong>大量 key 同时过期</strong> 或 Redis 宕机，导致所有请求打到数据库。</p>
+<pre class="mermaid">
+  graph TD
+    A[大量Key同时过期] --> B[全部请求打到DB]
+    B --> C[DB 被压垮]
+    D[Redis宕机] --> B
+
+    subgraph "雪崩 vs 击穿"
+        E["雪崩：大量Key失效<br/>击穿：单个热点Key失效"]
+    end
+</pre><p><strong>解决方案</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 方案1: 过期时间加随机值，避免同时过期</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">cacheWithRandomTTL</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">baseTTL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1800</span><span class="p">;</span><span class="w"> </span><span class="c1">// 30 分钟</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">randomTTL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ThreadLocalRandom</span><span class="p">.</span><span class="na">current</span><span class="p">().</span><span class="na">nextInt</span><span class="p">(</span><span class="n">300</span><span class="p">);</span><span class="w"> </span><span class="c1">// 0-5 分钟随机</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">baseTTL</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">randomTTL</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="p">.</span><span class="na">SECONDS</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 方案2: 多级缓存</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MultiLevelCache</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Cache</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">localCache</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Caffeine</span><span class="p">.</span><span class="na">newBuilder</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">maximumSize</span><span class="p">(</span><span class="n">10000</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">expireAfterWrite</span><span class="p">(</span><span class="n">5</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="p">.</span><span class="na">MINUTES</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">build</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// L1: 本地缓存</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">localCache</span><span class="p">.</span><span class="na">getIfPresent</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// L2: Redis 缓存</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">localCache</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// L3: 数据库</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queryFromDatabase</span><span class="p">(</span><span class="n">key</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForValue</span><span class="p">().</span><span class="na">set</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">30</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="p">.</span><span class="na">MINUTES</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">localCache</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="三大问题对比">
+<a class="header-anchor" href="#%e4%b8%89%e5%a4%a7%e9%97%ae%e9%a2%98%e5%af%b9%e6%af%94"></a>
+三大问题对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>问题</th>
+					<th>根因</th>
+					<th>解决方案</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>穿透</strong></td>
+					<td>查询不存在的数据</td>
+					<td>缓存空值 / 布隆过滤器</td>
+			</tr>
+			<tr>
+					<td><strong>击穿</strong></td>
+					<td>热点 key 过期</td>
+					<td>互斥锁 / 逻辑过期</td>
+			</tr>
+			<tr>
+					<td><strong>雪崩</strong></td>
+					<td>大量 key 同时过期</td>
+					<td>随机 TTL / 多级缓存 / 限流降级</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="分布式锁">
+<a class="header-anchor" href="#%e5%88%86%e5%b8%83%e5%bc%8f%e9%94%81"></a>
+分布式锁
+</h2><h3 id="基于-redis-的分布式锁演进">
+<a class="header-anchor" href="#%e5%9f%ba%e4%ba%8e-redis-%e7%9a%84%e5%88%86%e5%b8%83%e5%bc%8f%e9%94%81%e6%bc%94%e8%bf%9b"></a>
+基于 Redis 的分布式锁演进
+</h3><pre class="mermaid">
+  graph TD
+    A["v1: SETNX"] -->|"问题: 无法设置过期时间"| B["v2: SETNX + EXPIRE"]
+    B -->|"问题: 非原子性"| C["v3: SET NX EX（原子）"]
+    C -->|"问题: 误删他人锁"| D["v4: SET NX EX + UUID"]
+    D -->|"问题: 释放锁非原子"| E["v5: Lua 脚本释放"]
+    E -->|"问题: 锁过期但业务未完成"| F["v6: 看门狗自动续期"]
+    F -->|"生产方案"| G["v7: Redisson"]
+</pre><h3 id="redisson-分布式锁">
+<a class="header-anchor" href="#redisson-%e5%88%86%e5%b8%83%e5%bc%8f%e9%94%81"></a>
+Redisson 分布式锁
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 生产级分布式锁实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DistributedLockService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">RedissonClient</span><span class="w"> </span><span class="n">redisson</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">executeWithLock</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">lockKey</span><span class="p">,</span><span class="w"> </span><span class="n">Runnable</span><span class="w"> </span><span class="n">task</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">RLock</span><span class="w"> </span><span class="n">lock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redisson</span><span class="p">.</span><span class="na">getLock</span><span class="p">(</span><span class="n">lockKey</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 尝试加锁：最多等待 10 秒，锁自动过期 30 秒</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">boolean</span><span class="w"> </span><span class="n">locked</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lock</span><span class="p">.</span><span class="na">tryLock</span><span class="p">(</span><span class="n">10</span><span class="p">,</span><span class="w"> </span><span class="n">30</span><span class="p">,</span><span class="w"> </span><span class="n">TimeUnit</span><span class="p">.</span><span class="na">SECONDS</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">locked</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="s">&#34;获取锁失败: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">lockKey</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 执行业务逻辑</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">task</span><span class="p">.</span><span class="na">run</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InterruptedException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">interrupt</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 确保释放锁</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">lock</span><span class="p">.</span><span class="na">isHeldByCurrentThread</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">lock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 读写锁</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">readLockExample</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">RReadWriteLock</span><span class="w"> </span><span class="n">rwLock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redisson</span><span class="p">.</span><span class="na">getReadWriteLock</span><span class="p">(</span><span class="s">&#34;data-lock&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">RLock</span><span class="w"> </span><span class="n">readLock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rwLock</span><span class="p">.</span><span class="na">readLock</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">readLock</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 读取共享数据</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">readLock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 联锁（多个锁同时获取）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">multiLockExample</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">RLock</span><span class="w"> </span><span class="n">lock1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redisson</span><span class="p">.</span><span class="na">getLock</span><span class="p">(</span><span class="s">&#34;lock1&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">RLock</span><span class="w"> </span><span class="n">lock2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redisson</span><span class="p">.</span><span class="na">getLock</span><span class="p">(</span><span class="s">&#34;lock2&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">RLock</span><span class="w"> </span><span class="n">lock3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redisson</span><span class="p">.</span><span class="na">getLock</span><span class="p">(</span><span class="s">&#34;lock3&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">RedissonMultiLock</span><span class="w"> </span><span class="n">multiLock</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RedissonMultiLock</span><span class="p">(</span><span class="n">lock1</span><span class="p">,</span><span class="w"> </span><span class="n">lock2</span><span class="p">,</span><span class="w"> </span><span class="n">lock3</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">multiLock</span><span class="p">.</span><span class="na">lock</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 业务逻辑</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">multiLock</span><span class="p">.</span><span class="na">unlock</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="redisson-看门狗机制">
+<a class="header-anchor" href="#redisson-%e7%9c%8b%e9%97%a8%e7%8b%97%e6%9c%ba%e5%88%b6"></a>
+Redisson 看门狗机制
+</h3><pre class="mermaid">
+  sequenceDiagram
+    participant T as 业务线程
+    participant W as Watchdog
+    participant R as Redis
+
+    T->>R: 加锁 lockKey, TTL=30s
+    T->>T: 启动 Watchdog 定时任务
+    Note over T: 执行业务逻辑...
+
+    loop 每 10 秒（TTL/3）
+        W->>R: 刷新 TTL=30s
+    end
+
+    Note over T: 业务完成
+    T->>R: 释放锁
+    W->>W: 取消定时任务
+</pre><h2 id="性能优化">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96"></a>
+性能优化
+</h2><h3 id="内存优化">
+<a class="header-anchor" href="#%e5%86%85%e5%ad%98%e4%bc%98%e5%8c%96"></a>
+内存优化
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 设置最大内存和淘汰策略</span>
+</span></span><span class="line"><span class="cl">maxmemory 4gb
+</span></span><span class="line"><span class="cl">maxmemory-policy allkeys-lru
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 淘汰策略选择</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># allkeys-lru:     所有 key 中淘汰最久未使用（通用推荐）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># volatile-lru:    过期 key 中淘汰最久未使用</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># allkeys-lfu:     所有 key 中淘汰最少使用（Redis 4.0+）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># noeviction:      不淘汰，写入报错（默认）</span>
+</span></span></code></pre></div><h3 id="pipeline-批量操作">
+<a class="header-anchor" href="#pipeline-%e6%89%b9%e9%87%8f%e6%93%8d%e4%bd%9c"></a>
+Pipeline 批量操作
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 使用 Pipeline 减少网络往返</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">batchInsert</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">redis</span><span class="p">.</span><span class="na">executePipelined</span><span class="p">((</span><span class="n">RedisCallback</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="n">connection</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">StringRedisConnection</span><span class="w"> </span><span class="n">stringConn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">StringRedisConnection</span><span class="p">)</span><span class="w"> </span><span class="n">connection</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">data</span><span class="p">.</span><span class="na">forEach</span><span class="p">(</span><span class="n">stringConn</span><span class="p">::</span><span class="n">set</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="大-key-优化">
+<a class="header-anchor" href="#%e5%a4%a7-key-%e4%bc%98%e5%8c%96"></a>
+大 key 优化
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 检测大 key</span>
+</span></span><span class="line"><span class="cl">redis-cli --bigkeys
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查找大于 10KB 的 key</span>
+</span></span><span class="line"><span class="cl">redis-cli --memkeys --memkeys-samples <span class="m">1000</span>
+</span></span></code></pre></div><pre class="mermaid">
+  graph TD
+    A[大Key问题] --> B["String > 10KB"]
+    A --> C["List/Hash/Set > 5000元素"]
+    A --> D["ZSet > 5000元素"]
+
+    B --> B1[拆分为多个小 Key]
+    C --> C1[分片存储]
+    D --> D1[分页或分桶]
+
+    A --> E["影响：网络阻塞<br/>内存不均匀<br/>删除时阻塞"]
+</pre><h2 id="常见问题排查">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e6%8e%92%e6%9f%a5"></a>
+常见问题排查
+</h2><h3 id="慢查询排查">
+<a class="header-anchor" href="#%e6%85%a2%e6%9f%a5%e8%af%a2%e6%8e%92%e6%9f%a5"></a>
+慢查询排查
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看慢查询日志</span>
+</span></span><span class="line"><span class="cl">SLOWLOG GET <span class="m">10</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 设置慢查询阈值（微秒）</span>
+</span></span><span class="line"><span class="cl">CONFIG SET slowlog-log-slower-than <span class="m">10000</span>  <span class="c1"># 10ms</span>
+</span></span><span class="line"><span class="cl">CONFIG SET slowlog-max-len <span class="m">128</span>
+</span></span></code></pre></div><h3 id="内存碎片">
+<a class="header-anchor" href="#%e5%86%85%e5%ad%98%e7%a2%8e%e7%89%87"></a>
+内存碎片
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看内存信息</span>
+</span></span><span class="line"><span class="cl">INFO memory
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># used_memory:      实际使用的内存</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># used_memory_rss:  操作系统分配的内存</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># mem_fragmentation_ratio = RSS / used_memory</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># &gt; 1.5 表示碎片率高</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 主动整理碎片</span>
+</span></span><span class="line"><span class="cl">MEMORY PURGE
+</span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>Redis 的强大之处在于它把<strong>丰富的数据结构</strong>与<strong>极简的 API</strong> 结合在了一起。理解每种数据类型的底层编码（String 的 embstr→raw 转换、ZSet 的跳表结构、Hash 的 ziplist→hashtable 升级），能帮助我们在不同数据规模下做出正确的选择。</p>
+<p>在高可用方面，从主从复制到哨兵再到 Cluster，Redis 提供了完整的高可用演进路径。而在缓存场景中，穿透、击穿、雪崩三大问题是面试和实战的高频考点，布隆过滤器、互斥锁、随机 TTL 是对应的利器。</p>
+<p>最后，Redisson 封装的分布式锁（看门狗 + Lua 原子操作）是生产环境的标准方案，避免了手写分布式锁的各种陷阱。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/middleware-ops/redis%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E6%88%98/&amp;appkey=&amp;title=Redis%e6%a0%b8%e5%bf%83%e5%8e%9f%e7%90%86%e4%b8%8e%e5%ae%9e&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="Redis核心原理与实">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/middleware-ops/redis%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E6%88%98/&amp;title=Redis%e6%a0%b8%e5%bf%83%e5%8e%9f%e7%90%86%e4%b8%8e%e5%ae%9e&amp;desc=%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e5%ba%95%e5%b1%82%e5%8e%9f%e7%90%86%e3%80%81RDB/AOF%e6%8c%81%e4%b9%85%e5%8c%96%e3%80%81%e4%b8%bb%e4%bb%8e%e5%93%a8%e5%85%b5%e9%9b%86%e7%be%a4%e3%80%81%e7%bc%93%e5%ad%98%e7%a9%bf?%e5%87%bb%e7%a9%bf/%e9%9b%aa%e5%b4%a9%e4%b8%8e%e5%88%86%e5%b8%83%e5%bc%8f&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="Redis核心原理与实">
@@ -341,7 +1204,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
+              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
               data-sizes="auto"
               alt="Kafka Streams流处理实"
               class="lazyload"
@@ -353,7 +1216,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">Kafka Streams流处理实</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
+              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
               data-sizes="auto"
               alt="Kafka高吞吐消息流处理"
               class="lazyload"
@@ -385,10 +1248,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -438,7 +1301,62 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#核心数据结构与底层实现">核心数据结构与底层实现</a>
+      <ul>
+        <li><a href="#数据类型与底层编码">数据类型与底层编码</a></li>
+        <li><a href="#跳表skiplistzset-的核心">跳表（SkipList）——ZSet 的核心</a></li>
+        <li><a href="#常用数据结构应用场景">常用数据结构应用场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#持久化机制">持久化机制</a>
+      <ul>
+        <li><a href="#rdbredis-database">RDB（Redis Database）</a></li>
+        <li><a href="#aofappend-only-file">AOF（Append Only File）</a></li>
+        <li><a href="#aof-重写">AOF 重写</a></li>
+        <li><a href="#rdb-vs-aof-对比">RDB vs AOF 对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#高可用架构">高可用架构</a>
+      <ul>
+        <li><a href="#主从复制">主从复制</a></li>
+        <li><a href="#哨兵sentinel模式">哨兵（Sentinel）模式</a></li>
+        <li><a href="#cluster-集群">Cluster 集群</a></li>
+      </ul>
+    </li>
+    <li><a href="#缓存三大问题">缓存三大问题</a>
+      <ul>
+        <li><a href="#1-缓存穿透cache-penetration">1. 缓存穿透（Cache Penetration）</a></li>
+        <li><a href="#2-缓存击穿cache-breakdown">2. 缓存击穿（Cache Breakdown）</a></li>
+        <li><a href="#3-缓存雪崩cache-avalanche">3. 缓存雪崩（Cache Avalanche）</a></li>
+        <li><a href="#三大问题对比">三大问题对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#分布式锁">分布式锁</a>
+      <ul>
+        <li><a href="#基于-redis-的分布式锁演进">基于 Redis 的分布式锁演进</a></li>
+        <li><a href="#redisson-分布式锁">Redisson 分布式锁</a></li>
+        <li><a href="#redisson-看门狗机制">Redisson 看门狗机制</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能优化">性能优化</a>
+      <ul>
+        <li><a href="#内存优化">内存优化</a></li>
+        <li><a href="#pipeline-批量操作">Pipeline 批量操作</a></li>
+        <li><a href="#大-key-优化">大 key 优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题排查">常见问题排查</a>
+      <ul>
+        <li><a href="#慢查询排查">慢查询排查</a></li>
+        <li><a href="#内存碎片">内存碎片</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -569,6 +1487,105 @@
           description: "数据结构底层原理、RDB\/AOF持久化、主从哨兵集群、缓存穿?击穿\/雪崩与分布式",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

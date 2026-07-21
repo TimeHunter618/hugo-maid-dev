@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>TCP 三次握手与四次挥</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="tcp-协议概述">
+<a class="header-anchor" href="#tcp-%e5%8d%8f%e8%ae%ae%e6%a6%82%e8%bf%b0"></a>
+TCP 协议概述
+</h2><p>TCP（Transmission Control Protocol，传输控制协议）是一种<strong>面向连接</strong>、<strong>可靠传输</strong>、<strong>基于字节流</strong>的传输层协议。它在不可靠的 IP 层之上构建了可靠的数据传输服务，是 HTTP、FTP、SMTP 等众多应用层协议的传输基础。</p>
         
         <hr><p>本文2026-05-29首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-05-29</p>]]>
       </description>

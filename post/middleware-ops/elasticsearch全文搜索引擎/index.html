@@ -190,7 +190,63 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#核心概念">核心概念</a>
+      <ul>
+        <li><a href="#与关系型数据库的对比">与关系型数据库的对比</a></li>
+        <li><a href="#整体架构">整体架构</a></li>
+      </ul>
+    </li>
+    <li><a href="#倒排索引">倒排索引</a>
+      <ul>
+        <li><a href="#正向索引-vs-倒排索引">正向索引 vs 倒排索引</a></li>
+        <li><a href="#倒排索引结构">倒排索引结构</a></li>
+        <li><a href="#分词流程">分词流程</a></li>
+        <li><a href="#中文分词器">中文分词器</a></li>
+      </ul>
+    </li>
+    <li><a href="#索引与映射">索引与映射</a>
+      <ul>
+        <li><a href="#创建索引">创建索引</a></li>
+        <li><a href="#字段类型选择">字段类型选择</a></li>
+      </ul>
+    </li>
+    <li><a href="#dsl-查询">DSL 查询</a>
+      <ul>
+        <li><a href="#查询语法结构">查询语法结构</a></li>
+        <li><a href="#全文查询">全文查询</a></li>
+        <li><a href="#精确查询">精确查询</a></li>
+        <li><a href="#组合查询bool-query">组合查询（Bool Query）</a></li>
+        <li><a href="#聚合查询">聚合查询</a></li>
+        <li><a href="#spring-data-elasticsearch-示例">Spring Data Elasticsearch 示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#集群分片与副本">集群分片与副本</a>
+      <ul>
+        <li><a href="#分片路由">分片路由</a></li>
+        <li><a href="#分片数规划">分片数规划</a></li>
+        <li><a href="#集群健康状态">集群健康状态</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能优化">性能优化</a>
+      <ul>
+        <li><a href="#写入优化">写入优化</a></li>
+        <li><a href="#查询优化">查询优化</a></li>
+        <li><a href="#jvm-调优">JVM 调优</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题排查">常见问题排查</a>
+      <ul>
+        <li><a href="#问题-1集群状态-yellowred">问题 1：集群状态 Yellow/Red</a></li>
+        <li><a href="#问题-2查询慢">问题 2：查询慢</a></li>
+        <li><a href="#问题-3字段映射冲突">问题 3：字段映射冲突</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +327,808 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Elasticsearch（简称 ES）是基于 Apache Lucene 构建的分布式搜索引擎，能够近实时地对海量数据进行全文检索、结构化搜索和分析。它不仅是搜索引擎，更是一个分布式的数据分析引擎，被广泛应用于电商商品搜索、日志分析（ELK 体系）、监控指标存储等场景。</p>
+<h2 id="核心概念">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5"></a>
+核心概念
+</h2><h3 id="与关系型数据库的对比">
+<a class="header-anchor" href="#%e4%b8%8e%e5%85%b3%e7%b3%bb%e5%9e%8b%e6%95%b0%e6%8d%ae%e5%ba%93%e7%9a%84%e5%af%b9%e6%af%94"></a>
+与关系型数据库的对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>Elasticsearch</th>
+					<th>关系型数据库</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Index（索引）</td>
+					<td>Database（数据库）</td>
+			</tr>
+			<tr>
+					<td>Type（类型，已废弃）</td>
+					<td>Table（表）</td>
+			</tr>
+			<tr>
+					<td>Document（文档）</td>
+					<td>Row（行）</td>
+			</tr>
+			<tr>
+					<td>Field（字段）</td>
+					<td>Column（列）</td>
+			</tr>
+			<tr>
+					<td>Shard（分片）</td>
+					<td>Partition（分区）</td>
+			</tr>
+			<tr>
+					<td>Replica（副本）</td>
+					<td>Slave（从库）</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="整体架构">
+<a class="header-anchor" href="#%e6%95%b4%e4%bd%93%e6%9e%b6%e6%9e%84"></a>
+整体架构
+</h3><pre class="mermaid">
+  graph TB
+    subgraph "ES Cluster"
+        subgraph "Node 1 (Master)"
+            idx1["Index: products<br/>P0 Primary<br/>P1 Replica"]
+        end
+        subgraph "Node 2 (Data)"
+            idx2["Index: products<br/>P1 Primary<br/>P0 Replica"]
+        end
+        subgraph "Node 3 (Data)"
+            idx3["Index: products<br/>P2 Primary<br/>P2 Replica"]
+        end
+    end
+
+    Client -->|"路由: shard = hash(routing) % num_primary_shards"| Node1
+    Client --> Node2
+    Client --> Node3
+</pre><table>
+	<thead>
+			<tr>
+					<th>概念</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Cluster</strong></td>
+					<td>集群，由一个或多个节点组成</td>
+			</tr>
+			<tr>
+					<td><strong>Node</strong></td>
+					<td>节点，集群中的一个服务器实例</td>
+			</tr>
+			<tr>
+					<td><strong>Index</strong></td>
+					<td>索引，文档的集合（类似数据库）</td>
+			</tr>
+			<tr>
+					<td><strong>Document</strong></td>
+					<td>文档，JSON 格式的一条记录</td>
+			</tr>
+			<tr>
+					<td><strong>Shard</strong></td>
+					<td>分片，索引的水平拆分</td>
+			</tr>
+			<tr>
+					<td><strong>Replica</strong></td>
+					<td>副本，分片的拷贝，提供高可用</td>
+			</tr>
+			<tr>
+					<td><strong>Mapping</strong></td>
+					<td>映射，定义字段类型和分析方式</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="倒排索引">
+<a class="header-anchor" href="#%e5%80%92%e6%8e%92%e7%b4%a2%e5%bc%95"></a>
+倒排索引
+</h2><h3 id="正向索引-vs-倒排索引">
+<a class="header-anchor" href="#%e6%ad%a3%e5%90%91%e7%b4%a2%e5%bc%95-vs-%e5%80%92%e6%8e%92%e7%b4%a2%e5%bc%95"></a>
+正向索引 vs 倒排索引
+</h3><pre class="mermaid">
+  graph LR
+    subgraph "正向索引（传统数据库）"
+        D1["Doc 1: 'Elasticsearch is fast'"]
+        D2["Doc 2: 'Lucene is powerful'"]
+        D3["Doc 3: 'Elasticsearch uses Lucene'"]
+        D1 -->|"查找含 fast 的文档<br/>需要逐行扫描"| R1[慢]
+    end
+
+    subgraph "倒排索引（搜索引擎）"
+        T1["Term: elasticsearch → [Doc1, Doc3]"]
+        T2["Term: fast → [Doc1]"]
+        T3["Term: lucene → [Doc2, Doc3]"]
+        T4["Term: powerful → [Doc2]"]
+        T1 -->|"查找含 fast 的文档<br/>直接查 Term 表"| R2[快]
+    end
+</pre><h3 id="倒排索引结构">
+<a class="header-anchor" href="#%e5%80%92%e6%8e%92%e7%b4%a2%e5%bc%95%e7%bb%93%e6%9e%84"></a>
+倒排索引结构
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "倒排索引组成"
+        subgraph "Term Dictionary（词典）"
+            TD["Term → Posting List Pointer"]
+        end
+        subgraph "Term Index（词典索引）"
+            TI["FST 有限状态转换器<br/>快速定位 Term"]
+        end
+        subgraph "Posting List（倒排表）"
+            PL["DocID, TF, Position, Offset"]
+        end
+    end
+
+    TI --> TD
+    TD --> PL
+</pre><p><strong>倒排表存储的信息</strong>：</p>
+<table>
+	<thead>
+			<tr>
+					<th>信息</th>
+					<th>说明</th>
+					<th>用途</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>DocID</td>
+					<td>文档编号</td>
+					<td>定位文档</td>
+			</tr>
+			<tr>
+					<td>TF（Term Frequency）</td>
+					<td>词频</td>
+					<td>相关性评分</td>
+			</tr>
+			<tr>
+					<td>Position</td>
+					<td>词在文档中的位置</td>
+					<td>短语查询</td>
+			</tr>
+			<tr>
+					<td>Offset</td>
+					<td>词的起止偏移</td>
+					<td>高亮显示</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="分词流程">
+<a class="header-anchor" href="#%e5%88%86%e8%af%8d%e6%b5%81%e7%a8%8b"></a>
+分词流程
+</h3><pre class="mermaid">
+  graph LR
+    A["输入文本<br/>'Elasticsearch is Fast!'"] --> B[Character Filter<br/>字符过滤]
+    B --> C[Tokenizer<br/>分词]
+    C --> D[Token Filter<br/>词项过滤]
+    D --> E["输出词项<br/>elasticsearch, fast"]
+
+    B -.- B1["去除HTML标签等"]
+    C -.- C1["Standard: 按Unicode切分<br/>IK: 中文分词"]
+    D -.- D1["小写化 / 停用词 / 词干提取<br/>同义词扩展"]
+</pre><h3 id="中文分词器">
+<a class="header-anchor" href="#%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8"></a>
+中文分词器
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 安装 IK 中文分词器</span>
+</span></span><span class="line"><span class="cl">./bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v8.11.0/elasticsearch-analysis-ik-8.11.0.zip
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 测试分词效果</span>
+</span></span><span class="line"><span class="cl">POST /_analyze
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;analyzer&#34;</span>: <span class="s2">&#34;ik_max_word&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;text&#34;</span>: <span class="s2">&#34;Elasticsearch搜索引擎非常强大&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 结果</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># {</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   &#34;tokens&#34;: [</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     {&#34;token&#34;: &#34;elasticsearch&#34;, ...},</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     {&#34;token&#34;: &#34;搜索引擎&#34;, ...},</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     {&#34;token&#34;: &#34;搜索&#34;, ...},</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     {&#34;token&#34;: &#34;引擎&#34;, ...},</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     {&#34;token&#34;: &#34;非常&#34;, ...},</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#     {&#34;token&#34;: &#34;强大&#34;, ...}</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   ]</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># }</span>
+</span></span></code></pre></div><table>
+	<thead>
+			<tr>
+					<th>分词模式</th>
+					<th>说明</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>ik_max_word</code></td>
+					<td>最细粒度分词，穷尽各种组合</td>
+					<td>索引时使用（提高召回率）</td>
+			</tr>
+			<tr>
+					<td><code>ik_smart</code></td>
+					<td>智能分词，不会过度切分</td>
+					<td>搜索时使用（提高精确度）</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="索引与映射">
+<a class="header-anchor" href="#%e7%b4%a2%e5%bc%95%e4%b8%8e%e6%98%a0%e5%b0%84"></a>
+索引与映射
+</h2><h3 id="创建索引">
+<a class="header-anchor" href="#%e5%88%9b%e5%bb%ba%e7%b4%a2%e5%bc%95"></a>
+创建索引
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">PUT /products
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;settings&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;number_of_shards&#34;</span>: 3,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;number_of_replicas&#34;</span>: 1,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;analysis&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;analyzer&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;ik_smart_analyzer&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;custom&#34;</span>,
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;tokenizer&#34;</span>: <span class="s2">&#34;ik_smart&#34;</span>,
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;filter&#34;</span>: <span class="o">[</span><span class="s2">&#34;lowercase&#34;</span>, <span class="s2">&#34;stop&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;mappings&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;properties&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;name&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;text&#34;</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;analyzer&#34;</span>: <span class="s2">&#34;ik_max_word&#34;</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;search_analyzer&#34;</span>: <span class="s2">&#34;ik_smart&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;description&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;text&#34;</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;analyzer&#34;</span>: <span class="s2">&#34;ik_max_word&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;price&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;double&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;brand&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;keyword&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;category&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;keyword&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;tags&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;keyword&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;create_time&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;date&#34;</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;format&#34;</span>: <span class="s2">&#34;yyyy-MM-dd HH:mm:ss&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;in_stock&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;boolean&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;suggest&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;completion&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><h3 id="字段类型选择">
+<a class="header-anchor" href="#%e5%ad%97%e6%ae%b5%e7%b1%bb%e5%9e%8b%e9%80%89%e6%8b%a9"></a>
+字段类型选择
+</h3><pre class="mermaid">
+  graph TD
+    A[字段类型选择] --> B{需要全文搜索?}
+    B -->|是| C["text + analyzer"]
+    B -->|否| D{需要精确匹配/排序/聚合?}
+    D -->|是| E[keyword]
+    D -->|否| F{数据类型?}
+    F -->|整数| G[integer / long]
+    F -->|小数| H[float / double / scaled_float]
+    F -->|时间| I[date]
+    F -->|布尔| J[boolean]
+    F -->|嵌套对象| K{是否数组?}
+    K -->|是| L[nested]
+    K -->|否| M[object]
+</pre><table>
+	<thead>
+			<tr>
+					<th>类型</th>
+					<th>说明</th>
+					<th>典型用途</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>text</code></td>
+					<td>分词后索引</td>
+					<td>标题、描述、正文</td>
+			</tr>
+			<tr>
+					<td><code>keyword</code></td>
+					<td>整体索引不分词</td>
+					<td>标签、分类、状态</td>
+			</tr>
+			<tr>
+					<td><code>integer/long</code></td>
+					<td>整数</td>
+					<td>价格、数量</td>
+			</tr>
+			<tr>
+					<td><code>scaled_float</code></td>
+					<td>缩放浮点数</td>
+					<td>金额（避免浮点精度问题）</td>
+			</tr>
+			<tr>
+					<td><code>date</code></td>
+					<td>日期</td>
+					<td>时间戳</td>
+			</tr>
+			<tr>
+					<td><code>nested</code></td>
+					<td>嵌套对象</td>
+					<td>评论列表（独立查询）</td>
+			</tr>
+			<tr>
+					<td><code>completion</code></td>
+					<td>补全</td>
+					<td>搜索建议</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="dsl-查询">
+<a class="header-anchor" href="#dsl-%e6%9f%a5%e8%af%a2"></a>
+DSL 查询
+</h2><h3 id="查询语法结构">
+<a class="header-anchor" href="#%e6%9f%a5%e8%af%a2%e8%af%ad%e6%b3%95%e7%bb%93%e6%9e%84"></a>
+查询语法结构
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">POST /products/_search
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;query&#34;</span>: <span class="o">{</span>           <span class="c1"># 查询条件</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;match&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;name&#34;</span>: <span class="s2">&#34;手机&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;from&#34;</span>: 0,           <span class="c1"># 分页起始</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;size&#34;</span>: 10,          <span class="c1"># 每页大小</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;sort&#34;</span>: <span class="o">[</span>            <span class="c1"># 排序</span>
+</span></span><span class="line"><span class="cl">    <span class="o">{</span> <span class="s2">&#34;price&#34;</span>: <span class="s2">&#34;asc&#34;</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">    <span class="o">{</span> <span class="s2">&#34;_score&#34;</span>: <span class="s2">&#34;desc&#34;</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">]</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;highlight&#34;</span>: <span class="o">{</span>       <span class="c1"># 高亮</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;fields&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;name&#34;</span>: <span class="o">{}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;aggs&#34;</span>: <span class="o">{</span>            <span class="c1"># 聚合</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;brand_count&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;terms&#34;</span>: <span class="o">{</span> <span class="s2">&#34;field&#34;</span>: <span class="s2">&#34;brand&#34;</span>, <span class="s2">&#34;size&#34;</span>: <span class="m">10</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><h3 id="全文查询">
+<a class="header-anchor" href="#%e5%85%a8%e6%96%87%e6%9f%a5%e8%af%a2"></a>
+全文查询
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 1. match：单字段全文搜索（会对查询词分词）</span>
+</span></span><span class="line"><span class="cl">POST /products/_search
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;query&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;match&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;name&#34;</span>: <span class="s2">&#34;华为手机&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. match_phrase：短语匹配（词项顺序一致）</span>
+</span></span><span class="line"><span class="cl">POST /products/_search
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;query&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;match_phrase&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;description&#34;</span>: <span class="s2">&#34;高性能处理器&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 3. multi_match：多字段搜索</span>
+</span></span><span class="line"><span class="cl">POST /products/_search
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;query&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;multi_match&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;query&#34;</span>: <span class="s2">&#34;手机&#34;</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;fields&#34;</span>: <span class="o">[</span><span class="s2">&#34;name^3&#34;</span>, <span class="s2">&#34;description&#34;</span>, <span class="s2">&#34;tags&#34;</span><span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;best_fields&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><h3 id="精确查询">
+<a class="header-anchor" href="#%e7%b2%be%e7%a1%ae%e6%9f%a5%e8%af%a2"></a>
+精确查询
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># term：精确匹配（不分词）</span>
+</span></span><span class="line"><span class="cl">POST /products/_search
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;query&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;term&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;brand&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;value&#34;</span>: <span class="s2">&#34;华为&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># terms：多值匹配</span>
+</span></span><span class="line"><span class="cl">POST /products/_search
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;query&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;terms&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;brand&#34;</span>: <span class="o">[</span><span class="s2">&#34;华为&#34;</span>, <span class="s2">&#34;小米&#34;</span>, <span class="s2">&#34;OPPO&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># range：范围查询</span>
+</span></span><span class="line"><span class="cl">POST /products/_search
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;query&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;range&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;price&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;gte&#34;</span>: 1000,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;lte&#34;</span>: <span class="m">5000</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><h3 id="组合查询bool-query">
+<a class="header-anchor" href="#%e7%bb%84%e5%90%88%e6%9f%a5%e8%af%a2bool-query"></a>
+组合查询（Bool Query）
+</h3><pre class="mermaid">
+  graph TD
+    A["bool query"] --> B["must: 必须匹配（参与评分）"]
+    A --> C["should: 应该匹配（OR，参与评分）"]
+    A --> D["must_not: 必须不匹配（过滤）"]
+    A --> E["filter: 必须匹配（不参与评分）"]
+
+    B --> B1["相关性 + 包含"]
+    E --> E1["过滤条件（利用缓存）"]
+</pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">POST /products/_search
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;query&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;bool&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;must&#34;</span>: <span class="o">[</span>
+</span></span><span class="line"><span class="cl">        <span class="o">{</span> <span class="s2">&#34;match&#34;</span>: <span class="o">{</span> <span class="s2">&#34;name&#34;</span>: <span class="s2">&#34;手机&#34;</span> <span class="o">}</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;filter&#34;</span>: <span class="o">[</span>
+</span></span><span class="line"><span class="cl">        <span class="o">{</span> <span class="s2">&#34;term&#34;</span>: <span class="o">{</span> <span class="s2">&#34;category&#34;</span>: <span class="s2">&#34;数码&#34;</span> <span class="o">}</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">        <span class="o">{</span> <span class="s2">&#34;range&#34;</span>: <span class="o">{</span> <span class="s2">&#34;price&#34;</span>: <span class="o">{</span> <span class="s2">&#34;gte&#34;</span>: 1000, <span class="s2">&#34;lte&#34;</span>: <span class="m">5000</span> <span class="o">}</span> <span class="o">}</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">        <span class="o">{</span> <span class="s2">&#34;term&#34;</span>: <span class="o">{</span> <span class="s2">&#34;in_stock&#34;</span>: <span class="nb">true</span> <span class="o">}</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;must_not&#34;</span>: <span class="o">[</span>
+</span></span><span class="line"><span class="cl">        <span class="o">{</span> <span class="s2">&#34;term&#34;</span>: <span class="o">{</span> <span class="s2">&#34;brand&#34;</span>: <span class="s2">&#34;山寨&#34;</span> <span class="o">}</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;should&#34;</span>: <span class="o">[</span>
+</span></span><span class="line"><span class="cl">        <span class="o">{</span> <span class="s2">&#34;term&#34;</span>: <span class="o">{</span> <span class="s2">&#34;tags&#34;</span>: <span class="s2">&#34;热销&#34;</span> <span class="o">}</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">]</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;minimum_should_match&#34;</span>: <span class="m">0</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><h3 id="聚合查询">
+<a class="header-anchor" href="#%e8%81%9a%e5%90%88%e6%9f%a5%e8%af%a2"></a>
+聚合查询
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">POST /products/_search
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;size&#34;</span>: 0,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;aggs&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;brand_stats&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;terms&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;field&#34;</span>: <span class="s2">&#34;brand&#34;</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;size&#34;</span>: <span class="m">10</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;aggs&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;avg_price&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;avg&#34;</span>: <span class="o">{</span> <span class="s2">&#34;field&#34;</span>: <span class="s2">&#34;price&#34;</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;max_price&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;max&#34;</span>: <span class="o">{</span> <span class="s2">&#34;field&#34;</span>: <span class="s2">&#34;price&#34;</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;price_range&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">          <span class="s2">&#34;range&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;field&#34;</span>: <span class="s2">&#34;price&#34;</span>,
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;ranges&#34;</span>: <span class="o">[</span>
+</span></span><span class="line"><span class="cl">              <span class="o">{</span> <span class="s2">&#34;to&#34;</span>: <span class="m">1000</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">              <span class="o">{</span> <span class="s2">&#34;from&#34;</span>: 1000, <span class="s2">&#34;to&#34;</span>: <span class="m">3000</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">              <span class="o">{</span> <span class="s2">&#34;from&#34;</span>: <span class="m">3000</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">            <span class="o">]</span>
+</span></span><span class="line"><span class="cl">          <span class="o">}</span>
+</span></span><span class="line"><span class="cl">        <span class="o">}</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><h3 id="spring-data-elasticsearch-示例">
+<a class="header-anchor" href="#spring-data-elasticsearch-%e7%a4%ba%e4%be%8b"></a>
+Spring Data Elasticsearch 示例
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ProductSearchService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">ElasticsearchRestTemplate</span><span class="w"> </span><span class="n">esTemplate</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">SearchHits</span><span class="o">&lt;</span><span class="n">Product</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">keyword</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">brand</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                       </span><span class="n">Double</span><span class="w"> </span><span class="n">minPrice</span><span class="p">,</span><span class="w"> </span><span class="n">Double</span><span class="w"> </span><span class="n">maxPrice</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                       </span><span class="kt">int</span><span class="w"> </span><span class="n">page</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">NativeSearchQueryBuilder</span><span class="w"> </span><span class="n">queryBuilder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">NativeSearchQueryBuilder</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// Bool 查询</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">BoolQueryBuilder</span><span class="w"> </span><span class="n">boolQuery</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QueryBuilders</span><span class="p">.</span><span class="na">boolQuery</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// must: 全文搜索</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">StringUtils</span><span class="p">.</span><span class="na">hasText</span><span class="p">(</span><span class="n">keyword</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">boolQuery</span><span class="p">.</span><span class="na">must</span><span class="p">(</span><span class="n">QueryBuilders</span><span class="p">.</span><span class="na">multiMatchQuery</span><span class="p">(</span><span class="n">keyword</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="s">&#34;name&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;description&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;tags&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">.</span><span class="na">field</span><span class="p">(</span><span class="s">&#34;name&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">3</span><span class="p">.</span><span class="na">0f</span><span class="p">));</span><span class="w">  </span><span class="c1">// name 权重更高</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// filter: 精确过滤（不参与评分，可缓存）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">StringUtils</span><span class="p">.</span><span class="na">hasText</span><span class="p">(</span><span class="n">brand</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">boolQuery</span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">QueryBuilders</span><span class="p">.</span><span class="na">termQuery</span><span class="p">(</span><span class="s">&#34;brand&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">brand</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">minPrice</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">maxPrice</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">boolQuery</span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">QueryBuilders</span><span class="p">.</span><span class="na">rangeQuery</span><span class="p">(</span><span class="s">&#34;price&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">.</span><span class="na">gte</span><span class="p">(</span><span class="n">minPrice</span><span class="p">).</span><span class="na">lte</span><span class="p">(</span><span class="n">maxPrice</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">queryBuilder</span><span class="p">.</span><span class="na">withQuery</span><span class="p">(</span><span class="n">boolQuery</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 分页</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">queryBuilder</span><span class="p">.</span><span class="na">withPageable</span><span class="p">(</span><span class="n">PageRequest</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">page</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 排序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">queryBuilder</span><span class="p">.</span><span class="na">withSort</span><span class="p">(</span><span class="n">SortBuilders</span><span class="p">.</span><span class="na">scoreSort</span><span class="p">().</span><span class="na">order</span><span class="p">(</span><span class="n">SortOrder</span><span class="p">.</span><span class="na">DESC</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">queryBuilder</span><span class="p">.</span><span class="na">withSort</span><span class="p">(</span><span class="n">SortBuilders</span><span class="p">.</span><span class="na">fieldSort</span><span class="p">(</span><span class="s">&#34;create_time&#34;</span><span class="p">).</span><span class="na">order</span><span class="p">(</span><span class="n">SortOrder</span><span class="p">.</span><span class="na">DESC</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 高亮</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">queryBuilder</span><span class="p">.</span><span class="na">withHighlightBuilder</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">HighlightBuilder</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">field</span><span class="p">(</span><span class="s">&#34;name&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">preTags</span><span class="p">(</span><span class="s">&#34;&lt;em class=&#39;highlight&#39;&gt;&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">postTags</span><span class="p">(</span><span class="s">&#34;&lt;/em&gt;&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 聚合</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">queryBuilder</span><span class="p">.</span><span class="na">addAggregation</span><span class="p">(</span><span class="n">AggregationBuilders</span><span class="p">.</span><span class="na">terms</span><span class="p">(</span><span class="s">&#34;brand_agg&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">field</span><span class="p">(</span><span class="s">&#34;brand&#34;</span><span class="p">).</span><span class="na">size</span><span class="p">(</span><span class="n">10</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">esTemplate</span><span class="p">.</span><span class="na">search</span><span class="p">(</span><span class="n">queryBuilder</span><span class="p">.</span><span class="na">build</span><span class="p">(),</span><span class="w"> </span><span class="n">Product</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="集群分片与副本">
+<a class="header-anchor" href="#%e9%9b%86%e7%be%a4%e5%88%86%e7%89%87%e4%b8%8e%e5%89%af%e6%9c%ac"></a>
+集群分片与副本
+</h2><h3 id="分片路由">
+<a class="header-anchor" href="#%e5%88%86%e7%89%87%e8%b7%af%e7%94%b1"></a>
+分片路由
+</h3>$$
+\text{shard} = \text{hash}(\text{\_routing}) \mod \text{number\_of\_primary\_shards}
+$$<pre class="mermaid">
+  sequenceDiagram
+    participant C as Client
+    participant N1 as Node 1 (Coordinator)
+    participant P0 as Shard 0 Primary
+    participant R0 as Shard 0 Replica
+
+    C->>N1: GET /products/_doc/123
+    N1->>N1: 计算 shard = hash(123) % 3 = 0
+    N1->>P0: 转发请求到 P0 Primary
+    P0-->>N1: 返回文档
+    N1-->>C: 返回结果
+</pre><h3 id="分片数规划">
+<a class="header-anchor" href="#%e5%88%86%e7%89%87%e6%95%b0%e8%a7%84%e5%88%92"></a>
+分片数规划
+</h3><table>
+	<thead>
+			<tr>
+					<th>因素</th>
+					<th>建议</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>分片大小</strong></td>
+					<td>单分片建议 30-50GB，不超过 50GB</td>
+			</tr>
+			<tr>
+					<td><strong>分片数量</strong></td>
+					<td>每个节点分片数不超过 <code>heap(GB) × 20</code></td>
+			</tr>
+			<tr>
+					<td><strong>主分片数</strong></td>
+					<td>确定后不可修改（需 reindex），需提前规划</td>
+			</tr>
+			<tr>
+					<td><strong>副本数</strong></td>
+					<td>生产环境至少 1 个副本</td>
+			</tr>
+	</tbody>
+</table>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看分片分布</span>
+</span></span><span class="line"><span class="cl">GET /_cat/shards/products?v
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># index       shard prirep state   docs   store ip          node</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># products    0     p      STARTED 10000  50mb 10.0.0.1    node1</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># products    0     r      STARTED 10000  50mb 10.0.0.2    node2</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># products    1     p      STARTED 10000  52mb 10.0.0.2    node2</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># products    1     r      STARTED 10000  52mb 10.0.0.3    node3</span>
+</span></span></code></pre></div><h3 id="集群健康状态">
+<a class="header-anchor" href="#%e9%9b%86%e7%be%a4%e5%81%a5%e5%ba%b7%e7%8a%b6%e6%80%81"></a>
+集群健康状态
+</h3><pre class="mermaid">
+  graph TD
+    GREEN["Green: 所有主分片和副本都正常分配"] -->|"部分副本不可用"| YELLOW
+    YELLOW["Yellow: 所有主分片正常，部分副本缺失"] -->|"部分主分片不可用"| RED
+    RED["Red: 部分主分片不可用，数据不完整"]
+</pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看集群健康状态</span>
+</span></span><span class="line"><span class="cl">GET /_cluster/health
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># {</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   &#34;status&#34;: &#34;green&#34;,</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   &#34;number_of_nodes&#34;: 3,</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   &#34;number_of_data_nodes&#34;: 3,</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   &#34;active_primary_shards&#34;: 15,</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   &#34;active_shards&#34;: 30,</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   &#34;relocating_shards&#34;: 0,</span>
+</span></span><span class="line"><span class="cl"><span class="c1">#   &#34;unassigned_shards&#34;: 0</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># }</span>
+</span></span></code></pre></div><h2 id="性能优化">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96"></a>
+性能优化
+</h2><h3 id="写入优化">
+<a class="header-anchor" href="#%e5%86%99%e5%85%a5%e4%bc%98%e5%8c%96"></a>
+写入优化
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 批量写入</span>
+</span></span><span class="line"><span class="cl">POST /_bulk
+</span></span><span class="line"><span class="cl"><span class="o">{</span><span class="s2">&#34;index&#34;</span>: <span class="o">{</span><span class="s2">&#34;_index&#34;</span>: <span class="s2">&#34;products&#34;</span>, <span class="s2">&#34;_id&#34;</span>: <span class="s2">&#34;1&#34;</span><span class="o">}}</span>
+</span></span><span class="line"><span class="cl"><span class="o">{</span><span class="s2">&#34;name&#34;</span>: <span class="s2">&#34;手机A&#34;</span>, <span class="s2">&#34;price&#34;</span>: 2999, <span class="s2">&#34;brand&#34;</span>: <span class="s2">&#34;华为&#34;</span><span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">{</span><span class="s2">&#34;index&#34;</span>: <span class="o">{</span><span class="s2">&#34;_index&#34;</span>: <span class="s2">&#34;products&#34;</span>, <span class="s2">&#34;_id&#34;</span>: <span class="s2">&#34;2&#34;</span><span class="o">}}</span>
+</span></span><span class="line"><span class="cl"><span class="o">{</span><span class="s2">&#34;name&#34;</span>: <span class="s2">&#34;手机B&#34;</span>, <span class="s2">&#34;price&#34;</span>: 1999, <span class="s2">&#34;brand&#34;</span>: <span class="s2">&#34;小米&#34;</span><span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">{</span><span class="s2">&#34;update&#34;</span>: <span class="o">{</span><span class="s2">&#34;_index&#34;</span>: <span class="s2">&#34;products&#34;</span>, <span class="s2">&#34;_id&#34;</span>: <span class="s2">&#34;3&#34;</span><span class="o">}}</span>
+</span></span><span class="line"><span class="cl"><span class="o">{</span><span class="s2">&#34;doc&#34;</span>: <span class="o">{</span><span class="s2">&#34;price&#34;</span>: 3999<span class="o">}}</span>
+</span></span><span class="line"><span class="cl"><span class="o">{</span><span class="s2">&#34;delete&#34;</span>: <span class="o">{</span><span class="s2">&#34;_index&#34;</span>: <span class="s2">&#34;products&#34;</span>, <span class="s2">&#34;_id&#34;</span>: <span class="s2">&#34;4&#34;</span><span class="o">}}</span>
+</span></span></code></pre></div><pre class="mermaid">
+  graph TD
+    A[写入优化策略] --> B["批量写入: 减少网络往返"]
+    A --> C["调整 refresh_interval: 降低刷新频率"]
+    A --> D["减少副本数: 写入时 replicas=0"]
+    A --> E["关闭 _all 字段: 减少索引体积"]
+    A --> F["使用 bulk API: 批量操作"]
+
+    C --> C1["默认 1s → 写入密集改为 30s"]
+    D --> D1["写入完成后恢复 replicas=1"]
+</pre><h3 id="查询优化">
+<a class="header-anchor" href="#%e6%9f%a5%e8%af%a2%e4%bc%98%e5%8c%96"></a>
+查询优化
+</h3><table>
+	<thead>
+			<tr>
+					<th>优化策略</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>filter 替代 query</strong></td>
+					<td>filter 不评分且可缓存，性能更优</td>
+			</tr>
+			<tr>
+					<td><strong>避免深分页</strong></td>
+					<td><code>from + size &gt; 10000</code> 使用 <code>search_after</code></td>
+			</tr>
+			<tr>
+					<td><strong>路由</strong></td>
+					<td>查询时指定 routing，减少分片查询</td>
+			</tr>
+			<tr>
+					<td><strong>索引别名</strong></td>
+					<td>通过别名切换索引，实现零停机重建</td>
+			</tr>
+			<tr>
+					<td><strong>冷热分离</strong></td>
+					<td>热数据 SSD，冷数据 HDD</td>
+			</tr>
+	</tbody>
+</table>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 深分页优化：search_after</span>
+</span></span><span class="line"><span class="cl">POST /products/_search
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;size&#34;</span>: 10,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;sort&#34;</span>: <span class="o">[</span>
+</span></span><span class="line"><span class="cl">    <span class="o">{</span> <span class="s2">&#34;create_time&#34;</span>: <span class="s2">&#34;desc&#34;</span> <span class="o">}</span>,
+</span></span><span class="line"><span class="cl">    <span class="o">{</span> <span class="s2">&#34;_id&#34;</span>: <span class="s2">&#34;desc&#34;</span> <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">]</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;search_after&#34;</span>: <span class="o">[</span><span class="s2">&#34;2026-06-20T12:00:00&#34;</span>, <span class="s2">&#34;abc123&#34;</span><span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><h3 id="jvm-调优">
+<a class="header-anchor" href="#jvm-%e8%b0%83%e4%bc%98"></a>
+JVM 调优
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># jvm.options</span>
+</span></span><span class="line"><span class="cl">-Xms16g          <span class="c1"># 初始堆大小</span>
+</span></span><span class="line"><span class="cl">-Xmx16g          <span class="c1"># 最大堆大小（与初始相同）</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 重要规则：</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 1. 堆内存不超过物理内存的 50%（留给 Lucene 文件缓存）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. 堆内存不超过 32GB（压缩指针阈值）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 3. 初始堆和最大堆一致（避免动态调整开销）</span>
+</span></span></code></pre></div><h2 id="常见问题排查">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e6%8e%92%e6%9f%a5"></a>
+常见问题排查
+</h2><h3 id="问题-1集群状态-yellowred">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98-1%e9%9b%86%e7%be%a4%e7%8a%b6%e6%80%81-yellowred"></a>
+问题 1：集群状态 Yellow/Red
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看未分配的分片</span>
+</span></span><span class="line"><span class="cl">GET /_cat/shards?v<span class="p">&amp;</span><span class="nv">h</span><span class="o">=</span>index,shard,prirep,state,unassigned.reason
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 常见原因：</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 1. 节点数不足（副本无法分配到同一节点）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 2. 磁盘水位线触发（默认 85% flood, 90% 高, 95% 只读）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 3. 节点离线</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 检查磁盘使用</span>
+</span></span><span class="line"><span class="cl">GET /_cat/allocation?v
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 调整磁盘水位线</span>
+</span></span><span class="line"><span class="cl">PUT /_cluster/settings
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;transient&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;cluster.routing.allocation.disk.watermark.low&#34;</span>: <span class="s2">&#34;85%&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;cluster.routing.allocation.disk.watermark.high&#34;</span>: <span class="s2">&#34;90%&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;cluster.routing.allocation.disk.watermark.flood_stage&#34;</span>: <span class="s2">&#34;95%&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><h3 id="问题-2查询慢">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98-2%e6%9f%a5%e8%af%a2%e6%85%a2"></a>
+问题 2：查询慢
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 开启慢查询日志</span>
+</span></span><span class="line"><span class="cl">PUT /products/_settings
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;index.search.slowlog.threshold.query.warn&#34;</span>: <span class="s2">&#34;2s&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;index.search.slowlog.threshold.query.info&#34;</span>: <span class="s2">&#34;1s&#34;</span>,
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;index.indexing.slowlog.threshold.index.warn&#34;</span>: <span class="s2">&#34;1s&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><pre class="mermaid">
+  graph TD
+    A[查询慢] --> B{查询类型?}
+    B -->|全文搜索| C["减少 match 字段<br/>调整分词器"]
+    B -->|聚合| D["增加分片数<br/>使用 doc_values"]
+    B -->|深分页| E["改用 search_after"]
+    B -->|通配符前缀| F["避免 leading wildcard<br/>使用 ngram"]
+</pre><h3 id="问题-3字段映射冲突">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98-3%e5%ad%97%e6%ae%b5%e6%98%a0%e5%b0%84%e5%86%b2%e7%aa%81"></a>
+问题 3：字段映射冲突
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看映射</span>
+</span></span><span class="line"><span class="cl">GET /products/_mapping
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 如果 text 字段需要聚合，需要开启 fielddata（不推荐）或使用 keyword 子字段</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 正确做法：在 mapping 中为 text 字段添加 keyword 子字段</span>
+</span></span><span class="line"><span class="cl"><span class="o">{</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;name&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;text&#34;</span>,
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;fields&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">      <span class="s2">&#34;keyword&#34;</span>: <span class="o">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;type&#34;</span>: <span class="s2">&#34;keyword&#34;</span>,
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;ignore_above&#34;</span>: <span class="m">256</span>
+</span></span><span class="line"><span class="cl">      <span class="o">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">}</span>
+</span></span><span class="line"><span class="cl">  <span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>Elasticsearch 的核心是<strong>倒排索引</strong>——通过 Term Dictionary → Posting List 的映射，实现了对海量文本的毫秒级全文搜索。理解分词器的工作流程（Character Filter → Tokenizer → Token Filter）是正确建立中文搜索的前提。</p>
+<p>在集群层面，分片和副本是 ES 分布式的基石。合理的分片规划（单分片 30-50GB）和副本配置（至少 1 副本）决定了集群的查询性能和数据安全。而 filter 查询的缓存机制和 search_after 的深分页优化，则是实际开发中必须掌握的性能调优手段。</p>
+<p>下一篇我们将探讨 ZooKeeper——分布式系统的协调者。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/middleware-ops/elasticsearch%E5%85%A8%E6%96%87%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/&amp;appkey=&amp;title=Elasticsearch%e5%85%a8%e6%96%87%e6%90%9c%e7%b4%a2%e5%bc%95%e6%93%8e&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="Elasticsearch全文搜索引擎">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/middleware-ops/elasticsearch%E5%85%A8%E6%96%87%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/&amp;title=Elasticsearch%e5%85%a8%e6%96%87%e6%90%9c%e7%b4%a2%e5%bc%95%e6%93%8e&amp;desc=%e5%80%92%e6%8e%92%e7%b4%a2%e5%bc%95%e5%8e%9f%e7%90%86%e3%80%81%e5%88%86%e8%af%8d%e5%99%a8%e3%80%81DSL%e6%9f%a5%e8%af%a2%e8%af%ad%e6%b3%95%e3%80%81%e9%9b%86%e7%be%a4%e5%88%86%e7%89%87%e5%89%af%e6%9c%ac%e4%b8%8e%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="Elasticsearch全文搜索引擎">
@@ -341,7 +1198,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
+              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
               data-sizes="auto"
               alt="Nginx Lua脚本扩展与API网关实践"
               class="lazyload"
@@ -353,7 +1210,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">Nginx Lua脚本扩展与API网关实践</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
               data-sizes="auto"
               alt="Redis Stream消息队列与发布订阅实"
               class="lazyload"
@@ -385,10 +1242,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -438,7 +1295,63 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#核心概念">核心概念</a>
+      <ul>
+        <li><a href="#与关系型数据库的对比">与关系型数据库的对比</a></li>
+        <li><a href="#整体架构">整体架构</a></li>
+      </ul>
+    </li>
+    <li><a href="#倒排索引">倒排索引</a>
+      <ul>
+        <li><a href="#正向索引-vs-倒排索引">正向索引 vs 倒排索引</a></li>
+        <li><a href="#倒排索引结构">倒排索引结构</a></li>
+        <li><a href="#分词流程">分词流程</a></li>
+        <li><a href="#中文分词器">中文分词器</a></li>
+      </ul>
+    </li>
+    <li><a href="#索引与映射">索引与映射</a>
+      <ul>
+        <li><a href="#创建索引">创建索引</a></li>
+        <li><a href="#字段类型选择">字段类型选择</a></li>
+      </ul>
+    </li>
+    <li><a href="#dsl-查询">DSL 查询</a>
+      <ul>
+        <li><a href="#查询语法结构">查询语法结构</a></li>
+        <li><a href="#全文查询">全文查询</a></li>
+        <li><a href="#精确查询">精确查询</a></li>
+        <li><a href="#组合查询bool-query">组合查询（Bool Query）</a></li>
+        <li><a href="#聚合查询">聚合查询</a></li>
+        <li><a href="#spring-data-elasticsearch-示例">Spring Data Elasticsearch 示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#集群分片与副本">集群分片与副本</a>
+      <ul>
+        <li><a href="#分片路由">分片路由</a></li>
+        <li><a href="#分片数规划">分片数规划</a></li>
+        <li><a href="#集群健康状态">集群健康状态</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能优化">性能优化</a>
+      <ul>
+        <li><a href="#写入优化">写入优化</a></li>
+        <li><a href="#查询优化">查询优化</a></li>
+        <li><a href="#jvm-调优">JVM 调优</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题排查">常见问题排查</a>
+      <ul>
+        <li><a href="#问题-1集群状态-yellowred">问题 1：集群状态 Yellow/Red</a></li>
+        <li><a href="#问题-2查询慢">问题 2：查询慢</a></li>
+        <li><a href="#问题-3字段映射冲突">问题 3：字段映射冲突</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -569,6 +1482,105 @@
           description: "倒排索引原理、分词器、DSL查询语法、集群分片副本与性能优化",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

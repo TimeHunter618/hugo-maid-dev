@@ -200,6 +200,7 @@
         <li><a href="#3-降级策略">3. 降级策略</a></li>
       </ul>
     </li>
+    <li><a href="#面试回答框架">面试回答框架</a></li>
     <li><a href="#总结">总结</a></li>
   </ul>
 </nav>
@@ -289,13 +290,21 @@
 </h2><blockquote>
 <p><strong>面试场景</strong>：当系统中的Agent调用外部工具失败时，如何设计健壮的重试和降级机制？</p>
 </blockquote>
+<p>在实际的Agent系统中，工具调用失败是不可避免的。可能的原因包括：网络超时、API限流、服务宕机、参数错误等。一个健壮的系统需要能够优雅地处理这些失败情况。</p>
 <h2 id="核心策略">
 <a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e7%ad%96%e7%95%a5"></a>
 核心策略
 </h2><h3 id="1-重试机制">
 <a class="header-anchor" href="#1-%e9%87%8d%e8%af%95%e6%9c%ba%e5%88%b6"></a>
 1. 重试机制
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ToolRetryHandler</span><span class="w"> </span><span class="p">{</span><span class="w">
+</h3><p><strong>面试思路</strong>：首先要考虑哪些异常值得重试，哪些不需要重试。比如网络超时、服务暂时不可用适合重试；但参数错误、认证失败等业务逻辑错误重试是没有意义的。</p>
+<p><strong>重试策略要点</strong>：</p>
+<ul>
+<li><strong>指数退避</strong>：每次重试的间隔时间应该递增，避免在服务恢复前持续冲击</li>
+<li><strong>最大重试次数</strong>：设置上限，防止无限循环</li>
+<li><strong>抖动</strong>：在退避时间基础上添加随机抖动，避免多个请求同时重试</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ToolRetryHandler</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">MAX_RETRIES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">3</span><span class="p">;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">BASE_DELAY_MS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1000</span><span class="p">;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    
@@ -304,7 +313,7 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">attempt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w"> </span><span class="n">attempt</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">MAX_RETRIES</span><span class="p">;</span><span class="w"> </span><span class="n">attempt</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="n">toolCall</span><span class="p">.</span><span class="na">execute</span><span class="p">();</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">TransientException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">lastException</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="kt">long</span><span class="w"> </span><span class="n">delay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">BASE_DELAY_MS</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="kt">long</span><span class="p">)</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">pow</span><span class="p">(</span><span class="n">2</span><span class="p">,</span><span class="w"> </span><span class="n">attempt</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">Thread</span><span class="p">.</span><span class="na">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">);</span><span class="w">
@@ -313,10 +322,18 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ToolException</span><span class="p">(</span><span class="s">&#34;Max retries exceeded&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">lastException</span><span class="p">);</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><h3 id="2-熔断机制">
+</span></span></span></code></pre></div><p><strong>关键点</strong>：区分瞬时异常（TransientException）和永久异常。只有瞬时异常才需要重试。</p>
+<h3 id="2-熔断机制">
 <a class="header-anchor" href="#2-%e7%86%94%e6%96%ad%e6%9c%ba%e5%88%b6"></a>
 2. 熔断机制
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CircuitBreaker</span><span class="w"> </span><span class="p">{</span><span class="w">
+</h3><p><strong>面试思路</strong>：当某个工具持续失败时，继续重试只会浪费资源并加重服务负担。熔断机制可以在检测到服务不可用时快速失败，给服务恢复的时间。</p>
+<p><strong>熔断状态机</strong>：</p>
+<ul>
+<li><strong>关闭状态</strong>：正常处理请求</li>
+<li><strong>打开状态</strong>：检测到连续失败后打开，直接拒绝请求</li>
+<li><strong>半开状态</strong>：经过冷却时间后，允许少量请求测试服务是否恢复</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CircuitBreaker</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">FAILURE_THRESHOLD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">5</span><span class="p">;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">COOLDOWN_MS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">30000</span><span class="p">;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    
@@ -344,10 +361,19 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><h3 id="3-降级策略">
+</span></span></span></code></pre></div><p><strong>关键点</strong>：熔断机制需要与监控系统配合，及时发现服务异常并恢复。</p>
+<h3 id="3-降级策略">
 <a class="header-anchor" href="#3-%e9%99%8d%e7%ba%a7%e7%ad%96%e7%95%a5"></a>
 3. 降级策略
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ToolFallbackHandler</span><span class="w"> </span><span class="p">{</span><span class="w">
+</h3><p><strong>面试思路</strong>：当主服务不可用时，能否提供一个降级方案？比如返回缓存数据、使用备用服务、或者返回默认值。</p>
+<p><strong>降级方案类型</strong>：</p>
+<ul>
+<li><strong>缓存降级</strong>：返回最近的缓存结果</li>
+<li><strong>备用服务降级</strong>：切换到备用服务</li>
+<li><strong>默认值降级</strong>：返回预设的默认值</li>
+<li><strong>静默失败</strong>：记录日志，然后优雅地失败</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ToolFallbackHandler</span><span class="w"> </span><span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">ToolCall</span><span class="o">&lt;?&gt;&gt;</span><span class="w"> </span><span class="n">fallbackMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">registerFallback</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">toolName</span><span class="p">,</span><span class="w"> </span><span class="n">ToolCall</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">fallback</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
@@ -366,10 +392,22 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
-</span></span></span></code></pre></div><h2 id="总结">
+</span></span></span></code></pre></div><p><strong>关键点</strong>：降级方案需要提前设计，并且要考虑降级后的用户体验。</p>
+<h2 id="面试回答框架">
+<a class="header-anchor" href="#%e9%9d%a2%e8%af%95%e5%9b%9e%e7%ad%94%e6%a1%86%e6%9e%b6"></a>
+面试回答框架
+</h2><p>当面试官问到这个问题时，可以按照以下框架回答：</p>
+<ol>
+<li><strong>分层处理</strong>：重试 -&gt; 熔断 -&gt; 降级，三层递进</li>
+<li><strong>异常分类</strong>：区分瞬时异常和永久异常</li>
+<li><strong>具体策略</strong>：指数退避、状态机、缓存备用</li>
+<li><strong>监控告警</strong>：配合监控系统及时发现和处理问题</li>
+<li><strong>用户体验</strong>：降级方案要保证基本功能可用</li>
+</ol>
+<h2 id="总结">
 <a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
 总结
-</h2><p>处理工具调用失败需要综合运用重试、熔断和降级策略，确保系统在面对外部依赖故障时仍能保持可用。</p>
+</h2><p>处理工具调用失败需要综合运用重试、熔断和降级策略，确保系统在面对外部依赖故障时仍能保持可用。关键是要区分不同类型的失败，采取合适的处理方式，同时做好监控和告警。</p>
 </div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/ai-interview/agent%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E5%A4%B1%E8%B4%A5%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86/&amp;appkey=&amp;title=Agent%e5%b7%a5%e5%85%b7%e8%b0%83%e7%94%a8%e5%a4%b1%e8%b4%a5%e5%a6%82%e4%bd%95%e5%a4%84%e7%90%86&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="Agent工具调用失败如何处理">
       <div class="share-icon icon icon-weibo"></div>
@@ -447,7 +485,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
               data-sizes="auto"
               alt="429速率限制怎么解决"
               class="lazyload"
@@ -479,10 +517,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -542,6 +580,7 @@
         <li><a href="#3-降级策略">3. 降级策略</a></li>
       </ul>
     </li>
+    <li><a href="#面试回答框架">面试回答框架</a></li>
     <li><a href="#总结">总结</a></li>
   </ul>
 </nav>

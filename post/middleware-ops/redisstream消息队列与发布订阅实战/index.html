@@ -190,7 +190,78 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#stream-核心概念">Stream 核心概念</a>
+      <ul>
+        <li><a href="#什么是-stream">什么是 Stream</a></li>
+        <li><a href="#stream-与其他消息方案对比">Stream 与其他消息方案对比</a></li>
+        <li><a href="#stream-核心命令">Stream 核心命令</a></li>
+      </ul>
+    </li>
+    <li><a href="#stream-基础操作">Stream 基础操作</a>
+      <ul>
+        <li><a href="#1-添加消息xadd">1. 添加消息（XADD）</a></li>
+        <li><a href="#2-读取消息xread">2. 读取消息（XREAD）</a></li>
+        <li><a href="#3-范围查询xrangexrevrange">3. 范围查询（XRANGE/XREVRANGE）</a></li>
+        <li><a href="#4-获取流长度xlen">4. 获取流长度（XLEN）</a></li>
+      </ul>
+    </li>
+    <li><a href="#消费者组机制">消费者组机制</a>
+      <ul>
+        <li><a href="#创建消费者组">创建消费者组</a></li>
+        <li><a href="#组消费读取xreadgroup">组消费读取（XREADGROUP）</a></li>
+        <li><a href="#消息确认xack">消息确认（XACK）</a></li>
+        <li><a href="#查看待确认消息xpending">查看待确认消息（XPENDING）</a></li>
+        <li><a href="#消息转移xclaim">消息转移（XCLAIM）</a></li>
+      </ul>
+    </li>
+    <li><a href="#java-客户端实战">Java 客户端实战</a>
+      <ul>
+        <li><a href="#添加消息">添加消息</a></li>
+        <li><a href="#消费者组消费">消费者组消费</a></li>
+        <li><a href="#消息重试机制">消息重试机制</a></li>
+      </ul>
+    </li>
+    <li><a href="#stream-高级特性">Stream 高级特性</a>
+      <ul>
+        <li><a href="#消息持久化">消息持久化</a></li>
+        <li><a href="#消息修剪">消息修剪</a></li>
+        <li><a href="#消费者组管理">消费者组管理</a></li>
+        <li><a href="#多消费者组">多消费者组</a></li>
+      </ul>
+    </li>
+    <li><a href="#发布订阅pubsub">发布订阅（Pub/Sub）</a>
+      <ul>
+        <li><a href="#基础概念">基础概念</a></li>
+        <li><a href="#pubsub-命令">Pub/Sub 命令</a></li>
+        <li><a href="#pubsub-vs-stream">Pub/Sub vs Stream</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例订单处理系统">实战案例：订单处理系统</a>
+      <ul>
+        <li><a href="#系统架构">系统架构</a></li>
+        <li><a href="#完整代码">完整代码</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能优化">性能优化</a>
+      <ul>
+        <li><a href="#批量操作">批量操作</a></li>
+        <li><a href="#内存优化">内存优化</a></li>
+        <li><a href="#连接池配置">连接池配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题与解决方案">常见问题与解决方案</a>
+      <ul>
+        <li><a href="#消息堆积">消息堆积</a></li>
+        <li><a href="#消息丢失">消息丢失</a></li>
+        <li><a href="#消费者宕机">消费者宕机</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +342,732 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1543005472-1b1d37fa4eae?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1543005472-1b1d37fa4eae?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Redis 从 5.0 版本开始引入了 Stream 数据结构，它是一种全新的消息队列实现，弥补了 List 作为消息队列的诸多不足。Stream 支持多消费者组、消息确认、消息持久化、消息回溯等企业级特性，成为 Redis 在消息队列领域的旗舰方案。</p>
+<p>本文将深入讲解 Redis Stream 的核心概念、消费者模式、消费者组机制，以及与 List 和 Pub/Sub 的对比，最后通过实战案例展示如何构建可靠的消息系统。</p>
+<h2 id="stream-核心概念">
+<a class="header-anchor" href="#stream-%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5"></a>
+Stream 核心概念
+</h2><h3 id="什么是-stream">
+<a class="header-anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-stream"></a>
+什么是 Stream
+</h3><p>Stream 是 Redis 5.0 引入的一种新的数据类型，它是一个<strong>有序的、可持久化的、可回溯的消息日志</strong>。</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "Redis Stream"
+        A["Stream: mystream"]
+        A --> M1["ID: 1620000000000-0<br/>Fields: {user: 'Alice', msg: 'Hello'}"]
+        A --> M2["ID: 1620000000001-0<br/>Fields: {user: 'Bob', msg: 'Hi'}"]
+        A --> M3["ID: 1620000000002-0<br/>Fields: {user: 'Charlie', msg: 'Welcome'}"]
+        
+        subgraph "Consumer Groups"
+            CG1["Group: group1"]
+            CG2["Group: group2"]
+            
+            CG1 --> C1["Consumer: c1"]
+            CG1 --> C2["Consumer: c2"]
+            CG2 --> C3["Consumer: c3"]
+        end
+        
+        M1 --> CG1
+        M1 --> CG2
+    end
+</pre><h3 id="stream-与其他消息方案对比">
+<a class="header-anchor" href="#stream-%e4%b8%8e%e5%85%b6%e4%bb%96%e6%b6%88%e6%81%af%e6%96%b9%e6%a1%88%e5%af%b9%e6%af%94"></a>
+Stream 与其他消息方案对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>List</th>
+					<th>Pub/Sub</th>
+					<th>Stream</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>持久化</strong></td>
+					<td>是</td>
+					<td>否（内存）</td>
+					<td>是</td>
+			</tr>
+			<tr>
+					<td><strong>多消费者</strong></td>
+					<td>竞争消费</td>
+					<td>广播</td>
+					<td>竞争 + 广播</td>
+			</tr>
+			<tr>
+					<td><strong>消费者组</strong></td>
+					<td>无</td>
+					<td>无</td>
+					<td>支持</td>
+			</tr>
+			<tr>
+					<td><strong>消息确认</strong></td>
+					<td>无</td>
+					<td>无</td>
+					<td>支持</td>
+			</tr>
+			<tr>
+					<td><strong>消息回溯</strong></td>
+					<td>有限</td>
+					<td>无</td>
+					<td>全量</td>
+			</tr>
+			<tr>
+					<td><strong>消息堆积处理</strong></td>
+					<td>无</td>
+					<td>无</td>
+					<td>支持</td>
+			</tr>
+			<tr>
+					<td><strong>阻塞读取</strong></td>
+					<td>支持</td>
+					<td>支持</td>
+					<td>支持</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="stream-核心命令">
+<a class="header-anchor" href="#stream-%e6%a0%b8%e5%bf%83%e5%91%bd%e4%bb%a4"></a>
+Stream 核心命令
+</h3><table>
+	<thead>
+			<tr>
+					<th>命令</th>
+					<th>功能</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>XADD</code></td>
+					<td>添加消息</td>
+					<td>向 Stream 追加消息</td>
+			</tr>
+			<tr>
+					<td><code>XREAD</code></td>
+					<td>读取消息</td>
+					<td>从指定位置读取消息</td>
+			</tr>
+			<tr>
+					<td><code>XREADGROUP</code></td>
+					<td>组消费读取</td>
+					<td>消费者组方式读取</td>
+			</tr>
+			<tr>
+					<td><code>XGROUP</code></td>
+					<td>消费者组管理</td>
+					<td>创建/删除消费者组</td>
+			</tr>
+			<tr>
+					<td><code>XACK</code></td>
+					<td>消息确认</td>
+					<td>确认消息已处理</td>
+			</tr>
+			<tr>
+					<td><code>XPENDING</code></td>
+					<td>待确认消息</td>
+					<td>查看未确认消息</td>
+			</tr>
+			<tr>
+					<td><code>XCLAIM</code></td>
+					<td>消息转移</td>
+					<td>将消息转移给其他消费者</td>
+			</tr>
+			<tr>
+					<td><code>XLEN</code></td>
+					<td>消息数量</td>
+					<td>获取 Stream 长度</td>
+			</tr>
+			<tr>
+					<td><code>XRANGE</code></td>
+					<td>范围查询</td>
+					<td>按 ID 范围查询消息</td>
+			</tr>
+			<tr>
+					<td><code>XREVRANGE</code></td>
+					<td>反向范围查询</td>
+					<td>反向查询消息</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="stream-基础操作">
+<a class="header-anchor" href="#stream-%e5%9f%ba%e7%a1%80%e6%93%8d%e4%bd%9c"></a>
+Stream 基础操作
+</h2><h3 id="1-添加消息xadd">
+<a class="header-anchor" href="#1-%e6%b7%bb%e5%8a%a0%e6%b6%88%e6%81%afxadd"></a>
+1. 添加消息（XADD）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 添加消息，自动生成 ID</span>
+</span></span><span class="line"><span class="cl">XADD mystream * name Alice age <span class="m">30</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 添加消息，指定 ID</span>
+</span></span><span class="line"><span class="cl">XADD mystream 1620000000000-0 name Bob age <span class="m">25</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 添加多条消息</span>
+</span></span><span class="line"><span class="cl">XADD mystream * name Charlie age <span class="m">35</span>
+</span></span><span class="line"><span class="cl">XADD mystream * name David age <span class="m">28</span>
+</span></span></code></pre></div><h3 id="2-读取消息xread">
+<a class="header-anchor" href="#2-%e8%af%bb%e5%8f%96%e6%b6%88%e6%81%afxread"></a>
+2. 读取消息（XREAD）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 从流末尾读取新消息（阻塞模式，等待 10 秒）</span>
+</span></span><span class="line"><span class="cl">XREAD BLOCK <span class="m">10000</span> STREAMS mystream $
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 从指定 ID 开始读取（非阻塞）</span>
+</span></span><span class="line"><span class="cl">XREAD STREAMS mystream <span class="m">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 从指定 ID 开始读取，最多读取 2 条</span>
+</span></span><span class="line"><span class="cl">XREAD COUNT <span class="m">2</span> STREAMS mystream 1620000000000-0
+</span></span></code></pre></div><h3 id="3-范围查询xrangexrevrange">
+<a class="header-anchor" href="#3-%e8%8c%83%e5%9b%b4%e6%9f%a5%e8%af%a2xrangexrevrange"></a>
+3. 范围查询（XRANGE/XREVRANGE）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查询指定范围的消息</span>
+</span></span><span class="line"><span class="cl">XRANGE mystream 1620000000000-0 1620000000002-0
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查询所有消息</span>
+</span></span><span class="line"><span class="cl">XRANGE mystream - +
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查询最近 10 条消息</span>
+</span></span><span class="line"><span class="cl">XREVRANGE mystream + - COUNT <span class="m">10</span>
+</span></span></code></pre></div><h3 id="4-获取流长度xlen">
+<a class="header-anchor" href="#4-%e8%8e%b7%e5%8f%96%e6%b5%81%e9%95%bf%e5%ba%a6xlen"></a>
+4. 获取流长度（XLEN）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">XLEN mystream
+</span></span></code></pre></div><h2 id="消费者组机制">
+<a class="header-anchor" href="#%e6%b6%88%e8%b4%b9%e8%80%85%e7%bb%84%e6%9c%ba%e5%88%b6"></a>
+消费者组机制
+</h2><h3 id="创建消费者组">
+<a class="header-anchor" href="#%e5%88%9b%e5%bb%ba%e6%b6%88%e8%b4%b9%e8%80%85%e7%bb%84"></a>
+创建消费者组
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 创建消费者组（从流末尾开始消费）</span>
+</span></span><span class="line"><span class="cl">XGROUP CREATE mystream group1 $
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 创建消费者组（从流开始位置消费）</span>
+</span></span><span class="line"><span class="cl">XGROUP CREATE mystream group2 <span class="m">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看消费者组信息</span>
+</span></span><span class="line"><span class="cl">XGROUP INFO mystream group1
+</span></span></code></pre></div><h3 id="组消费读取xreadgroup">
+<a class="header-anchor" href="#%e7%bb%84%e6%b6%88%e8%b4%b9%e8%af%bb%e5%8f%96xreadgroup"></a>
+组消费读取（XREADGROUP）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 消费者 c1 从 group1 读取消息</span>
+</span></span><span class="line"><span class="cl">XREADGROUP GROUP group1 c1 STREAMS mystream &gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 消费者 c2 从 group1 读取消息</span>
+</span></span><span class="line"><span class="cl">XREADGROUP GROUP group1 c2 STREAMS mystream &gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 读取已读取但未确认的消息（用于重试）</span>
+</span></span><span class="line"><span class="cl">XREADGROUP GROUP group1 c1 STREAMS mystream <span class="m">0</span>
+</span></span></code></pre></div><h3 id="消息确认xack">
+<a class="header-anchor" href="#%e6%b6%88%e6%81%af%e7%a1%ae%e8%ae%a4xack"></a>
+消息确认（XACK）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 确认消息已处理</span>
+</span></span><span class="line"><span class="cl">XACK mystream group1 1620000000000-0 1620000000001-0
+</span></span></code></pre></div><h3 id="查看待确认消息xpending">
+<a class="header-anchor" href="#%e6%9f%a5%e7%9c%8b%e5%be%85%e7%a1%ae%e8%ae%a4%e6%b6%88%e6%81%afxpending"></a>
+查看待确认消息（XPENDING）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看 group1 的待确认消息</span>
+</span></span><span class="line"><span class="cl">XPENDING mystream group1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 详细查看待确认消息</span>
+</span></span><span class="line"><span class="cl">XPENDING mystream group1 - + <span class="m">10</span>
+</span></span></code></pre></div><h3 id="消息转移xclaim">
+<a class="header-anchor" href="#%e6%b6%88%e6%81%af%e8%bd%ac%e7%a7%bbxclaim"></a>
+消息转移（XCLAIM）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 将超时未确认的消息转移给其他消费者</span>
+</span></span><span class="line"><span class="cl">XCLAIM mystream group1 c2 <span class="m">60000</span> 1620000000000-0
+</span></span></code></pre></div><h2 id="java-客户端实战">
+<a class="header-anchor" href="#java-%e5%ae%a2%e6%88%b7%e7%ab%af%e5%ae%9e%e6%88%98"></a>
+Java 客户端实战
+</h2><h3 id="添加消息">
+<a class="header-anchor" href="#%e6%b7%bb%e5%8a%a0%e6%b6%88%e6%81%af"></a>
+添加消息
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">StreamProducerService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">StringRedisTemplate</span><span class="w"> </span><span class="n">redisTemplate</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">STREAM_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;order:stream&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">sendMessage</span><span class="p">(</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">RecordId</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redisTemplate</span><span class="p">.</span><span class="na">opsForStream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">STREAM_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">id</span><span class="p">.</span><span class="na">getValue</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">sendOrderMessage</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">message</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&#34;orderId&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">orderId</span><span class="p">.</span><span class="na">toString</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">message</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&#34;status&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">message</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&#34;timestamp&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">valueOf</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">sendMessage</span><span class="p">(</span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="消费者组消费">
+<a class="header-anchor" href="#%e6%b6%88%e8%b4%b9%e8%80%85%e7%bb%84%e6%b6%88%e8%b4%b9"></a>
+消费者组消费
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">StreamConsumerService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">StringRedisTemplate</span><span class="w"> </span><span class="n">redisTemplate</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">STREAM_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;order:stream&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">GROUP_NAME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;order-group&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">CONSUMER_NAME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;consumer-1&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@PostConstruct</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">initConsumerGroup</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">redisTemplate</span><span class="p">.</span><span class="na">opsForStream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="p">.</span><span class="na">createGroup</span><span class="p">(</span><span class="n">STREAM_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">GROUP_NAME</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 组已存在，忽略</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Scheduled</span><span class="p">(</span><span class="n">fixedDelay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">100</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">consumeMessages</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">MapRecord</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redisTemplate</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">opsForStream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">read</span><span class="p">(</span><span class="n">Consumer</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">GROUP_NAME</span><span class="p">,</span><span class="w"> </span><span class="n">CONSUMER_NAME</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">StreamReadOptions</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">count</span><span class="p">(</span><span class="n">10</span><span class="p">).</span><span class="na">block</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="n">1</span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">StreamOffset</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">STREAM_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">ReadOffset</span><span class="p">.</span><span class="na">lastConsumed</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">messages</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">messages</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">MapRecord</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">messages</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">processMessage</span><span class="p">(</span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="c1">// 确认消息</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">redisTemplate</span><span class="p">.</span><span class="na">opsForStream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="p">.</span><span class="na">acknowledge</span><span class="p">(</span><span class="n">STREAM_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">GROUP_NAME</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">.</span><span class="na">getId</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="c1">// 处理失败，消息保留在 pending 列表中</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">log</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">&#34;处理消息失败: {}&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">.</span><span class="na">getId</span><span class="p">(),</span><span class="w"> </span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">processMessage</span><span class="p">(</span><span class="n">MapRecord</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">orderId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="p">)</span><span class="w"> </span><span class="n">message</span><span class="p">.</span><span class="na">getValue</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="s">&#34;orderId&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="p">)</span><span class="w"> </span><span class="n">message</span><span class="p">.</span><span class="na">getValue</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="s">&#34;status&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&#34;处理订单: {}, 状态: {}&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="消息重试机制">
+<a class="header-anchor" href="#%e6%b6%88%e6%81%af%e9%87%8d%e8%af%95%e6%9c%ba%e5%88%b6"></a>
+消息重试机制
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Scheduled</span><span class="p">(</span><span class="n">fixedDelay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">5000</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">retryPendingMessages</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">PendingMessages</span><span class="w"> </span><span class="n">pending</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redisTemplate</span><span class="p">.</span><span class="na">opsForStream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">pending</span><span class="p">(</span><span class="n">STREAM_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">GROUP_NAME</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">pending</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">pending</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">PendingMessage</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pendingMessages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pending</span><span class="p">.</span><span class="na">stream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">filter</span><span class="p">(</span><span class="n">m</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">m</span><span class="p">.</span><span class="na">getElapsedTimeSinceLastDelivery</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">30000</span><span class="p">)</span><span class="w"> </span><span class="c1">// 超过30秒未确认</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">collect</span><span class="p">(</span><span class="n">Collectors</span><span class="p">.</span><span class="na">toList</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">PendingMessage</span><span class="w"> </span><span class="n">pendingMessage</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">pendingMessages</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 将消息转移给当前消费者重试</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">List</span><span class="o">&lt;</span><span class="n">MapRecord</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redisTemplate</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">opsForStream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">claim</span><span class="p">(</span><span class="n">ClaimOptions</span><span class="p">.</span><span class="na">empty</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="p">.</span><span class="na">consumer</span><span class="p">(</span><span class="n">CONSUMER_NAME</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="p">.</span><span class="na">minIdleTime</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="n">30</span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="n">StreamOffset</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">STREAM_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">ReadOffset</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">pendingMessage</span><span class="p">.</span><span class="na">getId</span><span class="p">())));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">messages</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">messages</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">MapRecord</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">messages</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">processMessage</span><span class="p">(</span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">redisTemplate</span><span class="p">.</span><span class="na">opsForStream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="p">.</span><span class="na">acknowledge</span><span class="p">(</span><span class="n">STREAM_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">GROUP_NAME</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">.</span><span class="na">getId</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">log</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">&#34;重试消息失败: {}&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">.</span><span class="na">getId</span><span class="p">(),</span><span class="w"> </span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="stream-高级特性">
+<a class="header-anchor" href="#stream-%e9%ab%98%e7%ba%a7%e7%89%b9%e6%80%a7"></a>
+Stream 高级特性
+</h2><h3 id="消息持久化">
+<a class="header-anchor" href="#%e6%b6%88%e6%81%af%e6%8c%81%e4%b9%85%e5%8c%96"></a>
+消息持久化
+</h3><p>Stream 会自动持久化到 RDB 和 AOF 文件中：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-properties" data-lang="properties"><span class="line"><span class="cl"><span class="c1"># redis.conf 配置</span>
+</span></span><span class="line"><span class="cl"><span class="na">appendonly</span> <span class="s">yes</span>
+</span></span><span class="line"><span class="cl"><span class="na">appendfsync</span> <span class="s">everysec</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="na">save</span> <span class="s">900 1</span>
+</span></span><span class="line"><span class="cl"><span class="na">save</span> <span class="s">300 10</span>
+</span></span><span class="line"><span class="cl"><span class="na">save</span> <span class="s">60 10000</span>
+</span></span></code></pre></div><h3 id="消息修剪">
+<a class="header-anchor" href="#%e6%b6%88%e6%81%af%e4%bf%ae%e5%89%aa"></a>
+消息修剪
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 保留最近 10000 条消息</span>
+</span></span><span class="line"><span class="cl">XTRIM mystream MAXLEN ~ <span class="m">10000</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 保留指定 ID 之前的消息</span>
+</span></span><span class="line"><span class="cl">XTRIM mystream MINID 1620000000000-0
+</span></span></code></pre></div><h3 id="消费者组管理">
+<a class="header-anchor" href="#%e6%b6%88%e8%b4%b9%e8%80%85%e7%bb%84%e7%ae%a1%e7%90%86"></a>
+消费者组管理
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 删除消费者</span>
+</span></span><span class="line"><span class="cl">XGROUP DELCONSUMER mystream group1 c1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 删除消费者组</span>
+</span></span><span class="line"><span class="cl">XGROUP DESTROY mystream group1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看消费者组信息</span>
+</span></span><span class="line"><span class="cl">XGROUP INFO mystream group1
+</span></span></code></pre></div><h3 id="多消费者组">
+<a class="header-anchor" href="#%e5%a4%9a%e6%b6%88%e8%b4%b9%e8%80%85%e7%bb%84"></a>
+多消费者组
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "Stream: orders"
+        M1["Order #1"]
+        M2["Order #2"]
+        M3["Order #3"]
+    end
+
+    subgraph "Consumer Group: payment"
+        P1["Payment Service"]
+    end
+
+    subgraph "Consumer Group: notification"
+        N1["Email Service"]
+        N2["SMS Service"]
+    end
+
+    subgraph "Consumer Group: analytics"
+        A1["Analytics Service"]
+    end
+
+    M1 --> P1
+    M1 --> N1
+    M1 --> N2
+    M1 --> A1
+    
+    M2 --> P1
+    M2 --> N1
+    M2 --> N2
+    M2 --> A1
+</pre><h2 id="发布订阅pubsub">
+<a class="header-anchor" href="#%e5%8f%91%e5%b8%83%e8%ae%a2%e9%98%85pubsub"></a>
+发布订阅（Pub/Sub）
+</h2><h3 id="基础概念">
+<a class="header-anchor" href="#%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5"></a>
+基础概念
+</h3><p>Pub/Sub 是 Redis 提供的发布订阅机制，支持消息的广播模式。</p>
+<pre class="mermaid">
+  graph TD
+    P1["Publisher 1"]
+    P2["Publisher 2"]
+    
+    subgraph "Channel: news"
+        C1["Subscriber A"]
+        C2["Subscriber B"]
+        C3["Subscriber C"]
+    end
+
+    subgraph "Channel: alerts"
+        C4["Subscriber A"]
+        C5["Subscriber D"]
+    end
+
+    P1 -->|"PUBLISH news 'Hello'"| C1
+    P1 -->|"PUBLISH news 'Hello'"| C2
+    P1 -->|"PUBLISH news 'Hello'"| C3
+    
+    P2 -->|"PUBLISH alerts 'Warning'"| C4
+    P2 -->|"PUBLISH alerts 'Warning'"| C5
+</pre><h3 id="pubsub-命令">
+<a class="header-anchor" href="#pubsub-%e5%91%bd%e4%bb%a4"></a>
+Pub/Sub 命令
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 订阅频道</span>
+</span></span><span class="line"><span class="cl">SUBSCRIBE news alerts
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 订阅模式匹配的频道</span>
+</span></span><span class="line"><span class="cl">PSUBSCRIBE news.*
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 发布消息</span>
+</span></span><span class="line"><span class="cl">PUBLISH news <span class="s2">&#34;Breaking news!&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看活跃频道</span>
+</span></span><span class="line"><span class="cl">PUBSUB CHANNELS
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看频道订阅数</span>
+</span></span><span class="line"><span class="cl">PUBSUB NUMSUB news
+</span></span></code></pre></div><h3 id="pubsub-vs-stream">
+<a class="header-anchor" href="#pubsub-vs-stream"></a>
+Pub/Sub vs Stream
+</h3><table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>Pub/Sub</th>
+					<th>Stream</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>持久化</strong></td>
+					<td>无</td>
+					<td>有</td>
+			</tr>
+			<tr>
+					<td><strong>消息回溯</strong></td>
+					<td>无</td>
+					<td>有</td>
+			</tr>
+			<tr>
+					<td><strong>消息确认</strong></td>
+					<td>无</td>
+					<td>有</td>
+			</tr>
+			<tr>
+					<td><strong>消费者组</strong></td>
+					<td>无</td>
+					<td>有</td>
+			</tr>
+			<tr>
+					<td><strong>阻塞模式</strong></td>
+					<td>有</td>
+					<td>有</td>
+			</tr>
+			<tr>
+					<td><strong>使用场景</strong></td>
+					<td>实时通知、聊天</td>
+					<td>可靠消息队列</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="实战案例订单处理系统">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8b%e8%ae%a2%e5%8d%95%e5%a4%84%e7%90%86%e7%b3%bb%e7%bb%9f"></a>
+实战案例：订单处理系统
+</h2><h3 id="系统架构">
+<a class="header-anchor" href="#%e7%b3%bb%e7%bb%9f%e6%9e%b6%e6%9e%84"></a>
+系统架构
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "生产者"
+        API[订单 API] -->|"XADD"| Stream
+    end
+
+    subgraph "Redis Stream"
+        Stream["order:stream"]
+    end
+
+    subgraph "消费者组"
+        subgraph "payment-group"
+            PG1["Payment Worker 1"]
+            PG2["Payment Worker 2"]
+        end
+        
+        subgraph "notification-group"
+            NG1["Notification Worker 1"]
+            NG2["Notification Worker 2"]
+        end
+        
+        subgraph "inventory-group"
+            IG1["Inventory Worker 1"]
+        end
+    end
+
+    Stream -->|"XREADGROUP"| PG1
+    Stream -->|"XREADGROUP"| PG2
+    Stream -->|"XREADGROUP"| NG1
+    Stream -->|"XREADGROUP"| NG2
+    Stream -->|"XREADGROUP"| IG1
+
+    PG1 --> PaymentDB[(Payment DB)]
+    NG1 --> Email[Email Service]
+    IG1 --> InventoryDB[(Inventory DB)]
+</pre><h3 id="完整代码">
+<a class="header-anchor" href="#%e5%ae%8c%e6%95%b4%e4%bb%a3%e7%a0%81"></a>
+完整代码
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 生产者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrderProducer</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">StringRedisTemplate</span><span class="w"> </span><span class="n">redis</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">STREAM_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;order:stream&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sendOrderEvent</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">eventType</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">message</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;orderId&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">orderId</span><span class="p">.</span><span class="na">toString</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;eventType&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">eventType</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="s">&#34;timestamp&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">valueOf</span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForStream</span><span class="p">().</span><span class="na">add</span><span class="p">(</span><span class="n">STREAM_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 支付消费者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Component</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">PaymentConsumer</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">StringRedisTemplate</span><span class="w"> </span><span class="n">redis</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">STREAM_KEY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;order:stream&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">GROUP</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;payment-group&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">CONSUMER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;payment-worker-&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">UUID</span><span class="p">.</span><span class="na">randomUUID</span><span class="p">().</span><span class="na">toString</span><span class="p">().</span><span class="na">substring</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">8</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@PostConstruct</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">init</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForStream</span><span class="p">().</span><span class="na">createGroup</span><span class="p">(</span><span class="n">STREAM_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">GROUP</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">ignored</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">Thread</span><span class="p">(</span><span class="k">this</span><span class="p">::</span><span class="n">consume</span><span class="p">).</span><span class="na">start</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">consume</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="kc">true</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">List</span><span class="o">&lt;</span><span class="n">MapRecord</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">messages</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">redis</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">opsForStream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">read</span><span class="p">(</span><span class="n">Consumer</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">GROUP</span><span class="p">,</span><span class="w"> </span><span class="n">CONSUMER</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">StreamReadOptions</span><span class="p">.</span><span class="na">empty</span><span class="p">().</span><span class="na">count</span><span class="p">(</span><span class="n">10</span><span class="p">).</span><span class="na">block</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="n">5</span><span class="p">)),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">StreamOffset</span><span class="p">.</span><span class="na">create</span><span class="p">(</span><span class="n">STREAM_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">ReadOffset</span><span class="p">.</span><span class="na">lastConsumed</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">messages</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kd">var</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">messages</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">String</span><span class="w"> </span><span class="n">orderId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="p">)</span><span class="w"> </span><span class="n">msg</span><span class="p">.</span><span class="na">getValue</span><span class="p">().</span><span class="na">get</span><span class="p">(</span><span class="s">&#34;orderId&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">processPayment</span><span class="p">(</span><span class="n">orderId</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">redis</span><span class="p">.</span><span class="na">opsForStream</span><span class="p">().</span><span class="na">acknowledge</span><span class="p">(</span><span class="n">STREAM_KEY</span><span class="p">,</span><span class="w"> </span><span class="n">GROUP</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">.</span><span class="na">getId</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Exception</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">log</span><span class="p">.</span><span class="na">error</span><span class="p">(</span><span class="s">&#34;支付处理失败: {}&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">msg</span><span class="p">.</span><span class="na">getId</span><span class="p">(),</span><span class="w"> </span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">processPayment</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">orderId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&#34;处理支付: {}&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">orderId</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="性能优化">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96"></a>
+性能优化
+</h2><h3 id="批量操作">
+<a class="header-anchor" href="#%e6%89%b9%e9%87%8f%e6%93%8d%e4%bd%9c"></a>
+批量操作
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 批量添加消息</span>
+</span></span><span class="line"><span class="cl">XADD mystream * name A age <span class="m">20</span>
+</span></span><span class="line"><span class="cl">XADD mystream * name B age <span class="m">21</span>
+</span></span><span class="line"><span class="cl">XADD mystream * name C age <span class="m">22</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 批量读取</span>
+</span></span><span class="line"><span class="cl">XREAD COUNT <span class="m">100</span> STREAMS mystream &gt;
+</span></span></code></pre></div><h3 id="内存优化">
+<a class="header-anchor" href="#%e5%86%85%e5%ad%98%e4%bc%98%e5%8c%96"></a>
+内存优化
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 定期修剪</span>
+</span></span><span class="line"><span class="cl">XTRIM mystream MAXLEN ~ <span class="m">100000</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 禁用惰性删除（Redis 6.2+）</span>
+</span></span><span class="line"><span class="cl">XTRIM mystream MAXLEN <span class="m">100000</span>
+</span></span></code></pre></div><h3 id="连接池配置">
+<a class="header-anchor" href="#%e8%bf%9e%e6%8e%a5%e6%b1%a0%e9%85%8d%e7%bd%ae"></a>
+连接池配置
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Bean</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">RedisTemplate</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">redisTemplate</span><span class="p">(</span><span class="n">RedisConnectionFactory</span><span class="w"> </span><span class="n">factory</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">RedisTemplate</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">template</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RedisTemplate</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">template</span><span class="p">.</span><span class="na">setConnectionFactory</span><span class="p">(</span><span class="n">factory</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 连接池配置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">LettuceConnectionFactory</span><span class="w"> </span><span class="n">lettuceFactory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">LettuceConnectionFactory</span><span class="p">)</span><span class="w"> </span><span class="n">factory</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">lettuceFactory</span><span class="p">.</span><span class="na">setPoolConfig</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">GenericObjectPoolConfig</span><span class="o">&lt;&gt;</span><span class="p">()</span><span class="w"> </span><span class="p">{{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">setMaxTotal</span><span class="p">(</span><span class="n">100</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">setMaxIdle</span><span class="p">(</span><span class="n">50</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">setMinIdle</span><span class="p">(</span><span class="n">10</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">setMaxWait</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="n">30</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">template</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="常见问题与解决方案">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b8%8e%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88"></a>
+常见问题与解决方案
+</h2><h3 id="消息堆积">
+<a class="header-anchor" href="#%e6%b6%88%e6%81%af%e5%a0%86%e7%a7%af"></a>
+消息堆积
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看待处理消息</span>
+</span></span><span class="line"><span class="cl">XPENDING mystream group1
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 增加消费者</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动更多 Consumer 实例</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 优化处理速度</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 异步处理、批量处理</span>
+</span></span></code></pre></div><h3 id="消息丢失">
+<a class="header-anchor" href="#%e6%b6%88%e6%81%af%e4%b8%a2%e5%a4%b1"></a>
+消息丢失
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 确保 AOF 配置正确</span>
+</span></span><span class="line"><span class="cl">appendonly yes
+</span></span><span class="line"><span class="cl">appendfsync everysec
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 使用消费者组 + XACK</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 处理完成后必须调用 XACK</span>
+</span></span></code></pre></div><h3 id="消费者宕机">
+<a class="header-anchor" href="#%e6%b6%88%e8%b4%b9%e8%80%85%e5%ae%95%e6%9c%ba"></a>
+消费者宕机
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 消息转移</span>
+</span></span><span class="line"><span class="cl">XCLAIM mystream group1 new-consumer <span class="m">60000</span> pending-id
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 自动重试机制</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 定时扫描 pending 列表</span>
+</span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>Redis Stream 是 Redis 5.0 引入的里程碑式特性，它将 Redis 从简单的缓存工具提升为具备企业级消息队列能力的平台。</p>
+<p>核心优势：</p>
+<ul>
+<li><strong>多消费者组</strong>：同一消息可被多个组消费，实现广播模式</li>
+<li><strong>消息确认</strong>：XACK 机制确保消息不丢失</li>
+<li><strong>消息回溯</strong>：支持从任意位置重新消费</li>
+<li><strong>持久化</strong>：消息自动持久化到 RDB/AOF</li>
+<li><strong>消息转移</strong>：XCLAIM 支持故障转移</li>
+</ul>
+<p>适用场景：</p>
+<ul>
+<li><strong>订单处理</strong>：支付、通知、库存扣减</li>
+<li><strong>日志收集</strong>：应用日志、审计日志</li>
+<li><strong>实时数据流</strong>：事件驱动架构</li>
+</ul>
+<p>选择建议：</p>
+<ul>
+<li>需要<strong>可靠消息队列</strong> → Stream</li>
+<li>需要<strong>实时通知广播</strong> → Pub/Sub</li>
+<li>需要<strong>简单队列</strong>（低延迟、无确认）→ List</li>
+</ul>
+<p>掌握 Redis Stream，你就拥有了构建轻量级消息系统的能力。</p>
+<hr>
+<p><strong>延伸阅读</strong>：</p>
+<ol>
+<li>Redis Stream 官方文档 - <a href="https://redis.io/docs/data-types/streams/">https://redis.io/docs/data-types/streams/</a></li>
+<li>Redis Pub/Sub 文档 - <a href="https://redis.io/docs/manual/pubsub/">https://redis.io/docs/manual/pubsub/</a></li>
+<li>Redis 命令参考 - <a href="https://redis.io/commands/?group=stream">https://redis.io/commands/?group=stream</a></li>
+</ol>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/middleware-ops/redisstream%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B8%8E%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E5%AE%9E%E6%88%98/&amp;appkey=&amp;title=Redis%20Stream%e6%b6%88%e6%81%af%e9%98%9f%e5%88%97%e4%b8%8e%e5%8f%91%e5%b8%83%e8%ae%a2%e9%98%85%e5%ae%9e&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="Redis Stream消息队列与发布订阅实">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/middleware-ops/redisstream%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B8%8E%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E5%AE%9E%E6%88%98/&amp;title=Redis%20Stream%e6%b6%88%e6%81%af%e9%98%9f%e5%88%97%e4%b8%8e%e5%8f%91%e5%b8%83%e8%ae%a2%e9%98%85%e5%ae%9e&amp;desc=Stream%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5%e3%80%81XADD/XREAD%e6%b6%88%e8%b4%b9%e8%80%85%e6%a8%a1%e5%bc%8f%e3%80%81%e6%b6%88%e8%b4%b9%e8%80%85%e7%bb%84%e3%80%81%e6%b6%88%e6%81%af%e7%a1%ae%e8%ae%a4%e4%b8%8e%e9%87%8d%e8%af%95%e3%80%81%e4%b8%8eList/PUBSUB%e5%af%b9%e6%af%94&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="Redis Stream消息队列与发布订阅实">
@@ -360,7 +1156,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">Elasticsearch全文搜索引擎</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
+              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
               data-sizes="auto"
               alt="Nginx反向代理与负载均"
               class="lazyload"
@@ -392,10 +1188,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -445,7 +1241,78 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#stream-核心概念">Stream 核心概念</a>
+      <ul>
+        <li><a href="#什么是-stream">什么是 Stream</a></li>
+        <li><a href="#stream-与其他消息方案对比">Stream 与其他消息方案对比</a></li>
+        <li><a href="#stream-核心命令">Stream 核心命令</a></li>
+      </ul>
+    </li>
+    <li><a href="#stream-基础操作">Stream 基础操作</a>
+      <ul>
+        <li><a href="#1-添加消息xadd">1. 添加消息（XADD）</a></li>
+        <li><a href="#2-读取消息xread">2. 读取消息（XREAD）</a></li>
+        <li><a href="#3-范围查询xrangexrevrange">3. 范围查询（XRANGE/XREVRANGE）</a></li>
+        <li><a href="#4-获取流长度xlen">4. 获取流长度（XLEN）</a></li>
+      </ul>
+    </li>
+    <li><a href="#消费者组机制">消费者组机制</a>
+      <ul>
+        <li><a href="#创建消费者组">创建消费者组</a></li>
+        <li><a href="#组消费读取xreadgroup">组消费读取（XREADGROUP）</a></li>
+        <li><a href="#消息确认xack">消息确认（XACK）</a></li>
+        <li><a href="#查看待确认消息xpending">查看待确认消息（XPENDING）</a></li>
+        <li><a href="#消息转移xclaim">消息转移（XCLAIM）</a></li>
+      </ul>
+    </li>
+    <li><a href="#java-客户端实战">Java 客户端实战</a>
+      <ul>
+        <li><a href="#添加消息">添加消息</a></li>
+        <li><a href="#消费者组消费">消费者组消费</a></li>
+        <li><a href="#消息重试机制">消息重试机制</a></li>
+      </ul>
+    </li>
+    <li><a href="#stream-高级特性">Stream 高级特性</a>
+      <ul>
+        <li><a href="#消息持久化">消息持久化</a></li>
+        <li><a href="#消息修剪">消息修剪</a></li>
+        <li><a href="#消费者组管理">消费者组管理</a></li>
+        <li><a href="#多消费者组">多消费者组</a></li>
+      </ul>
+    </li>
+    <li><a href="#发布订阅pubsub">发布订阅（Pub/Sub）</a>
+      <ul>
+        <li><a href="#基础概念">基础概念</a></li>
+        <li><a href="#pubsub-命令">Pub/Sub 命令</a></li>
+        <li><a href="#pubsub-vs-stream">Pub/Sub vs Stream</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例订单处理系统">实战案例：订单处理系统</a>
+      <ul>
+        <li><a href="#系统架构">系统架构</a></li>
+        <li><a href="#完整代码">完整代码</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能优化">性能优化</a>
+      <ul>
+        <li><a href="#批量操作">批量操作</a></li>
+        <li><a href="#内存优化">内存优化</a></li>
+        <li><a href="#连接池配置">连接池配置</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题与解决方案">常见问题与解决方案</a>
+      <ul>
+        <li><a href="#消息堆积">消息堆积</a></li>
+        <li><a href="#消息丢失">消息丢失</a></li>
+        <li><a href="#消费者宕机">消费者宕机</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -576,6 +1443,105 @@
           description: "Stream核心概念、XADD\/XREAD消费者模式、消费者组、消息确认与重试、与List\/PUBSUB对比",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

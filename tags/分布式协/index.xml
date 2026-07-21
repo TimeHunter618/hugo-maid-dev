@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>ZooKeeper分布式协</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在分布式系统中，协调（Coordination）是一个基础而关键的问题——如何选主、如何同步配置、如何实现分布式锁、如何感知服务上下线？ZooKeeper 最初由 Yahoo 开发，用于解决 Hadoop 生态的协调问题，如今已成为最经典的分布式协调框架。Kafka、HBase、Dubbo 等知名系统都依赖 ZooKeeper 作为协调中心。</p>
         
         <hr><p>本文2023-01-20首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-01-20</p>]]>
       </description>

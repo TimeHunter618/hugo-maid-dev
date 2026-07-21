@@ -200,6 +200,7 @@
         <li><a href="#3-重排序">3. 重排序</a></li>
       </ul>
     </li>
+    <li><a href="#面试回答框架">面试回答框架</a></li>
     <li><a href="#总结">总结</a></li>
   </ul>
 </nav>
@@ -289,21 +290,38 @@
 </h2><blockquote>
 <p><strong>面试场景</strong>：RAG系统召回率低可能有哪些原因？如何优化？</p>
 </blockquote>
+<p>RAG（Retrieval-Augmented Generation）系统的召回率直接影响生成质量。召回率低通常意味着相关文档没有被正确检索到。</p>
 <h2 id="优化策略">
 <a class="header-anchor" href="#%e4%bc%98%e5%8c%96%e7%ad%96%e7%95%a5"></a>
 优化策略
 </h2><h3 id="1-查询改写">
 <a class="header-anchor" href="#1-%e6%9f%a5%e8%af%a2%e6%94%b9%e5%86%99"></a>
 1. 查询改写
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">rewrite_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">history</span><span class="p">):</span>
+</h3><p><strong>面试思路</strong>：用户的原始查询可能不够精确，需要进行改写以提高检索效果。</p>
+<p><strong>改写方法</strong>：</p>
+<ul>
+<li><strong>关键词扩展</strong>：添加同义词、近义词</li>
+<li><strong>上下文融合</strong>：结合对话历史</li>
+<li><strong>意图识别</strong>：理解用户的真实意图</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">rewrite_query</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">history</span><span class="p">):</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">history</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">        <span class="n">context</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">h</span><span class="p">[</span><span class="s1">&#39;question&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">history</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]])</span>
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">context</span><span class="si">}</span><span class="s2">. Now answer: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&#34;</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">query</span>
-</span></span></code></pre></div><h3 id="2-多路召回">
+</span></span></code></pre></div><p><strong>关键点</strong>：查询改写需要理解用户意图，可以使用小模型来完成这个任务。</p>
+<h3 id="2-多路召回">
 <a class="header-anchor" href="#2-%e5%a4%9a%e8%b7%af%e5%8f%ac%e5%9b%9e"></a>
 2. 多路召回
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">multi_retrieval</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+</h3><p><strong>面试思路</strong>：单一的检索方式可能无法覆盖所有相关文档，需要使用多种检索策略。</p>
+<p><strong>检索方式</strong>：</p>
+<ul>
+<li><strong>向量检索</strong>：基于语义相似度</li>
+<li><strong>关键词检索</strong>：基于精确匹配</li>
+<li><strong>语义检索</strong>：基于语义理解</li>
+<li><strong>混合检索</strong>：结合多种方式</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">multi_retrieval</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
 </span></span><span class="line"><span class="cl">    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="n">vector_results</span> <span class="o">=</span> <span class="n">vector_db</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">top_k</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
@@ -315,10 +333,18 @@
 </span></span><span class="line"><span class="cl">    <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">semantic_results</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">deduplicate_and_rerank</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-</span></span></code></pre></div><h3 id="3-重排序">
+</span></span></code></pre></div><p><strong>关键点</strong>：多路召回可以提高召回率，但需要做好去重和重排序。</p>
+<h3 id="3-重排序">
 <a class="header-anchor" href="#3-%e9%87%8d%e6%8e%92%e5%ba%8f"></a>
 3. 重排序
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sentence_transformers</span> <span class="kn">import</span> <span class="n">CrossEncoder</span>
+</h3><p><strong>面试思路</strong>：检索结果可能包含不相关的文档，需要进行重排序以提高相关性。</p>
+<p><strong>排序方法</strong>：</p>
+<ul>
+<li><strong>交叉编码器</strong>：使用专门的排序模型</li>
+<li><strong>规则排序</strong>：基于关键词匹配、位置等规则</li>
+<li><strong>机器学习排序</strong>：训练排序模型</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sentence_transformers</span> <span class="kn">import</span> <span class="n">CrossEncoder</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">cross_encoder</span> <span class="o">=</span> <span class="n">CrossEncoder</span><span class="p">(</span><span class="s1">&#39;cross-encoder/ms-marco-MiniLM-L-6-v2&#39;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
@@ -330,10 +356,23 @@
 </span></span><span class="line"><span class="cl">    <span class="n">scored_docs</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">[</span><span class="n">doc</span> <span class="k">for</span> <span class="n">doc</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">scored_docs</span><span class="p">[:</span><span class="mi">5</span><span class="p">]]</span>
-</span></span></code></pre></div><h2 id="总结">
+</span></span></code></pre></div><p><strong>关键点</strong>：重排序可以显著提高检索质量，但会增加延迟。</p>
+<h2 id="面试回答框架">
+<a class="header-anchor" href="#%e9%9d%a2%e8%af%95%e5%9b%9e%e7%ad%94%e6%a1%86%e6%9e%b6"></a>
+面试回答框架
+</h2><p>当面试官问到这个问题时，可以按照以下框架回答：</p>
+<ol>
+<li><strong>问题诊断</strong>：分析召回率低的原因（查询质量、检索方式、数据质量）</li>
+<li><strong>查询优化</strong>：查询改写、关键词扩展、意图识别</li>
+<li><strong>检索策略</strong>：多路召回、混合检索</li>
+<li><strong>重排序</strong>：交叉编码器、机器学习排序</li>
+<li><strong>数据优化</strong>：文档分割、向量化优化、数据质量提升</li>
+<li><strong>评估指标</strong>：召回率、精确率、MRR等</li>
+</ol>
+<h2 id="总结">
 <a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
 总结
-</h2><p>RAG召回率优化需要综合运用查询改写、多路召回和重排序等技术。</p>
+</h2><p>RAG召回率优化需要综合运用查询改写、多路召回和重排序等技术。同时，数据质量和检索方式的选择也至关重要。通过不断的实验和调优，可以显著提升RAG系统的性能。</p>
 </div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/ai-interview/rag%E5%8F%AC%E5%9B%9E%E7%8E%87%E4%BD%8E%E6%80%8E%E4%B9%88%E4%BC%98%E5%8C%96/&amp;appkey=&amp;title=RAG%e5%8f%ac%e5%9b%9e%e7%8e%87%e4%bd%8e%e6%80%8e%e4%b9%88%e4%bc%98%e5%8c%96&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="RAG召回率低怎么优化">
       <div class="share-icon icon icon-weibo"></div>
@@ -411,7 +450,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
+              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
               data-sizes="auto"
               alt="Chrome插件如何安全调用AI"
               class="lazyload"
@@ -423,7 +462,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">Chrome插件如何安全调用AI</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
+              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
               data-sizes="auto"
               alt="如何做模型微调与数据集准备"
               class="lazyload"
@@ -455,10 +494,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -518,6 +557,7 @@
         <li><a href="#3-重排序">3. 重排序</a></li>
       </ul>
     </li>
+    <li><a href="#面试回答框架">面试回答框架</a></li>
     <li><a href="#总结">总结</a></li>
   </ul>
 </nav>

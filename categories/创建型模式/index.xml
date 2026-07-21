@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>工厂方法与抽象工厂模式</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>工厂模式是创建型模式中最重要的一种，其核心思想是<strong>将对象的创建过程封装起来，让客户端无需关心对象的创建细节</strong>，只需要告诉工厂需要什么对象即可。</p>
         
         <hr><p>本文2024-06-04首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-06-04</p>]]>
       </description>
@@ -50,7 +53,12 @@
       <description>
         <![CDATA[<h1>建造者模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>建造者模式（Builder Pattern）将一个复杂对象的构建过程与它的表示分离，使得同样的构建过程可以创建不同的表示。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示。</p>
         
         <hr><p>本文2024-02-03首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-02-03</p>]]>
       </description>
@@ -70,7 +78,10 @@
       <description>
         <![CDATA[<h1>单例模式详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>单例模式（Singleton Pattern）是最简单也是最常用的设计模式之一。它保证一个类在内存中只有一个实例，并提供一个全局访问点来获取该实例。</p>
         
         <hr><p>本文2023-11-16首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-11-16</p>]]>
       </description>

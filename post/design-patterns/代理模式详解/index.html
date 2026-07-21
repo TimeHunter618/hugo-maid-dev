@@ -190,7 +190,67 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+        <li><a href="#代理模式的核心结构">代理模式的核心结构</a></li>
+      </ul>
+    </li>
+    <li><a href="#代理模式的分类">代理模式的分类</a></li>
+    <li><a href="#一静态代理">一、静态代理</a>
+      <ul>
+        <li><a href="#静态代理的缺点">静态代理的缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#二jdk-动态代理">二、JDK 动态代理</a>
+      <ul>
+        <li><a href="#核心要求">核心要求</a></li>
+        <li><a href="#实现">实现</a></li>
+        <li><a href="#jdk-动态代理的原理">JDK 动态代理的原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#三cglib-代理">三、CGLIB 代理</a>
+      <ul>
+        <li><a href="#添加依赖">添加依赖</a></li>
+        <li><a href="#实现-1">实现</a></li>
+        <li><a href="#cglib-的限制">CGLIB 的限制</a></li>
+      </ul>
+    </li>
+    <li><a href="#jdk-动态代理-vs-cglib-代理">JDK 动态代理 vs CGLIB 代理</a></li>
+    <li><a href="#代理模式的常见用途">代理模式的常见用途</a>
+      <ul>
+        <li><a href="#1-远程代理remote-proxy">1. 远程代理（Remote Proxy）</a></li>
+        <li><a href="#2-虚拟代理virtual-proxy--延迟加载">2. 虚拟代理（Virtual Proxy / 延迟加载）</a></li>
+        <li><a href="#3-保护代理protection-proxy">3. 保护代理（Protection Proxy）</a></li>
+      </ul>
+    </li>
+    <li><a href="#spring-aop-原理">Spring AOP 原理</a>
+      <ul>
+        <li><a href="#aop-核心概念">AOP 核心概念</a></li>
+        <li><a href="#spring-aop-使用示例">Spring AOP 使用示例</a></li>
+        <li><a href="#spring-aop-的代理选择策略">Spring AOP 的代理选择策略</a></li>
+      </ul>
+    </li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#代理模式-vs-装饰器模式">代理模式 vs 装饰器模式</a></li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#mybatis-mapper-代理">MyBatis Mapper 代理</a></li>
+        <li><a href="#spring-事务管理">Spring 事务管理</a></li>
+        <li><a href="#feign-远程调用">Feign 远程调用</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +331,596 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-15017858041-af3ef285b470?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-15017858041-af3ef285b470?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>代理模式（Proxy Pattern）为其他对象提供一种代理以控制对这个对象的访问。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：为其他对象提供一种代理以控制对这个对象的访问。</p>
+</blockquote>
+<p>通俗地说：<strong>代理模式就是找一个&quot;中间人&quot;来替你做事</strong>。代理对象在客户端和目标对象之间起到中介作用，可以在不改变目标对象的前提下，增加额外的控制逻辑（如权限校验、延迟加载、日志记录等）。</p>
+<h3 id="类图">
+<a class="header-anchor" href="#%e7%b1%bb%e5%9b%be"></a>
+类图
+</h3><pre class="mermaid">
+  classDiagram
+    class Subject {
+        <<interface>>
+        +request()
+    }
+    class RealSubject {
+        +request()
+    }
+    class Proxy {
+        -RealSubject realSubject
+        +request()
+        -preRequest()
+        -postRequest()
+    }
+    Subject <|.. RealSubject
+    Subject <|.. Proxy
+    Proxy --> RealSubject : 控制访问
+</pre><h3 id="代理模式的核心结构">
+<a class="header-anchor" href="#%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f%e7%9a%84%e6%a0%b8%e5%bf%83%e7%bb%93%e6%9e%84"></a>
+代理模式的核心结构
+</h3><ul>
+<li><strong>Subject（抽象主题）</strong>：定义 RealSubject 和 Proxy 共同的接口</li>
+<li><strong>RealSubject（真实主题）</strong>：被代理的实际对象</li>
+<li><strong>Proxy（代理）</strong>：持有 RealSubject 的引用，控制对其的访问</li>
+</ul>
+<h2 id="代理模式的分类">
+<a class="header-anchor" href="#%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f%e7%9a%84%e5%88%86%e7%b1%bb"></a>
+代理模式的分类
+</h2><pre class="mermaid">
+  graph TD
+    A[代理模式] --> B[静态代理]
+    A --> C[动态代理]
+    C --> D[JDK 动态代理]
+    C --> E[CGLIB 代理]
+    A --> F[按用途分类]
+    F --> G[远程代理]
+    F --> H[虚拟代理/延迟加载]
+    F --> I[保护代理]
+    F --> J[智能引用代理]
+</pre><h2 id="一静态代理">
+<a class="header-anchor" href="#%e4%b8%80%e9%9d%99%e6%80%81%e4%bb%a3%e7%90%86"></a>
+一、静态代理
+</h2><p>静态代理是最基本的代理形式，代理类在编译期就确定。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 抽象主题</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">UserService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">addUser</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">deleteUser</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 真实主题</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UserServiceImpl</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">UserService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addUser</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;添加用户：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">deleteUser</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;删除用户，ID：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 静态代理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">UserServiceProxy</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">UserService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">UserService</span><span class="w"> </span><span class="n">target</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">UserServiceProxy</span><span class="p">(</span><span class="n">UserService</span><span class="w"> </span><span class="n">target</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">addUser</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">before</span><span class="p">();</span><span class="w">                        </span><span class="c1">// 前置增强</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">target</span><span class="p">.</span><span class="na">addUser</span><span class="p">(</span><span class="n">name</span><span class="p">);</span><span class="w">            </span><span class="c1">// 委托给真实对象</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">after</span><span class="p">();</span><span class="w">                         </span><span class="c1">// 后置增强</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">deleteUser</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">before</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">target</span><span class="p">.</span><span class="na">deleteUser</span><span class="p">(</span><span class="n">id</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">after</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">before</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[日志] 方法开始执行，时间：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[权限] 校验用户权限...&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">after</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[日志] 方法执行完毕，时间：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 客户端</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Client</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">UserService</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">UserServiceProxy</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">UserServiceImpl</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">proxy</span><span class="p">.</span><span class="na">addUser</span><span class="p">(</span><span class="s">&#34;张三&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="静态代理的缺点">
+<a class="header-anchor" href="#%e9%9d%99%e6%80%81%e4%bb%a3%e7%90%86%e7%9a%84%e7%bc%ba%e7%82%b9"></a>
+静态代理的缺点
+</h3><ol>
+<li><strong>一个接口需要一个代理类</strong>：接口方法多时代码冗余</li>
+<li><strong>接口变更需同步修改代理类</strong>：维护成本高</li>
+<li><strong>无法动态切换增强逻辑</strong>：增强代码写死在代理类中</li>
+</ol>
+<h2 id="二jdk-动态代理">
+<a class="header-anchor" href="#%e4%ba%8cjdk-%e5%8a%a8%e6%80%81%e4%bb%a3%e7%90%86"></a>
+二、JDK 动态代理
+</h2><p>JDK 动态代理通过 <code>Proxy</code> 类和 <code>InvocationHandler</code> 接口，在<strong>运行时</strong>动态生成代理类，解决了静态代理的缺点。</p>
+<h3 id="核心要求">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e8%a6%81%e6%b1%82"></a>
+核心要求
+</h3><p>JDK 动态代理<strong>要求目标对象必须实现接口</strong>（基于接口代理）。</p>
+<h3 id="实现">
+<a class="header-anchor" href="#%e5%ae%9e%e7%8e%b0"></a>
+实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// InvocationHandler：定义代理逻辑</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LoggingInvocationHandler</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">InvocationHandler</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">target</span><span class="p">;</span><span class="w">  </span><span class="c1">// 被代理的真实对象</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">LoggingInvocationHandler</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">target</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">invoke</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">proxy</span><span class="p">,</span><span class="w"> </span><span class="n">Method</span><span class="w"> </span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 前置增强</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[日志] 调用 &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">getName</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34;，参数：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">toString</span><span class="p">(</span><span class="n">args</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 执行真实方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Object</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 返回增强</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[日志] &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">getName</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; 返回：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">InvocationTargetException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 异常增强</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[日志] &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">getName</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; 抛出异常：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">getTargetException</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">getTargetException</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">finally</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[日志] &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">getName</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; 耗时：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34;ms&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 创建代理对象</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ProxyFactory</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@SuppressWarnings</span><span class="p">(</span><span class="s">&#34;unchecked&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="nf">createProxy</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">target</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="n">Proxy</span><span class="p">.</span><span class="na">newProxyInstance</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">target</span><span class="p">.</span><span class="na">getClass</span><span class="p">().</span><span class="na">getClassLoader</span><span class="p">(),</span><span class="w">   </span><span class="c1">// 类加载器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">target</span><span class="p">.</span><span class="na">getClass</span><span class="p">().</span><span class="na">getInterfaces</span><span class="p">(),</span><span class="w">     </span><span class="c1">// 目标对象实现的接口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">new</span><span class="w"> </span><span class="n">LoggingInvocationHandler</span><span class="p">(</span><span class="n">target</span><span class="p">)</span><span class="w">   </span><span class="c1">// 调用处理器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 客户端使用</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Client</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">UserService</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ProxyFactory</span><span class="p">.</span><span class="na">createProxy</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">UserServiceImpl</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">proxy</span><span class="p">.</span><span class="na">addUser</span><span class="p">(</span><span class="s">&#34;张三&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">proxy</span><span class="p">.</span><span class="na">deleteUser</span><span class="p">(</span><span class="n">1L</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="jdk-动态代理的原理">
+<a class="header-anchor" href="#jdk-%e5%8a%a8%e6%80%81%e4%bb%a3%e7%90%86%e7%9a%84%e5%8e%9f%e7%90%86"></a>
+JDK 动态代理的原理
+</h3><pre class="mermaid">
+  sequenceDiagram
+    participant Client
+    participant Proxy as $Proxy0（运行时生成）
+    participant Handler as InvocationHandler
+    participant Target as RealSubject
+
+    Client->>Proxy: addUser("张三")
+    Proxy->>Handler: invoke(proxy, method, args)
+    Handler->>Handler: 前置增强（日志/权限）
+    Handler->>Target: method.invoke(target, args)
+    Target-->>Handler: 返回结果
+    Handler->>Handler: 后置增强
+    Handler-->>Proxy: 返回结果
+    Proxy-->>Client: 返回结果
+</pre><p>JDK 在运行时通过字节码生成技术，动态创建了一个名为 <code>$Proxy0</code> 的类，该类实现了目标接口，并将所有方法调用转发给 <code>InvocationHandler.invoke()</code>。</p>
+<h2 id="三cglib-代理">
+<a class="header-anchor" href="#%e4%b8%89cglib-%e4%bb%a3%e7%90%86"></a>
+三、CGLIB 代理
+</h2><p>CGLIB（Code Generation Library）通过<strong>生成目标类的子类</strong>来实现代理，<strong>不要求目标对象实现接口</strong>。</p>
+<h3 id="添加依赖">
+<a class="header-anchor" href="#%e6%b7%bb%e5%8a%a0%e4%be%9d%e8%b5%96"></a>
+添加依赖
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="nt">&lt;dependency&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;groupId&gt;</span>cglib<span class="nt">&lt;/groupId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;artifactId&gt;</span>cglib<span class="nt">&lt;/artifactId&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;version&gt;</span>3.3.0<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/dependency&gt;</span>
+</span></span></code></pre></div><h3 id="实现-1">
+<a class="header-anchor" href="#%e5%ae%9e%e7%8e%b0-1"></a>
+实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// CGLIB 不需要接口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrderService</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="c1">// 注意：没有实现任何接口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">createOrder</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">orderId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;创建订单：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">orderId</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">queryOrder</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;查询订单：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&#34;Order-&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">id</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 方法拦截器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LoggingMethodInterceptor</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">MethodInterceptor</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">intercept</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="n">Method</span><span class="w"> </span><span class="n">method</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                            </span><span class="n">MethodProxy</span><span class="w"> </span><span class="n">methodProxy</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[CGLIB 日志] 调用 &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">getName</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Object</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">methodProxy</span><span class="p">.</span><span class="na">invokeSuper</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span><span class="w">  </span><span class="c1">// 调用父类（原始）方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[CGLIB 日志] &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">method</span><span class="p">.</span><span class="na">getName</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; 耗时：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34;ms&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 创建 CGLIB 代理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CglibProxyFactory</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@SuppressWarnings</span><span class="p">(</span><span class="s">&#34;unchecked&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="nf">createProxy</span><span class="p">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">targetClass</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Enhancer</span><span class="w"> </span><span class="n">enhancer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Enhancer</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">enhancer</span><span class="p">.</span><span class="na">setSuperclass</span><span class="p">(</span><span class="n">targetClass</span><span class="p">);</span><span class="w">           </span><span class="c1">// 设置父类（目标类）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">enhancer</span><span class="p">.</span><span class="na">setCallback</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">LoggingMethodInterceptor</span><span class="p">());</span><span class="w"> </span><span class="c1">// 设置拦截器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="n">enhancer</span><span class="p">.</span><span class="na">create</span><span class="p">();</span><span class="w">                   </span><span class="c1">// 创建代理对象</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 客户端</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Client</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">OrderService</span><span class="w"> </span><span class="n">proxy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CglibProxyFactory</span><span class="p">.</span><span class="na">createProxy</span><span class="p">(</span><span class="n">OrderService</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">proxy</span><span class="p">.</span><span class="na">createOrder</span><span class="p">(</span><span class="s">&#34;ORD-001&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">proxy</span><span class="p">.</span><span class="na">queryOrder</span><span class="p">(</span><span class="n">100L</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="cglib-的限制">
+<a class="header-anchor" href="#cglib-%e7%9a%84%e9%99%90%e5%88%b6"></a>
+CGLIB 的限制
+</h3><ol>
+<li><strong>不能代理 final 类</strong>：因为 CGLIB 通过继承创建子类</li>
+<li><strong>不能代理 final 方法</strong>：final 方法无法被子类覆盖</li>
+<li><strong>不能代理 private 方法</strong>：子类无法访问</li>
+</ol>
+<h2 id="jdk-动态代理-vs-cglib-代理">
+<a class="header-anchor" href="#jdk-%e5%8a%a8%e6%80%81%e4%bb%a3%e7%90%86-vs-cglib-%e4%bb%a3%e7%90%86"></a>
+JDK 动态代理 vs CGLIB 代理
+</h2><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>JDK 动态代理</th>
+					<th>CGLIB 代理</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>代理机制</td>
+					<td>基于接口（实现同一接口）</td>
+					<td>基于继承（生成子类）</td>
+			</tr>
+			<tr>
+					<td>要求</td>
+					<td>目标必须实现接口</td>
+					<td>无需接口</td>
+			</tr>
+			<tr>
+					<td>性能</td>
+					<td>创建快，执行稍慢</td>
+					<td>创建慢，执行快</td>
+			</tr>
+			<tr>
+					<td>生成类</td>
+					<td><code>$Proxy0</code></td>
+					<td>目标类的子类</td>
+			</tr>
+			<tr>
+					<td>依赖</td>
+					<td>JDK 内置</td>
+					<td>需引入 CGLIB 库</td>
+			</tr>
+			<tr>
+					<td>Spring 默认</td>
+					<td>有接口时使用</td>
+					<td>无接口时使用</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>Spring AOP 的策略：<strong>有接口用 JDK 动态代理，无接口用 CGLIB</strong>（Spring Boot 2.x 后默认使用 CGLIB）。</p>
+</blockquote>
+<h2 id="代理模式的常见用途">
+<a class="header-anchor" href="#%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f%e7%9a%84%e5%b8%b8%e8%a7%81%e7%94%a8%e9%80%94"></a>
+代理模式的常见用途
+</h2><h3 id="1-远程代理remote-proxy">
+<a class="header-anchor" href="#1-%e8%bf%9c%e7%a8%8b%e4%bb%a3%e7%90%86remote-proxy"></a>
+1. 远程代理（Remote Proxy）
+</h3><p>为远程对象提供本地代表，如 RPC 调用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Dubbo/RPC 中的远程代理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 消费者调用的是本地代理对象，代理对象负责网络通信</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@DubboReference</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="n">UserService</span><span class="w"> </span><span class="n">userService</span><span class="p">;</span><span class="w">  </span><span class="c1">// 实际是远程代理对象</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 调用时：userService.findById(1)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 代理对象：序列化参数 → 网络请求 → 反序列化结果</span><span class="w">
+</span></span></span></code></pre></div><h3 id="2-虚拟代理virtual-proxy--延迟加载">
+<a class="header-anchor" href="#2-%e8%99%9a%e6%8b%9f%e4%bb%a3%e7%90%86virtual-proxy--%e5%bb%b6%e8%bf%9f%e5%8a%a0%e8%bd%bd"></a>
+2. 虚拟代理（Virtual Proxy / 延迟加载）
+</h3><p>按需创建开销大的对象：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 延迟加载图片</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ImageProxy</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Image</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">RealImage</span><span class="w"> </span><span class="n">realImage</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">filename</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">ImageProxy</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">filename</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">filename</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">display</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">realImage</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">realImage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RealImage</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span><span class="w"> </span><span class="c1">// 第一次显示时才加载</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">realImage</span><span class="p">.</span><span class="na">display</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="3-保护代理protection-proxy">
+<a class="header-anchor" href="#3-%e4%bf%9d%e6%8a%a4%e4%bb%a3%e7%90%86protection-proxy"></a>
+3. 保护代理（Protection Proxy）
+</h3><p>控制访问权限：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ProtectedProxy</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Service</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">RealService</span><span class="w"> </span><span class="n">realService</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="n">currentUser</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sensitiveOperation</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">currentUser</span><span class="p">.</span><span class="na">hasRole</span><span class="p">(</span><span class="s">&#34;ADMIN&#34;</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">SecurityException</span><span class="p">(</span><span class="s">&#34;无权限访问&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">realService</span><span class="p">.</span><span class="na">sensitiveOperation</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="spring-aop-原理">
+<a class="header-anchor" href="#spring-aop-%e5%8e%9f%e7%90%86"></a>
+Spring AOP 原理
+</h2><p>Spring AOP 是代理模式在框架层面的最大规模应用。</p>
+<h3 id="aop-核心概念">
+<a class="header-anchor" href="#aop-%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5"></a>
+AOP 核心概念
+</h3><pre class="mermaid">
+  graph LR
+    A[目标方法] --> B[代理对象]
+    B --> C[前置通知 @Before]
+    C --> D[目标方法执行]
+    D --> E[后置通知 @AfterReturning]
+    D -.异常.-> F[异常通知 @AfterThrowing]
+    E --> G[最终通知 @After]
+    F --> G
+</pre><h3 id="spring-aop-使用示例">
+<a class="header-anchor" href="#spring-aop-%e4%bd%bf%e7%94%a8%e7%a4%ba%e4%be%8b"></a>
+Spring AOP 使用示例
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 定义切面</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Aspect</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Component</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LoggingAspect</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 切入点：所有 Service 类的所有方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Pointcut</span><span class="p">(</span><span class="s">&#34;execution(* com.example.service.*.*(..))&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">serviceLayer</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 前置通知</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Before</span><span class="p">(</span><span class="s">&#34;serviceLayer()&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">beforeLog</span><span class="p">(</span><span class="n">JoinPoint</span><span class="w"> </span><span class="n">joinPoint</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">joinPoint</span><span class="p">.</span><span class="na">getSignature</span><span class="p">().</span><span class="na">getName</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[AOP] 调用方法：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">method</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 后置通知</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@AfterReturning</span><span class="p">(</span><span class="n">pointcut</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;serviceLayer()&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">returning</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;result&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">afterLog</span><span class="p">(</span><span class="n">JoinPoint</span><span class="w"> </span><span class="n">joinPoint</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">result</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[AOP] 方法返回：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">result</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 环绕通知（最强大，等同于 InvocationHandler）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Around</span><span class="p">(</span><span class="s">&#34;serviceLayer()&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="nf">around</span><span class="p">(</span><span class="n">ProceedingJoinPoint</span><span class="w"> </span><span class="n">pjp</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Throwable</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Object</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pjp</span><span class="p">.</span><span class="na">proceed</span><span class="p">();</span><span class="w">  </span><span class="c1">// 执行目标方法</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[AOP] 耗时：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">System</span><span class="p">.</span><span class="na">currentTimeMillis</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34;ms&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">Throwable</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[AOP] 方法异常：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">e</span><span class="p">.</span><span class="na">getMessage</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="n">e</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="spring-aop-的代理选择策略">
+<a class="header-anchor" href="#spring-aop-%e7%9a%84%e4%bb%a3%e7%90%86%e9%80%89%e6%8b%a9%e7%ad%96%e7%95%a5"></a>
+Spring AOP 的代理选择策略
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Spring AOP 创建代理的核心逻辑（简化版）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">DefaultAopProxyFactory</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">AopProxy</span><span class="w"> </span><span class="nf">createAopProxy</span><span class="p">(</span><span class="n">AdvisedSupport</span><span class="w"> </span><span class="n">config</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 条件一：有接口 或 配置了使用 JDK 代理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 条件二：非 GraalVM 原生镜像</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">config</span><span class="p">.</span><span class="na">hasInterfaces</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">config</span><span class="p">.</span><span class="na">isProxyTargetClass</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">JdkDynamicAopProxy</span><span class="p">(</span><span class="n">config</span><span class="p">);</span><span class="w">     </span><span class="c1">// JDK 动态代理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">CglibAopProxy</span><span class="p">(</span><span class="n">config</span><span class="p">);</span><span class="w">           </span><span class="c1">// CGLIB 代理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="适用场景">
+<a class="header-anchor" href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+适用场景
+</h2><ol>
+<li><strong>AOP 切面编程</strong>：日志、事务、权限、缓存等横切关注点</li>
+<li><strong>远程调用</strong>：RPC、RMI 的本地代理</li>
+<li><strong>延迟加载</strong>：Hibernate 懒加载、大对象按需创建</li>
+<li><strong>权限控制</strong>：方法级别的访问控制</li>
+<li><strong>智能引用</strong>：引用计数、缓存等</li>
+</ol>
+<h2 id="优缺点">
+<a class="header-anchor" href="#%e4%bc%98%e7%bc%ba%e7%82%b9"></a>
+优缺点
+</h2><h3 id="优点">
+<a class="header-anchor" href="#%e4%bc%98%e7%82%b9"></a>
+优点
+</h3><ol>
+<li><strong>职责清晰</strong>：代理类专注于控制逻辑，目标类专注于业务</li>
+<li><strong>开闭原则</strong>：不修改目标类即可增加控制逻辑</li>
+<li><strong>解耦</strong>：客户端不直接接触目标对象</li>
+</ol>
+<h3 id="缺点">
+<a class="header-anchor" href="#%e7%bc%ba%e7%82%b9"></a>
+缺点
+</h3><ol>
+<li><strong>性能损耗</strong>：多了一层方法调用</li>
+<li><strong>复杂度增加</strong>：增加了代理类的维护成本</li>
+<li><strong>调试困难</strong>：调用栈中多了代理层</li>
+</ol>
+<h2 id="代理模式-vs-装饰器模式">
+<a class="header-anchor" href="#%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f-vs-%e8%a3%85%e9%a5%b0%e5%99%a8%e6%a8%a1%e5%bc%8f"></a>
+代理模式 vs 装饰器模式
+</h2><p>这两种模式结构几乎相同，区别在于<strong>设计意图</strong>：</p>
+<table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>代理模式</th>
+					<th>装饰器模式</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>意图</td>
+					<td>控制对对象的访问</td>
+					<td>增强对象的功能</td>
+			</tr>
+			<tr>
+					<td>创建者</td>
+					<td>代理自己创建/持有对象</td>
+					<td>客户端创建并传入对象</td>
+			</tr>
+			<tr>
+					<td>关注点</td>
+					<td>&ldquo;能不能访问&rdquo;</td>
+					<td>&ldquo;做得更多&rdquo;</td>
+			</tr>
+			<tr>
+					<td>典型场景</td>
+					<td>Spring AOP、远程代理</td>
+					<td>Java IO 流</td>
+			</tr>
+			<tr>
+					<td>使用者感知</td>
+					<td>不知道在用代理</td>
+					<td>知道在装饰</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>区分关键：<strong>代理强调&quot;控制&quot;，装饰器强调&quot;增强&quot;</strong>。</p>
+</blockquote>
+<h2 id="实战案例">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8b"></a>
+实战案例
+</h2><h3 id="mybatis-mapper-代理">
+<a class="header-anchor" href="#mybatis-mapper-%e4%bb%a3%e7%90%86"></a>
+MyBatis Mapper 代理
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Mapper 接口（没有实现类！）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">UserMapper</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">User</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// MyBatis 通过 JDK 动态代理生成 Mapper 实现</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// MapperProxy 实现了 InvocationHandler</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">UserMapper</span><span class="w"> </span><span class="n">mapper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sqlSession</span><span class="p">.</span><span class="na">getMapper</span><span class="p">(</span><span class="n">UserMapper</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// mapper 实际是代理对象，invoke() 中执行 SQL 解析和数据库查询</span><span class="w">
+</span></span></span></code></pre></div><h3 id="spring-事务管理">
+<a class="header-anchor" href="#spring-%e4%ba%8b%e5%8a%a1%e7%ae%a1%e7%90%86"></a>
+Spring 事务管理
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// @Transactional 背后就是 AOP 代理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Transactional</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">transferMoney</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">from</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="kd">to</span><span class="p">,</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 代理对象在方法前：开启事务</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">accountDao</span><span class="p">.</span><span class="na">debit</span><span class="p">(</span><span class="n">from</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">accountDao</span><span class="p">.</span><span class="na">credit</span><span class="p">(</span><span class="kd">to</span><span class="p">,</span><span class="w"> </span><span class="n">amount</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 代理对象在方法后：提交事务（异常时回滚）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="feign-远程调用">
+<a class="header-anchor" href="#feign-%e8%bf%9c%e7%a8%8b%e8%b0%83%e7%94%a8"></a>
+Feign 远程调用
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Spring Cloud Feign 声明式 HTTP 客户端</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 本质是动态代理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@FeignClient</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;user-service&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">UserFeignClient</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">&#34;/users/{id}&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">User</span><span class="w"> </span><span class="nf">getById</span><span class="p">(</span><span class="nd">@PathVariable</span><span class="w"> </span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 调用时：userFeignClient.getById(1L)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 代理对象：构造 HTTP 请求 → 发送 → 解析响应</span><span class="w">
+</span></span></span></code></pre></div><h2 id="总结">
+<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
+总结
+</h2><p>代理模式是 Spring 框架的基石之一。理解了代理模式，就能理解：</p>
+<ul>
+<li><strong>Spring AOP</strong> 是如何在不修改业务代码的前提下织入日志、事务、缓存等横切逻辑的</li>
+<li><strong>MyBatis Mapper</strong> 是如何让接口自动执行 SQL 的</li>
+<li><strong>Feign/Dubbo</strong> 是如何让远程调用像本地方法一样简单的</li>
+</ul>
+<p>掌握代理模式的三种形式：</p>
+<table>
+	<thead>
+			<tr>
+					<th>类型</th>
+					<th>适用场景</th>
+					<th>关键技术</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>静态代理</td>
+					<td>简单场景、代理类少</td>
+					<td>手动编写代理类</td>
+			</tr>
+			<tr>
+					<td>JDK 动态代理</td>
+					<td>目标有接口</td>
+					<td><code>Proxy</code> + <code>InvocationHandler</code></td>
+			</tr>
+			<tr>
+					<td>CGLIB 代理</td>
+					<td>目标无接口</td>
+					<td><code>Enhancer</code> + <code>MethodInterceptor</code></td>
+			</tr>
+	</tbody>
+</table>
+<p>代理模式的精髓在于：<strong>在不改变原对象的前提下，通过中间层控制对其的访问</strong>。这正是 AOP 编程范式的核心思想。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/design-patterns/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="代理模式详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/design-patterns/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;title=%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;desc=%e9%9d%99%e6%80%81%e4%bb%a3%e7%90%86%e3%80%81JDK%20%e5%8a%a8%e6%80%81%e4%bb%a3%e7%90%86%e3%80%81CGLIB%20%e4%bb%a3%e7%90%86Spring%20AOP%20%e5%8e%9f%e7%90%86%e6%b7%b1%e5%ba%a6%e5%89%96%e6%9e%90&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="代理模式详解">
@@ -334,7 +983,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
+              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
               data-sizes="auto"
               alt="适配器模式详解"
               class="lazyload"
@@ -366,10 +1015,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -419,7 +1068,67 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+        <li><a href="#代理模式的核心结构">代理模式的核心结构</a></li>
+      </ul>
+    </li>
+    <li><a href="#代理模式的分类">代理模式的分类</a></li>
+    <li><a href="#一静态代理">一、静态代理</a>
+      <ul>
+        <li><a href="#静态代理的缺点">静态代理的缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#二jdk-动态代理">二、JDK 动态代理</a>
+      <ul>
+        <li><a href="#核心要求">核心要求</a></li>
+        <li><a href="#实现">实现</a></li>
+        <li><a href="#jdk-动态代理的原理">JDK 动态代理的原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#三cglib-代理">三、CGLIB 代理</a>
+      <ul>
+        <li><a href="#添加依赖">添加依赖</a></li>
+        <li><a href="#实现-1">实现</a></li>
+        <li><a href="#cglib-的限制">CGLIB 的限制</a></li>
+      </ul>
+    </li>
+    <li><a href="#jdk-动态代理-vs-cglib-代理">JDK 动态代理 vs CGLIB 代理</a></li>
+    <li><a href="#代理模式的常见用途">代理模式的常见用途</a>
+      <ul>
+        <li><a href="#1-远程代理remote-proxy">1. 远程代理（Remote Proxy）</a></li>
+        <li><a href="#2-虚拟代理virtual-proxy--延迟加载">2. 虚拟代理（Virtual Proxy / 延迟加载）</a></li>
+        <li><a href="#3-保护代理protection-proxy">3. 保护代理（Protection Proxy）</a></li>
+      </ul>
+    </li>
+    <li><a href="#spring-aop-原理">Spring AOP 原理</a>
+      <ul>
+        <li><a href="#aop-核心概念">AOP 核心概念</a></li>
+        <li><a href="#spring-aop-使用示例">Spring AOP 使用示例</a></li>
+        <li><a href="#spring-aop-的代理选择策略">Spring AOP 的代理选择策略</a></li>
+      </ul>
+    </li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#代理模式-vs-装饰器模式">代理模式 vs 装饰器模式</a></li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#mybatis-mapper-代理">MyBatis Mapper 代理</a></li>
+        <li><a href="#spring-事务管理">Spring 事务管理</a></li>
+        <li><a href="#feign-远程调用">Feign 远程调用</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -550,6 +1259,105 @@
           description: "静态代理、JDK 动态代理、CGLIB 代理Spring AOP 原理深度剖析",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

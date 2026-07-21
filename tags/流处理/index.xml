@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>Kafka高吞吐消息流处理</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Kafka 是 LinkedIn 开源的分布式流处理平台，最初设计用于日志收集，如今已成为大数据领域最核心的消息系统。与 RabbitMQ 的&quot;消息投递&quot;模型不同，Kafka 采用&quot;日志追加&quot;模型——消息不是消费后删除，而是按序持久化在分区日志中，支持多次回放。</p>
         
         <hr><p>本文2026-02-21首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-02-21</p>]]>
       </description>

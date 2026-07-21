@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>Kafka高吞吐消息流处理</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Kafka 是 LinkedIn 开源的分布式流处理平台，最初设计用于日志收集，如今已成为大数据领域最核心的消息系统。与 RabbitMQ 的&quot;消息投递&quot;模型不同，Kafka 采用&quot;日志追加&quot;模型——消息不是消费后删除，而是按序持久化在分区日志中，支持多次回放。</p>
         
         <hr><p>本文2026-02-21首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-02-21</p>]]>
       </description>
@@ -50,7 +53,10 @@
       <description>
         <![CDATA[<h1>RabbitMQ消息队列详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在现代分布式系统中，消息队列是解耦应用、削峰填谷、异步处理的核心基础设施。RabbitMQ 作为最流行的开源消息代理之一，凭借其可靠性、灵活的路由模型和丰富的客户端生态，被广泛应用于订单处理、任务分发、日志收集等场景。</p>
         
         <hr><p>本文2024-05-29首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-05-29</p>]]>
       </description>
@@ -70,7 +76,10 @@
       <description>
         <![CDATA[<h1>Kafka Streams流处理实</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Kafka Streams 是 Kafka 提供的轻量级流处理库，它允许你在应用中直接处理 Kafka 消息，无需额外部署大型流处理框架（如 Flink、Spark Streaming）。Kafka Streams 提供了两种 API：DSL API（声明式，适合大多数场景）和 Processor API（命令式，适合复杂场景）。</p>
         
         <hr><p>本文2021-05-12首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-05-12</p>]]>
       </description>

@@ -200,6 +200,7 @@
         <li><a href="#3-权限最小化">3. 权限最小化</a></li>
       </ul>
     </li>
+    <li><a href="#面试回答框架">面试回答框架</a></li>
     <li><a href="#总结">总结</a></li>
   </ul>
 </nav>
@@ -289,13 +290,21 @@
 </h2><blockquote>
 <p><strong>面试场景</strong>：Chrome插件中存储和使用AI API Key存在哪些安全风险？如何防范？</p>
 </blockquote>
+<p>Chrome插件的安全问题尤为重要，因为插件可以访问用户的浏览数据。如果API Key泄露，可能导致：API费用被滥用、用户数据被泄露、服务被恶意调用等问题。</p>
 <h2 id="安全策略">
 <a class="header-anchor" href="#%e5%ae%89%e5%85%a8%e7%ad%96%e7%95%a5"></a>
 安全策略
 </h2><h3 id="1-api-key保护">
 <a class="header-anchor" href="#1-api-key%e4%bf%9d%e6%8a%a4"></a>
 1. API Key保护
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">chrome</span><span class="p">.</span><span class="nx">storage</span><span class="p">.</span><span class="nx">local</span><span class="p">.</span><span class="nx">get</span><span class="p">([</span><span class="s1">&#39;apiKey&#39;</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+</h3><p><strong>面试思路</strong>：API Key不能明文存储在前端代码中，也不能通过网络明文传输。需要使用安全的存储方式和传输协议。</p>
+<p><strong>存储方案</strong>：</p>
+<ul>
+<li><strong>chrome.storage.local</strong>：使用浏览器提供的本地存储，比localStorage更安全</li>
+<li><strong>加密存储</strong>：对API Key进行加密后再存储</li>
+<li><strong>不要硬编码</strong>：绝对不能把API Key写在代码中</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">chrome</span><span class="p">.</span><span class="nx">storage</span><span class="p">.</span><span class="nx">local</span><span class="p">.</span><span class="nx">get</span><span class="p">([</span><span class="s1">&#39;apiKey&#39;</span><span class="p">],</span> <span class="kd">function</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">apiKey</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="nx">chrome</span><span class="p">.</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">sendMessage</span><span class="p">({</span>
 </span></span><span class="line"><span class="cl">            <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;CALL_AI&#39;</span><span class="p">,</span>
@@ -304,10 +313,18 @@
 </span></span><span class="line"><span class="cl">        <span class="p">});</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></div><h3 id="2-后台脚本隔离">
+</span></span></code></pre></div><p><strong>关键点</strong>：storage.local虽然比localStorage安全，但仍然可能被其他扩展或恶意脚本访问。更安全的做法是使用后台脚本作为代理。</p>
+<h3 id="2-后台脚本隔离">
 <a class="header-anchor" href="#2-%e5%90%8e%e5%8f%b0%e8%84%9a%e6%9c%ac%e9%9a%94%e7%a6%bb"></a>
 2. 后台脚本隔离
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">chrome</span><span class="p">.</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">onMessage</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">sender</span><span class="p">,</span> <span class="nx">sendResponse</span><span class="p">)</span> <span class="p">{</span>
+</h3><p><strong>面试思路</strong>：将敏感操作放在后台脚本中执行，可以隔离来自网页的恶意代码访问。</p>
+<p><strong>隔离策略</strong>：</p>
+<ul>
+<li><strong>后台脚本</strong>：所有API调用都在background script中执行</li>
+<li><strong>消息通信</strong>：通过chrome.runtime.sendMessage进行通信</li>
+<li><strong>参数验证</strong>：在后台脚本中对所有输入进行验证</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="nx">chrome</span><span class="p">.</span><span class="nx">runtime</span><span class="p">.</span><span class="nx">onMessage</span><span class="p">.</span><span class="nx">addListener</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">request</span><span class="p">,</span> <span class="nx">sender</span><span class="p">,</span> <span class="nx">sendResponse</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">request</span><span class="p">.</span><span class="nx">type</span> <span class="o">===</span> <span class="s1">&#39;CALL_AI&#39;</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="nx">fetch</span><span class="p">(</span><span class="s1">&#39;https://api.example.com/ai&#39;</span><span class="p">,</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">            <span class="nx">method</span><span class="o">:</span> <span class="s1">&#39;POST&#39;</span><span class="p">,</span>
@@ -322,20 +339,40 @@
 </span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">});</span>
-</span></span></code></pre></div><h3 id="3-权限最小化">
+</span></span></code></pre></div><p><strong>关键点</strong>：后台脚本可以访问所有扩展权限，但不会被网页脚本直接访问，提供了一层安全隔离。</p>
+<h3 id="3-权限最小化">
 <a class="header-anchor" href="#3-%e6%9d%83%e9%99%90%e6%9c%80%e5%b0%8f%e5%8c%96"></a>
 3. 权限最小化
-</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</h3><p><strong>面试思路</strong>：遵循最小权限原则，只请求必要的权限。</p>
+<p><strong>权限策略</strong>：</p>
+<ul>
+<li><strong>host permissions</strong>：只允许访问必要的API域名</li>
+<li><strong>activeTab</strong>：只在当前活动标签页生效</li>
+<li><strong>storage</strong>：只请求存储权限</li>
+</ul>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="nt">&#34;permissions&#34;</span><span class="p">:</span> <span class="p">[</span>
 </span></span><span class="line"><span class="cl">        <span class="s2">&#34;storage&#34;</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">        <span class="s2">&#34;activeTab&#34;</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">        <span class="s2">&#34;https://api.example.com/*&#34;</span>
 </span></span><span class="line"><span class="cl">    <span class="p">]</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></div><h2 id="总结">
+</span></span></code></pre></div><p><strong>关键点</strong>：减少权限可以降低安全风险，即使插件被攻击，攻击者能做的事情也有限。</p>
+<h2 id="面试回答框架">
+<a class="header-anchor" href="#%e9%9d%a2%e8%af%95%e5%9b%9e%e7%ad%94%e6%a1%86%e6%9e%b6"></a>
+面试回答框架
+</h2><p>当面试官问到这个问题时，可以按照以下框架回答：</p>
+<ol>
+<li><strong>存储安全</strong>：加密存储、使用chrome.storage、避免硬编码</li>
+<li><strong>传输安全</strong>：HTTPS、后台脚本代理</li>
+<li><strong>隔离机制</strong>：content script与background script分离</li>
+<li><strong>权限控制</strong>：最小权限原则、细粒度权限配置</li>
+<li><strong>输入验证</strong>：在后台脚本中验证所有输入</li>
+</ol>
+<h2 id="总结">
 <a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
 总结
-</h2><p>Chrome插件调用AI时需要注意API Key的安全存储、后台脚本隔离和权限最小化。</p>
+</h2><p>Chrome插件调用AI时需要注意API Key的安全存储、后台脚本隔离和权限最小化。同时，要做好输入验证和错误处理，防止恶意用户滥用插件功能。</p>
 </div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/ai-interview/chrome%E6%8F%92%E4%BB%B6%E5%A6%82%E4%BD%95%E5%AE%89%E5%85%A8%E8%B0%83%E7%94%A8ai/&amp;appkey=&amp;title=Chrome%e6%8f%92%e4%bb%b6%e5%a6%82%e4%bd%95%e5%ae%89%e5%85%a8%e8%b0%83%e7%94%a8AI&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="Chrome插件如何安全调用AI">
       <div class="share-icon icon icon-weibo"></div>
@@ -413,7 +450,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
+              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
               data-sizes="auto"
               alt="大模型如何做本地化部署"
               class="lazyload"
@@ -425,7 +462,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">大模型如何做本地化部署</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
+              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
               data-sizes="auto"
               alt="RAG召回率低怎么优化"
               class="lazyload"
@@ -457,10 +494,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -520,6 +557,7 @@
         <li><a href="#3-权限最小化">3. 权限最小化</a></li>
       </ul>
     </li>
+    <li><a href="#面试回答框架">面试回答框架</a></li>
     <li><a href="#总结">总结</a></li>
   </ul>
 </nav>

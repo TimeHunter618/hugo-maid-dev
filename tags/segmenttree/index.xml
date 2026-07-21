@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>线段树SegmentTree 详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>线段树（Segment Tree）是一种高效的数据结构，用于处理区间查询和区间更新问题。它可以在 O(log n) 的时间复杂度内完成单点更新、区间查询、区间更新等操作，是算法竞赛和实际工程中常用的数据结构。</p>
         
         <hr><p>本文2024-10-25首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-10-25</p>]]>
       </description>

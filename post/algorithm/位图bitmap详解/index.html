@@ -190,7 +190,53 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#位图原理">位图原理</a>
+      <ul>
+        <li><a href="#基本概念">基本概念</a></li>
+        <li><a href="#空间对比">空间对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#位图实现">位图实现</a>
+      <ul>
+        <li><a href="#核心操作">核心操作</a></li>
+        <li><a href="#位运算详解">位运算详解</a></li>
+      </ul>
+    </li>
+    <li><a href="#高级操作">高级操作</a>
+      <ul>
+        <li><a href="#位图交集">位图交集</a></li>
+        <li><a href="#位图并集">位图并集</a></li>
+        <li><a href="#位图差集">位图差集</a></li>
+        <li><a href="#快速统计">快速统计</a></li>
+      </ul>
+    </li>
+    <li><a href="#应用场景">应用场景</a>
+      <ul>
+        <li><a href="#数据去重">数据去重</a></li>
+        <li><a href="#快速排序">快速排序</a></li>
+        <li><a href="#海量数据查找">海量数据查找</a></li>
+        <li><a href="#布隆过滤器基础">布隆过滤器基础</a></li>
+      </ul>
+    </li>
+    <li><a href="#位图-vs-布隆过滤器">位图 vs 布隆过滤器</a></li>
+    <li><a href="#java-中的位图实现">Java 中的位图实现</a>
+      <ul>
+        <li><a href="#bitset">BitSet</a></li>
+        <li><a href="#注意事项">注意事项</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +317,514 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>位图（BitMap）是一种高效的数据结构，它使用位（bit）来表示元素的存在状态。相比于传统的数据结构（如数组、链表），位图在空间效率上有着巨大的优势，特别适合处理大规模数据的去重、排序、查找等场景。</p>
+<p>本文将深入讲解位图的原理、实现、应用场景，并与布隆过滤器进行对比。</p>
+<h2 id="位图原理">
+<a class="header-anchor" href="#%e4%bd%8d%e5%9b%be%e5%8e%9f%e7%90%86"></a>
+位图原理
+</h2><h3 id="基本概念">
+<a class="header-anchor" href="#%e5%9f%ba%e6%9c%ac%e6%a6%82%e5%bf%b5"></a>
+基本概念
+</h3><p>位图的核心思想是用一个 bit 位来表示一个元素是否存在。如果第 i 位为 1，表示元素 i 存在；如果为 0，表示元素 i 不存在。</p>
+<pre class="mermaid">
+  graph LR
+    subgraph "位图结构"
+        A["Byte 0"] --> B["Bit 0: 元素0"]
+        A --> C["Bit 1: 元素1"]
+        A --> D["Bit 2: 元素2"]
+        A --> E["..."]
+        A --> F["Bit 7: 元素7"]
+        G["Byte 1"] --> H["Bit 8: 元素8"]
+        G --> I["..."]
+    end
+</pre><h3 id="空间对比">
+<a class="header-anchor" href="#%e7%a9%ba%e9%97%b4%e5%af%b9%e6%af%94"></a>
+空间对比
+</h3><p>假设需要存储 1 亿个整数（0-99999999）：</p>
+<table>
+	<thead>
+			<tr>
+					<th>数据结构</th>
+					<th>空间占用</th>
+					<th>计算公式</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>普通数组</strong></td>
+					<td>约 381 MB</td>
+					<td>1亿 × 4 字节</td>
+			</tr>
+			<tr>
+					<td><strong>HashSet</strong></td>
+					<td>约 1 GB+</td>
+					<td>包含对象头、引用等额外开销</td>
+			</tr>
+			<tr>
+					<td><strong>位图</strong></td>
+					<td>约 12 MB</td>
+					<td>1亿 / 8 = 12,500,000 字节</td>
+			</tr>
+	</tbody>
+</table>
+<p>位图的空间效率是普通数组的 <strong>32 倍</strong>，是 HashSet 的 <strong>80 倍以上</strong>。</p>
+<h2 id="位图实现">
+<a class="header-anchor" href="#%e4%bd%8d%e5%9b%be%e5%ae%9e%e7%8e%b0"></a>
+位图实现
+</h2><h3 id="核心操作">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e6%93%8d%e4%bd%9c"></a>
+核心操作
+</h3><p>位图的基本操作包括：设置位、清除位、检查位。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">BitMap</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">long</span><span class="o">[]</span><span class="w"> </span><span class="n">bits</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">BitMap</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">maxValue</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">maxValue</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">bits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">long</span><span class="o">[</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">63</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">64</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s">&#34;Value out of range&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">64</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">64</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">bits</span><span class="o">[</span><span class="n">index</span><span class="o">]</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="p">(</span><span class="n">1L</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">offset</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">IllegalArgumentException</span><span class="p">(</span><span class="s">&#34;Value out of range&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">64</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">64</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">bits</span><span class="o">[</span><span class="n">index</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;=</span><span class="w"> </span><span class="o">~</span><span class="p">(</span><span class="n">1L</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">offset</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">contains</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">0</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">64</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">64</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">bits</span><span class="o">[</span><span class="n">index</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">1L</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">offset</span><span class="p">))</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getCount</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">word</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">bits</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">count</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">bitCount</span><span class="p">(</span><span class="n">word</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="位运算详解">
+<a class="header-anchor" href="#%e4%bd%8d%e8%bf%90%e7%ae%97%e8%af%a6%e8%a7%a3"></a>
+位运算详解
+</h3><pre class="mermaid">
+  graph TD
+    A["value = 100"] --> B["index = 100 / 64 = 1"]
+    A --> C["offset = 100 % 64 = 36"]
+    B --> D["bits[1] |= (1L << 36)"]
+    C --> D
+    D --> E["设置第36位为1"]
+</pre><p><strong>设置位</strong>：<code>bits[index] |= (1L &lt;&lt; offset)</code></p>
+<ul>
+<li>将 1 左移 offset 位，得到只有第 offset 位为 1 的数</li>
+<li>使用或运算，将该位设置为 1</li>
+</ul>
+<p><strong>清除位</strong>：<code>bits[index] &amp;= ~(1L &lt;&lt; offset)</code></p>
+<ul>
+<li>将 1 左移 offset 位，然后取反，得到只有第 offset 位为 0 的数</li>
+<li>使用与运算，将该位设置为 0</li>
+</ul>
+<p><strong>检查位</strong>：<code>(bits[index] &amp; (1L &lt;&lt; offset)) != 0</code></p>
+<ul>
+<li>使用与运算，检查该位是否为 1</li>
+</ul>
+<h2 id="高级操作">
+<a class="header-anchor" href="#%e9%ab%98%e7%ba%a7%e6%93%8d%e4%bd%9c"></a>
+高级操作
+</h2><h3 id="位图交集">
+<a class="header-anchor" href="#%e4%bd%8d%e5%9b%be%e4%ba%a4%e9%9b%86"></a>
+位图交集
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">BitMap</span><span class="w"> </span><span class="nf">intersect</span><span class="p">(</span><span class="n">BitMap</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">minSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">size</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">size</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">BitMap</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BitMap</span><span class="p">(</span><span class="n">minSize</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">minLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">min</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">bits</span><span class="p">.</span><span class="na">length</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">bits</span><span class="p">.</span><span class="na">length</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">minLength</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="p">.</span><span class="na">bits</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">bits</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">bits</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="位图并集">
+<a class="header-anchor" href="#%e4%bd%8d%e5%9b%be%e5%b9%b6%e9%9b%86"></a>
+位图并集
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">BitMap</span><span class="w"> </span><span class="nf">union</span><span class="p">(</span><span class="n">BitMap</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">maxSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">size</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">size</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">BitMap</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BitMap</span><span class="p">(</span><span class="n">maxSize</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">maxLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">bits</span><span class="p">.</span><span class="na">length</span><span class="p">,</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">bits</span><span class="p">.</span><span class="na">length</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">maxLength</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">thisVal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">bits</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">bits</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">otherVal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">bits</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">bits</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="p">.</span><span class="na">bits</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">thisVal</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">otherVal</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="位图差集">
+<a class="header-anchor" href="#%e4%bd%8d%e5%9b%be%e5%b7%ae%e9%9b%86"></a>
+位图差集
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">BitMap</span><span class="w"> </span><span class="nf">difference</span><span class="p">(</span><span class="n">BitMap</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">BitMap</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BitMap</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="na">size</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">bits</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">otherVal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">bits</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">other</span><span class="p">.</span><span class="na">bits</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="p">.</span><span class="na">bits</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">this</span><span class="p">.</span><span class="na">bits</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">~</span><span class="n">otherVal</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="快速统计">
+<a class="header-anchor" href="#%e5%bf%ab%e9%80%9f%e7%bb%9f%e8%ae%a1"></a>
+快速统计
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">countRange</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">end</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">startIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">64</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">startOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">64</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">endIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">64</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">endOffset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">64</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">startIndex</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">endIndex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">long</span><span class="w"> </span><span class="n">mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="n">1L</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">endOffset</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">startOffset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">))</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">startOffset</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">bitCount</span><span class="p">(</span><span class="n">bits</span><span class="o">[</span><span class="n">startIndex</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">mask</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">startMask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">1L</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">64</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">startOffset</span><span class="p">))</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">count</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">bitCount</span><span class="p">(</span><span class="n">bits</span><span class="o">[</span><span class="n">startIndex</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">startMask</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">startIndex</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">endIndex</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">count</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">bitCount</span><span class="p">(</span><span class="n">bits</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">endMask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">1L</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">endOffset</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">))</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">count</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">Long</span><span class="p">.</span><span class="na">bitCount</span><span class="p">(</span><span class="n">bits</span><span class="o">[</span><span class="n">endIndex</span><span class="o">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">endMask</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="应用场景">
+<a class="header-anchor" href="#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+应用场景
+</h2><h3 id="数据去重">
+<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e5%8e%bb%e9%87%8d"></a>
+数据去重
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="nf">deduplicate</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">nums</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nums</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">nums</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">nums</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">stream</span><span class="p">(</span><span class="n">nums</span><span class="p">).</span><span class="na">max</span><span class="p">().</span><span class="na">orElse</span><span class="p">(</span><span class="n">0</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">BitMap</span><span class="w"> </span><span class="n">bitMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BitMap</span><span class="p">(</span><span class="n">max</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">nums</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">bitMap</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">num</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">max</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bitMap</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">result</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">stream</span><span class="p">().</span><span class="na">mapToInt</span><span class="p">(</span><span class="n">Integer</span><span class="p">::</span><span class="n">intValue</span><span class="p">).</span><span class="na">toArray</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="快速排序">
+<a class="header-anchor" href="#%e5%bf%ab%e9%80%9f%e6%8e%92%e5%ba%8f"></a>
+快速排序
+</h3><p>位图可以实现 O(n) 时间复杂度的排序：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">nums</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nums</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">nums</span><span class="p">.</span><span class="na">length</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">nums</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">stream</span><span class="p">(</span><span class="n">nums</span><span class="p">).</span><span class="na">max</span><span class="p">().</span><span class="na">orElse</span><span class="p">(</span><span class="n">0</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">min</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Arrays</span><span class="p">.</span><span class="na">stream</span><span class="p">(</span><span class="n">nums</span><span class="p">).</span><span class="na">min</span><span class="p">().</span><span class="na">orElse</span><span class="p">(</span><span class="n">0</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">BitMap</span><span class="w"> </span><span class="n">bitMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BitMap</span><span class="p">(</span><span class="n">max</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">min</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">num</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">nums</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">bitMap</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">num</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">min</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">nums</span><span class="p">.</span><span class="na">length</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">max</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">min</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bitMap</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">result</span><span class="o">[</span><span class="n">index</span><span class="o">++]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">min</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="海量数据查找">
+<a class="header-anchor" href="#%e6%b5%b7%e9%87%8f%e6%95%b0%e6%8d%ae%e6%9f%a5%e6%89%be"></a>
+海量数据查找
+</h3><p>在搜索引擎、日志分析等场景中，需要快速判断某个 ID 是否存在：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LogAnalyzer</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">BitMap</span><span class="w"> </span><span class="n">activeUsers</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">LogAnalyzer</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">maxUserId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">activeUsers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BitMap</span><span class="p">(</span><span class="n">maxUserId</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">recordAccess</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">userId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">activeUsers</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">isActive</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">userId</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">activeUsers</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">getActiveUserCount</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">activeUsers</span><span class="p">.</span><span class="na">getCount</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="布隆过滤器基础">
+<a class="header-anchor" href="#%e5%b8%83%e9%9a%86%e8%bf%87%e6%bb%a4%e5%99%a8%e5%9f%ba%e7%a1%80"></a>
+布隆过滤器基础
+</h3><p>位图是布隆过滤器的核心组件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">BloomFilter</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">BitMap</span><span class="w"> </span><span class="n">bitMap</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">hashCount</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">BloomFilter</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">capacity</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">falsePositiveRate</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">capacity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">capacity</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">hashCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">ceil</span><span class="p">(</span><span class="n">Math</span><span class="p">.</span><span class="na">log</span><span class="p">(</span><span class="n">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">falsePositiveRate</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">log</span><span class="p">(</span><span class="n">2</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">bitSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">ceil</span><span class="p">(</span><span class="n">capacity</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">log</span><span class="p">(</span><span class="n">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">falsePositiveRate</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">log</span><span class="p">(</span><span class="n">2</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">log</span><span class="p">(</span><span class="n">2</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">bitMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BitMap</span><span class="p">(</span><span class="n">bitSize</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">hashCount</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hash</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">bitMap</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">hash</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">mightContain</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">hashCount</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hash</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">bitMap</span><span class="p">.</span><span class="na">contains</span><span class="p">(</span><span class="n">hash</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">hash</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">seed</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">key</span><span class="p">.</span><span class="na">toCharArray</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">hash</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">seed</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">c</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">abs</span><span class="p">(</span><span class="n">hash</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">bitMap</span><span class="p">.</span><span class="na">size</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="位图-vs-布隆过滤器">
+<a class="header-anchor" href="#%e4%bd%8d%e5%9b%be-vs-%e5%b8%83%e9%9a%86%e8%bf%87%e6%bb%a4%e5%99%a8"></a>
+位图 vs 布隆过滤器
+</h2><table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>位图</th>
+					<th>布隆过滤器</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>存储方式</strong></td>
+					<td>精确存储</td>
+					<td>概率存储</td>
+			</tr>
+			<tr>
+					<td><strong>误判率</strong></td>
+					<td>0%</td>
+					<td>有一定误判率</td>
+			</tr>
+			<tr>
+					<td><strong>删除操作</strong></td>
+					<td>支持</td>
+					<td>不支持（标准实现）</td>
+			</tr>
+			<tr>
+					<td><strong>空间效率</strong></td>
+					<td>高</td>
+					<td>更高</td>
+			</tr>
+			<tr>
+					<td><strong>适用场景</strong></td>
+					<td>精确查找、去重、排序</td>
+					<td>去重、缓存穿透防护</td>
+			</tr>
+	</tbody>
+</table>
+<pre class="mermaid">
+  graph TD
+    A["数据存储"] --> B["精确存储"]
+    A --> C["概率存储"]
+    B --> D["位图"]
+    C --> E["布隆过滤器"]
+    
+    subgraph "位图特点"
+        D1["无误差"]
+        D2["支持删除"]
+        D3["需要知道数据范围"]
+    end
+    
+    subgraph "布隆过滤器特点"
+        E1["有一定误差"]
+        E2["不支持删除"]
+        E3["不需要知道数据范围"]
+        E4["空间效率更高"]
+    end
+    
+    D --> D1
+    D --> D2
+    D --> D3
+    E --> E1
+    E --> E2
+    E --> E3
+    E --> E4
+</pre><h2 id="java-中的位图实现">
+<a class="header-anchor" href="#java-%e4%b8%ad%e7%9a%84%e4%bd%8d%e5%9b%be%e5%ae%9e%e7%8e%b0"></a>
+Java 中的位图实现
+</h2><h3 id="bitset">
+<a class="header-anchor" href="#bitset"></a>
+BitSet
+</h3><p>Java 标准库提供了 <code>BitSet</code> 类：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">BitSet</span><span class="w"> </span><span class="n">bitSet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BitSet</span><span class="p">(</span><span class="n">1000</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">bitSet</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">100</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">bitSet</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">200</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">bitSet</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">300</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">bitSet</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">100</span><span class="p">));</span><span class="w">  </span><span class="c1">// true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">bitSet</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">150</span><span class="p">));</span><span class="w">  </span><span class="c1">// false</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">bitSet</span><span class="p">.</span><span class="na">clear</span><span class="p">(</span><span class="n">200</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">bitSet</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">200</span><span class="p">));</span><span class="w">  </span><span class="c1">// false</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 位运算</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">BitSet</span><span class="w"> </span><span class="n">other</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BitSet</span><span class="p">(</span><span class="n">1000</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">other</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">200</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">other</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">300</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">bitSet</span><span class="p">.</span><span class="na">and</span><span class="p">(</span><span class="n">other</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">bitSet</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">300</span><span class="p">));</span><span class="w">  </span><span class="c1">// true</span><span class="w">
+</span></span></span></code></pre></div><h3 id="注意事项">
+<a class="header-anchor" href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9"></a>
+注意事项
+</h3><ol>
+<li><strong>数据范围</strong>：位图需要预先知道数据的最大范围</li>
+<li><strong>稀疏数据</strong>：对于稀疏数据，位图可能浪费空间</li>
+<li><strong>并发安全</strong>：<code>BitSet</code> 不是线程安全的，需要额外同步</li>
+</ol>
+<h2 id="实战题目">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e9%a2%98%e7%9b%ae"></a>
+实战题目
+</h2><h3 id="leetcode-相关题目">
+<a class="header-anchor" href="#leetcode-%e7%9b%b8%e5%85%b3%e9%a2%98%e7%9b%ae"></a>
+LeetCode 相关题目
+</h3><table>
+	<thead>
+			<tr>
+					<th>题目</th>
+					<th>难度</th>
+					<th>标签</th>
+					<th>链接</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>349. 两个数组的交集</td>
+					<td>简单</td>
+					<td>位图/哈希表</td>
+					<td><a href="https://leetcode.cn/problems/intersection-of-two-arrays/">https://leetcode.cn/problems/intersection-of-two-arrays/</a></td>
+			</tr>
+			<tr>
+					<td>350. 两个数组的交集 II</td>
+					<td>简单</td>
+					<td>位图/哈希表</td>
+					<td><a href="https://leetcode.cn/problems/intersection-of-two-arrays-ii/">https://leetcode.cn/problems/intersection-of-two-arrays-ii/</a></td>
+			</tr>
+			<tr>
+					<td>268. 丢失的数字</td>
+					<td>简单</td>
+					<td>位图/数学</td>
+					<td><a href="https://leetcode.cn/problems/missing-number/">https://leetcode.cn/problems/missing-number/</a></td>
+			</tr>
+			<tr>
+					<td>41. 缺失的第一个正数</td>
+					<td>困难</td>
+					<td>位图</td>
+					<td><a href="https://leetcode.cn/problems/first-missing-positive/">https://leetcode.cn/problems/first-missing-positive/</a></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="题解示例">
+<a class="header-anchor" href="#%e9%a2%98%e8%a7%a3%e7%a4%ba%e4%be%8b"></a>
+题解示例
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// LeetCode 41: 缺失的第一个正数</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">firstMissingPositive</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">nums</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nums</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">0</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">nums</span><span class="o">[</span><span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">temp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nums</span><span class="o">[</span><span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">nums</span><span class="o">[</span><span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">temp</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">nums</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>位图是一种极其高效的数据结构，在处理大规模数据时具有不可替代的优势。</p>
+<p>核心要点：</p>
+<ul>
+<li><strong>空间效率</strong>：用 bit 位表示状态，比普通数组节省 32 倍空间</li>
+<li><strong>操作高效</strong>：位运算速度快，O(1) 时间复杂度</li>
+<li><strong>适用场景</strong>：数据去重、排序、快速查找、布隆过滤器</li>
+</ul>
+<p>选择位图时需要注意：</p>
+<ol>
+<li>数据范围是否已知且可控</li>
+<li>数据分布是否密集（稀疏数据可能浪费空间）</li>
+<li>是否需要支持删除操作</li>
+</ol>
+<p>结合布隆过滤器，可以进一步扩展位图的应用场景，在空间和准确性之间取得平衡。</p>
+<hr>
+<p><strong>延伸阅读</strong>：</p>
+<ol>
+<li><em>算法导论</em> - 位图章节</li>
+<li>Java BitSet 文档 - <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/BitSet.html">https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/BitSet.html</a></li>
+<li>布隆过滤器原理 - <a href="https://en.wikipedia.org/wiki/Bloom_filter">https://en.wikipedia.org/wiki/Bloom_filter</a></li>
+</ol>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/algorithm/%E4%BD%8D%E5%9B%BEbitmap%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=%e4%bd%8d%e5%9b%be%20BitMap%20%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="位图 BitMap 详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/algorithm/%E4%BD%8D%E5%9B%BEbitmap%E8%AF%A6%E8%A7%A3/&amp;title=%e4%bd%8d%e5%9b%be%20BitMap%20%e8%af%a6%e8%a7%a3&amp;desc=%e4%bd%8d%e5%9b%be%e5%8e%9f%e7%90%86%e3%80%81%e5%ae%9e%e7%8e%b0%e3%80%81%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af%e5%8f%8a%e4%b8%8e%e5%b8%83%e9%9a%86%e8%bf%87%e6%bb%a4%e5%99%a8%e7%9a%84%e5%af%b9%e6%af%94&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="位图 BitMap 详解">
@@ -348,7 +901,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
+              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
               data-sizes="auto"
               alt="线段树SegmentTree 详解"
               class="lazyload"
@@ -360,7 +913,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">线段树SegmentTree 详解</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
+              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
               data-sizes="auto"
               alt="动态规划经典问题"
               class="lazyload"
@@ -392,10 +945,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -445,7 +998,53 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#位图原理">位图原理</a>
+      <ul>
+        <li><a href="#基本概念">基本概念</a></li>
+        <li><a href="#空间对比">空间对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#位图实现">位图实现</a>
+      <ul>
+        <li><a href="#核心操作">核心操作</a></li>
+        <li><a href="#位运算详解">位运算详解</a></li>
+      </ul>
+    </li>
+    <li><a href="#高级操作">高级操作</a>
+      <ul>
+        <li><a href="#位图交集">位图交集</a></li>
+        <li><a href="#位图并集">位图并集</a></li>
+        <li><a href="#位图差集">位图差集</a></li>
+        <li><a href="#快速统计">快速统计</a></li>
+      </ul>
+    </li>
+    <li><a href="#应用场景">应用场景</a>
+      <ul>
+        <li><a href="#数据去重">数据去重</a></li>
+        <li><a href="#快速排序">快速排序</a></li>
+        <li><a href="#海量数据查找">海量数据查找</a></li>
+        <li><a href="#布隆过滤器基础">布隆过滤器基础</a></li>
+      </ul>
+    </li>
+    <li><a href="#位图-vs-布隆过滤器">位图 vs 布隆过滤器</a></li>
+    <li><a href="#java-中的位图实现">Java 中的位图实现</a>
+      <ul>
+        <li><a href="#bitset">BitSet</a></li>
+        <li><a href="#注意事项">注意事项</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -576,6 +1175,105 @@
           description: "位图原理、实现、应用场景及与布隆过滤器的对比",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

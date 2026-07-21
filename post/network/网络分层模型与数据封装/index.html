@@ -190,7 +190,52 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#为什么需要分层">为什么需要分层</a></li>
+    <li><a href="#osi-七层模型">OSI 七层模型</a>
+      <ul>
+        <li><a href="#各层职责详解">各层职责详解</a></li>
+        <li><a href="#各层详解">各层详解</a></li>
+      </ul>
+    </li>
+    <li><a href="#tcpip-四层模型">TCP/IP 四层模型</a>
+      <ul>
+        <li><a href="#五层协议模型">五层协议模型</a></li>
+      </ul>
+    </li>
+    <li><a href="#osi-与-tcpip-的对比">OSI 与 TCP/IP 的对比</a></li>
+    <li><a href="#数据封装与解封装">数据封装与解封装</a>
+      <ul>
+        <li><a href="#封装过程">封装过程</a></li>
+        <li><a href="#各层数据单元pdu名称">各层数据单元（PDU）名称</a></li>
+        <li><a href="#解封装过程">解封装过程</a></li>
+        <li><a href="#完整通信示例">完整通信示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#各层协议总览">各层协议总览</a>
+      <ul>
+        <li><a href="#应用层协议">应用层协议</a></li>
+        <li><a href="#传输层协议">传输层协议</a></li>
+        <li><a href="#网络层协议">网络层协议</a></li>
+        <li><a href="#数据链路层协议">数据链路层协议</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战抓包分析">实战抓包分析</a></li>
+    <li><a href="#面试高频问答">面试高频问答</a>
+      <ul>
+        <li><a href="#q1osi-七层模型和-tcpip-四层模型有什么区别">Q1：OSI 七层模型和 TCP/IP 四层模型有什么区别？</a></li>
+        <li><a href="#q2为什么-tcpip-模型比-osi-更流行">Q2：为什么 TCP/IP 模型比 OSI 更流行？</a></li>
+        <li><a href="#q3什么是数据的封装和解封装">Q3：什么是数据的封装和解封装？</a></li>
+        <li><a href="#q4arp-协议工作在哪一层">Q4：ARP 协议工作在哪一层？</a></li>
+        <li><a href="#q5各层的数据单元分别叫什么">Q5：各层的数据单元分别叫什么？</a></li>
+        <li><a href="#q6路由器和交换机分别工作在哪一层">Q6：路由器和交换机分别工作在哪一层？</a></li>
+        <li><a href="#q7ping-命令使用的是什么协议">Q7：ping 命令使用的是什么协议？</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +316,639 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="为什么需要分层">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e5%88%86%e5%b1%82"></a>
+为什么需要分层
+</h2><p>计算机网络是一个极其复杂的系统，涉及信号传输、路由选择、错误恢复、数据加密等众多功能。如果将所有功能揉在一起，系统将变得难以理解、难以实现、难以维护。<strong>分层架构</strong>（Layered Architecture）通过将复杂问题分解为若干独立的层次，每层只负责特定功能，并为上层提供服务，从而实现了：</p>
+<ul>
+<li><strong>解耦</strong>：各层独立演进，只要接口不变，层内实现可以自由替换</li>
+<li><strong>复用</strong>：下层可以为多个上层提供服务（如 TCP 同时承载 HTTP 和 SMTP）</li>
+<li><strong>标准化</strong>：清晰的层次划分有利于制定国际标准</li>
+<li><strong>可测试性</strong>：每层可以独立测试和验证</li>
+</ul>
+<h2 id="osi-七层模型">
+<a class="header-anchor" href="#osi-%e4%b8%83%e5%b1%82%e6%a8%a1%e5%9e%8b"></a>
+OSI 七层模型
+</h2><p>OSI（Open Systems Interconnection）参考模型由 ISO（国际标准化组织）于 1984 年提出，将网络通信分为七个层次：</p>
+<pre class="mermaid">
+  graph TB
+    subgraph OSI 七层模型
+        L7["7. 应用层 Application<br/>HTTP, FTP, SMTP, DNS, SNMP"]
+        L6["6. 表示层 Presentation<br/>SSL/TLS, JPEG, ASCII, 加密压缩"]
+        L5["5. 会话层 Session<br/>NetBIOS, RPC, PPTP"]
+        L4["4. 传输层 Transport<br/>TCP, UDP, QUIC"]
+        L3["3. 网络层 Network<br/>IP, ICMP, OSPF, BGP"]
+        L2["2. 数据链路层 Data Link<br/>Ethernet, PPP, ARP, MAC"]
+        L1["1. 物理层 Physical<br/>双绞线, 光纤, 无线电波"]
+    end
+    L7 --> L6 --> L5 --> L4 --> L3 --> L2 --> L1
+</pre><h3 id="各层职责详解">
+<a class="header-anchor" href="#%e5%90%84%e5%b1%82%e8%81%8c%e8%b4%a3%e8%af%a6%e8%a7%a3"></a>
+各层职责详解
+</h3><table>
+	<thead>
+			<tr>
+					<th>层次</th>
+					<th>名称</th>
+					<th>核心职责</th>
+					<th>数据单元</th>
+					<th>典型设备</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>7</td>
+					<td>应用层</td>
+					<td>为用户应用程序提供网络服务接口</td>
+					<td>报文（Message）</td>
+					<td>应用程序</td>
+			</tr>
+			<tr>
+					<td>6</td>
+					<td>表示层</td>
+					<td>数据格式转换、加密解密、压缩解压</td>
+					<td>报文</td>
+					<td>—</td>
+			</tr>
+			<tr>
+					<td>5</td>
+					<td>会话层</td>
+					<td>建立、管理、终止会话连接</td>
+					<td>报文</td>
+					<td>—</td>
+			</tr>
+			<tr>
+					<td>4</td>
+					<td>传输层</td>
+					<td>端到端的可靠/不可靠数据传输</td>
+					<td>报文段（Segment）/数据报（Datagram）</td>
+					<td>防火墙</td>
+			</tr>
+			<tr>
+					<td>3</td>
+					<td>网络层</td>
+					<td>路由选择、逻辑寻址</td>
+					<td>分组（Packet）</td>
+					<td>路由器（L3 交换机）</td>
+			</tr>
+			<tr>
+					<td>2</td>
+					<td>数据链路层</td>
+					<td>物理寻址、帧封装、差错检测</td>
+					<td>帧（Frame）</td>
+					<td>交换机、网桥</td>
+			</tr>
+			<tr>
+					<td>1</td>
+					<td>物理层</td>
+					<td>比特流传输、物理介质规范</td>
+					<td>比特（Bit）</td>
+					<td>集线器、中继器、线缆</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="各层详解">
+<a class="header-anchor" href="#%e5%90%84%e5%b1%82%e8%af%a6%e8%a7%a3"></a>
+各层详解
+</h3><h4 id="物理层">
+<a class="header-anchor" href="#%e7%89%a9%e7%90%86%e5%b1%82"></a>
+物理层
+</h4><p>物理层关注的是<strong>如何在传输介质上传送原始比特流</strong>。它定义了：</p>
+<ul>
+<li><strong>机械特性</strong>：接口形状、引脚数目、排列方式</li>
+<li><strong>电气特性</strong>：电压范围、传输速率、距离限制</li>
+<li><strong>功能特性</strong>：各引脚的功能定义</li>
+<li><strong>过程特性</strong>：事件出现的顺序</li>
+</ul>
+<p>常见物理层标准：RJ-45、IEEE 802.3（以太网物理层）、IEEE 802.11（Wi-Fi 物理层）、光纤通信标准。</p>
+<h4 id="数据链路层">
+<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e9%93%be%e8%b7%af%e5%b1%82"></a>
+数据链路层
+</h4><p>数据链路层将物理层的原始比特流组装成<strong>帧</strong>（Frame），并提供节点到节点（Node-to-Node）的可靠传输：</p>
+<ul>
+<li><strong>成帧</strong>：将比特流划分为帧，添加首部和尾部</li>
+<li><strong>物理寻址</strong>：使用 MAC 地址标识网络接口</li>
+<li><strong>流量控制</strong>：防止快发送方淹没慢接收方</li>
+<li><strong>差错控制</strong>：通过 CRC 等校验机制检测错误</li>
+<li><strong>介质访问控制</strong>：CSMA/CD（以太网）、CSMA/CA（Wi-Fi）</li>
+</ul>
+<h4 id="网络层">
+<a class="header-anchor" href="#%e7%bd%91%e7%bb%9c%e5%b1%82"></a>
+网络层
+</h4><p>网络层负责<strong>源到目的地的数据包交付</strong>，可能跨越多个网络：</p>
+<ul>
+<li><strong>逻辑寻址</strong>：IP 地址的分配与管理</li>
+<li><strong>路由选择</strong>：确定数据包从源到目的的路径</li>
+<li><strong>分组转发</strong>：将数据包从入接口转发到出接口</li>
+<li><strong>拥塞控制</strong>：网络级别的拥塞管理</li>
+</ul>
+<h4 id="传输层">
+<a class="header-anchor" href="#%e4%bc%a0%e8%be%93%e5%b1%82"></a>
+传输层
+</h4><p>传输层提供<strong>进程到进程</strong>（Process-to-Process）的数据交付：</p>
+<ul>
+<li><strong>端口寻址</strong>：通过端口号区分不同进程</li>
+<li><strong>连接管理</strong>：TCP 的建立与释放</li>
+<li><strong>流量控制与拥塞控制</strong>：TCP 的滑动窗口机制</li>
+<li><strong>差错恢复</strong>：TCP 的重传机制</li>
+</ul>
+<h4 id="会话层表示层应用层">
+<a class="header-anchor" href="#%e4%bc%9a%e8%af%9d%e5%b1%82%e8%a1%a8%e7%a4%ba%e5%b1%82%e5%ba%94%e7%94%a8%e5%b1%82"></a>
+会话层、表示层、应用层
+</h4><p>在 TCP/IP 模型中，这三层通常合并为一层（应用层），但在 OSI 模型中各有分工：</p>
+<ul>
+<li><strong>会话层</strong>：管理通信双方的会话（同步点、对话控制）</li>
+<li><strong>表示层</strong>：统一数据表示（字节序转换、加密解密、压缩）</li>
+<li><strong>应用层</strong>：直接为用户应用提供网络服务</li>
+</ul>
+<h2 id="tcpip-四层模型">
+<a class="header-anchor" href="#tcpip-%e5%9b%9b%e5%b1%82%e6%a8%a1%e5%9e%8b"></a>
+TCP/IP 四层模型
+</h2><p>TCP/IP 模型是互联网实际使用的协议栈模型，由 DARPA 在 20 世纪 70 年代开发：</p>
+<pre class="mermaid">
+  graph TB
+    subgraph "TCP/IP 四层模型"
+        A4["4. 应用层<br/>HTTP, DNS, SMTP, FTP, SSH"]
+        A3["3. 传输层<br/>TCP, UDP"]
+        A2["2. 网际层 / 网络层<br/>IP, ICMP, ARP"]
+        A1["1. 网络接口层 / 链路层<br/>Ethernet, Wi-Fi, PPP"]
+    end
+    A4 --> A3 --> A2 --> A1
+</pre><h3 id="五层协议模型">
+<a class="header-anchor" href="#%e4%ba%94%e5%b1%82%e5%8d%8f%e8%ae%ae%e6%a8%a1%e5%9e%8b"></a>
+五层协议模型
+</h3><p>在教学和工程实践中，常使用一种折中的<strong>五层模型</strong>，综合了 OSI 和 TCP/IP 的优点：</p>
+<table>
+	<thead>
+			<tr>
+					<th>OSI 七层</th>
+					<th>TCP/IP 四层</th>
+					<th>五层模型</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>应用层</td>
+					<td>应用层</td>
+					<td>应用层</td>
+			</tr>
+			<tr>
+					<td>表示层</td>
+					<td>↑</td>
+					<td>↑</td>
+			</tr>
+			<tr>
+					<td>会话层</td>
+					<td>↑</td>
+					<td>↑</td>
+			</tr>
+			<tr>
+					<td>传输层</td>
+					<td>传输层</td>
+					<td>传输层</td>
+			</tr>
+			<tr>
+					<td>网络层</td>
+					<td>网际层</td>
+					<td>网络层</td>
+			</tr>
+			<tr>
+					<td>数据链路层</td>
+					<td>网络接口层</td>
+					<td>数据链路层</td>
+			</tr>
+			<tr>
+					<td>物理层</td>
+					<td>↑</td>
+					<td>物理层</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="osi-与-tcpip-的对比">
+<a class="header-anchor" href="#osi-%e4%b8%8e-tcpip-%e7%9a%84%e5%af%b9%e6%af%94"></a>
+OSI 与 TCP/IP 的对比
+</h2><table>
+	<thead>
+			<tr>
+					<th>对比维度</th>
+					<th>OSI 模型</th>
+					<th>TCP/IP 模型</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>层数</td>
+					<td>7 层</td>
+					<td>4 层</td>
+			</tr>
+			<tr>
+					<td>提出者</td>
+					<td>ISO（标准化组织）</td>
+					<td>DARPA（军方研究）</td>
+			</tr>
+			<tr>
+					<td>先有模型还是协议</td>
+					<td>先有模型，后有协议</td>
+					<td>先有协议，后有模型</td>
+			</tr>
+			<tr>
+					<td>会话/表示层</td>
+					<td>独立存在</td>
+					<td>合并到应用层</td>
+			</tr>
+			<tr>
+					<td>链路层</td>
+					<td>分为数据链路层和物理层</td>
+					<td>合并为网络接口层</td>
+			</tr>
+			<tr>
+					<td>实际应用</td>
+					<td>主要作为理论参考</td>
+					<td>互联网的实际标准</td>
+			</tr>
+			<tr>
+					<td>网络层</td>
+					<td>面向连接和无连接都支持</td>
+					<td>只支持无连接（IP）</td>
+			</tr>
+			<tr>
+					<td>传输层</td>
+					<td>面向连接和无连接都支持</td>
+					<td>TCP（面向连接）+ UDP（无连接）</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="数据封装与解封装">
+<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e5%b0%81%e8%a3%85%e4%b8%8e%e8%a7%a3%e5%b0%81%e8%a3%85"></a>
+数据封装与解封装
+</h2><p>数据在网络中的传输过程，就是一层层<strong>封装</strong>（Encapsulation）和<strong>解封装</strong>（Decapsulation）的过程。</p>
+<h3 id="封装过程">
+<a class="header-anchor" href="#%e5%b0%81%e8%a3%85%e8%bf%87%e7%a8%8b"></a>
+封装过程
+</h3><p>发送方从上到下逐层添加首部（和尾部），每层添加的信息称为该层的协议数据单元（PDU）：</p>
+<pre class="mermaid">
+  graph BT
+    subgraph "发送端封装过程"
+        D["应用数据<br/>Data"] -->|"添加 HTTP 头"| S["TCP 报文段<br/>Segment = TCP头 + Data"]
+        S -->|"添加 TCP 头"| P["IP 数据报<br/>Packet = IP头 + Segment"]
+        P -->|"添加 IP 头"| F["以太网帧<br/>Frame = 帧头 + Packet + 帧尾"]
+        F -->|"添加帧头帧尾"| B["比特流<br/>Bits = 01101001..."]
+    end
+</pre><p>每一层添加的头部包含<strong>对端同层需要的信息</strong>（对等层通信）：</p>
+<table>
+	<thead>
+			<tr>
+					<th>层次</th>
+					<th>添加的头部</th>
+					<th>关键字段</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>传输层（TCP）</td>
+					<td>TCP 头部</td>
+					<td>源端口、目的端口、序号、确认号、窗口大小</td>
+			</tr>
+			<tr>
+					<td>网络层（IP）</td>
+					<td>IP 头部</td>
+					<td>源 IP、目的 IP、TTL、协议号</td>
+			</tr>
+			<tr>
+					<td>数据链路层</td>
+					<td>帧头 + 帧尾</td>
+					<td>源 MAC、目的 MAC、类型字段、FCS 校验</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="各层数据单元pdu名称">
+<a class="header-anchor" href="#%e5%90%84%e5%b1%82%e6%95%b0%e6%8d%ae%e5%8d%95%e5%85%83pdu%e5%90%8d%e7%a7%b0"></a>
+各层数据单元（PDU）名称
+</h3><table>
+	<thead>
+			<tr>
+					<th>层次</th>
+					<th>PDU 名称</th>
+					<th>英文</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>应用层</td>
+					<td>数据 / 报文</td>
+					<td>Data / Message</td>
+			</tr>
+			<tr>
+					<td>传输层</td>
+					<td>报文段 / 数据报</td>
+					<td>Segment（TCP）/ Datagram（UDP）</td>
+			</tr>
+			<tr>
+					<td>网络层</td>
+					<td>分组 / 数据报</td>
+					<td>Packet / Datagram</td>
+			</tr>
+			<tr>
+					<td>数据链路层</td>
+					<td>帧</td>
+					<td>Frame</td>
+			</tr>
+			<tr>
+					<td>物理层</td>
+					<td>比特</td>
+					<td>Bit</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="解封装过程">
+<a class="header-anchor" href="#%e8%a7%a3%e5%b0%81%e8%a3%85%e8%bf%87%e7%a8%8b"></a>
+解封装过程
+</h3><p>接收方从下到上逐层去除头部，这个过程是封装的逆过程：</p>
+<pre class="mermaid">
+  graph TB
+    subgraph "接收端解封装过程"
+        B2["接收比特流 Bits"] -->|"物理层"| F2["提取帧 Frame"]
+        F2 -->|"去除帧头帧尾, FCS 校验"| P2["提取 IP 数据报 Packet"]
+        P2 -->|"去除 IP 头"| S2["提取 TCP 报文段 Segment"]
+        S2 -->|"去除 TCP 头"| D2["还原应用数据 Data"]
+    end
+</pre><h3 id="完整通信示例">
+<a class="header-anchor" href="#%e5%ae%8c%e6%95%b4%e9%80%9a%e4%bf%a1%e7%a4%ba%e4%be%8b"></a>
+完整通信示例
+</h3><p>当用户通过浏览器访问 <code>https://www.example.com</code> 时，数据经历如下旅程：</p>
+<ol>
+<li><strong>应用层</strong>：浏览器构造 HTTP 请求报文 <code>GET / HTTP/1.1\r\nHost: www.example.com\r\n...</code></li>
+<li><strong>传输层</strong>：TCP 将数据分段，添加 TCP 头部（源端口 54321、目的端口 443）</li>
+<li><strong>网络层</strong>：IP 添加头部（源 IP 192.168.1.100、目的 IP 93.184.216.34）</li>
+<li><strong>数据链路层</strong>：以太网添加帧头（源 MAC、目的 MAC = 网关 MAC）和帧尾（FCS）</li>
+<li><strong>物理层</strong>：网卡将帧转换为电信号通过网线发送</li>
+</ol>
+<p>每经过一台路由器，网络层和数据链路层的头部会被更新（IP 的 TTL 减 1，MAC 地址更换为下一跳）：</p>
+<pre class="mermaid">
+  graph LR
+    PC["PC<br/>192.168.1.100"] -->|"帧: [PC_MAC→GW_MAC]"| R1["路由器 R1"]
+    R1 -->|"帧: [R1_MAC→R2_MAC]<br/>IP TTL-1"| R2["路由器 R2"]
+    R2 -->|"帧: [R2_MAC→SRV_MAC]<br/>IP TTL-2"| SRV["Server<br/>93.184.216.34"]
+</pre><h2 id="各层协议总览">
+<a class="header-anchor" href="#%e5%90%84%e5%b1%82%e5%8d%8f%e8%ae%ae%e6%80%bb%e8%a7%88"></a>
+各层协议总览
+</h2><h3 id="应用层协议">
+<a class="header-anchor" href="#%e5%ba%94%e7%94%a8%e5%b1%82%e5%8d%8f%e8%ae%ae"></a>
+应用层协议
+</h3><table>
+	<thead>
+			<tr>
+					<th>协议</th>
+					<th>全称</th>
+					<th>端口</th>
+					<th>传输层</th>
+					<th>用途</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>HTTP</td>
+					<td>HyperText Transfer Protocol</td>
+					<td>80</td>
+					<td>TCP</td>
+					<td>网页传输</td>
+			</tr>
+			<tr>
+					<td>HTTPS</td>
+					<td>HTTP Secure</td>
+					<td>443</td>
+					<td>TCP</td>
+					<td>加密网页传输</td>
+			</tr>
+			<tr>
+					<td>DNS</td>
+					<td>Domain Name System</td>
+					<td>53</td>
+					<td>UDP/TCP</td>
+					<td>域名解析</td>
+			</tr>
+			<tr>
+					<td>SMTP</td>
+					<td>Simple Mail Transfer Protocol</td>
+					<td>25/587</td>
+					<td>TCP</td>
+					<td>发送邮件</td>
+			</tr>
+			<tr>
+					<td>POP3</td>
+					<td>Post Office Protocol v3</td>
+					<td>110</td>
+					<td>TCP</td>
+					<td>接收邮件</td>
+			</tr>
+			<tr>
+					<td>IMAP</td>
+					<td>Internet Message Access Protocol</td>
+					<td>143/993</td>
+					<td>TCP</td>
+					<td>邮件访问</td>
+			</tr>
+			<tr>
+					<td>FTP</td>
+					<td>File Transfer Protocol</td>
+					<td>20/21</td>
+					<td>TCP</td>
+					<td>文件传输</td>
+			</tr>
+			<tr>
+					<td>SSH</td>
+					<td>Secure Shell</td>
+					<td>22</td>
+					<td>TCP</td>
+					<td>安全远程登录</td>
+			</tr>
+			<tr>
+					<td>Telnet</td>
+					<td>Telnet</td>
+					<td>23</td>
+					<td>TCP</td>
+					<td>远程登录（明文）</td>
+			</tr>
+			<tr>
+					<td>DHCP</td>
+					<td>Dynamic Host Configuration Protocol</td>
+					<td>67/68</td>
+					<td>UDP</td>
+					<td>动态 IP 分配</td>
+			</tr>
+			<tr>
+					<td>SNMP</td>
+					<td>Simple Network Management Protocol</td>
+					<td>161/162</td>
+					<td>UDP</td>
+					<td>网络管理</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="传输层协议">
+<a class="header-anchor" href="#%e4%bc%a0%e8%be%93%e5%b1%82%e5%8d%8f%e8%ae%ae"></a>
+传输层协议
+</h3><table>
+	<thead>
+			<tr>
+					<th>协议</th>
+					<th>特性</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>TCP</td>
+					<td>面向连接、可靠传输、有序、流量/拥塞控制</td>
+					<td>网页、邮件、文件传输</td>
+			</tr>
+			<tr>
+					<td>UDP</td>
+					<td>无连接、不可靠、无序、轻量</td>
+					<td>DNS、视频流、游戏、VoIP</td>
+			</tr>
+			<tr>
+					<td>QUIC</td>
+					<td>基于 UDP、多路复用、0-RTT</td>
+					<td>HTTP/3、现代实时应用</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="网络层协议">
+<a class="header-anchor" href="#%e7%bd%91%e7%bb%9c%e5%b1%82%e5%8d%8f%e8%ae%ae"></a>
+网络层协议
+</h3><table>
+	<thead>
+			<tr>
+					<th>协议</th>
+					<th>用途</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>IPv4 / IPv6</td>
+					<td>互联网寻址与路由</td>
+			</tr>
+			<tr>
+					<td>ICMP</td>
+					<td>网络诊断（ping、traceroute）</td>
+			</tr>
+			<tr>
+					<td>ARP</td>
+					<td>IP 地址到 MAC 地址的解析</td>
+			</tr>
+			<tr>
+					<td>OSPF</td>
+					<td>内部网关协议（链路状态路由）</td>
+			</tr>
+			<tr>
+					<td>BGP</td>
+					<td>外部网关协议（自治系统间路由）</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="数据链路层协议">
+<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e9%93%be%e8%b7%af%e5%b1%82%e5%8d%8f%e8%ae%ae"></a>
+数据链路层协议
+</h3><table>
+	<thead>
+			<tr>
+					<th>协议</th>
+					<th>用途</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Ethernet（IEEE 802.3）</td>
+					<td>有线局域网</td>
+			</tr>
+			<tr>
+					<td>Wi-Fi（IEEE 802.11）</td>
+					<td>无线局域网</td>
+			</tr>
+			<tr>
+					<td>PPP</td>
+					<td>点对点链路</td>
+			</tr>
+			<tr>
+					<td>VLAN（IEEE 802.1Q）</td>
+					<td>虚拟局域网</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="实战抓包分析">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%8a%93%e5%8c%85%e5%88%86%e6%9e%90"></a>
+实战抓包分析
+</h2><p>使用 Wireshark 抓取一次 HTTP 请求，可以清晰地看到分层结构：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Frame 1: 74 bytes on wire (592 bits), 74 bytes captured
+</span></span><span class="line"><span class="cl">    Interface: eth0
+</span></span><span class="line"><span class="cl">Ethernet II: Src: 00:1a:2b:3c:4d:5e, Dst: 00:50:56:c0:00:08
+</span></span><span class="line"><span class="cl">    Destination: 00:50:56:c0:00:08
+</span></span><span class="line"><span class="cl">    Source: 00:1a:2b:3c:4d:5e
+</span></span><span class="line"><span class="cl">    Type: IPv4 (0x0800)
+</span></span><span class="line"><span class="cl">Internet Protocol Version 4: Src: 192.168.1.100, Dst: 93.184.216.34
+</span></span><span class="line"><span class="cl">    Version: 4
+</span></span><span class="line"><span class="cl">    Header Length: 20 bytes
+</span></span><span class="line"><span class="cl">    Time to Live: 64
+</span></span><span class="line"><span class="cl">    Protocol: TCP (6)
+</span></span><span class="line"><span class="cl">    Source: 192.168.1.100
+</span></span><span class="line"><span class="cl">    Destination: 93.184.216.34
+</span></span><span class="line"><span class="cl">Transmission Control Protocol: Src Port: 54321, Dst Port: 443
+</span></span><span class="line"><span class="cl">    Source Port: 54321
+</span></span><span class="line"><span class="cl">    Destination Port: 443
+</span></span><span class="line"><span class="cl">    Sequence Number: 0
+</span></span><span class="line"><span class="cl">    Flags: 0x002 (SYN)
+</span></span><span class="line"><span class="cl">    Window: 64240
+</span></span></code></pre></div><p>从抓包结果可以看出，Wireshark 的协议树完美对应了 TCP/IP 模型的分层结构：以太网帧 → IP 数据报 → TCP 报文段。</p>
+<h2 id="面试高频问答">
+<a class="header-anchor" href="#%e9%9d%a2%e8%af%95%e9%ab%98%e9%a2%91%e9%97%ae%e7%ad%94"></a>
+面试高频问答
+</h2><h3 id="q1osi-七层模型和-tcpip-四层模型有什么区别">
+<a class="header-anchor" href="#q1osi-%e4%b8%83%e5%b1%82%e6%a8%a1%e5%9e%8b%e5%92%8c-tcpip-%e5%9b%9b%e5%b1%82%e6%a8%a1%e5%9e%8b%e6%9c%89%e4%bb%80%e4%b9%88%e5%8c%ba%e5%88%ab"></a>
+Q1：OSI 七层模型和 TCP/IP 四层模型有什么区别？
+</h3><p><strong>答</strong>：主要区别有三点：</p>
+<ol>
+<li><strong>层数不同</strong>：OSI 有 7 层，TCP/IP 有 4 层</li>
+<li><strong>模型与协议的关系</strong>：OSI 是先有模型后制定协议（偏向理论），TCP/IP 是先有协议后总结模型（偏向实践）</li>
+<li><strong>层次划分</strong>：OSI 将会话、表示、应用分开；TCP/IP 合并为应用层。OSI 将物理层和数据链路层分开；TCP/IP 合并为网络接口层</li>
+</ol>
+<h3 id="q2为什么-tcpip-模型比-osi-更流行">
+<a class="header-anchor" href="#q2%e4%b8%ba%e4%bb%80%e4%b9%88-tcpip-%e6%a8%a1%e5%9e%8b%e6%af%94-osi-%e6%9b%b4%e6%b5%81%e8%a1%8c"></a>
+Q2：为什么 TCP/IP 模型比 OSI 更流行？
+</h3><p><strong>答</strong>：TCP/IP 模型伴随着互联网的发展而成熟，协议先于模型出现，经过大量工程验证。而 OSI 模型过于理想化，标准制定周期长，协议实现复杂。互联网的先发优势使 TCP/IP 成为事实标准。</p>
+<h3 id="q3什么是数据的封装和解封装">
+<a class="header-anchor" href="#q3%e4%bb%80%e4%b9%88%e6%98%af%e6%95%b0%e6%8d%ae%e7%9a%84%e5%b0%81%e8%a3%85%e5%92%8c%e8%a7%a3%e5%b0%81%e8%a3%85"></a>
+Q3：什么是数据的封装和解封装？
+</h3><p><strong>答</strong>：<strong>封装</strong>是发送方从应用层到物理层，每经过一层就添加该层首部（链路层还有尾部）的过程。<strong>解封装</strong>是接收方从物理层到应用层，逐层去除首部的逆过程。封装使得各层协议可以独立工作，实现&quot;对等层通信&quot;的抽象。</p>
+<h3 id="q4arp-协议工作在哪一层">
+<a class="header-anchor" href="#q4arp-%e5%8d%8f%e8%ae%ae%e5%b7%a5%e4%bd%9c%e5%9c%a8%e5%93%aa%e4%b8%80%e5%b1%82"></a>
+Q4：ARP 协议工作在哪一层？
+</h3><p><strong>答</strong>：ARP（地址解析协议）是一个有争议的话题。从功能上看，它完成 IP 地址到 MAC 地址的转换，是网络层和数据链路层之间的桥梁。一般将其归类为网络层（或网络层与数据链路层之间），因为它操作的是 IP 地址和 MAC 地址。在 TCP/IP 模型中，ARP 属于网际层。</p>
+<h3 id="q5各层的数据单元分别叫什么">
+<a class="header-anchor" href="#q5%e5%90%84%e5%b1%82%e7%9a%84%e6%95%b0%e6%8d%ae%e5%8d%95%e5%85%83%e5%88%86%e5%88%ab%e5%8f%ab%e4%bb%80%e4%b9%88"></a>
+Q5：各层的数据单元分别叫什么？
+</h3><p><strong>答</strong>：应用层——报文（Message）；传输层——报文段（Segment，TCP）/ 数据报（Datagram，UDP）；网络层——分组（Packet）/ 数据报；数据链路层——帧（Frame）；物理层——比特（Bit）。</p>
+<h3 id="q6路由器和交换机分别工作在哪一层">
+<a class="header-anchor" href="#q6%e8%b7%af%e7%94%b1%e5%99%a8%e5%92%8c%e4%ba%a4%e6%8d%a2%e6%9c%ba%e5%88%86%e5%88%ab%e5%b7%a5%e4%bd%9c%e5%9c%a8%e5%93%aa%e4%b8%80%e5%b1%82"></a>
+Q6：路由器和交换机分别工作在哪一层？
+</h3><p><strong>答</strong>：传统路由器工作在网络层（第三层），根据 IP 地址转发数据包，连接不同网络。传统交换机工作在数据链路层（第二层），根据 MAC 地址转发帧，连接同一网络内的设备。现代三层交换机兼具二层交换和三层路由功能。</p>
+<h3 id="q7ping-命令使用的是什么协议">
+<a class="header-anchor" href="#q7ping-%e5%91%bd%e4%bb%a4%e4%bd%bf%e7%94%a8%e7%9a%84%e6%98%af%e4%bb%80%e4%b9%88%e5%8d%8f%e8%ae%ae"></a>
+Q7：ping 命令使用的是什么协议？
+</h3><p><strong>答</strong>：ping 使用 ICMP（Internet Control Message Protocol）协议，属于网络层。ICMP 封装在 IP 数据报中传输。ping 发送 ICMP Echo Request，目标返回 ICMP Echo Reply，通过往返时间判断连通性和延迟。</p>
+<h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>网络分层模型是理解整个计算机网络体系的基石。OSI 七层模型提供了完整的理论框架，TCP/IP 四层模型则是互联网的实际标准。数据的封装与解封装过程揭示了网络通信的本质——每一层独立工作、通过头部信息与对端对等层&quot;对话&quot;。</p>
+<p>掌握了分层模型，就拥有了分析网络问题的通用框架。无论是排查 HTTP 请求失败，还是优化 TCP 性能，都可以从分层模型入手，逐层分析定位问题。</p>
+<hr>
+<p><strong>延伸阅读</strong>：</p>
+<ol>
+<li>Kurose J F, Ross K W. <em>Computer Networking: A Top-Down Approach</em>. 8th Edition.</li>
+<li>Tanenbaum A S, Wetherall D J. <em>Computer Networks</em>. 6th Edition.</li>
+<li>RFC 1122 - Requirements for Internet Hosts - Communication Layers.</li>
+</ol>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/network/%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%B0%81%E8%A3%85/&amp;appkey=&amp;title=%e7%bd%91%e7%bb%9c%e5%88%86%e5%b1%82%e6%a8%a1%e5%9e%8b%e4%b8%8e%e6%95%b0%e6%8d%ae%e5%b0%81%e8%a3%85&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="网络分层模型与数据封装">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/network/%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%B0%81%E8%A3%85/&amp;title=%e7%bd%91%e7%bb%9c%e5%88%86%e5%b1%82%e6%a8%a1%e5%9e%8b%e4%b8%8e%e6%95%b0%e6%8d%ae%e5%b0%81%e8%a3%85&amp;desc=OSI%20%e4%b8%83%e5%b1%82%20vs%20TCP/IP%20%e5%9b%9b%e5%b1%82%e6%a8%a1%20%e5%9e%8b%e3%80%81%e6%95%b0%e6%8d%ae%e5%b0%81%e8%a3%85%e4%b8%8e%e8%a7%a3%e5%b0%81%e8%a3%85%e8%bf%87%e7%a8%8b%e3%80%81%e5%90%84%e5%b1%82%e5%8d%8f%e8%ae%ae%e6%80%bb%e8%a7%88&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="网络分层模型与数据封装">
@@ -341,7 +1018,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
+              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
               data-sizes="auto"
               alt="HTTP 协议详解?HTTPS 原理"
               class="lazyload"
@@ -373,10 +1050,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -426,7 +1103,52 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#为什么需要分层">为什么需要分层</a></li>
+    <li><a href="#osi-七层模型">OSI 七层模型</a>
+      <ul>
+        <li><a href="#各层职责详解">各层职责详解</a></li>
+        <li><a href="#各层详解">各层详解</a></li>
+      </ul>
+    </li>
+    <li><a href="#tcpip-四层模型">TCP/IP 四层模型</a>
+      <ul>
+        <li><a href="#五层协议模型">五层协议模型</a></li>
+      </ul>
+    </li>
+    <li><a href="#osi-与-tcpip-的对比">OSI 与 TCP/IP 的对比</a></li>
+    <li><a href="#数据封装与解封装">数据封装与解封装</a>
+      <ul>
+        <li><a href="#封装过程">封装过程</a></li>
+        <li><a href="#各层数据单元pdu名称">各层数据单元（PDU）名称</a></li>
+        <li><a href="#解封装过程">解封装过程</a></li>
+        <li><a href="#完整通信示例">完整通信示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#各层协议总览">各层协议总览</a>
+      <ul>
+        <li><a href="#应用层协议">应用层协议</a></li>
+        <li><a href="#传输层协议">传输层协议</a></li>
+        <li><a href="#网络层协议">网络层协议</a></li>
+        <li><a href="#数据链路层协议">数据链路层协议</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战抓包分析">实战抓包分析</a></li>
+    <li><a href="#面试高频问答">面试高频问答</a>
+      <ul>
+        <li><a href="#q1osi-七层模型和-tcpip-四层模型有什么区别">Q1：OSI 七层模型和 TCP/IP 四层模型有什么区别？</a></li>
+        <li><a href="#q2为什么-tcpip-模型比-osi-更流行">Q2：为什么 TCP/IP 模型比 OSI 更流行？</a></li>
+        <li><a href="#q3什么是数据的封装和解封装">Q3：什么是数据的封装和解封装？</a></li>
+        <li><a href="#q4arp-协议工作在哪一层">Q4：ARP 协议工作在哪一层？</a></li>
+        <li><a href="#q5各层的数据单元分别叫什么">Q5：各层的数据单元分别叫什么？</a></li>
+        <li><a href="#q6路由器和交换机分别工作在哪一层">Q6：路由器和交换机分别工作在哪一层？</a></li>
+        <li><a href="#q7ping-命令使用的是什么协议">Q7：ping 命令使用的是什么协议？</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -557,6 +1279,105 @@
           description: "OSI 七层 vs TCP\/IP 四层模 型、数据封装与解封装过程、各层协议总览",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

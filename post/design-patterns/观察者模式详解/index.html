@@ -190,7 +190,47 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+        <li><a href="#时序图">时序图</a></li>
+      </ul>
+    </li>
+    <li><a href="#手写观察者模式">手写观察者模式</a>
+      <ul>
+        <li><a href="#基础实现">基础实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#java-内置观察者模式已废弃">Java 内置观察者模式（已废弃）</a></li>
+    <li><a href="#spring-事件机制推荐">Spring 事件机制（推荐）</a>
+      <ul>
+        <li><a href="#核心组件">核心组件</a></li>
+        <li><a href="#完整示例订单事件驱动">完整示例：订单事件驱动</a></li>
+        <li><a href="#异步事件处理">异步事件处理</a></li>
+        <li><a href="#条件监听">条件监听</a></li>
+      </ul>
+    </li>
+    <li><a href="#push-模式-vs-pull-模式">Push 模式 vs Pull 模式</a></li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#guava-eventbus">Guava EventBus</a></li>
+        <li><a href="#spring-applicationlistener-接口方式">Spring ApplicationListener 接口方式</a></li>
+        <li><a href="#redis-的-pubsub">Redis 的 Pub/Sub</a></li>
+      </ul>
+    </li>
+    <li><a href="#观察者模式-vs-发布-订阅模式">观察者模式 vs 发布-订阅模式</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +311,434 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>观察者模式（Observer Pattern）定义了对象之间的一对多依赖关系，当一个对象的状态发生变化时，所有依赖于它的对象都会得到通知并自动更新。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：定义对象间的一种一对多的依赖关系，以便当一个对象的状态发生改变时，所有依赖于它的对象都得到通知并自动更新。</p>
+</blockquote>
+<p>观察者模式又称<strong>发布-订阅模式</strong>（Publish-Subscribe）、<strong>模型-视图模式</strong>（Model-View）。</p>
+<h3 id="类图">
+<a class="header-anchor" href="#%e7%b1%bb%e5%9b%be"></a>
+类图
+</h3><pre class="mermaid">
+  classDiagram
+    class Subject {
+        <<interface>>
+        +attach(Observer)
+        +detach(Observer)
+        +notifyObservers()
+    }
+    class Observer {
+        <<interface>>
+        +update(Subject)
+    }
+    class ConcreteSubject {
+        -List~Observer~ observers
+        -Object state
+        +attach(Observer)
+        +detach(Observer)
+        +notifyObservers()
+        +getState() Object
+        +setState(Object)
+    }
+    class ConcreteObserver {
+        -Object observerState
+        +update(Subject)
+    }
+    Subject <|.. ConcreteSubject
+    Observer <|.. ConcreteObserver
+    ConcreteSubject --> Observer : 通知
+    ConcreteObserver ..> ConcreteSubject : 观察状态
+</pre><h3 id="时序图">
+<a class="header-anchor" href="#%e6%97%b6%e5%ba%8f%e5%9b%be"></a>
+时序图
+</h3><pre class="mermaid">
+  sequenceDiagram
+    participant Client
+    participant Subject
+    participant ObserverA
+    participant ObserverB
+
+    Client->>Subject: setState(newState)
+    Subject->>Subject: 状态变更
+    Subject->>ObserverA: notify()
+    ObserverA->>Subject: getState()
+    ObserverA->>ObserverA: 更新自身
+    Subject->>ObserverB: notify()
+    ObserverB->>Subject: getState()
+    ObserverB->>ObserverB: 更新自身
+</pre><h2 id="手写观察者模式">
+<a class="header-anchor" href="#%e6%89%8b%e5%86%99%e8%a7%82%e5%af%9f%e8%80%85%e6%a8%a1%e5%bc%8f"></a>
+手写观察者模式
+</h2><h3 id="基础实现">
+<a class="header-anchor" href="#%e5%9f%ba%e7%a1%80%e5%ae%9e%e7%8e%b0"></a>
+基础实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 观察者接口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">Observer</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">data</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 主题（被观察者）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Subject</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Observer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">observers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">state</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 注册观察者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">attach</span><span class="p">(</span><span class="n">Observer</span><span class="w"> </span><span class="n">observer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">observers</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">observer</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 移除观察者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">detach</span><span class="p">(</span><span class="n">Observer</span><span class="w"> </span><span class="n">observer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">observers</span><span class="p">.</span><span class="na">remove</span><span class="p">(</span><span class="n">observer</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 通知所有观察者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">notifyObservers</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Observer</span><span class="w"> </span><span class="n">observer</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">observers</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">observer</span><span class="p">.</span><span class="na">update</span><span class="p">(</span><span class="s">&#34;STATE_CHANGE&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">state</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getState</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">state</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">setState</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">state</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">state</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;主题状态变更为：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">state</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">notifyObservers</span><span class="p">();</span><span class="w"> </span><span class="c1">// 状态变更后自动通知</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 具体观察者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">EmailNotifier</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Observer</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[邮件通知] 收到状态变更：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">data</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SmsNotifier</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Observer</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">event</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="w"> </span><span class="n">data</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[短信通知] 收到状态变更：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">data</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 客户端</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Client</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Subject</span><span class="w"> </span><span class="n">subject</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Subject</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">subject</span><span class="p">.</span><span class="na">attach</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">EmailNotifier</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">subject</span><span class="p">.</span><span class="na">attach</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">SmsNotifier</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">subject</span><span class="p">.</span><span class="na">setState</span><span class="p">(</span><span class="s">&#34;订单已支付&#34;</span><span class="p">);</span><span class="w"> </span><span class="c1">// 自动通知所有观察者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 输出：</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 主题状态变更为：订单已支付</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// [邮件通知] 收到状态变更：订单已支付</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// [短信通知] 收到状态变更：订单已支付</span><span class="w">
+</span></span></span></code></pre></div><h2 id="java-内置观察者模式已废弃">
+<a class="header-anchor" href="#java-%e5%86%85%e7%bd%ae%e8%a7%82%e5%af%9f%e8%80%85%e6%a8%a1%e5%bc%8f%e5%b7%b2%e5%ba%9f%e5%bc%83"></a>
+Java 内置观察者模式（已废弃）
+</h2><p>Java 早期在 <code>java.util</code> 中提供了 <code>Observable</code> 类和 <code>Observer</code> 接口，但存在诸多设计缺陷（如 <code>Observable</code> 是类而非接口，且非线程安全），在 <strong>Java 9 中已被废弃</strong>。推荐使用更现代的事件驱动框架。</p>
+<h2 id="spring-事件机制推荐">
+<a class="header-anchor" href="#spring-%e4%ba%8b%e4%bb%b6%e6%9c%ba%e5%88%b6%e6%8e%a8%e8%8d%90"></a>
+Spring 事件机制（推荐）
+</h2><p>Spring 提供了一套完善的事件驱动机制，是观察者模式在企业级开发中的最佳实践。</p>
+<h3 id="核心组件">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6"></a>
+核心组件
+</h3><table>
+	<thead>
+			<tr>
+					<th>组件</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>ApplicationEvent</code></td>
+					<td>事件基类</td>
+			</tr>
+			<tr>
+					<td><code>ApplicationListener</code></td>
+					<td>观察者接口（事件监听器）</td>
+			</tr>
+			<tr>
+					<td><code>ApplicationEventPublisher</code></td>
+					<td>主题（事件发布者）</td>
+			</tr>
+			<tr>
+					<td><code>@EventListener</code></td>
+					<td>注解式监听器（更简洁）</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="完整示例订单事件驱动">
+<a class="header-anchor" href="#%e5%ae%8c%e6%95%b4%e7%a4%ba%e4%be%8b%e8%ae%a2%e5%8d%95%e4%ba%8b%e4%bb%b6%e9%a9%b1%e5%8a%a8"></a>
+完整示例：订单事件驱动
+</h3><h4 id="第一步定义事件">
+<a class="header-anchor" href="#%e7%ac%ac%e4%b8%80%e6%ad%a5%e5%ae%9a%e4%b9%89%e4%ba%8b%e4%bb%b6"></a>
+第一步：定义事件
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 自定义事件</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrderCreatedEvent</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">ApplicationEvent</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">orderId</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">userId</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">amount</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">OrderCreatedEvent</span><span class="p">(</span><span class="n">Object</span><span class="w"> </span><span class="n">source</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">orderId</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">userId</span><span class="p">,</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">source</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">orderId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderId</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">userId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">userId</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">amount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amount</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// getter 省略</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getOrderId</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">orderId</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getUserId</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">userId</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">BigDecimal</span><span class="w"> </span><span class="nf">getAmount</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">amount</span><span class="p">;</span><span class="w"> </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h4 id="第二步发布事件主题">
+<a class="header-anchor" href="#%e7%ac%ac%e4%ba%8c%e6%ad%a5%e5%8f%91%e5%b8%83%e4%ba%8b%e4%bb%b6%e4%b8%bb%e9%a2%98"></a>
+第二步：发布事件（主题）
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrderService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">ApplicationEventPublisher</span><span class="w"> </span><span class="n">eventPublisher</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">createOrder</span><span class="p">(</span><span class="n">OrderDTO</span><span class="w"> </span><span class="n">orderDTO</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 1. 创建订单</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Order</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saveOrder</span><span class="p">(</span><span class="n">orderDTO</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;订单创建成功：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">order</span><span class="p">.</span><span class="na">getId</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 2. 发布事件，通知所有监听者（解耦核心逻辑与副作用）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">eventPublisher</span><span class="p">.</span><span class="na">publishEvent</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">new</span><span class="w"> </span><span class="n">OrderCreatedEvent</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="n">order</span><span class="p">.</span><span class="na">getId</span><span class="p">(),</span><span class="w"> </span><span class="n">order</span><span class="p">.</span><span class="na">getUserId</span><span class="p">(),</span><span class="w"> </span><span class="n">order</span><span class="p">.</span><span class="na">getAmount</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h4 id="第三步监听事件观察者">
+<a class="header-anchor" href="#%e7%ac%ac%e4%b8%89%e6%ad%a5%e7%9b%91%e5%90%ac%e4%ba%8b%e4%bb%b6%e8%a7%82%e5%af%9f%e8%80%85"></a>
+第三步：监听事件（观察者）
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 方式一：注解方式（推荐）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Component</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrderEventListener</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@EventListener</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">handleOrderCreated</span><span class="p">(</span><span class="n">OrderCreatedEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[积分服务] 为用户 &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">getUserId</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; 增加积分&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@EventListener</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sendEmail</span><span class="p">(</span><span class="n">OrderCreatedEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[邮件服务] 发送订单确认邮件，订单号：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">getOrderId</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@EventListener</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">sendSms</span><span class="p">(</span><span class="n">OrderCreatedEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[短信服务] 发送订单通知短信&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@EventListener</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">pushToMQ</span><span class="p">(</span><span class="n">OrderCreatedEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[消息队列] 推送订单到 MQ 进行异步处理&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="异步事件处理">
+<a class="header-anchor" href="#%e5%bc%82%e6%ad%a5%e4%ba%8b%e4%bb%b6%e5%a4%84%e7%90%86"></a>
+异步事件处理
+</h3><p>默认情况下 Spring 事件是<strong>同步</strong>的（发布者阻塞等待所有监听器执行完毕）。要实现异步：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 配置异步支持</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@EnableAsync</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AsyncConfig</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Bean</span><span class="p">(</span><span class="s">&#34;eventExecutor&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Executor</span><span class="w"> </span><span class="nf">eventExecutor</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ThreadPoolTaskExecutor</span><span class="w"> </span><span class="n">executor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ThreadPoolTaskExecutor</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">setCorePoolSize</span><span class="p">(</span><span class="n">2</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">setMaxPoolSize</span><span class="p">(</span><span class="n">5</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">setQueueCapacity</span><span class="p">(</span><span class="n">100</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">executor</span><span class="p">.</span><span class="na">setThreadNamePrefix</span><span class="p">(</span><span class="s">&#34;event-&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">executor</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 在监听器上使用 @Async</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Component</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AsyncOrderListener</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Async</span><span class="p">(</span><span class="s">&#34;eventExecutor&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@EventListener</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">handleOrder</span><span class="p">(</span><span class="n">OrderCreatedEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 异步执行，不阻塞主流程</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;异步处理订单：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">getOrderId</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="o">+</span><span class="w"> </span><span class="s">&#34;，线程：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Thread</span><span class="p">.</span><span class="na">currentThread</span><span class="p">().</span><span class="na">getName</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="条件监听">
+<a class="header-anchor" href="#%e6%9d%a1%e4%bb%b6%e7%9b%91%e5%90%ac"></a>
+条件监听
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 只监听金额大于 1000 的大额订单</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@EventListener</span><span class="p">(</span><span class="n">condition</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;#event.amount &gt; 1000&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">handleLargeOrder</span><span class="p">(</span><span class="n">OrderCreatedEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;[大额订单告警] 金额：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">getAmount</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="push-模式-vs-pull-模式">
+<a class="header-anchor" href="#push-%e6%a8%a1%e5%bc%8f-vs-pull-%e6%a8%a1%e5%bc%8f"></a>
+Push 模式 vs Pull 模式
+</h2><table>
+	<thead>
+			<tr>
+					<th>模式</th>
+					<th>说明</th>
+					<th>优点</th>
+					<th>缺点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>推模式</strong>（Push）</td>
+					<td>主题将数据主动推给观察者</td>
+					<td>观察者无需主动查询</td>
+					<td>可能推送观察者不需要的数据</td>
+			</tr>
+			<tr>
+					<td><strong>拉模式</strong>（Pull）</td>
+					<td>主题只发通知，观察者自行拉取数据</td>
+					<td>观察者按需获取</td>
+					<td>需要多次方法调用</td>
+			</tr>
+	</tbody>
+</table>
+<p>Spring 事件机制默认使用<strong>推模式</strong>（将 Event 对象推给监听器）。</p>
+<h2 id="适用场景">
+<a class="header-anchor" href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+适用场景
+</h2><ol>
+<li><strong>事件驱动系统</strong>：订单创建后触发积分、通知、物流等</li>
+<li><strong>消息广播</strong>：配置变更通知所有节点刷新</li>
+<li><strong>GUI 系统</strong>：按钮点击、文本变化等 UI 事件</li>
+<li><strong>数据同步</strong>：主数据变更同步到缓存、搜索引擎</li>
+<li><strong>日志审计</strong>：业务操作记录审计日志</li>
+</ol>
+<h2 id="优缺点">
+<a class="header-anchor" href="#%e4%bc%98%e7%bc%ba%e7%82%b9"></a>
+优缺点
+</h2><h3 id="优点">
+<a class="header-anchor" href="#%e4%bc%98%e7%82%b9"></a>
+优点
+</h3><ol>
+<li><strong>解耦</strong>：主题与观察者松耦合，互不感知</li>
+<li><strong>开闭原则</strong>：新增观察者无需修改主题</li>
+<li><strong>广播通信</strong>：一次状态变更通知多个对象</li>
+</ol>
+<h3 id="缺点">
+<a class="header-anchor" href="#%e7%bc%ba%e7%82%b9"></a>
+缺点
+</h3><ol>
+<li><strong>性能问题</strong>：观察者过多或处理过慢会影响主题</li>
+<li><strong>循环依赖</strong>：观察者之间可能形成循环通知</li>
+<li><strong>执行顺序不确定</strong>：多个观察者的执行顺序不可控</li>
+<li><strong>内存泄漏风险</strong>：忘记取消注册会导致观察者无法被 GC</li>
+</ol>
+<h2 id="实战案例">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8b"></a>
+实战案例
+</h2><h3 id="guava-eventbus">
+<a class="header-anchor" href="#guava-eventbus"></a>
+Guava EventBus
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Guava 提供了更简洁的事件总线</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">EventBus</span><span class="w"> </span><span class="n">eventBus</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">EventBus</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 注册订阅者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">eventBus</span><span class="p">.</span><span class="na">register</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Object</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Subscribe</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">handle</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">message</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;收到消息：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 发布事件</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">eventBus</span><span class="p">.</span><span class="na">post</span><span class="p">(</span><span class="s">&#34;Hello EventBus&#34;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h3 id="spring-applicationlistener-接口方式">
+<a class="header-anchor" href="#spring-applicationlistener-%e6%8e%a5%e5%8f%a3%e6%96%b9%e5%bc%8f"></a>
+Spring ApplicationListener 接口方式
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Component</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">StartupListener</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">ApplicationListener</span><span class="o">&lt;</span><span class="n">ContextRefreshedEvent</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onApplicationEvent</span><span class="p">(</span><span class="n">ContextRefreshedEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Spring 容器启动完成！&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="redis-的-pubsub">
+<a class="header-anchor" href="#redis-%e7%9a%84-pubsub"></a>
+Redis 的 Pub/Sub
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 发布者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">redisTemplate</span><span class="p">.</span><span class="na">convertAndSend</span><span class="p">(</span><span class="s">&#34;orderChannel&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;订单已创建&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 订阅者</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Component</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrderSubscriber</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">MessageListenerAdapter</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onMessage</span><span class="p">(</span><span class="n">Message</span><span class="w"> </span><span class="n">message</span><span class="p">,</span><span class="w"> </span><span class="kt">byte</span><span class="o">[]</span><span class="w"> </span><span class="n">pattern</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;收到 Redis 消息：&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">message</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="观察者模式-vs-发布-订阅模式">
+<a class="header-anchor" href="#%e8%a7%82%e5%af%9f%e8%80%85%e6%a8%a1%e5%bc%8f-vs-%e5%8f%91%e5%b8%83-%e8%ae%a2%e9%98%85%e6%a8%a1%e5%bc%8f"></a>
+观察者模式 vs 发布-订阅模式
+</h2><p>严格来说，两者有细微区别：</p>
+<pre class="mermaid">
+  graph LR
+    subgraph 观察者模式
+        A[Subject] -->|直接通知| B[Observer]
+    end
+    subgraph 发布订阅模式
+        C[Publisher] -->|发布| D[Event Broker]
+        D -->|分发| E[Subscriber]
+    end
+</pre><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>观察者模式</th>
+					<th>发布-订阅模式</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>耦合</td>
+					<td>Subject 直接持有 Observer 引用</td>
+					<td>通过中间件（Broker）解耦</td>
+			</tr>
+			<tr>
+					<td>通信</td>
+					<td>同步</td>
+					<td>通常异步</td>
+			</tr>
+			<tr>
+					<td>跨进程</td>
+					<td>不支持</td>
+					<td>支持（如 Kafka、RabbitMQ）</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="总结">
+<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
+总结
+</h2><p>观察者模式是构建<strong>事件驱动架构</strong>（EDA）的基石。通过 Spring 事件机制，我们可以轻松实现业务逻辑与副作用的解耦：</p>
+<ul>
+<li>订单服务只管创建订单</li>
+<li>积分、通知、物流各自监听事件，互不干扰</li>
+<li>新增副作用（如风控检查）只需新增一个监听器</li>
+</ul>
+<p><strong>关键原则：核心业务逻辑与衍生操作通过事件解耦，让系统更灵活、更易扩展</strong>。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/design-patterns/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=%e8%a7%82%e5%af%9f%e8%80%85%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="观察者模式详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/design-patterns/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;title=%e8%a7%82%e5%af%9f%e8%80%85%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;desc=%e5%8f%91%e5%b8%83%e8%ae%a2%e9%98%85%e3%80%81%e4%ba%8b%e4%bb%b6%e9%a9%b1%e5%8a%a8%e6%9e%b6%e6%9e%84%e3%80%81Spring%20%e4%ba%8b%e4%bb%b6%e6%9c%ba%e5%88%b6%e5%ae%9e%e6%88%98&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="观察者模式详解">
@@ -334,7 +801,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
               data-sizes="auto"
               alt="责任链模式详解"
               class="lazyload"
@@ -346,7 +813,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">责任链模式详解</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
+              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
               data-sizes="auto"
               alt="策略模式详解"
               class="lazyload"
@@ -378,10 +845,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -431,7 +898,47 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+        <li><a href="#时序图">时序图</a></li>
+      </ul>
+    </li>
+    <li><a href="#手写观察者模式">手写观察者模式</a>
+      <ul>
+        <li><a href="#基础实现">基础实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#java-内置观察者模式已废弃">Java 内置观察者模式（已废弃）</a></li>
+    <li><a href="#spring-事件机制推荐">Spring 事件机制（推荐）</a>
+      <ul>
+        <li><a href="#核心组件">核心组件</a></li>
+        <li><a href="#完整示例订单事件驱动">完整示例：订单事件驱动</a></li>
+        <li><a href="#异步事件处理">异步事件处理</a></li>
+        <li><a href="#条件监听">条件监听</a></li>
+      </ul>
+    </li>
+    <li><a href="#push-模式-vs-pull-模式">Push 模式 vs Pull 模式</a></li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#guava-eventbus">Guava EventBus</a></li>
+        <li><a href="#spring-applicationlistener-接口方式">Spring ApplicationListener 接口方式</a></li>
+        <li><a href="#redis-的-pubsub">Redis 的 Pub/Sub</a></li>
+      </ul>
+    </li>
+    <li><a href="#观察者模式-vs-发布-订阅模式">观察者模式 vs 发布-订阅模式</a></li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -562,6 +1069,105 @@
           description: "发布订阅、事件驱动架构、Spring 事件机制实战",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

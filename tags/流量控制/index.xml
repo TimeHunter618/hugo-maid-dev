@@ -30,7 +30,47 @@
       <description>
         <![CDATA[<h1>TCP 流量控制与拥塞控</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="流量控制-vs-拥塞控制">
+<a class="header-anchor" href="#%e6%b5%81%e9%87%8f%e6%8e%a7%e5%88%b6-vs-%e6%8b%a5%e5%a1%9e%e6%8e%a7%e5%88%b6"></a>
+流量控制 vs 拥塞控制
+</h2><p>很多人容易混淆这两个概念，但它们解决的是不同层面的问题：</p>
+<table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>流量控制（Flow Control）</th>
+					<th>拥塞控制（Congestion Control）</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>解决的问题</td>
+					<td>发送方 vs 接收方速率不匹配</td>
+					<td>网络整体负载过重</td>
+			</tr>
+			<tr>
+					<td>视角</td>
+					<td>端到端（Point-to-Point）</td>
+					<td>全局（Global）</td>
+			</tr>
+			<tr>
+					<td>核心机制</td>
+					<td>滑动窗口（接收窗口 rwnd）</td>
+					<td>拥塞窗口（cwnd）</td>
+			</tr>
+			<tr>
+					<td>信息来源</td>
+					<td>接收方通过 ACK 告知</td>
+					<td>发送方自行探测网络状况</td>
+			</tr>
+			<tr>
+					<td>目标</td>
+					<td>不淹没接收方</td>
+					<td>不淹没网络</td>
+			</tr>
+	</tbody>
+</table>
+<p><strong>实际发送窗口</strong>由两者共同决定：</p>
         
         <hr><p>本文2024-12-15首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-12-15</p>]]>
       </description>

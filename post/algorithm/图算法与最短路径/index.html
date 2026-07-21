@@ -190,7 +190,73 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#图的基础概念">图的基础概念</a>
+      <ul>
+        <li><a href="#图的定义">图的定义</a></li>
+        <li><a href="#图的类型">图的类型</a></li>
+        <li><a href="#图的表示">图的表示</a></li>
+      </ul>
+    </li>
+    <li><a href="#深度优先搜索dfs">深度优先搜索（DFS）</a>
+      <ul>
+        <li><a href="#原理">原理</a></li>
+        <li><a href="#递归实现">递归实现</a></li>
+        <li><a href="#迭代实现">迭代实现</a></li>
+        <li><a href="#应用检测环路">应用：检测环路</a></li>
+      </ul>
+    </li>
+    <li><a href="#广度优先搜索bfs">广度优先搜索（BFS）</a>
+      <ul>
+        <li><a href="#原理-1">原理</a></li>
+        <li><a href="#代码实现">代码实现</a></li>
+        <li><a href="#应用最短路径无权图">应用：最短路径（无权图）</a></li>
+      </ul>
+    </li>
+    <li><a href="#dijkstra-最短路径算法">Dijkstra 最短路径算法</a>
+      <ul>
+        <li><a href="#原理-2">原理</a></li>
+        <li><a href="#代码实现-1">代码实现</a></li>
+        <li><a href="#复杂度分析">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#floyd-warshall-算法">Floyd-Warshall 算法</a>
+      <ul>
+        <li><a href="#原理-3">原理</a></li>
+        <li><a href="#代码实现-2">代码实现</a></li>
+        <li><a href="#复杂度分析-1">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#拓扑排序">拓扑排序</a>
+      <ul>
+        <li><a href="#原理-4">原理</a></li>
+        <li><a href="#kahn-算法bfs-方式">Kahn 算法（BFS 方式）</a></li>
+      </ul>
+    </li>
+    <li><a href="#最小生成树">最小生成树</a>
+      <ul>
+        <li><a href="#原理-5">原理</a></li>
+        <li><a href="#prim-算法">Prim 算法</a></li>
+        <li><a href="#kruskal-算法">Kruskal 算法</a></li>
+      </ul>
+    </li>
+    <li><a href="#算法对比">算法对比</a>
+      <ul>
+        <li><a href="#最短路径算法对比">最短路径算法对比</a></li>
+        <li><a href="#最小生成树算法对比">最小生成树算法对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +337,735 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>图是一种强大的数据结构，用于表示对象之间的关系。图算法在社交网络、地图导航、网络路由、推荐系统等领域有着广泛的应用。掌握图的遍历、最短路径、拓扑排序和最小生成树等核心算法，是解决复杂问题的关键。</p>
+<p>本文将系统讲解图的基本概念、BFS/DFS 遍历、Dijkstra 最短路径算法、Floyd-Warshall 算法、拓扑排序和最小生成树（Prim/Kruskal）。</p>
+<h2 id="图的基础概念">
+<a class="header-anchor" href="#%e5%9b%be%e7%9a%84%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5"></a>
+图的基础概念
+</h2><h3 id="图的定义">
+<a class="header-anchor" href="#%e5%9b%be%e7%9a%84%e5%ae%9a%e4%b9%89"></a>
+图的定义
+</h3><pre class="mermaid">
+  graph TD
+    subgraph "无向图"
+        A["A"] --- B["B"]
+        A --- C["C"]
+        B --- D["D"]
+        C --- D
+        D --- E["E"]
+    end
+
+    subgraph "有向图"
+        A2["A"] --> B2["B"]
+        B2 --> C2["C"]
+        C2 --> A2
+        C2 --> D2["D"]
+        D2 --> E2["E"]
+    end
+</pre><h3 id="图的类型">
+<a class="header-anchor" href="#%e5%9b%be%e7%9a%84%e7%b1%bb%e5%9e%8b"></a>
+图的类型
+</h3><table>
+	<thead>
+			<tr>
+					<th>类型</th>
+					<th>说明</th>
+					<th>特点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>无向图</strong></td>
+					<td>边没有方向</td>
+					<td>(u, v) = (v, u)</td>
+			</tr>
+			<tr>
+					<td><strong>有向图</strong></td>
+					<td>边有方向</td>
+					<td>&lt;u, v&gt; ≠ &lt;v, u&gt;</td>
+			</tr>
+			<tr>
+					<td><strong>加权图</strong></td>
+					<td>边带有权重</td>
+					<td>用于最短路径</td>
+			</tr>
+			<tr>
+					<td><strong>连通图</strong></td>
+					<td>任意两点可达</td>
+					<td>无孤立节点</td>
+			</tr>
+			<tr>
+					<td><strong>有环图</strong></td>
+					<td>存在环路</td>
+					<td>DAG 的反面</td>
+			</tr>
+			<tr>
+					<td><strong>DAG</strong></td>
+					<td>有向无环图</td>
+					<td>可拓扑排序</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="图的表示">
+<a class="header-anchor" href="#%e5%9b%be%e7%9a%84%e8%a1%a8%e7%a4%ba"></a>
+图的表示
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 邻接矩阵</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kt">int</span><span class="o">[][]</span><span class="w"> </span><span class="n">adjMatrix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">},</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">},</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">},</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">};</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 邻接表</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">adjList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">adjList</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="p">));</span><span class="w">  </span><span class="c1">// 0 的邻居</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">adjList</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">3</span><span class="p">));</span><span class="w">  </span><span class="c1">// 1 的邻居</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">adjList</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">3</span><span class="p">));</span><span class="w">  </span><span class="c1">// 2 的邻居</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">adjList</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">2</span><span class="p">));</span><span class="w">  </span><span class="c1">// 3 的邻居</span><span class="w">
+</span></span></span></code></pre></div><h2 id="深度优先搜索dfs">
+<a class="header-anchor" href="#%e6%b7%b1%e5%ba%a6%e4%bc%98%e5%85%88%e6%90%9c%e7%b4%a2dfs"></a>
+深度优先搜索（DFS）
+</h2><h3 id="原理">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86"></a>
+原理
+</h3><p>DFS 是一种先尽可能深地探索分支，再回溯的遍历方式。</p>
+<pre class="mermaid">
+  graph TD
+    A["A"] --> B["B"]
+    A --> C["C"]
+    B --> D["D"]
+    B --> E["E"]
+    C --> F["F"]
+
+    subgraph "DFS 遍历顺序"
+        S["A → B → D → E → C → F"]
+    end
+</pre><h3 id="递归实现">
+<a class="header-anchor" href="#%e9%80%92%e5%bd%92%e5%ae%9e%e7%8e%b0"></a>
+递归实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">dfs</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="o">[]</span><span class="w"> </span><span class="n">visited</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">adj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">visited</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">print</span><span class="p">(</span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; &#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">neighbor</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">visited</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">dfs</span><span class="p">(</span><span class="n">neighbor</span><span class="p">,</span><span class="w"> </span><span class="n">visited</span><span class="p">,</span><span class="w"> </span><span class="n">adj</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="迭代实现">
+<a class="header-anchor" href="#%e8%bf%ad%e4%bb%a3%e5%ae%9e%e7%8e%b0"></a>
+迭代实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">dfsIterative</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">adj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">boolean</span><span class="o">[]</span><span class="w"> </span><span class="n">visited</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">boolean</span><span class="o">[</span><span class="n">adj</span><span class="p">.</span><span class="na">size</span><span class="p">()</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Stack</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">stack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Stack</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">stack</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">start</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">stack</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">stack</span><span class="p">.</span><span class="na">pop</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">visited</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">visited</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">print</span><span class="p">(</span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; &#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="c1">// 逆序入栈，保证顺序</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">neighbors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">neighbors</span><span class="p">.</span><span class="na">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">--</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="kt">int</span><span class="w"> </span><span class="n">neighbor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">neighbors</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">visited</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">stack</span><span class="p">.</span><span class="na">push</span><span class="p">(</span><span class="n">neighbor</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="应用检测环路">
+<a class="header-anchor" href="#%e5%ba%94%e7%94%a8%e6%a3%80%e6%b5%8b%e7%8e%af%e8%b7%af"></a>
+应用：检测环路
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">hasCycle</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">adj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">size</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">boolean</span><span class="o">[]</span><span class="w"> </span><span class="n">visited</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">boolean</span><span class="o">[</span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">boolean</span><span class="o">[]</span><span class="w"> </span><span class="n">onStack</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">boolean</span><span class="o">[</span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dfsCycle</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">visited</span><span class="p">,</span><span class="w"> </span><span class="n">onStack</span><span class="p">,</span><span class="w"> </span><span class="n">adj</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">dfsCycle</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="o">[]</span><span class="w"> </span><span class="n">visited</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="o">[]</span><span class="w"> </span><span class="n">onStack</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">adj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">onStack</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">visited</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">visited</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">onStack</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">neighbor</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dfsCycle</span><span class="p">(</span><span class="n">neighbor</span><span class="p">,</span><span class="w"> </span><span class="n">visited</span><span class="p">,</span><span class="w"> </span><span class="n">onStack</span><span class="p">,</span><span class="w"> </span><span class="n">adj</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">onStack</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">false</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="广度优先搜索bfs">
+<a class="header-anchor" href="#%e5%b9%bf%e5%ba%a6%e4%bc%98%e5%85%88%e6%90%9c%e7%b4%a2bfs"></a>
+广度优先搜索（BFS）
+</h2><h3 id="原理-1">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86-1"></a>
+原理
+</h3><p>BFS 是一种逐层遍历的方式，先访问当前节点的所有邻居，再访问邻居的邻居。</p>
+<pre class="mermaid">
+  graph TD
+    A["A"] --> B["B"]
+    A --> C["C"]
+    B --> D["D"]
+    B --> E["E"]
+    C --> F["F"]
+
+    subgraph "BFS 遍历顺序"
+        S["A → B → C → D → E → F"]
+    end
+</pre><h3 id="代码实现">
+<a class="header-anchor" href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0"></a>
+代码实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">bfs</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">adj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">boolean</span><span class="o">[]</span><span class="w"> </span><span class="n">visited</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">boolean</span><span class="o">[</span><span class="n">adj</span><span class="p">.</span><span class="na">size</span><span class="p">()</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Queue</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">queue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">visited</span><span class="o">[</span><span class="n">start</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">queue</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="n">start</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">queue</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queue</span><span class="p">.</span><span class="na">poll</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">print</span><span class="p">(</span><span class="n">node</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; &#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">neighbor</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">visited</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">visited</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">queue</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="n">neighbor</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="应用最短路径无权图">
+<a class="header-anchor" href="#%e5%ba%94%e7%94%a8%e6%9c%80%e7%9f%ad%e8%b7%af%e5%be%84%e6%97%a0%e6%9d%83%e5%9b%be"></a>
+应用：最短路径（无权图）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="nf">shortestPathBFS</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">adj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">size</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Arrays</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Queue</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">queue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">dist</span><span class="o">[</span><span class="n">start</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">queue</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="n">start</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">queue</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queue</span><span class="p">.</span><span class="na">poll</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">neighbor</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dist</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">-</span><span class="n">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">dist</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">queue</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="n">neighbor</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">dist</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="dijkstra-最短路径算法">
+<a class="header-anchor" href="#dijkstra-%e6%9c%80%e7%9f%ad%e8%b7%af%e5%be%84%e7%ae%97%e6%b3%95"></a>
+Dijkstra 最短路径算法
+</h2><h3 id="原理-2">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86-2"></a>
+原理
+</h3><p>Dijkstra 算法用于在加权图中寻找从起点到所有其他节点的最短路径。</p>
+<pre class="mermaid">
+  graph TD
+    A["A"] -->|"4"| B["B"]
+    A -->|"2"| C["C"]
+    B -->|"3"| D["D"]
+    B -->|"1"| E["E"]
+    C -->|"2"| B
+    C -->|"5"| D
+    E -->|"3"| D
+
+    subgraph "Dijkstra 路径"
+        S["A → C → B → E → D (总权重: 8)"]
+    end
+</pre><h3 id="代码实现-1">
+<a class="header-anchor" href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0-1"></a>
+代码实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="nf">dijkstra</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;&gt;</span><span class="w"> </span><span class="n">adj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">size</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Arrays</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">dist</span><span class="o">[</span><span class="n">start</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">PriorityQueue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;</span><span class="w"> </span><span class="n">pq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PriorityQueue</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">Comparator</span><span class="p">.</span><span class="na">comparingInt</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">pq</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">pq</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pq</span><span class="p">.</span><span class="na">poll</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">distance</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">edge</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">neighbor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dist</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">weight</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">dist</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">weight</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">pq</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="n">neighbor</span><span class="p">,</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">dist</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="复杂度分析">
+<a class="header-anchor" href="#%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%88%86%e6%9e%90"></a>
+复杂度分析
+</h3><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>时间复杂度</strong></td>
+					<td>O((V + E) log V)</td>
+			</tr>
+			<tr>
+					<td><strong>空间复杂度</strong></td>
+					<td>O(V)</td>
+			</tr>
+			<tr>
+					<td><strong>适用场景</strong></td>
+					<td>非负权边的加权图</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="floyd-warshall-算法">
+<a class="header-anchor" href="#floyd-warshall-%e7%ae%97%e6%b3%95"></a>
+Floyd-Warshall 算法
+</h2><h3 id="原理-3">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86-3"></a>
+原理
+</h3><p>Floyd-Warshall 算法用于计算图中所有节点对之间的最短路径。</p>
+<pre class="mermaid">
+  graph TD
+    A["初始化距离矩阵"]
+    A --> B["k=1: 经过节点1的路径"]
+    B --> C["k=2: 经过节点2的路径"]
+    C --> D["k=3: 经过节点3的路径"]
+    D --> E["最终距离矩阵"]
+</pre><h3 id="代码实现-2">
+<a class="header-anchor" href="#%e4%bb%a3%e7%a0%81%e5%ae%9e%e7%8e%b0-2"></a>
+代码实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="o">[][]</span><span class="w"> </span><span class="nf">floydWarshall</span><span class="p">(</span><span class="kt">int</span><span class="o">[][]</span><span class="w"> </span><span class="n">graph</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="p">.</span><span class="na">length</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="o">[][]</span><span class="w"> </span><span class="n">dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">][</span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 初始化距离矩阵</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">dist</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">graph</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 动态规划</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dist</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">k</span><span class="o">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">dist</span><span class="o">[</span><span class="n">k</span><span class="o">][</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">dist</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">k</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">k</span><span class="o">][</span><span class="n">j</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">dist</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">k</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">k</span><span class="o">][</span><span class="n">j</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">dist</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="复杂度分析-1">
+<a class="header-anchor" href="#%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%88%86%e6%9e%90-1"></a>
+复杂度分析
+</h3><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>时间复杂度</strong></td>
+					<td>O(V³)</td>
+			</tr>
+			<tr>
+					<td><strong>空间复杂度</strong></td>
+					<td>O(V²)</td>
+			</tr>
+			<tr>
+					<td><strong>适用场景</strong></td>
+					<td>小规模图、含负权边但无负权环</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="拓扑排序">
+<a class="header-anchor" href="#%e6%8b%93%e6%89%91%e6%8e%92%e5%ba%8f"></a>
+拓扑排序
+</h2><h3 id="原理-4">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86-4"></a>
+原理
+</h3><p>拓扑排序是对有向无环图（DAG）的节点进行排序，使得所有边的起点在终点之前。</p>
+<pre class="mermaid">
+  graph TD
+    A["课程 A"] --> B["课程 B"]
+    A --> C["课程 C"]
+    B --> D["课程 D"]
+    C --> D
+
+    subgraph "拓扑排序结果"
+        S["A → B → C → D 或 A → C → B → D"]
+    end
+</pre><h3 id="kahn-算法bfs-方式">
+<a class="header-anchor" href="#kahn-%e7%ae%97%e6%b3%95bfs-%e6%96%b9%e5%bc%8f"></a>
+Kahn 算法（BFS 方式）
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">topologicalSort</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">[][]</span><span class="w"> </span><span class="n">edges</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">adj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">inDegree</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">adj</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">edge</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">edges</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">from</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="kd">to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">adj</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">from</span><span class="p">).</span><span class="na">add</span><span class="p">(</span><span class="kd">to</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">inDegree</span><span class="o">[</span><span class="kd">to</span><span class="o">]++</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Queue</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">queue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LinkedList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inDegree</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">queue</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="n">i</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">queue</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">queue</span><span class="p">.</span><span class="na">poll</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">result</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="n">node</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">neighbor</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">inDegree</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]--</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inDegree</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">queue</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="n">neighbor</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">result</span><span class="p">.</span><span class="na">size</span><span class="p">()</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="最小生成树">
+<a class="header-anchor" href="#%e6%9c%80%e5%b0%8f%e7%94%9f%e6%88%90%e6%a0%91"></a>
+最小生成树
+</h2><h3 id="原理-5">
+<a class="header-anchor" href="#%e5%8e%9f%e7%90%86-5"></a>
+原理
+</h3><p>最小生成树（MST）是连接图中所有节点的最小权重边集合。</p>
+<pre class="mermaid">
+  graph TD
+    A["A"] -->|"3"| B["B"]
+    A -->|"1"| C["C"]
+    B -->|"2"| C
+    B -->|"4"| D["D"]
+    C -->|"5"| D
+
+    subgraph "最小生成树"
+        A2["A"] -->|"1"| C2["C"]
+        C2 -->|"2"| B2["B"]
+        B2 -->|"4"| D2["D"]
+        style A2 fill:#90EE90
+        style B2 fill:#90EE90
+        style C2 fill:#90EE90
+        style D2 fill:#90EE90
+    end
+</pre><h3 id="prim-算法">
+<a class="header-anchor" href="#prim-%e7%ae%97%e6%b3%95"></a>
+Prim 算法
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">prim</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;&gt;</span><span class="w"> </span><span class="n">adj</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">boolean</span><span class="o">[]</span><span class="w"> </span><span class="n">visited</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">boolean</span><span class="o">[</span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">PriorityQueue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;</span><span class="w"> </span><span class="n">pq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PriorityQueue</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">Comparator</span><span class="p">.</span><span class="na">comparingInt</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">pq</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="n">0</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">totalWeight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">pq</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">()</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pq</span><span class="p">.</span><span class="na">poll</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">visited</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">visited</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">totalWeight</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">weight</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">count</span><span class="o">++</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">edge</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">neighbor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">edgeWeight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">visited</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">pq</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="n">neighbor</span><span class="p">,</span><span class="w"> </span><span class="n">edgeWeight</span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">totalWeight</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="o">-</span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="kruskal-算法">
+<a class="header-anchor" href="#kruskal-%e7%ae%97%e6%b3%95"></a>
+Kruskal 算法
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">kruskal</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="o">[][]</span><span class="w"> </span><span class="n">edges</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Arrays</span><span class="p">.</span><span class="na">sort</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span><span class="w"> </span><span class="n">Comparator</span><span class="p">.</span><span class="na">comparingInt</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="o">[</span><span class="n">2</span><span class="o">]</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">parent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">parent</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">totalWeight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">edge</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">edges</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge</span><span class="o">[</span><span class="n">2</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">find</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">find</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">union</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="n">u</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">totalWeight</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">weight</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">count</span><span class="o">++</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">count</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">break</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">1</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">totalWeight</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="o">-</span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">find</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">parent</span><span class="o">[</span><span class="n">x</span><span class="o">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">parent</span><span class="o">[</span><span class="n">x</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">find</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="n">parent</span><span class="o">[</span><span class="n">x</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">parent</span><span class="o">[</span><span class="n">x</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">union</span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">parent</span><span class="o">[</span><span class="n">find</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">find</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="算法对比">
+<a class="header-anchor" href="#%e7%ae%97%e6%b3%95%e5%af%b9%e6%af%94"></a>
+算法对比
+</h2><h3 id="最短路径算法对比">
+<a class="header-anchor" href="#%e6%9c%80%e7%9f%ad%e8%b7%af%e5%be%84%e7%ae%97%e6%b3%95%e5%af%b9%e6%af%94"></a>
+最短路径算法对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>算法</th>
+					<th>时间复杂度</th>
+					<th>适用场景</th>
+					<th style="text-align: center">负权边</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Dijkstra</strong></td>
+					<td>O((V+E)logV)</td>
+					<td>非负权边</td>
+					<td style="text-align: center">❌</td>
+			</tr>
+			<tr>
+					<td><strong>Bellman-Ford</strong></td>
+					<td>O(VE)</td>
+					<td>含负权边</td>
+					<td style="text-align: center">✅</td>
+			</tr>
+			<tr>
+					<td><strong>Floyd-Warshall</strong></td>
+					<td>O(V³)</td>
+					<td>所有节点对</td>
+					<td style="text-align: center">✅</td>
+			</tr>
+			<tr>
+					<td><strong>BFS</strong></td>
+					<td>O(V+E)</td>
+					<td>无权图</td>
+					<td style="text-align: center">-</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="最小生成树算法对比">
+<a class="header-anchor" href="#%e6%9c%80%e5%b0%8f%e7%94%9f%e6%88%90%e6%a0%91%e7%ae%97%e6%b3%95%e5%af%b9%e6%af%94"></a>
+最小生成树算法对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>算法</th>
+					<th>时间复杂度</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Prim</strong></td>
+					<td>O((V+E)logV)</td>
+					<td>稠密图</td>
+			</tr>
+			<tr>
+					<td><strong>Kruskal</strong></td>
+					<td>O(E log E)</td>
+					<td>稀疏图</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="实战题目">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e9%a2%98%e7%9b%ae"></a>
+实战题目
+</h2><h3 id="leetcode-相关题目">
+<a class="header-anchor" href="#leetcode-%e7%9b%b8%e5%85%b3%e9%a2%98%e7%9b%ae"></a>
+LeetCode 相关题目
+</h3><table>
+	<thead>
+			<tr>
+					<th>题目</th>
+					<th>难度</th>
+					<th>标签</th>
+					<th>链接</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>200. 岛屿数量</td>
+					<td>中等</td>
+					<td>DFS/BFS</td>
+					<td><a href="https://leetcode.cn/problems/number-of-islands/">https://leetcode.cn/problems/number-of-islands/</a></td>
+			</tr>
+			<tr>
+					<td>785. 判断二分图</td>
+					<td>中等</td>
+					<td>BFS/DFS</td>
+					<td><a href="https://leetcode.cn/problems/is-graph-bipartite/">https://leetcode.cn/problems/is-graph-bipartite/</a></td>
+			</tr>
+			<tr>
+					<td>743. 网络延迟时间</td>
+					<td>中等</td>
+					<td>Dijkstra</td>
+					<td><a href="https://leetcode.cn/problems/network-delay-time/">https://leetcode.cn/problems/network-delay-time/</a></td>
+			</tr>
+			<tr>
+					<td>207. 课程表</td>
+					<td>中等</td>
+					<td>拓扑排序</td>
+					<td><a href="https://leetcode.cn/problems/course-schedule/">https://leetcode.cn/problems/course-schedule/</a></td>
+			</tr>
+			<tr>
+					<td>1584. 连接所有点的最小费用</td>
+					<td>中等</td>
+					<td>最小生成树</td>
+					<td><a href="https://leetcode.cn/problems/min-cost-to-connect-all-points/">https://leetcode.cn/problems/min-cost-to-connect-all-points/</a></td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="题解示例">
+<a class="header-anchor" href="#%e9%a2%98%e8%a7%a3%e7%a4%ba%e4%be%8b"></a>
+题解示例
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// LeetCode 743: 网络延迟时间</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">networkDelayTime</span><span class="p">(</span><span class="kt">int</span><span class="o">[][]</span><span class="w"> </span><span class="n">times</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">List</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;&gt;</span><span class="w"> </span><span class="n">adj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">adj</span><span class="p">.</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">times</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">adj</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">time</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">).</span><span class="na">add</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="n">time</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">time</span><span class="o">[</span><span class="n">2</span><span class="o">]</span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">dist</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Arrays</span><span class="p">.</span><span class="na">fill</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">dist</span><span class="o">[</span><span class="n">k</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">PriorityQueue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;</span><span class="w"> </span><span class="n">pq</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">PriorityQueue</span><span class="o">&lt;&gt;</span><span class="p">(</span><span class="n">Comparator</span><span class="p">.</span><span class="na">comparingInt</span><span class="p">(</span><span class="n">a</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">a</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">pq</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">0</span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">pq</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">curr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pq</span><span class="p">.</span><span class="na">poll</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">node</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">curr</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">time</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="p">)</span><span class="w"> </span><span class="k">continue</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="o">[]</span><span class="w"> </span><span class="n">edge</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">adj</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">node</span><span class="p">))</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">neighbor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="kt">int</span><span class="w"> </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">edge</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dist</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">weight</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">dist</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">node</span><span class="o">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">weight</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">pq</span><span class="p">.</span><span class="na">offer</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="kt">int</span><span class="o">[]</span><span class="p">{</span><span class="n">neighbor</span><span class="p">,</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">neighbor</span><span class="o">]</span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">maxTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">dist</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Integer</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="o">-</span><span class="n">1</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">maxTime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Math</span><span class="p">.</span><span class="na">max</span><span class="p">(</span><span class="n">maxTime</span><span class="p">,</span><span class="w"> </span><span class="n">dist</span><span class="o">[</span><span class="n">i</span><span class="o">]</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">maxTime</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>图算法是计算机科学中最具挑战性也最有价值的领域之一。掌握图的遍历、最短路径、拓扑排序和最小生成树等算法，能够帮助你解决各种复杂的实际问题。</p>
+<p>核心要点：</p>
+<ul>
+<li><strong>DFS</strong>：深度优先，适合连通性检测、环路检测</li>
+<li><strong>BFS</strong>：广度优先，适合无权图最短路径</li>
+<li><strong>Dijkstra</strong>：加权图最短路径，非负权边</li>
+<li><strong>Floyd-Warshall</strong>：所有节点对最短路径</li>
+<li><strong>拓扑排序</strong>：DAG 的线性排序，适合任务调度</li>
+<li><strong>最小生成树</strong>：连接所有节点的最小权重边集合</li>
+</ul>
+<p>选择图算法时，需要根据图的规模、边的权重特性和具体问题场景来决定。</p>
+<hr>
+<p><strong>延伸阅读</strong>：</p>
+<ol>
+<li><em>算法导论</em> - 图算法章节</li>
+<li>LeetCode 图专题 - <a href="https://leetcode.cn/tag/graph/">https://leetcode.cn/tag/graph/</a></li>
+<li>图算法可视化 - <a href="https://visualgo.net/zh/graphds">https://visualgo.net/zh/graphds</a></li>
+</ol>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/algorithm/%E5%9B%BE%E7%AE%97%E6%B3%95%E4%B8%8E%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84/&amp;appkey=&amp;title=%e5%9b%be%e7%ae%97%e6%b3%95%e4%b8%8e%e6%9c%80%e7%9f%ad%e8%b7%af%e5%be%84%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="图算法与最短路径详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/algorithm/%E5%9B%BE%E7%AE%97%E6%B3%95%E4%B8%8E%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84/&amp;title=%e5%9b%be%e7%ae%97%e6%b3%95%e4%b8%8e%e6%9c%80%e7%9f%ad%e8%b7%af%e5%be%84%e8%af%a6%e8%a7%a3&amp;desc=BFS/DFS%e9%81%8d%e5%8e%86%e3%80%81Dijkstra%e6%9c%80%e7%9f%ad%e8%b7%af%e5%be%84%e3%80%81Floyd-Warshall%e3%80%81%e6%8b%93%e6%89%91%e6%8e%92%e5%ba%8f%e3%80%81%e6%9c%80%e5%b0%8f%e7%94%9f%e6%88%90%e6%a0%91&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="图算法与最短路径详解">
@@ -348,7 +1142,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
+              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
               data-sizes="auto"
               alt="动态规划经典问题"
               class="lazyload"
@@ -360,7 +1154,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">动态规划经典问题</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
+              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
               data-sizes="auto"
               alt="二叉树与遍历实战"
               class="lazyload"
@@ -392,10 +1186,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -445,7 +1239,73 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#图的基础概念">图的基础概念</a>
+      <ul>
+        <li><a href="#图的定义">图的定义</a></li>
+        <li><a href="#图的类型">图的类型</a></li>
+        <li><a href="#图的表示">图的表示</a></li>
+      </ul>
+    </li>
+    <li><a href="#深度优先搜索dfs">深度优先搜索（DFS）</a>
+      <ul>
+        <li><a href="#原理">原理</a></li>
+        <li><a href="#递归实现">递归实现</a></li>
+        <li><a href="#迭代实现">迭代实现</a></li>
+        <li><a href="#应用检测环路">应用：检测环路</a></li>
+      </ul>
+    </li>
+    <li><a href="#广度优先搜索bfs">广度优先搜索（BFS）</a>
+      <ul>
+        <li><a href="#原理-1">原理</a></li>
+        <li><a href="#代码实现">代码实现</a></li>
+        <li><a href="#应用最短路径无权图">应用：最短路径（无权图）</a></li>
+      </ul>
+    </li>
+    <li><a href="#dijkstra-最短路径算法">Dijkstra 最短路径算法</a>
+      <ul>
+        <li><a href="#原理-2">原理</a></li>
+        <li><a href="#代码实现-1">代码实现</a></li>
+        <li><a href="#复杂度分析">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#floyd-warshall-算法">Floyd-Warshall 算法</a>
+      <ul>
+        <li><a href="#原理-3">原理</a></li>
+        <li><a href="#代码实现-2">代码实现</a></li>
+        <li><a href="#复杂度分析-1">复杂度分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#拓扑排序">拓扑排序</a>
+      <ul>
+        <li><a href="#原理-4">原理</a></li>
+        <li><a href="#kahn-算法bfs-方式">Kahn 算法（BFS 方式）</a></li>
+      </ul>
+    </li>
+    <li><a href="#最小生成树">最小生成树</a>
+      <ul>
+        <li><a href="#原理-5">原理</a></li>
+        <li><a href="#prim-算法">Prim 算法</a></li>
+        <li><a href="#kruskal-算法">Kruskal 算法</a></li>
+      </ul>
+    </li>
+    <li><a href="#算法对比">算法对比</a>
+      <ul>
+        <li><a href="#最短路径算法对比">最短路径算法对比</a></li>
+        <li><a href="#最小生成树算法对比">最小生成树算法对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战题目">实战题目</a>
+      <ul>
+        <li><a href="#leetcode-相关题目">LeetCode 相关题目</a></li>
+        <li><a href="#题解示例">题解示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -576,6 +1436,105 @@
           description: "BFS\/DFS遍历、Dijkstra最短路径、Floyd-Warshall、拓扑排序、最小生成树",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

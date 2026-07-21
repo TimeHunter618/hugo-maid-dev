@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>Elasticsearch全文搜索引擎</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Elasticsearch（简称 ES）是基于 Apache Lucene 构建的分布式搜索引擎，能够近实时地对海量数据进行全文检索、结构化搜索和分析。它不仅是搜索引擎，更是一个分布式的数据分析引擎，被广泛应用于电商商品搜索、日志分析（ELK 体系）、监控指标存储等场景。</p>
         
         <hr><p>本文2024-12-06首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-12-06</p>]]>
       </description>

@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>图算法与最短路径详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>图是一种强大的数据结构，用于表示对象之间的关系。图算法在社交网络、地图导航、网络路由、推荐系统等领域有着广泛的应用。掌握图的遍历、最短路径、拓扑排序和最小生成树等核心算法，是解决复杂问题的关键。</p>
         
         <hr><p>本文2022-02-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2022-02-10</p>]]>
       </description>

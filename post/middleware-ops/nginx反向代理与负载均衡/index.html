@@ -190,7 +190,65 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#nginx-架构原理">Nginx 架构原理</a>
+      <ul>
+        <li><a href="#事件驱动模型">事件驱动模型</a></li>
+      </ul>
+    </li>
+    <li><a href="#配置文件结构">配置文件结构</a>
+      <ul>
+        <li><a href="#配置块层级关系">配置块层级关系</a></li>
+      </ul>
+    </li>
+    <li><a href="#反向代理配置">反向代理配置</a>
+      <ul>
+        <li><a href="#基础反向代理">基础反向代理</a></li>
+        <li><a href="#负载均衡策略">负载均衡策略</a></li>
+        <li><a href="#健康检查与故障转移">健康检查与故障转移</a></li>
+        <li><a href="#负载均衡策略对比">负载均衡策略对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#限流配置">限流配置</a>
+      <ul>
+        <li><a href="#两种限流方式">两种限流方式</a></li>
+        <li><a href="#请求速率限流">请求速率限流</a></li>
+        <li><a href="#漏桶算法原理">漏桶算法原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#https-配置">HTTPS 配置</a>
+      <ul>
+        <li><a href="#ssl-证书配置">SSL 证书配置</a></li>
+        <li><a href="#https-性能优化">HTTPS 性能优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#静态资源服务">静态资源服务</a></li>
+    <li><a href="#高级配置">高级配置</a>
+      <ul>
+        <li><a href="#动静分离">动静分离</a></li>
+        <li><a href="#灰度发布">灰度发布</a></li>
+        <li><a href="#请求大小与超时限制">请求大小与超时限制</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能优化">性能优化</a>
+      <ul>
+        <li><a href="#核心优化参数">核心优化参数</a></li>
+        <li><a href="#系统内核参数">系统内核参数</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题排查">常见问题排查</a>
+      <ul>
+        <li><a href="#问题-1502-bad-gateway">问题 1：502 Bad Gateway</a></li>
+        <li><a href="#问题-2504-gateway-timeout">问题 2：504 Gateway Timeout</a></li>
+        <li><a href="#问题-3性能瓶颈定位">问题 3：性能瓶颈定位</a></li>
+      </ul>
+    </li>
+    <li><a href="#最佳实践总结">最佳实践总结</a></li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +329,719 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Nginx 是目前最流行的 Web 服务器和反向代理服务器，以高并发、低内存消耗和灵活的配置系统著称。无论是静态资源服务、API 网关、负载均衡还是 SSL 终端，Nginx 都能胜任。本文将系统讲解 Nginx 的核心配置、负载均衡策略、限流机制和 HTTPS 配置。</p>
+<h2 id="nginx-架构原理">
+<a class="header-anchor" href="#nginx-%e6%9e%b6%e6%9e%84%e5%8e%9f%e7%90%86"></a>
+Nginx 架构原理
+</h2><h3 id="事件驱动模型">
+<a class="header-anchor" href="#%e4%ba%8b%e4%bb%b6%e9%a9%b1%e5%8a%a8%e6%a8%a1%e5%9e%8b"></a>
+事件驱动模型
+</h3><pre class="mermaid">
+  graph TB
+    subgraph "Nginx Master-Worker 架构"
+        M[Master Process<br/>读取配置/管理Worker]
+
+        W1[Worker 1<br/>epoll]
+        W2[Worker 2<br/>epoll]
+        W3[Worker 3<br/>epoll]
+        W4[Worker 4<br/>epoll]
+
+        CH[Cache Manager]
+        CL[Cache Loader]
+    end
+
+    C1[Client 1] --> W1
+    C2[Client 2] --> W1
+    C3[Client 3] --> W2
+    C4[Client 4] --> W3
+
+    M --> W1
+    M --> W2
+    M --> W3
+    M --> W4
+</pre><p>Nginx 采用 <strong>Master-Worker</strong> 多进程架构：</p>
+<ul>
+<li><strong>Master</strong>：管理 Worker 进程，加载配置，不处理请求</li>
+<li><strong>Worker</strong>：实际处理客户端请求，每个 Worker 使用 epoll 事件驱动，单进程可处理数万并发连接</li>
+</ul>
+<pre class="mermaid">
+  graph LR
+    subgraph "Worker 内部请求处理"
+        A[接受连接] --> B[读取请求头]
+        B --> C{路由匹配}
+        C -->|静态文件| D[磁盘读取]
+        C -->|反向代理| E[转发到后端]
+        D --> F[发送响应]
+        E --> F
+        F --> G[记录日志]
+    end
+</pre><h2 id="配置文件结构">
+<a class="header-anchor" href="#%e9%85%8d%e7%bd%ae%e6%96%87%e4%bb%b6%e7%bb%93%e6%9e%84"></a>
+配置文件结构
+</h2><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="c1"># nginx.conf 整体结构
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ─── 全局块 ───
+</span></span></span><span class="line"><span class="cl"><span class="k">worker_processes</span> <span class="s">auto</span><span class="p">;</span>           <span class="c1"># Worker 进程数，通常等于 CPU 核数
+</span></span></span><span class="line"><span class="cl"><span class="k">worker_rlimit_nofile</span> <span class="mi">65535</span><span class="p">;</span>      <span class="c1"># 每个 Worker 最大文件描述符
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ─── events 块 ───
+</span></span></span><span class="line"><span class="cl"><span class="k">events</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">use</span> <span class="s">epoll</span><span class="p">;</span>                   <span class="c1"># 事件驱动模型（Linux）
+</span></span></span><span class="line"><span class="cl">    <span class="kn">worker_connections</span> <span class="mi">10240</span><span class="p">;</span>    <span class="c1"># 每个 Worker 最大连接数
+</span></span></span><span class="line"><span class="cl">    <span class="kn">multi_accept</span> <span class="no">on</span><span class="p">;</span>             <span class="c1"># 同时接受多个连接
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ─── http 块 ───
+</span></span></span><span class="line"><span class="cl"><span class="k">http</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">include</span>       <span class="s">mime.types</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">default_type</span>  <span class="s">application/octet-stream</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 日志格式
+</span></span></span><span class="line"><span class="cl">    <span class="kn">log_format</span> <span class="s">main</span> <span class="s">&#39;</span><span class="nv">$remote_addr</span> <span class="s">-</span> <span class="nv">$remote_user</span> <span class="s">[</span><span class="nv">$time_local]</span> <span class="s">&#39;</span>
+</span></span><span class="line"><span class="cl">                    <span class="s">&#39;&#34;</span><span class="nv">$request&#34;</span> <span class="nv">$status</span> <span class="nv">$body_bytes_sent</span> <span class="s">&#39;</span>
+</span></span><span class="line"><span class="cl">                    <span class="s">&#39;&#34;</span><span class="nv">$http_referer&#34;</span> <span class="s">&#34;</span><span class="nv">$http_user_agent&#34;</span> <span class="s">&#39;</span>
+</span></span><span class="line"><span class="cl">                    <span class="s">&#39;rt=</span><span class="nv">$request_time</span> <span class="s">uct=&#34;</span><span class="nv">$upstream_connect_time&#34;</span> <span class="s">&#39;</span>
+</span></span><span class="line"><span class="cl">                    <span class="s">&#39;urt=&#34;</span><span class="nv">$upstream_response_time&#34;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">sendfile</span>        <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">tcp_nopush</span>      <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">keepalive_timeout</span>  <span class="mi">65</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">gzip</span>            <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># ─── upstream 块（负载均衡） ───
+</span></span></span><span class="line"><span class="cl">    <span class="kn">upstream</span> <span class="s">backend</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server</span> <span class="n">192.168.1.101</span><span class="p">:</span><span class="mi">8080</span> <span class="s">weight=3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server</span> <span class="n">192.168.1.102</span><span class="p">:</span><span class="mi">8080</span> <span class="s">weight=2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server</span> <span class="n">192.168.1.103</span><span class="p">:</span><span class="mi">8080</span> <span class="s">weight=1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># ─── server 块（虚拟主机） ───
+</span></span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server_name</span> <span class="s">www.example.com</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># ─── location 块（URL 路由） ───
+</span></span></span><span class="line"><span class="cl">        <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_pass</span> <span class="s">http://backend</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">location</span> <span class="s">/static/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">root</span> <span class="s">/var/www</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">expires</span> <span class="s">30d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="配置块层级关系">
+<a class="header-anchor" href="#%e9%85%8d%e7%bd%ae%e5%9d%97%e5%b1%82%e7%ba%a7%e5%85%b3%e7%b3%bb"></a>
+配置块层级关系
+</h3><pre class="mermaid">
+  graph TD
+    G[Global 全局块] --> H[http 块]
+    H --> UP[upstream 块]
+    H --> SV[server 块]
+    SV --> LC[location 块]
+    SV --> LC2[location 块]
+
+    G -.- G1["worker_processes<br/>error_log<br/>pid"]
+    H -.- H1["gzip<br/>sendfile<br/>keepalive<br/>mime.types"]
+    UP -.- UP1["server weight<br/>负载均衡策略"]
+    SV -.- SV1["listen<br/>server_name<br/>ssl"]
+    LC -.- LC1["proxy_pass<br/>root/alias<br/>rewrite<br/>限流规则"]
+</pre><h2 id="反向代理配置">
+<a class="header-anchor" href="#%e5%8f%8d%e5%90%91%e4%bb%a3%e7%90%86%e9%85%8d%e7%bd%ae"></a>
+反向代理配置
+</h2><h3 id="基础反向代理">
+<a class="header-anchor" href="#%e5%9f%ba%e7%a1%80%e5%8f%8d%e5%90%91%e4%bb%a3%e7%90%86"></a>
+基础反向代理
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server_name</span> <span class="s">api.example.com</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_pass</span> <span class="s">http://127.0.0.1:8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 传递客户端真实信息
+</span></span></span><span class="line"><span class="cl">        <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$host</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-Proto</span> <span class="nv">$scheme</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 代理超时设置
+</span></span></span><span class="line"><span class="cl">        <span class="kn">proxy_connect_timeout</span> <span class="s">5s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_send_timeout</span> <span class="s">30s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_read_timeout</span> <span class="s">30s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 缓冲区设置
+</span></span></span><span class="line"><span class="cl">        <span class="kn">proxy_buffering</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_buffer_size</span> <span class="mi">4k</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_buffers</span> <span class="mi">8</span> <span class="mi">4k</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># WebSocket 支持
+</span></span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="s">/ws</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_pass</span> <span class="s">http://127.0.0.1:8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_http_version</span> <span class="mi">1</span><span class="s">.1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_set_header</span> <span class="s">Upgrade</span> <span class="nv">$http_upgrade</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_set_header</span> <span class="s">Connection</span> <span class="s">&#34;upgrade&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_read_timeout</span> <span class="s">3600s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="负载均衡策略">
+<a class="header-anchor" href="#%e8%b4%9f%e8%bd%bd%e5%9d%87%e8%a1%a1%e7%ad%96%e7%95%a5"></a>
+负载均衡策略
+</h3><pre class="mermaid">
+  graph TD
+    C[Client] --> N[Nginx]
+    N -->|"策略选择"| S1[Server 1]
+    N --> S2[Server 2]
+    N --> S3[Server 3]
+</pre><h4 id="1-轮询默认">
+<a class="header-anchor" href="#1-%e8%bd%ae%e8%af%a2%e9%bb%98%e8%ae%a4"></a>
+1. 轮询（默认）
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">upstream</span> <span class="s">backend</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.101</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>  <span class="c1"># 默认 weight=1
+</span></span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.102</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.103</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="2-加权轮询">
+<a class="header-anchor" href="#2-%e5%8a%a0%e6%9d%83%e8%bd%ae%e8%af%a2"></a>
+2. 加权轮询
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">upstream</span> <span class="s">backend</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.101</span><span class="p">:</span><span class="mi">8080</span> <span class="s">weight=3</span><span class="p">;</span>  <span class="c1"># 30% 请求
+</span></span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.102</span><span class="p">:</span><span class="mi">8080</span> <span class="s">weight=2</span><span class="p">;</span>  <span class="c1"># 20% 请求
+</span></span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.103</span><span class="p">:</span><span class="mi">8080</span> <span class="s">weight=5</span><span class="p">;</span>  <span class="c1"># 50% 请求
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="3-ip-hash会话保持">
+<a class="header-anchor" href="#3-ip-hash%e4%bc%9a%e8%af%9d%e4%bf%9d%e6%8c%81"></a>
+3. IP Hash（会话保持）
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">upstream</span> <span class="s">backend</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">ip_hash</span><span class="p">;</span>  <span class="c1"># 相同客户端 IP 始终路由到同一服务器
+</span></span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.101</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.102</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="4-最少连接数">
+<a class="header-anchor" href="#4-%e6%9c%80%e5%b0%91%e8%bf%9e%e6%8e%a5%e6%95%b0"></a>
+4. 最少连接数
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">upstream</span> <span class="s">backend</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">least_conn</span><span class="p">;</span>  <span class="c1"># 路由到当前连接数最少的服务器
+</span></span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.101</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.102</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.103</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h4 id="5-一致性哈希需要第三方模块">
+<a class="header-anchor" href="#5-%e4%b8%80%e8%87%b4%e6%80%a7%e5%93%88%e5%b8%8c%e9%9c%80%e8%a6%81%e7%ac%ac%e4%b8%89%e6%96%b9%e6%a8%a1%e5%9d%97"></a>
+5. 一致性哈希（需要第三方模块）
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">upstream</span> <span class="s">backend</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">hash</span> <span class="nv">$request_uri</span> <span class="s">consistent</span><span class="p">;</span>  <span class="c1"># 按 URI 一致性哈希
+</span></span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.101</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.102</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.103</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="健康检查与故障转移">
+<a class="header-anchor" href="#%e5%81%a5%e5%ba%b7%e6%a3%80%e6%9f%a5%e4%b8%8e%e6%95%85%e9%9a%9c%e8%bd%ac%e7%a7%bb"></a>
+健康检查与故障转移
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">upstream</span> <span class="s">backend</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.101</span><span class="p">:</span><span class="mi">8080</span> <span class="s">max_fails=3</span> <span class="s">fail_timeout=30s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.102</span><span class="p">:</span><span class="mi">8080</span> <span class="s">max_fails=3</span> <span class="s">fail_timeout=30s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># max_fails: 在 fail_timeout 内失败 3 次则标记为宕机
+</span></span></span><span class="line"><span class="cl">    <span class="c1"># fail_timeout: 标记宕机后 30 秒内不参与负载
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.103</span><span class="p">:</span><span class="mi">8080</span> <span class="s">backup</span><span class="p">;</span>  <span class="c1"># 备用服务器，仅在主服务器全部宕机时启用
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_pass</span> <span class="s">http://backend</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 自定义健康检查（商业版功能）
+</span></span></span><span class="line"><span class="cl">        <span class="kn">health_check</span> <span class="s">interval=5s</span> <span class="s">fails=3</span> <span class="s">passes=2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 代理下一跳错误时转移到下一个服务器
+</span></span></span><span class="line"><span class="cl">        <span class="kn">proxy_next_upstream</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">http_500</span> <span class="s">http_502</span> <span class="s">http_503</span> <span class="s">http_504</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_next_upstream_tries</span> <span class="mi">3</span><span class="p">;</span>          <span class="c1"># 最多尝试 3 个服务器
+</span></span></span><span class="line"><span class="cl">        <span class="kn">proxy_next_upstream_timeout</span> <span class="s">10s</span><span class="p">;</span>      <span class="c1"># 转移总超时时间
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="负载均衡策略对比">
+<a class="header-anchor" href="#%e8%b4%9f%e8%bd%bd%e5%9d%87%e8%a1%a1%e7%ad%96%e7%95%a5%e5%af%b9%e6%af%94"></a>
+负载均衡策略对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>策略</th>
+					<th>说明</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>轮询</strong></td>
+					<td>依次分配</td>
+					<td>服务器性能相同</td>
+			</tr>
+			<tr>
+					<td><strong>加权轮询</strong></td>
+					<td>按权重比例分配</td>
+					<td>服务器性能不同</td>
+			</tr>
+			<tr>
+					<td><strong>IP Hash</strong></td>
+					<td>相同 IP 固定到同一服务器</td>
+					<td>需要会话保持</td>
+			</tr>
+			<tr>
+					<td><strong>最少连接</strong></td>
+					<td>分配给连接数最少的</td>
+					<td>长连接场景</td>
+			</tr>
+			<tr>
+					<td><strong>一致性哈希</strong></td>
+					<td>按 Key 哈希到固定节点</td>
+					<td>缓存命中率优化</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="限流配置">
+<a class="header-anchor" href="#%e9%99%90%e6%b5%81%e9%85%8d%e7%bd%ae"></a>
+限流配置
+</h2><h3 id="两种限流方式">
+<a class="header-anchor" href="#%e4%b8%a4%e7%a7%8d%e9%99%90%e6%b5%81%e6%96%b9%e5%bc%8f"></a>
+两种限流方式
+</h3><pre class="mermaid">
+  graph TD
+    A[Nginx 限流] --> B["limit_req: 请求速率限流<br/>漏桶算法"]
+    A --> C["limit_conn: 并发连接数限流"]
+
+    B --> B1["控制每秒/每分请求数<br/>超出返回 503"]
+    C --> C1["控制同时连接数<br/>超出拒绝新连接"]
+</pre><h3 id="请求速率限流">
+<a class="header-anchor" href="#%e8%af%b7%e6%b1%82%e9%80%9f%e7%8e%87%e9%99%90%e6%b5%81"></a>
+请求速率限流
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">http</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 定义限流区域：按客户端 IP 限流，速率 10 请求/秒
+</span></span></span><span class="line"><span class="cl">    <span class="kn">limit_req_zone</span> <span class="nv">$binary_remote_addr</span> <span class="s">zone=req_limit:10m</span> <span class="s">rate=10r/s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 按连接数限流：每个 IP 最多 20 个并发连接
+</span></span></span><span class="line"><span class="cl">    <span class="kn">limit_conn_zone</span> <span class="nv">$binary_remote_addr</span> <span class="s">zone=conn_limit:10m</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 限流状态码
+</span></span></span><span class="line"><span class="cl">        <span class="kn">limit_req_status</span> <span class="mi">429</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">limit_conn_status</span> <span class="mi">429</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">location</span> <span class="s">/api</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># burst=20: 允许突发 20 个请求排队
+</span></span></span><span class="line"><span class="cl">            <span class="c1"># nodelay: 突发请求不延迟，直接处理（超出才拒绝）
+</span></span></span><span class="line"><span class="cl">            <span class="kn">limit_req</span> <span class="s">zone=req_limit</span> <span class="s">burst=20</span> <span class="s">nodelay</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># 并发连接数限制
+</span></span></span><span class="line"><span class="cl">            <span class="kn">limit_conn</span> <span class="s">conn_limit</span> <span class="mi">20</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_pass</span> <span class="s">http://backend</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 对不同接口设置不同限流
+</span></span></span><span class="line"><span class="cl">        <span class="kn">location</span> <span class="s">/api/login</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 登录接口更严格：1 请求/秒
+</span></span></span><span class="line"><span class="cl">            <span class="kn">limit_req</span> <span class="s">zone=req_limit</span> <span class="s">burst=5</span> <span class="s">nodelay</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">limit_conn</span> <span class="s">conn_limit</span> <span class="mi">5</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_pass</span> <span class="s">http://backend</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="kn">location</span> <span class="s">/api/search</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 搜索接口：5 请求/秒
+</span></span></span><span class="line"><span class="cl">            <span class="kn">limit_req</span> <span class="s">zone=req_limit</span> <span class="s">burst=10</span> <span class="s">nodelay</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="kn">proxy_pass</span> <span class="s">http://backend</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="漏桶算法原理">
+<a class="header-anchor" href="#%e6%bc%8f%e6%a1%b6%e7%ae%97%e6%b3%95%e5%8e%9f%e7%90%86"></a>
+漏桶算法原理
+</h3><pre class="mermaid">
+  graph LR
+    A[请求流入] --> B["漏桶<br/>rate=10r/s"]
+    B -->|"匀速漏出"| C[正常处理]
+    B -->|"桶满"| D["burst 排队"]
+    D -->|"队列满"| E[429 拒绝]
+
+    style D fill:#ff9
+    style E fill:#f99
+</pre><h2 id="https-配置">
+<a class="header-anchor" href="#https-%e9%85%8d%e7%bd%ae"></a>
+HTTPS 配置
+</h2><h3 id="ssl-证书配置">
+<a class="header-anchor" href="#ssl-%e8%af%81%e4%b9%a6%e9%85%8d%e7%bd%ae"></a>
+SSL 证书配置
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">listen</span> <span class="mi">443</span> <span class="s">ssl</span> <span class="s">http2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server_name</span> <span class="s">www.example.com</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># SSL 证书路径
+</span></span></span><span class="line"><span class="cl">    <span class="kn">ssl_certificate</span>     <span class="s">/etc/nginx/ssl/fullchain.pem</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">ssl_certificate_key</span> <span class="s">/etc/nginx/ssl/privkey.pem</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># TLS 协议版本（禁用不安全的 SSLv3/TLSv1.0/TLSv1.1）
+</span></span></span><span class="line"><span class="cl">    <span class="kn">ssl_protocols</span> <span class="s">TLSv1.2</span> <span class="s">TLSv1.3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 加密套件
+</span></span></span><span class="line"><span class="cl">    <span class="kn">ssl_ciphers</span> <span class="s">ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">ssl_prefer_server_ciphers</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># SSL 会话缓存（减少握手开销）
+</span></span></span><span class="line"><span class="cl">    <span class="kn">ssl_session_cache</span> <span class="s">shared:SSL:10m</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">ssl_session_timeout</span> <span class="s">1d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">ssl_session_tickets</span> <span class="no">off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># OCSP 装订（加速证书验证）
+</span></span></span><span class="line"><span class="cl">    <span class="kn">ssl_stapling</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">ssl_stapling_verify</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">resolver</span> <span class="n">8.8.8.8</span> <span class="n">8.8.4.4</span> <span class="s">valid=300s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># HSTS（强制 HTTPS）
+</span></span></span><span class="line"><span class="cl">    <span class="kn">add_header</span> <span class="s">Strict-Transport-Security</span> <span class="s">&#34;max-age=63072000</span><span class="p">;</span> <span class="kn">includeSubDomains</span><span class="p">;</span> <span class="kn">preload&#34;</span> <span class="s">always</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_pass</span> <span class="s">http://backend</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># HTTP 跳转 HTTPS
+</span></span></span><span class="line"><span class="cl"><span class="k">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server_name</span> <span class="s">www.example.com</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">return</span> <span class="mi">301</span> <span class="s">https://</span><span class="nv">$host$request_uri</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="https-性能优化">
+<a class="header-anchor" href="#https-%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96"></a>
+HTTPS 性能优化
+</h3><pre class="mermaid">
+  graph TD
+    A[HTTPS 性能优化] --> B["TLS 1.3: 1-RTT 握手"]
+    A --> C["Session 复用: 0-RTT"]
+    A --> D["HTTP/2 多路复用"]
+    A --> E["OCSP Stapling: 减少验证往返"]
+    A --> F["硬件加速 AES-NI"]
+</pre><h2 id="静态资源服务">
+<a class="header-anchor" href="#%e9%9d%99%e6%80%81%e8%b5%84%e6%ba%90%e6%9c%8d%e5%8a%a1"></a>
+静态资源服务
+</h2><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server_name</span> <span class="s">static.example.com</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">root</span> <span class="s">/var/www/static</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 图片缓存
+</span></span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="p">~</span><span class="sr">*</span> <span class="s">\.(jpg|jpeg|png|gif|ico|webp)</span>$ <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">expires</span> <span class="s">30d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">add_header</span> <span class="s">Cache-Control</span> <span class="s">&#34;public,</span> <span class="s">immutable&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">access_log</span> <span class="no">off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># CSS/JS 缓存
+</span></span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="p">~</span><span class="sr">*</span> <span class="s">\.(css|js)</span>$ <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">expires</span> <span class="s">7d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">add_header</span> <span class="s">Cache-Control</span> <span class="s">&#34;public&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">access_log</span> <span class="no">off</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 字体文件跨域
+</span></span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="p">~</span><span class="sr">*</span> <span class="s">\.(woff|woff2|ttf|eot|otf)</span>$ <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">expires</span> <span class="s">1y</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">add_header</span> <span class="s">Access-Control-Allow-Origin</span> <span class="s">*</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">add_header</span> <span class="s">Cache-Control</span> <span class="s">&#34;public&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 禁止访问隐藏文件
+</span></span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="p">~</span> <span class="sr">/\.</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">deny</span> <span class="s">all</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Gzip 压缩
+</span></span></span><span class="line"><span class="cl">    <span class="kn">gzip</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">gzip_comp_level</span> <span class="mi">6</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">gzip_min_length</span> <span class="mi">1024</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">gzip_types</span> <span class="s">text/plain</span> <span class="s">text/css</span> <span class="s">application/json</span> <span class="s">application/javascript</span>
+</span></span><span class="line"><span class="cl">               <span class="s">text/xml</span> <span class="s">application/xml</span> <span class="s">application/xml+rss</span> <span class="s">text/javascript</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="高级配置">
+<a class="header-anchor" href="#%e9%ab%98%e7%ba%a7%e9%85%8d%e7%bd%ae"></a>
+高级配置
+</h2><h3 id="动静分离">
+<a class="header-anchor" href="#%e5%8a%a8%e9%9d%99%e5%88%86%e7%a6%bb"></a>
+动静分离
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server_name</span> <span class="s">www.example.com</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 动态请求 → 后端应用服务器
+</span></span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="s">/api</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_pass</span> <span class="s">http://backend</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$host</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 静态资源 → Nginx 直接返回
+</span></span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="s">/static</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">alias</span> <span class="s">/var/www/static</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">expires</span> <span class="s">30d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 图片 → Nginx 图片处理模块
+</span></span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="p">~</span> <span class="sr">^/images/(.+)\\.(jpg|png|webp)$</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">root</span> <span class="s">/var/www</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">image_filter</span> <span class="s">resize</span> <span class="mi">800</span> <span class="mi">600</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">image_filter_jpeg_quality</span> <span class="mi">85</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 根路径 → 前端 SPA
+</span></span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">root</span> <span class="s">/var/www/html</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">try_files</span> <span class="nv">$uri</span> <span class="nv">$uri/</span> <span class="s">/index.html</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="灰度发布">
+<a class="header-anchor" href="#%e7%81%b0%e5%ba%a6%e5%8f%91%e5%b8%83"></a>
+灰度发布
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">upstream</span> <span class="s">stable</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.101</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">upstream</span> <span class="s">canary</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">server</span> <span class="n">192.168.1.201</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 灰度切分配置
+</span></span></span><span class="line"><span class="cl"><span class="k">split_clients</span> <span class="s">&#34;</span><span class="nv">${remote_addr}AAA&#34;</span> <span class="nv">$upstream_group</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">10%</span>  <span class="s">canary</span><span class="p">;</span>   <span class="c1"># 10% 流量到灰度环境
+</span></span></span><span class="line"><span class="cl">    <span class="kn">*</span>    <span class="s">stable</span><span class="p">;</span>   <span class="c1"># 90% 流量到稳定环境
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_pass</span> <span class="s">http://</span><span class="nv">$upstream_group</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$host</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="请求大小与超时限制">
+<a class="header-anchor" href="#%e8%af%b7%e6%b1%82%e5%a4%a7%e5%b0%8f%e4%b8%8e%e8%b6%85%e6%97%b6%e9%99%90%e5%88%b6"></a>
+请求大小与超时限制
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="k">server</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 请求体大小限制（防止大文件上传攻击）
+</span></span></span><span class="line"><span class="cl">    <span class="kn">client_max_body_size</span> <span class="mi">10m</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 请求头超时
+</span></span></span><span class="line"><span class="cl">    <span class="kn">client_header_timeout</span> <span class="s">30s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 请求体超时
+</span></span></span><span class="line"><span class="cl">    <span class="kn">client_body_timeout</span> <span class="s">30s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 响应超时
+</span></span></span><span class="line"><span class="cl">    <span class="kn">send_timeout</span> <span class="s">30s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kn">location</span> <span class="s">/api/upload</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 上传接口允许更大的请求体
+</span></span></span><span class="line"><span class="cl">        <span class="kn">client_max_body_size</span> <span class="mi">100m</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">proxy_pass</span> <span class="s">http://backend</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="性能优化">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96"></a>
+性能优化
+</h2><h3 id="核心优化参数">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e4%bc%98%e5%8c%96%e5%8f%82%e6%95%b0"></a>
+核心优化参数
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="c1"># ─── 全局优化 ───
+</span></span></span><span class="line"><span class="cl"><span class="k">worker_processes</span> <span class="s">auto</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">worker_rlimit_nofile</span> <span class="mi">65535</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">events</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">worker_connections</span> <span class="mi">10240</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">multi_accept</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">use</span> <span class="s">epoll</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">http</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># ─── IO 优化 ───
+</span></span></span><span class="line"><span class="cl">    <span class="kn">sendfile</span> <span class="no">on</span><span class="p">;</span>           <span class="c1"># 零拷贝发送文件
+</span></span></span><span class="line"><span class="cl">    <span class="kn">tcp_nopush</span> <span class="no">on</span><span class="p">;</span>         <span class="c1"># 数据包合并发送
+</span></span></span><span class="line"><span class="cl">    <span class="kn">tcp_nodelay</span> <span class="no">on</span><span class="p">;</span>        <span class="c1"># 禁用 Nagle 算法（小数据立即发送）
+</span></span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># ─── Keepalive 优化 ───
+</span></span></span><span class="line"><span class="cl">    <span class="kn">keepalive_timeout</span> <span class="mi">65</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">keepalive_requests</span> <span class="mi">1000</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># ─── 后端长连接（减少 TCP 握手） ───
+</span></span></span><span class="line"><span class="cl">    <span class="kn">upstream</span> <span class="s">backend</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">server</span> <span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">8080</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">keepalive</span> <span class="mi">32</span><span class="p">;</span>  <span class="c1"># 保持 32 个空闲长连接
+</span></span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># ─── 缓冲优化 ───
+</span></span></span><span class="line"><span class="cl">    <span class="kn">client_body_buffer_size</span> <span class="mi">16k</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">client_header_buffer_size</span> <span class="mi">4k</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">large_client_header_buffers</span> <span class="mi">4</span> <span class="mi">8k</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># ─── 压缩优化 ───
+</span></span></span><span class="line"><span class="cl">    <span class="kn">gzip</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">gzip_comp_level</span> <span class="mi">6</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">gzip_min_length</span> <span class="mi">1024</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">gzip_vary</span> <span class="no">on</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">gzip_proxied</span> <span class="s">any</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">gzip_types</span> <span class="s">text/plain</span> <span class="s">text/css</span> <span class="s">application/json</span>
+</span></span><span class="line"><span class="cl">               <span class="s">application/javascript</span> <span class="s">text/xml</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="系统内核参数">
+<a class="header-anchor" href="#%e7%b3%bb%e7%bb%9f%e5%86%85%e6%a0%b8%e5%8f%82%e6%95%b0"></a>
+系统内核参数
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># /etc/sysctl.conf</span>
+</span></span><span class="line"><span class="cl">net.core.somaxconn <span class="o">=</span> <span class="m">65535</span>        <span class="c1"># TCP 连接队列</span>
+</span></span><span class="line"><span class="cl">net.ipv4.tcp_max_syn_backlog <span class="o">=</span> <span class="m">65535</span>
+</span></span><span class="line"><span class="cl">net.ipv4.tcp_fin_timeout <span class="o">=</span> <span class="m">15</span>
+</span></span><span class="line"><span class="cl">net.ipv4.tcp_tw_reuse <span class="o">=</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl">net.ipv4.ip_local_port_range <span class="o">=</span> <span class="m">1024</span> <span class="m">65000</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 生效</span>
+</span></span><span class="line"><span class="cl">sysctl -p
+</span></span></code></pre></div><h2 id="常见问题排查">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e6%8e%92%e6%9f%a5"></a>
+常见问题排查
+</h2><h3 id="问题-1502-bad-gateway">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98-1502-bad-gateway"></a>
+问题 1：502 Bad Gateway
+</h3><pre class="mermaid">
+  graph TD
+    A[502 Bad Gateway] --> B{后端服务运行?}
+    B -->|否| C[启动后端服务]
+    B -->|是| D{端口/地址正确?}
+    D -->|否| E[检查 proxy_pass 配置]
+    D -->|是| F{防火墙/SELinux?}
+    F -->|是| G[开放端口/配置 SELinux]
+    F -->|否| H{后端处理超时?}
+    H -->|是| I[增大 proxy_read_timeout]
+</pre><h3 id="问题-2504-gateway-timeout">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98-2504-gateway-timeout"></a>
+问题 2：504 Gateway Timeout
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="line"><span class="cl"><span class="c1"># 增加超时时间
+</span></span></span><span class="line"><span class="cl"><span class="k">location</span> <span class="s">/api/slow</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">proxy_pass</span> <span class="s">http://backend</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">proxy_connect_timeout</span> <span class="s">10s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">proxy_read_timeout</span> <span class="s">120s</span><span class="p">;</span>   <span class="c1"># 后端处理慢，增大读取超时
+</span></span></span><span class="line"><span class="cl">    <span class="kn">proxy_send_timeout</span> <span class="s">120s</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h3 id="问题-3性能瓶颈定位">
+<a class="header-anchor" href="#%e9%97%ae%e9%a2%98-3%e6%80%a7%e8%83%bd%e7%93%b6%e9%a2%88%e5%ae%9a%e4%bd%8d"></a>
+问题 3：性能瓶颈定位
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看连接状态统计</span>
+</span></span><span class="line"><span class="cl">nginx -V 2&gt;<span class="p">&amp;</span><span class="m">1</span> <span class="p">|</span> grep with-http_stub_status
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 开启状态监控</span>
+</span></span><span class="line"><span class="cl">location /nginx_status <span class="o">{</span>
+</span></span><span class="line"><span class="cl">    stub_status on<span class="p">;</span>
+</span></span><span class="line"><span class="cl">    access_log off<span class="p">;</span>
+</span></span><span class="line"><span class="cl">    allow 127.0.0.1<span class="p">;</span>
+</span></span><span class="line"><span class="cl">    deny all<span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="o">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 输出示例</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Active connections: 50</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># server accepts handled requests</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 1234 1234 5678</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># Reading: 0 Writing: 1 Waiting: 49</span>
+</span></span></code></pre></div><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>含义</th>
+					<th>关注点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Active connections</td>
+					<td>当前活跃连接数</td>
+					<td>持续增长需关注</td>
+			</tr>
+			<tr>
+					<td>Reading</td>
+					<td>读取请求头的连接数</td>
+					<td>过高说明客户端上传慢</td>
+			</tr>
+			<tr>
+					<td>Writing</td>
+					<td>返回响应的连接数</td>
+					<td>过高说明后端处理慢</td>
+			</tr>
+			<tr>
+					<td>Waiting</td>
+					<td>空闲等待中的连接数</td>
+					<td>正常值，keepalive 连接</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="最佳实践总结">
+<a class="header-anchor" href="#%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e6%80%bb%e7%bb%93"></a>
+最佳实践总结
+</h2><table>
+	<thead>
+			<tr>
+					<th>实践</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>动静分离</strong></td>
+					<td>静态资源由 Nginx 直接服务，动态请求才转发后端</td>
+			</tr>
+			<tr>
+					<td><strong>开启 Gzip</strong></td>
+					<td>减少网络传输 60-80%</td>
+			</tr>
+			<tr>
+					<td><strong>合理缓存</strong></td>
+					<td>静态资源设置长期缓存 + 内容哈希文件名</td>
+			</tr>
+			<tr>
+					<td><strong>健康检查</strong></td>
+					<td>配置 max_fails + proxy_next_upstream</td>
+			</tr>
+			<tr>
+					<td><strong>限流防护</strong></td>
+					<td>对 API 接口配置 limit_req + limit_conn</td>
+			</tr>
+			<tr>
+					<td><strong>HTTPS</strong></td>
+					<td>启用 TLS 1.3 + HSTS + OCSP Stapling</td>
+			</tr>
+			<tr>
+					<td><strong>日志监控</strong></td>
+					<td>记录 request_time 和 upstream_response_time</td>
+			</tr>
+			<tr>
+					<td><strong>内核调优</strong></td>
+					<td>调整 somaxconn、tcp 参数</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>Nginx 的精髓在于其<strong>事件驱动架构</strong>和<strong>声明式配置系统</strong>。通过 Master-Worker 进程模型和 epoll 事件驱动，单个 Nginx 实例即可处理数万并发连接；通过灵活的 location 匹配和 proxy_pass 转发，可以构建从静态资源服务到 API 网关的全栈解决方案。</p>
+<p>掌握负载均衡策略的选择（轮询/加权/IP Hash/最少连接）和限流配置（漏桶算法），是构建高可用系统的关键技能。下一篇我们将探讨 Elasticsearch——当需要全文搜索和复杂的数据分析时，它是 Nginx 之外另一个不可或缺的基础设施。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/middleware-ops/nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E4%B8%8E%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/&amp;appkey=&amp;title=Nginx%e5%8f%8d%e5%90%91%e4%bb%a3%e7%90%86%e4%b8%8e%e8%b4%9f%e8%bd%bd%e5%9d%87&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="Nginx反向代理与负载均">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/middleware-ops/nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E4%B8%8E%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/&amp;title=Nginx%e5%8f%8d%e5%90%91%e4%bb%a3%e7%90%86%e4%b8%8e%e8%b4%9f%e8%bd%bd%e5%9d%87&amp;desc=Nginx%e9%85%8d%e7%bd%ae%e8%af%a6%e8%a7%a3%e3%80%81%e8%b4%9f%e8%bd%bd%e5%9d%87%e8%a1%a1%e7%ad%96%e7%95%a5%e3%80%81%e9%99%90%e6%b5%81%e4%b8%8eHTTPS%e9%85%8d%e7%bd%ae%e5%ae%9e%e8%b7%b5&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="Nginx反向代理与负载均">
@@ -341,7 +1111,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
+              data-src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800"
               data-sizes="auto"
               alt="Redis Stream消息队列与发布订阅实"
               class="lazyload"
@@ -353,7 +1123,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">Redis Stream消息队列与发布订阅实</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
               data-sizes="auto"
               alt="Kafka Streams流处理实"
               class="lazyload"
@@ -385,10 +1155,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -438,7 +1208,65 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#nginx-架构原理">Nginx 架构原理</a>
+      <ul>
+        <li><a href="#事件驱动模型">事件驱动模型</a></li>
+      </ul>
+    </li>
+    <li><a href="#配置文件结构">配置文件结构</a>
+      <ul>
+        <li><a href="#配置块层级关系">配置块层级关系</a></li>
+      </ul>
+    </li>
+    <li><a href="#反向代理配置">反向代理配置</a>
+      <ul>
+        <li><a href="#基础反向代理">基础反向代理</a></li>
+        <li><a href="#负载均衡策略">负载均衡策略</a></li>
+        <li><a href="#健康检查与故障转移">健康检查与故障转移</a></li>
+        <li><a href="#负载均衡策略对比">负载均衡策略对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#限流配置">限流配置</a>
+      <ul>
+        <li><a href="#两种限流方式">两种限流方式</a></li>
+        <li><a href="#请求速率限流">请求速率限流</a></li>
+        <li><a href="#漏桶算法原理">漏桶算法原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#https-配置">HTTPS 配置</a>
+      <ul>
+        <li><a href="#ssl-证书配置">SSL 证书配置</a></li>
+        <li><a href="#https-性能优化">HTTPS 性能优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#静态资源服务">静态资源服务</a></li>
+    <li><a href="#高级配置">高级配置</a>
+      <ul>
+        <li><a href="#动静分离">动静分离</a></li>
+        <li><a href="#灰度发布">灰度发布</a></li>
+        <li><a href="#请求大小与超时限制">请求大小与超时限制</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能优化">性能优化</a>
+      <ul>
+        <li><a href="#核心优化参数">核心优化参数</a></li>
+        <li><a href="#系统内核参数">系统内核参数</a></li>
+      </ul>
+    </li>
+    <li><a href="#常见问题排查">常见问题排查</a>
+      <ul>
+        <li><a href="#问题-1502-bad-gateway">问题 1：502 Bad Gateway</a></li>
+        <li><a href="#问题-2504-gateway-timeout">问题 2：504 Gateway Timeout</a></li>
+        <li><a href="#问题-3性能瓶颈定位">问题 3：性能瓶颈定位</a></li>
+      </ul>
+    </li>
+    <li><a href="#最佳实践总结">最佳实践总结</a></li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -569,6 +1397,105 @@
           description: "Nginx配置详解、负载均衡策略、限流与HTTPS配置实践",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

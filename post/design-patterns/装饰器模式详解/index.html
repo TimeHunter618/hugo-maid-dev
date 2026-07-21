@@ -190,7 +190,42 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+        <li><a href="#核心特征">核心特征</a></li>
+      </ul>
+    </li>
+    <li><a href="#手写装饰器模式">手写装饰器模式</a>
+      <ul>
+        <li><a href="#经典示例咖啡配料系统">经典示例：咖啡配料系统</a></li>
+        <li><a href="#客户端自由组合">客户端：自由组合</a></li>
+        <li><a href="#嵌套结构示意图">嵌套结构示意图</a></li>
+      </ul>
+    </li>
+    <li><a href="#java-io-流装饰器模式的经典应用">Java IO 流：装饰器模式的经典应用</a></li>
+    <li><a href="#装饰器-vs-继承">装饰器 vs 继承</a></li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#装饰器模式-vs-代理模式">装饰器模式 vs 代理模式</a></li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#spring-的-beanwrapper">Spring 的 BeanWrapper</a></li>
+        <li><a href="#spring-cache">Spring Cache</a></li>
+        <li><a href="#servlet-api-的-httpservletrequestwrapper">Servlet API 的 HttpServletRequestWrapper</a></li>
+        <li><a href="#collectionssynchronizedlist">Collections.synchronizedList</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +306,389 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="模式定义">
+<a class="header-anchor" href="#%e6%a8%a1%e5%bc%8f%e5%ae%9a%e4%b9%89"></a>
+模式定义
+</h2><p>装饰器模式（Decorator Pattern）动态地给一个对象添加一些额外的职责，就增加功能而言，装饰器模式比生成子类（继承）更加灵活。</p>
+<blockquote>
+<p><strong>GoF 定义</strong>：动态地给一个对象添加一些额外的职责。就增加功能来说，装饰器模式相比生成子类更为灵活。</p>
+</blockquote>
+<p>通俗地说：<strong>装饰器模式就是用&quot;包装&quot;的方式给对象增加新功能，而不改变原有对象</strong>。就像给手机套上手机壳、贴上贴纸，手机本身没有变，但功能增强了。</p>
+<h3 id="类图">
+<a class="header-anchor" href="#%e7%b1%bb%e5%9b%be"></a>
+类图
+</h3><pre class="mermaid">
+  classDiagram
+    class Component {
+        <<interface>>
+        +operation()
+    }
+    class ConcreteComponent {
+        +operation()
+    }
+    class Decorator {
+        <<abstract>>
+        #Component component
+        +operation()
+    }
+    class ConcreteDecoratorA {
+        +operation()
+        +addedBehavior()
+    }
+    class ConcreteDecoratorB {
+        +operation()
+    }
+    Component <|.. ConcreteComponent
+    Component <|.. Decorator
+    Decorator <|-- ConcreteDecoratorA
+    Decorator <|-- ConcreteDecoratorB
+    Decorator --> Component : 持有引用
+</pre><h3 id="核心特征">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e7%89%b9%e5%be%81"></a>
+核心特征
+</h3><ul>
+<li>装饰器和被装饰对象<strong>实现同一个接口</strong></li>
+<li>装饰器<strong>持有</strong>被装饰对象的引用</li>
+<li>装饰器在调用被装饰对象方法的前后，<strong>添加自己的行为</strong></li>
+</ul>
+<h2 id="手写装饰器模式">
+<a class="header-anchor" href="#%e6%89%8b%e5%86%99%e8%a3%85%e9%a5%b0%e5%99%a8%e6%a8%a1%e5%bc%8f"></a>
+手写装饰器模式
+</h2><h3 id="经典示例咖啡配料系统">
+<a class="header-anchor" href="#%e7%bb%8f%e5%85%b8%e7%a4%ba%e4%be%8b%e5%92%96%e5%95%a1%e9%85%8d%e6%96%99%e7%b3%bb%e7%bb%9f"></a>
+经典示例：咖啡配料系统
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 抽象组件：饮品</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">interface</span> <span class="nc">Beverage</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="nf">cost</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 具体组件：基础咖啡</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Espresso</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Beverage</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&#34;浓缩咖啡&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">cost</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">15</span><span class="p">.</span><span class="na">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Decaf</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Beverage</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&#34;无咖啡因咖啡&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">cost</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">18</span><span class="p">.</span><span class="na">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 抽象装饰器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">abstract</span><span class="w"> </span><span class="kd">class</span> <span class="nc">CondimentDecorator</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Beverage</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">protected</span><span class="w"> </span><span class="n">Beverage</span><span class="w"> </span><span class="n">beverage</span><span class="p">;</span><span class="w">  </span><span class="c1">// 被装饰的对象</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">CondimentDecorator</span><span class="p">(</span><span class="n">Beverage</span><span class="w"> </span><span class="n">beverage</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">beverage</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">beverage</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">beverage</span><span class="p">.</span><span class="na">getDescription</span><span class="p">();</span><span class="w">  </span><span class="c1">// 默认委托给被装饰对象</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 具体装饰器：牛奶</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">MilkDecorator</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">CondimentDecorator</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">MilkDecorator</span><span class="p">(</span><span class="n">Beverage</span><span class="w"> </span><span class="n">beverage</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">beverage</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">beverage</span><span class="p">.</span><span class="na">getDescription</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; + 牛奶&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">cost</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">beverage</span><span class="p">.</span><span class="na">cost</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">3</span><span class="p">.</span><span class="na">0</span><span class="p">;</span><span class="w">  </span><span class="c1">// 在原有价格上增加</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 具体装饰器：糖</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SugarDecorator</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">CondimentDecorator</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">SugarDecorator</span><span class="p">(</span><span class="n">Beverage</span><span class="w"> </span><span class="n">beverage</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">beverage</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">beverage</span><span class="p">.</span><span class="na">getDescription</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; + 糖&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">cost</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">beverage</span><span class="p">.</span><span class="na">cost</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">.</span><span class="na">0</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 具体装饰器：大杯</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LargeSizeDecorator</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">CondimentDecorator</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">LargeSizeDecorator</span><span class="p">(</span><span class="n">Beverage</span><span class="w"> </span><span class="n">beverage</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">beverage</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getDescription</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">beverage</span><span class="p">.</span><span class="na">getDescription</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34;（大杯）&#34;</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">cost</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">beverage</span><span class="p">.</span><span class="na">cost</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">1</span><span class="p">.</span><span class="na">3</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="客户端自由组合">
+<a class="header-anchor" href="#%e5%ae%a2%e6%88%b7%e7%ab%af%e8%87%aa%e7%94%b1%e7%bb%84%e5%90%88"></a>
+客户端：自由组合
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Client</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 一杯浓缩咖啡</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Beverage</span><span class="w"> </span><span class="n">coffee1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Espresso</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">coffee1</span><span class="p">.</span><span class="na">getDescription</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; → ¥&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">coffee1</span><span class="p">.</span><span class="na">cost</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 浓缩咖啡 + 牛奶</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Beverage</span><span class="w"> </span><span class="n">coffee2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">MilkDecorator</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Espresso</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">coffee2</span><span class="p">.</span><span class="na">getDescription</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; → ¥&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">coffee2</span><span class="p">.</span><span class="na">cost</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 浓缩咖啡 + 牛奶 + 糖 + 大杯（层层嵌套）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Beverage</span><span class="w"> </span><span class="n">coffee3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">LargeSizeDecorator</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="k">new</span><span class="w"> </span><span class="n">SugarDecorator</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                        </span><span class="k">new</span><span class="w"> </span><span class="n">MilkDecorator</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="k">new</span><span class="w"> </span><span class="n">Espresso</span><span class="p">())));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">coffee3</span><span class="p">.</span><span class="na">getDescription</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; → ¥&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">format</span><span class="p">(</span><span class="s">&#34;%.2f&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">coffee3</span><span class="p">.</span><span class="na">cost</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>输出：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">浓缩咖啡 → ¥15.0
+</span></span><span class="line"><span class="cl">浓缩咖啡 + 牛奶 → ¥18.0
+</span></span><span class="line"><span class="cl">浓缩咖啡 + 牛奶 + 糖（大杯） → ¥24.70
+</span></span></code></pre></div><h3 id="嵌套结构示意图">
+<a class="header-anchor" href="#%e5%b5%8c%e5%a5%97%e7%bb%93%e6%9e%84%e7%a4%ba%e6%84%8f%e5%9b%be"></a>
+嵌套结构示意图
+</h3><pre class="mermaid">
+  graph LR
+    A[LargeSizeDecorator] -->|包装| B[SugarDecorator]
+    B -->|包装| C[MilkDecorator]
+    C -->|包装| D[Espresso]
+    D -->|cost| E["15.0（基础价格）"]
+</pre><h2 id="java-io-流装饰器模式的经典应用">
+<a class="header-anchor" href="#java-io-%e6%b5%81%e8%a3%85%e9%a5%b0%e5%99%a8%e6%a8%a1%e5%bc%8f%e7%9a%84%e7%bb%8f%e5%85%b8%e5%ba%94%e7%94%a8"></a>
+Java IO 流：装饰器模式的经典应用
+</h2><p>Java IO 流的设计是装饰器模式最经典的案例：</p>
+<pre class="mermaid">
+  graph TD
+    InputStream --> FileInputStream
+    InputStream --> ByteArrayInputStream
+    InputStream --> FilterInputStream
+    FilterInputStream --> BufferedInputStream
+    FilterInputStream --> DataInputStream
+    FilterInputStream --> GZIPInputStream
+</pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 层层装饰，功能逐步增强</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">InputStream</span><span class="w"> </span><span class="n">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">FileInputStream</span><span class="p">(</span><span class="s">&#34;data.txt&#34;</span><span class="p">);</span><span class="w">           </span><span class="c1">// 基础：读文件</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BufferedInputStream</span><span class="p">(</span><span class="n">input</span><span class="p">);</span><span class="w">                         </span><span class="c1">// 增强：加缓冲区</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">GZIPInputStream</span><span class="p">(</span><span class="n">input</span><span class="p">);</span><span class="w">                             </span><span class="c1">// 增强：GZIP 解压</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 还可以继续包装</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">Reader</span><span class="w"> </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">InputStreamReader</span><span class="p">(</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;UTF-8&#34;</span><span class="p">);</span><span class="w">         </span><span class="c1">// 转为字符流</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">BufferedReader</span><span class="w"> </span><span class="n">br</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BufferedReader</span><span class="p">(</span><span class="n">reader</span><span class="p">);</span><span class="w">                 </span><span class="c1">// 增加按行读取</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">String</span><span class="w"> </span><span class="n">line</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">while</span><span class="w"> </span><span class="p">((</span><span class="n">line</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">br</span><span class="p">.</span><span class="na">readLine</span><span class="p">())</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">line</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p><strong>每一层装饰器都添加了新功能</strong>：</p>
+<ul>
+<li><code>FileInputStream</code>：从文件读取字节</li>
+<li><code>BufferedInputStream</code>：添加缓冲区，减少 IO 次数</li>
+<li><code>GZIPInputStream</code>：添加 GZIP 解压功能</li>
+<li><code>InputStreamReader</code>：字节流转字符流</li>
+<li><code>BufferedReader</code>：添加按行读取功能</li>
+</ul>
+<h2 id="装饰器-vs-继承">
+<a class="header-anchor" href="#%e8%a3%85%e9%a5%b0%e5%99%a8-vs-%e7%bb%a7%e6%89%bf"></a>
+装饰器 vs 继承
+</h2><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>继承</th>
+					<th>装饰器</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>扩展方式</td>
+					<td>编译时静态确定</td>
+					<td>运行时动态组合</td>
+			</tr>
+			<tr>
+					<td>灵活性</td>
+					<td>低（类爆炸）</td>
+					<td>高（自由组合）</td>
+			</tr>
+			<tr>
+					<td>多功能组合</td>
+					<td>N 个功能需要 $2^N$ 个子类</td>
+					<td>N 个装饰器自由组合</td>
+			</tr>
+			<tr>
+					<td>修改原类</td>
+					<td>是（通过子类覆盖）</td>
+					<td>否（不改变原对象）</td>
+			</tr>
+	</tbody>
+</table>
+<p>例如，咖啡有 4 种配料（牛奶、糖、大杯、奶油），用继承需要 $2^4 = 16$ 个子类，而装饰器只需 4 个装饰器类即可任意组合。</p>
+<h2 id="适用场景">
+<a class="header-anchor" href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+适用场景
+</h2><ol>
+<li><strong>功能增强</strong>：在不修改原有类的前提下增加功能</li>
+<li><strong>动态组合</strong>：需要运行时灵活组合多种功能</li>
+<li><strong>IO 处理</strong>：Java IO 流的经典设计</li>
+<li><strong>缓存增强</strong>：给数据访问层添加缓存</li>
+<li><strong>日志/权限</strong>：给业务方法添加日志或权限检查</li>
+</ol>
+<h2 id="优缺点">
+<a class="header-anchor" href="#%e4%bc%98%e7%bc%ba%e7%82%b9"></a>
+优缺点
+</h2><h3 id="优点">
+<a class="header-anchor" href="#%e4%bc%98%e7%82%b9"></a>
+优点
+</h3><ol>
+<li><strong>开闭原则</strong>：扩展功能不修改原有代码</li>
+<li><strong>灵活组合</strong>：多个装饰器可以自由搭配</li>
+<li><strong>替代继承</strong>：避免类爆炸问题</li>
+<li><strong>单一职责</strong>：每个装饰器只负责一种增强</li>
+</ol>
+<h3 id="缺点">
+<a class="header-anchor" href="#%e7%bc%ba%e7%82%b9"></a>
+缺点
+</h3><ol>
+<li><strong>对象增多</strong>：多层装饰会产生很多小对象</li>
+<li><strong>调试困难</strong>：嵌套层次深时，排查问题需要逐层追踪</li>
+<li><strong>顺序依赖</strong>：装饰器的顺序可能影响结果（如先加缓冲还是先解压）</li>
+<li><strong>初始化繁琐</strong>：多层嵌套的构造代码可读性差</li>
+</ol>
+<h2 id="装饰器模式-vs-代理模式">
+<a class="header-anchor" href="#%e8%a3%85%e9%a5%b0%e5%99%a8%e6%a8%a1%e5%bc%8f-vs-%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f"></a>
+装饰器模式 vs 代理模式
+</h2><p>装饰器模式和代理模式的结构几乎一模一样（都是&quot;实现同一接口 + 持有引用&quot;），但意图截然不同：</p>
+<table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>装饰器模式</th>
+					<th>代理模式</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>意图</strong></td>
+					<td>增强/添加功能</td>
+					<td>控制访问</td>
+			</tr>
+			<tr>
+					<td><strong>关注点</strong></td>
+					<td>&ldquo;怎么做更多&rdquo;</td>
+					<td>&ldquo;能不能做&rdquo;</td>
+			</tr>
+			<tr>
+					<td><strong>对象创建</strong></td>
+					<td>客户端创建并传入</td>
+					<td>代理内部创建或持有</td>
+			</tr>
+			<tr>
+					<td><strong>使用者</strong></td>
+					<td>客户端知道在装饰</td>
+					<td>客户端以为在用真实对象</td>
+			</tr>
+			<tr>
+					<td><strong>典型场景</strong></td>
+					<td>IO 流增强</td>
+					<td>远程代理、延迟加载、权限控制</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>经验法则：<strong>装饰器关注&quot;加功能&quot;，代理关注&quot;加控制&quot;</strong>。</p>
+</blockquote>
+<h2 id="实战案例">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8b"></a>
+实战案例
+</h2><h3 id="spring-的-beanwrapper">
+<a class="header-anchor" href="#spring-%e7%9a%84-beanwrapper"></a>
+Spring 的 BeanWrapper
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// Spring 的 BeanWrapper 对 Bean 进行功能增强</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">BeanWrapper</span><span class="w"> </span><span class="n">wrapper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BeanWrapperImpl</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">User</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">wrapper</span><span class="p">.</span><span class="na">setPropertyValue</span><span class="p">(</span><span class="s">&#34;name&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;张三&#34;</span><span class="p">);</span><span class="w">  </span><span class="c1">// 增强了属性设置功能</span><span class="w">
+</span></span></span></code></pre></div><h3 id="spring-cache">
+<a class="header-anchor" href="#spring-cache"></a>
+Spring Cache
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 给方法添加缓存，本质是装饰</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Cacheable</span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;users&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;#id&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">User</span><span class="w"> </span><span class="nf">findById</span><span class="p">(</span><span class="n">Long</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">userRepository</span><span class="p">.</span><span class="na">findById</span><span class="p">(</span><span class="n">id</span><span class="p">);</span><span class="w">  </span><span class="c1">// 原始查询被缓存装饰</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="servlet-api-的-httpservletrequestwrapper">
+<a class="header-anchor" href="#servlet-api-%e7%9a%84-httpservletrequestwrapper"></a>
+Servlet API 的 HttpServletRequestWrapper
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 装饰 HttpServletRequest，添加自定义功能</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">XssRequestWrapper</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">HttpServletRequestWrapper</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">XssRequestWrapper</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">super</span><span class="p">(</span><span class="n">request</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getParameter</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kd">super</span><span class="p">.</span><span class="na">getParameter</span><span class="p">(</span><span class="n">name</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">cleanXss</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">;</span><span class="w">  </span><span class="c1">// 增强：过滤 XSS</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">cleanXss</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">value</span><span class="p">.</span><span class="na">replaceAll</span><span class="p">(</span><span class="s">&#34;&lt;script&gt;&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                     </span><span class="p">.</span><span class="na">replaceAll</span><span class="p">(</span><span class="s">&#34;&lt;/script&gt;&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 在过滤器中使用</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">XssFilter</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Filter</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">doFilter</span><span class="p">(</span><span class="n">ServletRequest</span><span class="w"> </span><span class="n">req</span><span class="p">,</span><span class="w"> </span><span class="n">ServletResponse</span><span class="w"> </span><span class="n">res</span><span class="p">,</span><span class="w"> </span><span class="n">FilterChain</span><span class="w"> </span><span class="n">chain</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">chain</span><span class="p">.</span><span class="na">doFilter</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">XssRequestWrapper</span><span class="p">((</span><span class="n">HttpServletRequest</span><span class="p">)</span><span class="w"> </span><span class="n">req</span><span class="p">),</span><span class="w"> </span><span class="n">res</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="collectionssynchronizedlist">
+<a class="header-anchor" href="#collectionssynchronizedlist"></a>
+Collections.synchronizedList
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 将非线程安全的 List 装饰为线程安全的</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">syncList</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Collections</span><span class="p">.</span><span class="na">synchronizedList</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">ArrayList</span><span class="o">&lt;&gt;</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// SynchronizedList 持有原 List 的引用，在每个方法上加 synchronized</span><span class="w">
+</span></span></span></code></pre></div><h2 id="总结">
+<a class="header-anchor" href="#%e6%80%bb%e7%bb%93"></a>
+总结
+</h2><p>装饰器模式的核心价值在于：</p>
+<blockquote>
+<p><strong>通过&quot;包装&quot;而非&quot;继承&quot;来扩展功能，让功能可以自由组合。</strong></p>
+</blockquote>
+<p>当我们需要给一个对象动态添加多种功能，且这些功能可以自由组合时，装饰器模式就是最佳选择。Java IO 流的设计完美诠释了这一思想——<code>FileInputStream</code> + <code>BufferedInputStream</code> + <code>DataInputStream</code> 的层层包装，让 IO 功能既丰富又灵活。</p>
+<p>记住装饰器的口诀：<strong>同接口、持引用、加行为</strong>。</p>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/design-patterns/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=%e8%a3%85%e9%a5%b0%e5%99%a8%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="装饰器模式详解">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/design-patterns/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/&amp;title=%e8%a3%85%e9%a5%b0%e5%99%a8%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3&amp;desc=IO%20%e6%b5%81%e8%ae%be%e8%ae%a1%e3%80%81%e5%8a%9f%e8%83%bd%e5%a2%9e%e5%bc%ba%e3%80%81%e4%b8%8e%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f%e8%af%a6%e8%a7%a3%e7%9a%84%e6%b7%b1%e5%ba%a6%e5%af%b9&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="装饰器模式详解">
@@ -334,7 +751,7 @@
     aria-label="Article navigation"
     data-aos="fade-up"
   ><div class="article-nav-link-wrap left"><img
-              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
+              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
               data-sizes="auto"
               alt="适配器模式详解"
               class="lazyload"
@@ -346,7 +763,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">适配器模式详解</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
               data-sizes="auto"
               alt="模板方法模式详解"
               class="lazyload"
@@ -378,10 +795,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -431,7 +848,42 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#模式定义">模式定义</a>
+      <ul>
+        <li><a href="#类图">类图</a></li>
+        <li><a href="#核心特征">核心特征</a></li>
+      </ul>
+    </li>
+    <li><a href="#手写装饰器模式">手写装饰器模式</a>
+      <ul>
+        <li><a href="#经典示例咖啡配料系统">经典示例：咖啡配料系统</a></li>
+        <li><a href="#客户端自由组合">客户端：自由组合</a></li>
+        <li><a href="#嵌套结构示意图">嵌套结构示意图</a></li>
+      </ul>
+    </li>
+    <li><a href="#java-io-流装饰器模式的经典应用">Java IO 流：装饰器模式的经典应用</a></li>
+    <li><a href="#装饰器-vs-继承">装饰器 vs 继承</a></li>
+    <li><a href="#适用场景">适用场景</a></li>
+    <li><a href="#优缺点">优缺点</a>
+      <ul>
+        <li><a href="#优点">优点</a></li>
+        <li><a href="#缺点">缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#装饰器模式-vs-代理模式">装饰器模式 vs 代理模式</a></li>
+    <li><a href="#实战案例">实战案例</a>
+      <ul>
+        <li><a href="#spring-的-beanwrapper">Spring 的 BeanWrapper</a></li>
+        <li><a href="#spring-cache">Spring Cache</a></li>
+        <li><a href="#servlet-api-的-httpservletrequestwrapper">Servlet API 的 HttpServletRequestWrapper</a></li>
+        <li><a href="#collectionssynchronizedlist">Collections.synchronizedList</a></li>
+      </ul>
+    </li>
+    <li><a href="#总结">总结</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -562,6 +1014,105 @@
           description: "IO 流设计、功能增强、与代理模式详解的深度对",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({

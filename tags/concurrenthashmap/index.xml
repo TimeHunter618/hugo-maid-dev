@@ -30,7 +30,10 @@
       <description>
         <![CDATA[<h1>哈希?HashMap 详解</h1><p>作者：Aries（xxx@example.com）</p>
         
-          
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>哈希表（Hash Table）是一种高效的数据结构，通过哈希函数将键映射到数组索引，实现 O(1) 平均时间复杂度的查找、插入和删除操作。它是计算机科学中最重要的数据结构之一，广泛应用于缓存、数据库索引、编译器符号表等领域。</p>
         
         <hr><p>本文2023-01-26首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-01-26</p>]]>
       </description>

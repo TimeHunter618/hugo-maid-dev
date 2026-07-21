@@ -190,7 +190,69 @@
       data-aos="fade-up"
     ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#核心概念">核心概念</a>
+      <ul>
+        <li><a href="#流与表">流与表</a></li>
+        <li><a href="#流到表的转换">流到表的转换</a></li>
+        <li><a href="#时间语义">时间语义</a></li>
+      </ul>
+    </li>
+    <li><a href="#dsl-api-实战">DSL API 实战</a>
+      <ul>
+        <li><a href="#环境配置">环境配置</a></li>
+        <li><a href="#简单流处理">简单流处理</a></li>
+        <li><a href="#聚合操作">聚合操作</a></li>
+        <li><a href="#窗口聚合">窗口聚合</a></li>
+        <li><a href="#join-操作">Join 操作</a></li>
+      </ul>
+    </li>
+    <li><a href="#processor-api-实战">Processor API 实战</a>
+      <ul>
+        <li><a href="#自定义处理器">自定义处理器</a></li>
+        <li><a href="#使用处理器">使用处理器</a></li>
+      </ul>
+    </li>
+    <li><a href="#状态管理">状态管理</a>
+      <ul>
+        <li><a href="#状态存储类型">状态存储类型</a></li>
+        <li><a href="#状态存储配置">状态存储配置</a></li>
+        <li><a href="#状态恢复">状态恢复</a></li>
+      </ul>
+    </li>
+    <li><a href="#exactly-once-语义">Exactly-Once 语义</a>
+      <ul>
+        <li><a href="#配置-exactly-once">配置 Exactly-Once</a></li>
+        <li><a href="#exactly-once-原理">Exactly-Once 原理</a></li>
+        <li><a href="#注意事项">注意事项</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例实时订单分析">实战案例：实时订单分析</a>
+      <ul>
+        <li><a href="#需求分析">需求分析</a></li>
+        <li><a href="#完整实现">完整实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能优化">性能优化</a>
+      <ul>
+        <li><a href="#并行度配置">并行度配置</a></li>
+        <li><a href="#缓存优化">缓存优化</a></li>
+        <li><a href="#批处理优化">批处理优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#监控与运维">监控与运维</a>
+      <ul>
+        <li><a href="#内置监控指标">内置监控指标</a></li>
+        <li><a href="#监控指标">监控指标</a></li>
+        <li><a href="#常见问题">常见问题</a></li>
+      </ul>
+    </li>
+    <li><a href="#kafka-streams-vs-flink">Kafka Streams vs Flink</a></li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
           <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -271,7 +333,662 @@
     <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&amp;q=80" target="_blank">
           <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&amp;q=80" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
         </a></div>
-  </div><div class="e-content article-entry" itemprop="articleBody"></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Kafka Streams 是 Kafka 提供的轻量级流处理库，它允许你在应用中直接处理 Kafka 消息，无需额外部署大型流处理框架（如 Flink、Spark Streaming）。Kafka Streams 提供了两种 API：DSL API（声明式，适合大多数场景）和 Processor API（命令式，适合复杂场景）。</p>
+<p>本文将深入讲解 Kafka Streams 的核心概念、流与表的关系、窗口聚合、状态管理，以及如何构建实时流处理应用。</p>
+<h2 id="核心概念">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e6%a6%82%e5%bf%b5"></a>
+核心概念
+</h2><h3 id="流与表">
+<a class="header-anchor" href="#%e6%b5%81%e4%b8%8e%e8%a1%a8"></a>
+流与表
+</h3><p>Kafka Streams 中有两个核心抽象：<strong>流（Stream）</strong> 和 <strong>表（Table）</strong>。</p>
+<pre class="mermaid">
+  graph TD
+    subgraph "流 (Stream)"
+        S1["订单创建: {id:1, amount:100}"]
+        S2["订单创建: {id:2, amount:200}"]
+        S3["订单更新: {id:1, amount:150}"]
+    end
+
+    subgraph "表 (Table)"
+        T1["订单 1: {amount: 150}"]
+        T2["订单 2: {amount: 200}"]
+    end
+
+    S1 -->|"INSERT"| T1
+    S2 -->|"INSERT"| T2
+    S3 -->|"UPDATE"| T1
+</pre><table>
+	<thead>
+			<tr>
+					<th>概念</th>
+					<th>说明</th>
+					<th>类比</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>流 (Stream)</strong></td>
+					<td>无限的、只读的事件序列</td>
+					<td>流水日志</td>
+			</tr>
+			<tr>
+					<td><strong>表 (Table)</strong></td>
+					<td>流的快照视图，支持更新</td>
+					<td>数据库表</td>
+			</tr>
+			<tr>
+					<td><strong>KStream</strong></td>
+					<td>流的抽象，每条记录都是独立事件</td>
+					<td>-</td>
+			</tr>
+			<tr>
+					<td><strong>KTable</strong></td>
+					<td>表的抽象，每条记录代表一个状态更新</td>
+					<td>-</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="流到表的转换">
+<a class="header-anchor" href="#%e6%b5%81%e5%88%b0%e8%a1%a8%e7%9a%84%e8%bd%ac%e6%8d%a2"></a>
+流到表的转换
+</h3><pre class="mermaid">
+  graph LR
+    KStream -->|"groupByKey + aggregate"| KTable
+    KTable -->|"toStream"| KStream
+    KStream -->|"groupByKey + count"| KTable
+    KStream -->|"groupByKey + reduce"| KTable
+</pre><h3 id="时间语义">
+<a class="header-anchor" href="#%e6%97%b6%e9%97%b4%e8%af%ad%e4%b9%89"></a>
+时间语义
+</h3><p>Kafka Streams 支持三种时间语义：</p>
+<table>
+	<thead>
+			<tr>
+					<th>时间类型</th>
+					<th>说明</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Event Time</strong></td>
+					<td>事件发生的时间（消息中的时间戳）</td>
+					<td>实时分析、窗口计算</td>
+			</tr>
+			<tr>
+					<td><strong>Processing Time</strong></td>
+					<td>消息被处理的时间</td>
+					<td>简单统计、监控</td>
+			</tr>
+			<tr>
+					<td><strong>Ingestion Time</strong></td>
+					<td>消息进入 Kafka 的时间</td>
+					<td>日志审计</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="dsl-api-实战">
+<a class="header-anchor" href="#dsl-api-%e5%ae%9e%e6%88%98"></a>
+DSL API 实战
+</h2><h3 id="环境配置">
+<a class="header-anchor" href="#%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae"></a>
+环境配置
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Configuration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">KafkaStreamsConfig</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Value</span><span class="p">(</span><span class="s">&#34;${spring.kafka.bootstrap-servers}&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">bootstrapServers</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Bean</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">StreamsConfig</span><span class="w"> </span><span class="nf">streamsConfig</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">HashMap</span><span class="o">&lt;&gt;</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">APPLICATION_ID_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;order-processing-app&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">BOOTSTRAP_SERVERS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">bootstrapServers</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">DEFAULT_KEY_SERDE_CLASS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">Serdes</span><span class="p">.</span><span class="na">String</span><span class="p">().</span><span class="na">getClass</span><span class="p">().</span><span class="na">getName</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">DEFAULT_VALUE_SERDE_CLASS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">Serdes</span><span class="p">.</span><span class="na">String</span><span class="p">().</span><span class="na">getClass</span><span class="p">().</span><span class="na">getName</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">STATE_STORE_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;/tmp/kafka-streams&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">PROCESSING_GUARANTEE_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">AT_LEAST_ONCE</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">StreamsConfig</span><span class="p">(</span><span class="n">config</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="简单流处理">
+<a class="header-anchor" href="#%e7%ae%80%e5%8d%95%e6%b5%81%e5%a4%84%e7%90%86"></a>
+简单流处理
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrderStreamService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">KafkaStreams</span><span class="w"> </span><span class="n">streams</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">OrderStreamService</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="w"> </span><span class="n">streamsConfig</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 定义流处理拓扑</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orderStream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">stream</span><span class="p">(</span><span class="s">&#34;orders-topic&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 过滤金额大于 100 的订单</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">highValueOrders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderStream</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">filter</span><span class="p">((</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="n">Order</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parseOrder</span><span class="p">(</span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="n">order</span><span class="p">.</span><span class="na">getAmount</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">100</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">});</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 发送到新的 topic</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">highValueOrders</span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="s">&#34;high-value-orders&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 启动流处理</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">streams</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">KafkaStreams</span><span class="p">(</span><span class="n">builder</span><span class="p">.</span><span class="na">build</span><span class="p">(),</span><span class="w"> </span><span class="n">streamsConfig</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">streams</span><span class="p">.</span><span class="na">start</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// JVM 关闭时停止</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Runtime</span><span class="p">.</span><span class="na">getRuntime</span><span class="p">().</span><span class="na">addShutdownHook</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Thread</span><span class="p">(</span><span class="n">streams</span><span class="p">::</span><span class="n">close</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Order</span><span class="w"> </span><span class="nf">parseOrder</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">ObjectMapper</span><span class="w"> </span><span class="n">mapper</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">mapper</span><span class="p">.</span><span class="na">readValue</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">Order</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">JsonProcessingException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="聚合操作">
+<a class="header-anchor" href="#%e8%81%9a%e5%90%88%e6%93%8d%e4%bd%9c"></a>
+聚合操作
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 统计每个用户的订单数量</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KTable</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orderCountByUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderStream</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">groupByKey</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">count</span><span class="p">(</span><span class="n">Materialized</span><span class="p">.</span><span class="na">as</span><span class="p">(</span><span class="s">&#34;order-count-store&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">orderCountByUser</span><span class="p">.</span><span class="na">toStream</span><span class="p">().</span><span class="na">to</span><span class="p">(</span><span class="s">&#34;order-count-topic&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 计算每个用户的订单总金额</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KTable</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">totalAmountByUser</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderStream</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">groupByKey</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">aggregate</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">0</span><span class="p">.</span><span class="na">0</span><span class="p">,</span><span class="w">  </span><span class="c1">// 初始值</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">aggregate</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">aggregate</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">parseOrder</span><span class="p">(</span><span class="n">value</span><span class="p">).</span><span class="na">getAmount</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Materialized</span><span class="p">.</span><span class="na">as</span><span class="p">(</span><span class="s">&#34;total-amount-store&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">totalAmountByUser</span><span class="p">.</span><span class="na">toStream</span><span class="p">().</span><span class="na">to</span><span class="p">(</span><span class="s">&#34;total-amount-topic&#34;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h3 id="窗口聚合">
+<a class="header-anchor" href="#%e7%aa%97%e5%8f%a3%e8%81%9a%e5%90%88"></a>
+窗口聚合
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 滚动窗口（Tumbling Window）- 每 5 分钟统计一次</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tumblingWindowCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderStream</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">groupByKey</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">windowedBy</span><span class="p">(</span><span class="n">TimeWindows</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofMinutes</span><span class="p">(</span><span class="n">5</span><span class="p">)))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">count</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">toStream</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 滑动窗口（Hopping Window）- 每 1 分钟统计过去 5 分钟的数据</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">hoppingWindowCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderStream</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">groupByKey</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">windowedBy</span><span class="p">(</span><span class="n">TimeWindows</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofMinutes</span><span class="p">(</span><span class="n">5</span><span class="p">)).</span><span class="na">advanceBy</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofMinutes</span><span class="p">(</span><span class="n">1</span><span class="p">)))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">count</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">toStream</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 会话窗口（Session Window）- 空闲 10 秒后结束会话</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sessionWindowCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderStream</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">groupByKey</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">windowedBy</span><span class="p">(</span><span class="n">SessionWindows</span><span class="p">.</span><span class="na">with</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="n">10</span><span class="p">)))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">count</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">.</span><span class="na">toStream</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div><h3 id="join-操作">
+<a class="header-anchor" href="#join-%e6%93%8d%e4%bd%9c"></a>
+Join 操作
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// KStream 与 KStream Join</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">stream</span><span class="p">(</span><span class="s">&#34;orders&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Payment</span><span class="o">&gt;</span><span class="w"> </span><span class="n">payments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">stream</span><span class="p">(</span><span class="s">&#34;payments&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">OrderPayment</span><span class="o">&gt;</span><span class="w"> </span><span class="n">joined</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orders</span><span class="p">.</span><span class="na">join</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">payments</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">(</span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">payment</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OrderPayment</span><span class="p">(</span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">payment</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">JoinWindows</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofMinutes</span><span class="p">(</span><span class="n">5</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">joined</span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="s">&#34;order-payment-joined&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// KStream 与 KTable Join</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KTable</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">User</span><span class="o">&gt;</span><span class="w"> </span><span class="n">users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">table</span><span class="p">(</span><span class="s">&#34;users&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Order</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orders</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">stream</span><span class="p">(</span><span class="s">&#34;orders&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">OrderWithUser</span><span class="o">&gt;</span><span class="w"> </span><span class="n">enriched</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orders</span><span class="p">.</span><span class="na">join</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">users</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">(</span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">user</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">OrderWithUser</span><span class="p">(</span><span class="n">order</span><span class="p">,</span><span class="w"> </span><span class="n">user</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">enriched</span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="s">&#34;enriched-orders&#34;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h2 id="processor-api-实战">
+<a class="header-anchor" href="#processor-api-%e5%ae%9e%e6%88%98"></a>
+Processor API 实战
+</h2><h3 id="自定义处理器">
+<a class="header-anchor" href="#%e8%87%aa%e5%ae%9a%e4%b9%89%e5%a4%84%e7%90%86%e5%99%a8"></a>
+自定义处理器
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrderProcessor</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">Processor</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">ProcessorContext</span><span class="w"> </span><span class="n">context</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">KeyValueStore</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orderCountStore</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span><span class="n">ProcessorContext</span><span class="w"> </span><span class="n">context</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">context</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">orderCountStore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">KeyValueStore</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="p">)</span><span class="w"> </span><span class="n">context</span><span class="p">.</span><span class="na">getStateStore</span><span class="p">(</span><span class="s">&#34;order-count-store&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">context</span><span class="p">.</span><span class="na">schedule</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofSeconds</span><span class="p">(</span><span class="n">10</span><span class="p">),</span><span class="w"> </span><span class="n">PunctuationType</span><span class="p">.</span><span class="na">WALL_CLOCK_TIME</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">::</span><span class="n">punctuate</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Order</span><span class="w"> </span><span class="n">order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">parseOrder</span><span class="p">(</span><span class="n">value</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 更新状态存储</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Long</span><span class="w"> </span><span class="n">currentCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderCountStore</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">order</span><span class="p">.</span><span class="na">getUserId</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">currentCount</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">currentCount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">0L</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">orderCountStore</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">order</span><span class="p">.</span><span class="na">getUserId</span><span class="p">(),</span><span class="w"> </span><span class="n">currentCount</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 转发到下游处理器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">context</span><span class="p">.</span><span class="na">forward</span><span class="p">(</span><span class="n">order</span><span class="p">.</span><span class="na">getUserId</span><span class="p">(),</span><span class="w"> </span><span class="n">currentCount</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">punctuate</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="n">timestamp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 定期输出统计结果</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">KeyValueIterator</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">iterator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">orderCountStore</span><span class="p">.</span><span class="na">all</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">iterator</span><span class="p">.</span><span class="na">hasNext</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">KeyValue</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">entry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">iterator</span><span class="p">.</span><span class="na">next</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">context</span><span class="p">.</span><span class="na">forward</span><span class="p">(</span><span class="n">entry</span><span class="p">.</span><span class="na">key</span><span class="p">,</span><span class="w"> </span><span class="n">entry</span><span class="p">.</span><span class="na">value</span><span class="p">,</span><span class="w"> </span><span class="n">To</span><span class="p">.</span><span class="na">all</span><span class="p">().</span><span class="na">topic</span><span class="p">(</span><span class="s">&#34;order-stats&#34;</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">iterator</span><span class="p">.</span><span class="na">close</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">close</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">orderCountStore</span><span class="p">.</span><span class="na">close</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="使用处理器">
+<a class="header-anchor" href="#%e4%bd%bf%e7%94%a8%e5%a4%84%e7%90%86%e5%99%a8"></a>
+使用处理器
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">Topology</span><span class="w"> </span><span class="n">topology</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Topology</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 添加源处理器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">topology</span><span class="p">.</span><span class="na">addSource</span><span class="p">(</span><span class="s">&#34;Source&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;orders-topic&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 添加自定义处理器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">topology</span><span class="p">.</span><span class="na">addProcessor</span><span class="p">(</span><span class="s">&#34;Processor&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">OrderProcessor</span><span class="p">::</span><span class="k">new</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;Source&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 添加状态存储</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">topology</span><span class="p">.</span><span class="na">addStateStore</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Stores</span><span class="p">.</span><span class="na">keyValueStoreBuilder</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Stores</span><span class="p">.</span><span class="na">inMemoryKeyValueStore</span><span class="p">(</span><span class="s">&#34;order-count-store&#34;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Serdes</span><span class="p">.</span><span class="na">String</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Serdes</span><span class="p">.</span><span class="na">Long</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="s">&#34;Processor&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 添加汇处理器</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">topology</span><span class="p">.</span><span class="na">addSink</span><span class="p">(</span><span class="s">&#34;Sink&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;processed-orders&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;Processor&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">KafkaStreams</span><span class="w"> </span><span class="n">streams</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">KafkaStreams</span><span class="p">(</span><span class="n">topology</span><span class="p">,</span><span class="w"> </span><span class="n">streamsConfig</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">streams</span><span class="p">.</span><span class="na">start</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div><h2 id="状态管理">
+<a class="header-anchor" href="#%e7%8a%b6%e6%80%81%e7%ae%a1%e7%90%86"></a>
+状态管理
+</h2><h3 id="状态存储类型">
+<a class="header-anchor" href="#%e7%8a%b6%e6%80%81%e5%ad%98%e5%82%a8%e7%b1%bb%e5%9e%8b"></a>
+状态存储类型
+</h3><table>
+	<thead>
+			<tr>
+					<th>存储类型</th>
+					<th>说明</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>KeyValueStore</strong></td>
+					<td>键值对存储</td>
+					<td>聚合、计数</td>
+			</tr>
+			<tr>
+					<td><strong>WindowStore</strong></td>
+					<td>窗口化键值存储</td>
+					<td>窗口聚合</td>
+			</tr>
+			<tr>
+					<td><strong>SessionStore</strong></td>
+					<td>会话键值存储</td>
+					<td>会话分析</td>
+			</tr>
+			<tr>
+					<td><strong>TimestampedKeyValueStore</strong></td>
+					<td>带时间戳的键值存储</td>
+					<td>版本化数据</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="状态存储配置">
+<a class="header-anchor" href="#%e7%8a%b6%e6%80%81%e5%ad%98%e5%82%a8%e9%85%8d%e7%bd%ae"></a>
+状态存储配置
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 内存存储（开发环境）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">StoreBuilder</span><span class="o">&lt;</span><span class="n">KeyValueStore</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">inMemoryStore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Stores</span><span class="p">.</span><span class="na">keyValueStoreBuilder</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Stores</span><span class="p">.</span><span class="na">inMemoryKeyValueStore</span><span class="p">(</span><span class="s">&#34;in-memory-store&#34;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Serdes</span><span class="p">.</span><span class="na">String</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Serdes</span><span class="p">.</span><span class="na">Long</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// RocksDB 存储（生产环境）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">StoreBuilder</span><span class="o">&lt;</span><span class="n">KeyValueStore</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">rocksDbStore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Stores</span><span class="p">.</span><span class="na">keyValueStoreBuilder</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Stores</span><span class="p">.</span><span class="na">persistentKeyValueStore</span><span class="p">(</span><span class="s">&#34;rocksdb-store&#34;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Serdes</span><span class="p">.</span><span class="na">String</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Serdes</span><span class="p">.</span><span class="na">Long</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">.</span><span class="na">withCachingEnabled</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">.</span><span class="na">withLoggingEnabled</span><span class="p">(</span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">topology</span><span class="p">.</span><span class="na">addStateStore</span><span class="p">(</span><span class="n">rocksDbStore</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;Processor&#34;</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h3 id="状态恢复">
+<a class="header-anchor" href="#%e7%8a%b6%e6%80%81%e6%81%a2%e5%a4%8d"></a>
+状态恢复
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 配置状态恢复</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">STATE_STORE_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;/data/kafka-streams&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">numStreamThreads</span><span class="p">(),</span><span class="w"> </span><span class="n">4</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h2 id="exactly-once-语义">
+<a class="header-anchor" href="#exactly-once-%e8%af%ad%e4%b9%89"></a>
+Exactly-Once 语义
+</h2><h3 id="配置-exactly-once">
+<a class="header-anchor" href="#%e9%85%8d%e7%bd%ae-exactly-once"></a>
+配置 Exactly-Once
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">PROCESSING_GUARANTEE_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">EXACTLY_ONCE_V2</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h3 id="exactly-once-原理">
+<a class="header-anchor" href="#exactly-once-%e5%8e%9f%e7%90%86"></a>
+Exactly-Once 原理
+</h3><pre class="mermaid">
+  sequenceDiagram
+    participant K as Kafka
+    participant P as Producer
+    participant C as Consumer
+    participant S as State Store
+
+    C->>K: 开始事务
+    K-->>C: 事务 ID
+
+    C->>K: 读取消息
+    K-->>C: 返回消息
+
+    C->>S: 更新状态
+    S-->>C: 状态更新成功
+
+    P->>K: 发送结果（事务模式）
+    K-->>P: 发送成功
+
+    C->>K: 提交事务
+    K-->>C: 事务提交成功
+</pre><h3 id="注意事项">
+<a class="header-anchor" href="#%e6%b3%a8%e6%84%8f%e4%ba%8b%e9%a1%b9"></a>
+注意事项
+</h3><table>
+	<thead>
+			<tr>
+					<th>事项</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>性能开销</strong></td>
+					<td>Exactly-Once 会带来约 20-30% 的性能损失</td>
+			</tr>
+			<tr>
+					<td><strong>事务超时</strong></td>
+					<td>需要配置合理的事务超时时间</td>
+			</tr>
+			<tr>
+					<td><strong>状态存储</strong></td>
+					<td>需要使用支持事务的状态存储（如 RocksDB）</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="实战案例实时订单分析">
+<a class="header-anchor" href="#%e5%ae%9e%e6%88%98%e6%a1%88%e4%be%8b%e5%ae%9e%e6%97%b6%e8%ae%a2%e5%8d%95%e5%88%86%e6%9e%90"></a>
+实战案例：实时订单分析
+</h2><h3 id="需求分析">
+<a class="header-anchor" href="#%e9%9c%80%e6%b1%82%e5%88%86%e6%9e%90"></a>
+需求分析
+</h3><ul>
+<li>实时统计每分钟的订单数量</li>
+<li>实时计算每个用户的订单总金额</li>
+<li>实时检测异常订单（金额超过 10000）</li>
+</ul>
+<h3 id="完整实现">
+<a class="header-anchor" href="#%e5%ae%8c%e6%95%b4%e5%ae%9e%e7%8e%b0"></a>
+完整实现
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">OrderAnalyticsService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">KafkaStreams</span><span class="w"> </span><span class="n">streams</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Autowired</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">OrderAnalyticsService</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="w"> </span><span class="n">streamsConfig</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">StreamsBuilder</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">StreamsBuilder</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">KStream</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orderStream</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="p">.</span><span class="na">stream</span><span class="p">(</span><span class="s">&#34;orders&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 1. 每分钟订单数量统计</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">orderStream</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">selectKey</span><span class="p">((</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&#34;total&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">groupByKey</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">windowedBy</span><span class="p">(</span><span class="n">TimeWindows</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="n">Duration</span><span class="p">.</span><span class="na">ofMinutes</span><span class="p">(</span><span class="n">1</span><span class="p">)))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">count</span><span class="p">(</span><span class="n">Materialized</span><span class="p">.</span><span class="na">as</span><span class="p">(</span><span class="s">&#34;minute-order-count&#34;</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">toStream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">map</span><span class="p">((</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">KeyValue</span><span class="p">.</span><span class="na">pair</span><span class="p">(</span><span class="n">k</span><span class="p">.</span><span class="na">window</span><span class="p">().</span><span class="na">toString</span><span class="p">(),</span><span class="w"> </span><span class="n">v</span><span class="p">.</span><span class="na">toString</span><span class="p">()))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="s">&#34;minute-order-count-topic&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 2. 用户订单总金额</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">orderStream</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">groupBy</span><span class="p">((</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">parseOrder</span><span class="p">(</span><span class="n">v</span><span class="p">).</span><span class="na">getUserId</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">aggregate</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">()</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">0</span><span class="p">.</span><span class="na">0</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">aggregate</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">aggregate</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">parseOrder</span><span class="p">(</span><span class="n">value</span><span class="p">).</span><span class="na">getAmount</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">Materialized</span><span class="p">.</span><span class="na">as</span><span class="p">(</span><span class="s">&#34;user-total-amount&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">toStream</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="s">&#34;user-total-amount-topic&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 3. 异常订单检测</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">orderStream</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">filter</span><span class="p">((</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">parseOrder</span><span class="p">(</span><span class="n">v</span><span class="p">).</span><span class="na">getAmount</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">10000</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">mapValues</span><span class="p">(</span><span class="n">v</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="s">&#34;ALERT: High value order detected - &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">to</span><span class="p">(</span><span class="s">&#34;alert-topic&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">streams</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">KafkaStreams</span><span class="p">(</span><span class="n">builder</span><span class="p">.</span><span class="na">build</span><span class="p">(),</span><span class="w"> </span><span class="n">streamsConfig</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">streams</span><span class="p">.</span><span class="na">start</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Runtime</span><span class="p">.</span><span class="na">getRuntime</span><span class="p">().</span><span class="na">addShutdownHook</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">Thread</span><span class="p">(</span><span class="n">streams</span><span class="p">::</span><span class="n">close</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">Order</span><span class="w"> </span><span class="nf">parseOrder</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ObjectMapper</span><span class="p">().</span><span class="na">readValue</span><span class="p">(</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">Order</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">catch</span><span class="w"> </span><span class="p">(</span><span class="n">JsonProcessingException</span><span class="w"> </span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="k">throw</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RuntimeException</span><span class="p">(</span><span class="n">e</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="性能优化">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e4%bc%98%e5%8c%96"></a>
+性能优化
+</h2><h3 id="并行度配置">
+<a class="header-anchor" href="#%e5%b9%b6%e8%a1%8c%e5%ba%a6%e9%85%8d%e7%bd%ae"></a>
+并行度配置
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 设置流处理线程数（建议等于 Kafka 分区数）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">NUM_STREAM_THREADS_CONFIG</span><span class="p">,</span><span class="w"> </span><span class="n">4</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h3 id="缓存优化">
+<a class="header-anchor" href="#%e7%bc%93%e5%ad%98%e4%bc%98%e5%8c%96"></a>
+缓存优化
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 启用缓存</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">StoreBuilder</span><span class="o">&lt;</span><span class="n">KeyValueStore</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Long</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">storeBuilder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Stores</span><span class="p">.</span><span class="na">keyValueStoreBuilder</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Stores</span><span class="p">.</span><span class="na">persistentKeyValueStore</span><span class="p">(</span><span class="s">&#34;cache-store&#34;</span><span class="p">),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Serdes</span><span class="p">.</span><span class="na">String</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Serdes</span><span class="p">.</span><span class="na">Long</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">).</span><span class="na">withCachingEnabled</span><span class="p">();</span><span class="w">
+</span></span></span></code></pre></div><h3 id="批处理优化">
+<a class="header-anchor" href="#%e6%89%b9%e5%a4%84%e7%90%86%e4%bc%98%e5%8c%96"></a>
+批处理优化
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 配置批处理大小</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">producerPrefix</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">BATCH_SIZE_CONFIG</span><span class="p">),</span><span class="w"> </span><span class="n">16384</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">config</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">StreamsConfig</span><span class="p">.</span><span class="na">producerPrefix</span><span class="p">(</span><span class="n">ProducerConfig</span><span class="p">.</span><span class="na">LINGER_MS_CONFIG</span><span class="p">),</span><span class="w"> </span><span class="n">5</span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h2 id="监控与运维">
+<a class="header-anchor" href="#%e7%9b%91%e6%8e%a7%e4%b8%8e%e8%bf%90%e7%bb%b4"></a>
+监控与运维
+</h2><h3 id="内置监控指标">
+<a class="header-anchor" href="#%e5%86%85%e7%bd%ae%e7%9b%91%e6%8e%a7%e6%8c%87%e6%a0%87"></a>
+内置监控指标
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 查看流处理应用状态</span>
+</span></span><span class="line"><span class="cl">kafka-streams-application-reset.sh --application-id order-processing-app
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查看消费者组状态</span>
+</span></span><span class="line"><span class="cl">kafka-consumer-groups.sh --bootstrap-server localhost:9092 --describe --group order-processing-app
+</span></span></code></pre></div><h3 id="监控指标">
+<a class="header-anchor" href="#%e7%9b%91%e6%8e%a7%e6%8c%87%e6%a0%87"></a>
+监控指标
+</h3><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>stream-metrics</code></td>
+					<td>流处理延迟、吞吐量</td>
+			</tr>
+			<tr>
+					<td><code>state-metrics</code></td>
+					<td>状态存储读写次数</td>
+			</tr>
+			<tr>
+					<td><code>task-metrics</code></td>
+					<td>Task 处理状态</td>
+			</tr>
+			<tr>
+					<td><code>thread-metrics</code></td>
+					<td>线程状态</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="常见问题">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98"></a>
+常见问题
+</h3><table>
+	<thead>
+			<tr>
+					<th>问题</th>
+					<th>原因</th>
+					<th>解决方案</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>状态恢复慢</strong></td>
+					<td>状态存储过大</td>
+					<td>使用 RocksDB、增加恢复线程数</td>
+			</tr>
+			<tr>
+					<td><strong>反压</strong></td>
+					<td>处理速度跟不上生产速度</td>
+					<td>增加并行度、优化处理逻辑</td>
+			</tr>
+			<tr>
+					<td><strong>数据重复</strong></td>
+					<td>应用重启</td>
+					<td>使用 Exactly-Once 语义</td>
+			</tr>
+			<tr>
+					<td><strong>窗口数据丢失</strong></td>
+					<td>时间戳延迟</td>
+					<td>配置 <code>max.timestamp.span.ms</code></td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="kafka-streams-vs-flink">
+<a class="header-anchor" href="#kafka-streams-vs-flink"></a>
+Kafka Streams vs Flink
+</h2><table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>Kafka Streams</th>
+					<th>Flink</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>部署方式</strong></td>
+					<td>嵌入式，无需独立集群</td>
+					<td>需要独立集群</td>
+			</tr>
+			<tr>
+					<td><strong>延迟</strong></td>
+					<td>毫秒级</td>
+					<td>亚毫秒级</td>
+			</tr>
+			<tr>
+					<td><strong>状态管理</strong></td>
+					<td>内置（RocksDB）</td>
+					<td>内置（RocksDB/内存）</td>
+			</tr>
+			<tr>
+					<td><strong>窗口支持</strong></td>
+					<td>滚动、滑动、会话</td>
+					<td>滚动、滑动、会话、全局</td>
+			</tr>
+			<tr>
+					<td><strong>容错</strong></td>
+					<td>Exactly-Once</td>
+					<td>Exactly-Once</td>
+			</tr>
+			<tr>
+					<td><strong>适用场景</strong></td>
+					<td>轻量级流处理</td>
+					<td>复杂流处理、批流一体</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>Kafka Streams 是一个强大的轻量级流处理库，它将流处理能力直接嵌入到应用中，无需额外部署复杂的流处理集群。</p>
+<p>核心优势：</p>
+<ul>
+<li><strong>轻量级</strong>：无需独立部署，与应用一同运行</li>
+<li><strong>集成性</strong>：与 Kafka 深度集成，使用相同的客户端</li>
+<li><strong>灵活性</strong>：DSL API 快速开发，Processor API 处理复杂场景</li>
+<li><strong>可靠性</strong>：支持 Exactly-Once 语义</li>
+</ul>
+<p>适用场景：</p>
+<ul>
+<li><strong>实时监控</strong>：实时统计、告警</li>
+<li><strong>数据转换</strong>：ETL、数据清洗</li>
+<li><strong>实时分析</strong>：用户行为分析、业务指标计算</li>
+</ul>
+<p>掌握 Kafka Streams，你就拥有了构建实时数据管道的能力。</p>
+<hr>
+<p><strong>延伸阅读</strong>：</p>
+<ol>
+<li>Kafka Streams 官方文档 - <a href="https://kafka.apache.org/documentation/streams/">https://kafka.apache.org/documentation/streams/</a></li>
+<li>Kafka Streams DSL 指南 - <a href="https://kafka.apache.org/26/documentation/streams/developer-guide/dsl-api.html">https://kafka.apache.org/26/documentation/streams/developer-guide/dsl-api.html</a></li>
+<li>Kafka Streams Processor API - <a href="https://kafka.apache.org/26/documentation/streams/developer-guide/processor-api.html">https://kafka.apache.org/26/documentation/streams/developer-guide/processor-api.html</a></li>
+</ol>
+</div>
     <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/middleware-ops/kafkastreams%E6%B5%81%E5%A4%84%E7%90%86%E5%AE%9E%E6%88%98/&amp;appkey=&amp;title=Kafka%20Streams%e6%b5%81%e5%a4%84%e7%90%86%e5%ae%9e&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="Kafka Streams流处理实">
       <div class="share-icon icon icon-weibo"></div>
     </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/middleware-ops/kafkastreams%E6%B5%81%E5%A4%84%E7%90%86%E5%AE%9E%E6%88%98/&amp;title=Kafka%20Streams%e6%b5%81%e5%a4%84%e7%90%86%e5%ae%9e&amp;desc=DSL%20API%e4%b8%8eProcessor%20API%e3%80%81%e6%b5%81%e4%b8%8e%e8%a1%a8%e3%80%81%e7%aa%97%e5%8f%a3%e8%81%9a%e5%90%88%e3%80%81%e7%8a%b6%e6%80%81%e7%ae%a1%e7%90%86%e3%80%81Exactly-Once%e8%af%ad%e4%b9%89&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="Kafka Streams流处理实">
@@ -360,7 +1077,7 @@
         <div class="article-nav-caption">前一篇</div>
         <h3 class="article-nav-title">Nginx反向代理与负载均</h3>
       </div><div class="article-nav-link-wrap right"><img
-              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
+              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
               data-sizes="auto"
               alt="Redis核心原理与实"
               class="lazyload"
@@ -392,10 +1109,10 @@
         >
       </div><div>
         <span class="icon-brush"
-          >&nbsp;218.1k</span
+          >&nbsp;363.5k</span
         >
         &nbsp;|&nbsp;
-        <span class="icon-coffee">&nbsp;07:36</span>
+        <span class="icon-coffee">&nbsp;12:47</span>
       </div><div>
         <span class="icon-eye"></span>
         <span id="busuanzi_container_site_pv"
@@ -445,7 +1162,69 @@
       </div><nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
 <div class="sidebar-toc-wrapper toc-div-class">
-  <nav id="TableOfContents"></nav>
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#核心概念">核心概念</a>
+      <ul>
+        <li><a href="#流与表">流与表</a></li>
+        <li><a href="#流到表的转换">流到表的转换</a></li>
+        <li><a href="#时间语义">时间语义</a></li>
+      </ul>
+    </li>
+    <li><a href="#dsl-api-实战">DSL API 实战</a>
+      <ul>
+        <li><a href="#环境配置">环境配置</a></li>
+        <li><a href="#简单流处理">简单流处理</a></li>
+        <li><a href="#聚合操作">聚合操作</a></li>
+        <li><a href="#窗口聚合">窗口聚合</a></li>
+        <li><a href="#join-操作">Join 操作</a></li>
+      </ul>
+    </li>
+    <li><a href="#processor-api-实战">Processor API 实战</a>
+      <ul>
+        <li><a href="#自定义处理器">自定义处理器</a></li>
+        <li><a href="#使用处理器">使用处理器</a></li>
+      </ul>
+    </li>
+    <li><a href="#状态管理">状态管理</a>
+      <ul>
+        <li><a href="#状态存储类型">状态存储类型</a></li>
+        <li><a href="#状态存储配置">状态存储配置</a></li>
+        <li><a href="#状态恢复">状态恢复</a></li>
+      </ul>
+    </li>
+    <li><a href="#exactly-once-语义">Exactly-Once 语义</a>
+      <ul>
+        <li><a href="#配置-exactly-once">配置 Exactly-Once</a></li>
+        <li><a href="#exactly-once-原理">Exactly-Once 原理</a></li>
+        <li><a href="#注意事项">注意事项</a></li>
+      </ul>
+    </li>
+    <li><a href="#实战案例实时订单分析">实战案例：实时订单分析</a>
+      <ul>
+        <li><a href="#需求分析">需求分析</a></li>
+        <li><a href="#完整实现">完整实现</a></li>
+      </ul>
+    </li>
+    <li><a href="#性能优化">性能优化</a>
+      <ul>
+        <li><a href="#并行度配置">并行度配置</a></li>
+        <li><a href="#缓存优化">缓存优化</a></li>
+        <li><a href="#批处理优化">批处理优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#监控与运维">监控与运维</a>
+      <ul>
+        <li><a href="#内置监控指标">内置监控指标</a></li>
+        <li><a href="#监控指标">监控指标</a></li>
+        <li><a href="#常见问题">常见问题</a></li>
+      </ul>
+    </li>
+    <li><a href="#kafka-streams-vs-flink">Kafka Streams vs Flink</a></li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
 </div></div>
         <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img
@@ -576,6 +1355,105 @@
           description: "DSL API与Processor API、流与表、窗口聚合、状态管理、Exactly-Once语义",
           cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
         };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
       </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
           if (_$$(`${gallery} ${children}`).length > 0) {
             new PhotoSwipeLightbox({
