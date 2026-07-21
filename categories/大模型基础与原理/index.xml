@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>大模型基础与原理 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:15:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>大模型微调技术全攻略</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E6%8A%80%E6%9C%AF%E5%85%A8%E6%94%BB%E7%95%A5/</link>
+      <pubDate>Fri, 19 Jun 2026 03:15:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E6%8A%80%E6%9C%AF%E5%85%A8%E6%94%BB%E7%95%A5/</guid>
+      <description>
+        <![CDATA[<h1>大模型微调技术全攻略</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）在海量数据上预训练后，获得了强大的通用能力。但要将这些通用能力适配到特定领域或特定任务上，微调（Fine-tuning）是不可或缺的关键步骤。</p>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>Transformer 架构深度解析</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/</link>
+      <pubDate>Fri, 19 Jun 2026 03:10:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/</guid>
+      <description>
+        <![CDATA[<h1>Transformer 架构深度解析</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Transformer 架构自 2017 年提出以来，已经成为自然语言处理乃至整个深度学习领域的基石。从 GPT 系列到 BERT，从 ViT 到 Diffusion Model，Transformer 的身影无处不在。本文将从第一性原理出发，深入拆解 Transformer 的每一个核心组件，帮助读者彻底理解这一革命性的架构设计。</p>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>大语言模型基础原理与发展历程</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Fri, 19 Jun 2026 03:05:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/</guid>
+      <description>
+        <![CDATA[<h1>大语言模型基础原理与发展历程</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（Large Language Model, LLM）正在深刻改变着人机交互的方式，推动着人工智能技术进入新的时代。从最初的统计语言模型到如今参数规模突破万亿的超大规模预训练模型，语言模型技术经历了数十年的演进与发展。本文将系统梳理大语言模型的发展历程，深入解析其核心技术原理，帮助读者建立对这一前沿技术的全面认知。</p>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>上下文窗口、Token 计算与 Hallucination 缓解</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AA%97%E5%8F%A3%E4%B8%8E%E5%B9%BB%E8%A7%89%E7%BC%93%E8%A7%A3/</link>
+      <pubDate>Thu, 05 Mar 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AA%97%E5%8F%A3%E4%B8%8E%E5%B9%BB%E8%A7%89%E7%BC%93%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>上下文窗口、Token 计算与 Hallucination 缓解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）的能力边界，在很大程度上由三个基础但至关重要的因素共同决定：<strong>上下文窗口</strong>决定了模型一次能&quot;看到&quot;多少信息，<strong>Token</strong> 是模型处理文本的最小单位且直接关系到推理成本，而**幻觉（Hallucination）**则是模型&quot;一本正经地胡说八道&quot;的顽疾，是 LLM 落地应用的核心障碍。</p>
+        
+        <hr><p>本文2026-03-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-03-05</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/</link>
+      <pubDate>Tue, 10 Feb 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/</guid>
+      <description>
+        <![CDATA[<h1>大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>2025 年以来，大语言模型领域呈现出前所未有的百花齐放态势。OpenAI 的 GPT 系列持续领跑闭源阵营，Meta 的 Llama、阿里巴巴的 Qwen、深度求索的 DeepSeek 以及智谱 AI 的 GLM 则在开源与商用之间开辟了各自的差异化路线。对于开发者和企业而言，面对如此众多的选择，<strong>模型选型已经成为一项关键的技术决策</strong>——它直接影响产品的能力上限、运营成本、数据合规和技术自主性。</p>
+        
+        <hr><p>本文2026-02-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-02-10</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>大模型训练全流程详解</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%85%A8%E6%B5%81%E7%A8%8B/</link>
+      <pubDate>Thu, 15 Jan 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%85%A8%E6%B5%81%E7%A8%8B/</guid>
+      <description>
+        <![CDATA[<h1>大模型训练全流程详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）的训练并非一蹴而就，而是一个多阶段、多目标的复杂工程。从原始的互联网文本到最终能够安全、有用、诚实地回答用户问题的对话助手，模型需要经历一条精心设计的训练链路。</p>
+        
+        <hr><p>本文2026-01-15首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-01-15</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>Skill 蒸馏与能力萃取技术</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/skill%E8%92%B8%E9%A6%8F%E4%B8%8E%E8%83%BD%E5%8A%9B%E8%90%83%E5%8F%96/</link>
+      <pubDate>Sat, 08 Nov 2025 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/skill%E8%92%B8%E9%A6%8F%E4%B8%8E%E8%83%BD%E5%8A%9B%E8%90%83%E5%8F%96/</guid>
+      <description>
+        <![CDATA[<h1>Skill 蒸馏与能力萃取技术</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>随着大语言模型（LLM）参数规模从数十亿增长到数千亿，一个核心矛盾日益凸显：<strong>强大能力往往与庞大参数绑定，而实际部署迫切需要小而精的模型</strong>。传统的知识蒸馏（Knowledge Distillation）试图将大模型的整体知识压缩到小模型中，但这种&quot;全量压缩&quot;的思路在面对复杂能力时往往力不从心——小模型在通用能力上尚可，但在代码生成、数学推理、工具使用等高阶能力上与大模型存在显著鸿沟。</p>
+        
+        <hr><p>本文2025-11-08首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-11-08</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>大模型知识蒸馏技术详解</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F/</link>
+      <pubDate>Mon, 20 Oct 2025 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F/</guid>
+      <description>
+        <![CDATA[<h1>大模型知识蒸馏技术详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）的能力随着参数规模的增大而显著提升，但庞大的模型也带来了高昂的部署成本：推理延迟高、显存占用大、服务费用昂贵。与之相对，小模型部署轻快、成本低，但能力往往不足。这就形成了一个核心矛盾——<strong>能力与成本难以兼得</strong>。</p>
+        
+        <hr><p>本文2025-10-20首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-10-20</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>大模型推理优化与部署实践</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96%E4%B8%8E%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Mon, 15 Sep 2025 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96%E4%B8%8E%E9%83%A8%E7%BD%B2/</guid>
+      <description>
+        <![CDATA[<h1>大模型推理优化与部署实践</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型在各项任务上展现出卓越的能力，但将它们从实验室推向生产环境却面临着严峻的工程挑战。一个千亿参数的模型，仅模型权重就需要数百 GB 的存储空间，推理时还需要额外的显存来存放激活值和 KV Cache。如何在有限的硬件资源下实现低延迟、高吞吐的推理服务，成为了大模型落地的关键瓶颈。</p>
+        
+        <hr><p>本文2025-09-15首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-09-15</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

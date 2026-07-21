@@ -1,0 +1,1857 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  RAG 检索增强生成技术详解 | Aries
+</title>
+<meta name="description" content="从基础原理到高级优化，全面掌握检索增强生成（RAG）的核心技术与实践方法"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="RAG 检索增强生成技术详解 | Aries" />
+  <meta
+    property="og:description"
+    content="从基础原理到高级优化，全面掌握检索增强生成（RAG）的核心技术与实践方法"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-06-19T03:20:00&#43;08:00" />
+  <meta property="article:modified_time" content="2026-06-19T03:20:00&#43;08:00" /><meta property="article:tag" content="RAG, 检索增强生成, 大模型, 向量数据库, 知识库" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200" alt="RAG 检索增强生成技术详解"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">RAG 检索增强生成技术详解</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">从基础原理到高级优化，全面掌握检索增强生成（RAG）的核心技术与实践方法</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container sticky"><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#rag-基础概念">RAG 基础概念</a>
+      <ul>
+        <li><a href="#什么是-rag">什么是 RAG</a></li>
+        <li><a href="#rag-的核心优势">RAG 的核心优势</a></li>
+        <li><a href="#rag-vs-微调">RAG vs 微调</a></li>
+      </ul>
+    </li>
+    <li><a href="#rag-系统架构">RAG 系统架构</a>
+      <ul>
+        <li><a href="#基础-rag-架构">基础 RAG 架构</a></li>
+        <li><a href="#进阶-rag-架构">进阶 RAG 架构</a></li>
+      </ul>
+    </li>
+    <li><a href="#索引阶段详解">索引阶段详解</a>
+      <ul>
+        <li><a href="#文档采集">文档采集</a></li>
+        <li><a href="#文档清洗与预处理">文档清洗与预处理</a></li>
+        <li><a href="#文本分块chunking">文本分块（Chunking）</a></li>
+        <li><a href="#向量化embedding">向量化（Embedding）</a></li>
+        <li><a href="#向量数据库">向量数据库</a></li>
+      </ul>
+    </li>
+    <li><a href="#检索阶段详解">检索阶段详解</a>
+      <ul>
+        <li><a href="#向量检索">向量检索</a></li>
+        <li><a href="#关键词检索">关键词检索</a></li>
+        <li><a href="#混合检索hybrid-search">混合检索（Hybrid Search）</a></li>
+        <li><a href="#重排序reranking">重排序（Reranking）</a></li>
+        <li><a href="#查询优化">查询优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#生成阶段详解">生成阶段详解</a>
+      <ul>
+        <li><a href="#prompt-工程">Prompt 工程</a></li>
+        <li><a href="#回答生成策略">回答生成策略</a></li>
+        <li><a href="#引用与溯源">引用与溯源</a></li>
+      </ul>
+    </li>
+    <li><a href="#rag-评估">RAG 评估</a>
+      <ul>
+        <li><a href="#为什么需要评估">为什么需要评估</a></li>
+        <li><a href="#评估维度">评估维度</a></li>
+        <li><a href="#评估方法">评估方法</a></li>
+      </ul>
+    </li>
+    <li><a href="#rag-优化策略">RAG 优化策略</a>
+      <ul>
+        <li><a href="#检索优化">检索优化</a></li>
+        <li><a href="#生成优化">生成优化</a></li>
+        <li><a href="#系统优化">系统优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#高级-rag-技术">高级 RAG 技术</a>
+      <ul>
+        <li><a href="#图-raggraph-rag">图 RAG（Graph RAG）</a></li>
+        <li><a href="#自适应-ragself-rag">自适应 RAG（Self-RAG）</a></li>
+        <li><a href="#agentic-rag">Agentic RAG</a></li>
+        <li><a href="#多模态-rag">多模态 RAG</a></li>
+      </ul>
+    </li>
+    <li><a href="#rag-实践指南">RAG 实践指南</a>
+      <ul>
+        <li><a href="#快速上手步骤">快速上手步骤</a></li>
+        <li><a href="#常见问题与解决方案">常见问题与解决方案</a></li>
+        <li><a href="#成本优化">成本优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#主流框架与工具">主流框架与工具</a>
+      <ul>
+        <li><a href="#langchain">LangChain</a></li>
+        <li><a href="#llamaindex">LlamaIndex</a></li>
+        <li><a href="#dify">Dify</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div><div class="sidebar-widget"></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-06-19 03:20:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2026-06-19</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-06-19</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg2.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg2.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）虽然展现出惊人的语言理解和生成能力，但也面临着一些固有的局限性：</p>
+<ol>
+<li><strong>知识时效性差</strong>：模型的知识截止于训练数据的时间点，无法获取最新信息</li>
+<li><strong>领域知识不足</strong>：在专业领域（如医疗、法律、企业内部）的知识往往不够深入</li>
+<li><strong>幻觉问题</strong>：模型可能会&quot;一本正经地胡说八道&quot;，生成看似合理但实际错误的内容</li>
+<li><strong>知识更新困难</strong>：通过微调更新知识成本高昂，且容易导致灾难性遗忘</li>
+</ol>
+<p>检索增强生成（Retrieval-Augmented Generation, RAG）为这些问题提供了一个优雅的解决方案。通过在生成过程中引入外部知识检索，RAG 让大模型能够&quot;查资料&quot;后再回答问题，从而大幅提升回答的准确性和时效性。</p>
+<p>本文将从基础原理出发，系统介绍 RAG 的架构设计、核心技术、优化方法和最佳实践，帮助读者全面掌握这一重要技术。</p>
+<h2 id="rag-基础概念">
+<a class="header-anchor" href="#rag-%e5%9f%ba%e7%a1%80%e6%a6%82%e5%bf%b5"></a>
+RAG 基础概念
+</h2><h3 id="什么是-rag">
+<a class="header-anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af-rag"></a>
+什么是 RAG
+</h3><p>RAG 是一种将信息检索（Retrieval）与文本生成（Generation）相结合的技术范式。在回答用户问题时，系统首先从外部知识库中检索相关的文档片段，然后将这些片段作为上下文提供给大语言模型，引导模型基于检索到的信息生成回答。</p>
+<pre class="mermaid">
+  graph LR
+    A[用户问题] --> B[检索模块]
+    C[知识库] --> B
+    B --> D[相关文档]
+    D --> E[大语言模型]
+    A --> E
+    E --> F[生成回答]
+</pre><h3 id="rag-的核心优势">
+<a class="header-anchor" href="#rag-%e7%9a%84%e6%a0%b8%e5%bf%83%e4%bc%98%e5%8a%bf"></a>
+RAG 的核心优势
+</h3><table>
+	<thead>
+			<tr>
+					<th>优势</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>知识可更新</strong></td>
+					<td>只需更新知识库，无需重新训练模型</td>
+			</tr>
+			<tr>
+					<td><strong>减少幻觉</strong></td>
+					<td>基于事实文档生成，回答更准确可靠</td>
+			</tr>
+			<tr>
+					<td><strong>成本低廉</strong></td>
+					<td>相比微调，构建和维护成本低得多</td>
+			</tr>
+			<tr>
+					<td><strong>可溯源</strong></td>
+					<td>回答可以引用来源，便于验证</td>
+			</tr>
+			<tr>
+					<td><strong>隐私保护</strong></td>
+					<td>敏感数据只需放在知识库中，无需训练</td>
+			</tr>
+			<tr>
+					<td><strong>时效性强</strong></td>
+					<td>可以接入实时数据，提供最新信息</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="rag-vs-微调">
+<a class="header-anchor" href="#rag-vs-%e5%be%ae%e8%b0%83"></a>
+RAG vs 微调
+</h3><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>RAG</th>
+					<th>微调（Fine-tuning）</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>知识更新</td>
+					<td>简单，更新知识库即可</td>
+					<td>困难，需要重新训练</td>
+			</tr>
+			<tr>
+					<td>事实准确性</td>
+					<td>高，基于检索文档</td>
+					<td>中等，可能产生幻觉</td>
+			</tr>
+			<tr>
+					<td>实现成本</td>
+					<td>低</td>
+					<td>高</td>
+			</tr>
+			<tr>
+					<td>适用场景</td>
+					<td>事实性问答、知识库</td>
+					<td>风格模仿、任务适配</td>
+			</tr>
+			<tr>
+					<td>知识来源</td>
+					<td>外部文档</td>
+					<td>训练数据</td>
+			</tr>
+			<tr>
+					<td>可解释性</td>
+					<td>好，可溯源</td>
+					<td>差，黑盒</td>
+			</tr>
+	</tbody>
+</table>
+<p><strong>最佳实践</strong>：RAG 和微调不是互斥的，很多场景下两者结合使用效果最佳——用 RAG 提供事实知识，用微调调整回答风格和格式。</p>
+<h2 id="rag-系统架构">
+<a class="header-anchor" href="#rag-%e7%b3%bb%e7%bb%9f%e6%9e%b6%e6%9e%84"></a>
+RAG 系统架构
+</h2><h3 id="基础-rag-架构">
+<a class="header-anchor" href="#%e5%9f%ba%e7%a1%80-rag-%e6%9e%b6%e6%9e%84"></a>
+基础 RAG 架构
+</h3><p>一个典型的 RAG 系统包含两个主要阶段：</p>
+<ol>
+<li><strong>索引阶段（Indexing）</strong>：将文档处理并存储到知识库中</li>
+<li><strong>检索生成阶段（Retrieval &amp; Generation）</strong>：根据用户问题检索文档并生成回答</li>
+</ol>
+<pre class="mermaid">
+  graph TD
+    subgraph 索引阶段
+        A[文档采集] --> B[文档清洗]
+        B --> C[文本分块]
+        C --> D[向量化]
+        D --> E[向量数据库]
+    end
+    
+    subgraph 检索生成阶段
+        F[用户问题] --> G[查询向量化]
+        G --> H[向量检索]
+        E --> H
+        H --> I[相关文档块]
+        I --> J[Prompt 构建]
+        F --> J
+        J --> K[LLM 生成]
+        K --> L[回答]
+    end
+</pre><h3 id="进阶-rag-架构">
+<a class="header-anchor" href="#%e8%bf%9b%e9%98%b6-rag-%e6%9e%b6%e6%9e%84"></a>
+进阶 RAG 架构
+</h3><p>随着技术的发展，RAG 架构也在不断演进，出现了各种增强版本：</p>
+<ul>
+<li><strong>Naive RAG</strong>：最基础的检索-生成两阶段架构</li>
+<li><strong>Advanced RAG</strong>：加入查询重写、重排序等优化</li>
+<li><strong>Modular RAG</strong>：模块化设计，支持灵活组合各种组件</li>
+<li><strong>Agentic RAG</strong>：结合 Agent，具备规划和反思能力</li>
+</ul>
+<h2 id="索引阶段详解">
+<a class="header-anchor" href="#%e7%b4%a2%e5%bc%95%e9%98%b6%e6%ae%b5%e8%af%a6%e8%a7%a3"></a>
+索引阶段详解
+</h2><h3 id="文档采集">
+<a class="header-anchor" href="#%e6%96%87%e6%a1%a3%e9%87%87%e9%9b%86"></a>
+文档采集
+</h3><p>文档来源可以多种多样：</p>
+<ul>
+<li>企业内部文档（PDF、Word、PPT 等）</li>
+<li>网页内容</li>
+<li>数据库记录</li>
+<li>API 接口数据</li>
+<li>结构化表格</li>
+<li>图片、音频（需要转文字）</li>
+</ul>
+<p><strong>数据质量是 RAG 效果的基石</strong>。采集阶段就要注意：</p>
+<ul>
+<li>确保数据的权威性和准确性</li>
+<li>去除重复和冗余内容</li>
+<li>处理格式混乱的文档</li>
+</ul>
+<h3 id="文档清洗与预处理">
+<a class="header-anchor" href="#%e6%96%87%e6%a1%a3%e6%b8%85%e6%b4%97%e4%b8%8e%e9%a2%84%e5%a4%84%e7%90%86"></a>
+文档清洗与预处理
+</h3><p>原始文档往往包含大量噪声，需要进行清洗：</p>
+<ol>
+<li><strong>格式转换</strong>：将各种格式统一为纯文本</li>
+<li><strong>噪声去除</strong>：去除页眉页脚、页码、广告等无关内容</li>
+<li><strong>格式规范化</strong>：统一标点、空格、换行等</li>
+<li><strong>内容过滤</strong>：过滤低质量、不相关的内容</li>
+</ol>
+<h3 id="文本分块chunking">
+<a class="header-anchor" href="#%e6%96%87%e6%9c%ac%e5%88%86%e5%9d%97chunking"></a>
+文本分块（Chunking）
+</h3><p>文本分块是 RAG 中最关键的步骤之一。分块策略直接影响检索质量。</p>
+<h4 id="为什么需要分块">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e5%88%86%e5%9d%97"></a>
+为什么需要分块
+</h4><ul>
+<li>LLM 的上下文长度有限</li>
+<li>检索需要粒度适中的信息单元</li>
+<li>太大的块会引入噪声，太小的块会丢失上下文</li>
+</ul>
+<h4 id="常见分块策略">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e5%88%86%e5%9d%97%e7%ad%96%e7%95%a5"></a>
+常见分块策略
+</h4><table>
+	<thead>
+			<tr>
+					<th>策略</th>
+					<th>描述</th>
+					<th>优点</th>
+					<th>缺点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>固定大小分块</strong></td>
+					<td>按固定字符数/token数切分</td>
+					<td>简单高效</td>
+					<td>可能切断语义单元</td>
+			</tr>
+			<tr>
+					<td><strong>语义分块</strong></td>
+					<td>根据语义边界切分</td>
+					<td>语义完整</td>
+					<td>实现复杂，速度慢</td>
+			</tr>
+			<tr>
+					<td><strong>递归分块</strong></td>
+					<td>按层级递归切分（段落→句子→&hellip;）</td>
+					<td>兼顾结构和大小</td>
+					<td>需要调优</td>
+			</tr>
+			<tr>
+					<td><strong>结构化分块</strong></td>
+					<td>根据文档结构（标题、段落）切分</td>
+					<td>保留文档结构</td>
+					<td>需要结构化文档</td>
+			</tr>
+			<tr>
+					<td><strong>滑动窗口</strong></td>
+					<td>分块之间有重叠</td>
+					<td>减少边界信息丢失</td>
+					<td>有冗余</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="分块大小的选择">
+<a class="header-anchor" href="#%e5%88%86%e5%9d%97%e5%a4%a7%e5%b0%8f%e7%9a%84%e9%80%89%e6%8b%a9"></a>
+分块大小的选择
+</h4><p>分块大小没有标准答案，需要根据具体场景调整：</p>
+<ul>
+<li><strong>小分块（128-256 token）</strong>：检索精度高，但上下文不足</li>
+<li><strong>中分块（512-1024 token）</strong>：平衡选择，适用大多数场景</li>
+<li><strong>大分块（2048+ token）</strong>：上下文丰富，但可能引入噪声</li>
+</ul>
+<p><strong>最佳实践</strong>：</p>
+<ul>
+<li>使用滑动窗口，重叠 10%-20%</li>
+<li>根据文档类型和查询特点调整大小</li>
+<li>可以使用多层级分块（小分块检索，大分块返回）</li>
+</ul>
+<h3 id="向量化embedding">
+<a class="header-anchor" href="#%e5%90%91%e9%87%8f%e5%8c%96embedding"></a>
+向量化（Embedding）
+</h3><p>向量化是将文本转换为向量表示的过程。向量的质量直接决定了检索的准确性。</p>
+<h4 id="常见-embedding-模型">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81-embedding-%e6%a8%a1%e5%9e%8b"></a>
+常见 Embedding 模型
+</h4><table>
+	<thead>
+			<tr>
+					<th>模型</th>
+					<th>维度</th>
+					<th>语言</th>
+					<th>特点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>text-embedding-ada-002</td>
+					<td>1536</td>
+					<td>中英等</td>
+					<td>OpenAI，效果稳定</td>
+			</tr>
+			<tr>
+					<td>text-embedding-3-large</td>
+					<td>3072</td>
+					<td>中英等</td>
+					<td>OpenAI，最新最强</td>
+			</tr>
+			<tr>
+					<td>bge-large-zh-v1.5</td>
+					<td>1024</td>
+					<td>中文</td>
+					<td>BAAI，中文效果好</td>
+			</tr>
+			<tr>
+					<td>m3e-large</td>
+					<td>1024</td>
+					<td>中英</td>
+					<td>Moka，通用场景</td>
+			</tr>
+			<tr>
+					<td>gte-large</td>
+					<td>1024</td>
+					<td>中英</td>
+					<td>阿里，综合性能好</td>
+			</tr>
+			<tr>
+					<td>bge-m3</td>
+					<td>1024</td>
+					<td>多语言</td>
+					<td>多语言，支持稀疏稠密混合</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="embedding-模型选择建议">
+<a class="header-anchor" href="#embedding-%e6%a8%a1%e5%9e%8b%e9%80%89%e6%8b%a9%e5%bb%ba%e8%ae%ae"></a>
+Embedding 模型选择建议
+</h4><ol>
+<li><strong>优先考虑领域适配</strong>：如果有领域数据，微调 Embedding 模型效果提升明显</li>
+<li><strong>中文场景</strong>：推荐 bge 系列、gte 系列、m3e 等中文优化模型</li>
+<li><strong>多语言场景</strong>：推荐 bge-m3、multilingual-e5 等</li>
+<li><strong>性能与效果平衡</strong>：large 版本效果最好，base 版本速度更快</li>
+</ol>
+<h3 id="向量数据库">
+<a class="header-anchor" href="#%e5%90%91%e9%87%8f%e6%95%b0%e6%8d%ae%e5%ba%93"></a>
+向量数据库
+</h3><p>向量数据库专门用于存储和检索向量，是 RAG 系统的核心组件。</p>
+<h4 id="常见向量数据库">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e5%90%91%e9%87%8f%e6%95%b0%e6%8d%ae%e5%ba%93"></a>
+常见向量数据库
+</h4><table>
+	<thead>
+			<tr>
+					<th>数据库</th>
+					<th>类型</th>
+					<th>特点</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Chroma</strong></td>
+					<td>轻量级</td>
+					<td>Python 原生，简单易用</td>
+					<td>原型开发、小规模</td>
+			</tr>
+			<tr>
+					<td><strong>FAISS</strong></td>
+					<td>库</td>
+					<td>Meta 开源，性能优秀</td>
+					<td>高性能检索</td>
+			</tr>
+			<tr>
+					<td><strong>Milvus</strong></td>
+					<td>分布式</td>
+					<td>云原生，可扩展</td>
+					<td>大规模生产环境</td>
+			</tr>
+			<tr>
+					<td><strong>Pinecone</strong></td>
+					<td>SaaS</td>
+					<td>托管服务，零运维</td>
+					<td>不想自己运维</td>
+			</tr>
+			<tr>
+					<td><strong>Weaviate</strong></td>
+					<td>混合检索</td>
+					<td>支持向量+关键词</td>
+					<td>混合检索场景</td>
+			</tr>
+			<tr>
+					<td><strong>Qdrant</strong></td>
+					<td>Rust 实现</td>
+					<td>高性能，Rust 编写</td>
+					<td>高性能、生产环境</td>
+			</tr>
+			<tr>
+					<td><strong>Elasticsearch</strong></td>
+					<td>通用</td>
+					<td>支持向量+全文</td>
+					<td>已有 ES 基础设施</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="检索算法">
+<a class="header-anchor" href="#%e6%a3%80%e7%b4%a2%e7%ae%97%e6%b3%95"></a>
+检索算法
+</h4><p>向量检索的核心是近似最近邻（ANN）算法：</p>
+<table>
+	<thead>
+			<tr>
+					<th>算法</th>
+					<th>原理</th>
+					<th>特点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>HNSW</strong></td>
+					<td>层次化导航小世界</td>
+					<td>目前最流行，查询速度快，内存占用高</td>
+			</tr>
+			<tr>
+					<td><strong>IVF</strong></td>
+					<td>倒排文件</td>
+					<td>聚类分区，构建快，查询稍慢</td>
+			</tr>
+			<tr>
+					<td><strong>PQ</strong></td>
+					<td>乘积量化</td>
+					<td>压缩向量，内存占用小，精度有损失</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="检索阶段详解">
+<a class="header-anchor" href="#%e6%a3%80%e7%b4%a2%e9%98%b6%e6%ae%b5%e8%af%a6%e8%a7%a3"></a>
+检索阶段详解
+</h2><h3 id="向量检索">
+<a class="header-anchor" href="#%e5%90%91%e9%87%8f%e6%a3%80%e7%b4%a2"></a>
+向量检索
+</h3><p>向量检索是最基础的检索方式，通过计算查询向量与文档向量的相似度来找到最相关的文档。</p>
+<h4 id="相似度度量">
+<a class="header-anchor" href="#%e7%9b%b8%e4%bc%bc%e5%ba%a6%e5%ba%a6%e9%87%8f"></a>
+相似度度量
+</h4><table>
+	<thead>
+			<tr>
+					<th>度量方式</th>
+					<th>公式</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>余弦相似度</strong></td>
+					<td>$sim(a,b) = \frac{a \cdot b}{\|a\| \|b\|}$</td>
+					<td>最常用，忽略向量长度</td>
+			</tr>
+			<tr>
+					<td><strong>内积（IP）</strong></td>
+					<td>$sim(a,b) = a \cdot b$</td>
+					<td>向量已归一化时等价于余弦</td>
+			</tr>
+			<tr>
+					<td><strong>欧氏距离</strong></td>
+					<td>$d(a,b) = \|a - b\|_2$</td>
+					<td>距离越小越相似</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="关键词检索">
+<a class="header-anchor" href="#%e5%85%b3%e9%94%ae%e8%af%8d%e6%a3%80%e7%b4%a2"></a>
+关键词检索
+</h3><p>向量检索擅长语义匹配，但对精确关键词、专有名词的匹配可能不如传统的关键词检索。</p>
+<p>常见的关键词检索算法：</p>
+<ul>
+<li><strong>BM25</strong>：目前最优秀的关键词检索算法之一</li>
+<li><strong>TF-IDF</strong>：经典的词频-逆文档频率算法</li>
+</ul>
+<h3 id="混合检索hybrid-search">
+<a class="header-anchor" href="#%e6%b7%b7%e5%90%88%e6%a3%80%e7%b4%a2hybrid-search"></a>
+混合检索（Hybrid Search）
+</h3><p>将向量检索和关键词检索结合起来，可以兼顾语义匹配和精确匹配，通常比单一检索方式效果更好。</p>
+$$
+score = \alpha \cdot score_{vector} + (1 - \alpha) \cdot score_{keyword}
+$$<p>其中 $\alpha$ 是权重系数，需要根据具体场景调优。</p>
+<h3 id="重排序reranking">
+<a class="header-anchor" href="#%e9%87%8d%e6%8e%92%e5%ba%8freranking"></a>
+重排序（Reranking）
+</h3><p>初检索通常返回较多候选（如 top-50），然后使用更强大的模型进行重排序，选出最相关的少数几个（如 top-5）。</p>
+<h4 id="为什么需要重排序">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e9%87%8d%e6%8e%92%e5%ba%8f"></a>
+为什么需要重排序
+</h4><ul>
+<li>初检索追求召回率，可能返回较多不相关结果</li>
+<li>更强大的模型计算成本高，只能处理少量候选</li>
+<li>交叉编码器（Cross-Encoder）效果优于双编码器（Bi-Encoder）</li>
+</ul>
+<h4 id="常见-reranker-模型">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81-reranker-%e6%a8%a1%e5%9e%8b"></a>
+常见 Reranker 模型
+</h4><ul>
+<li><strong>bge-reranker</strong>：BAAI 出品，中文效果好</li>
+<li><strong>bge-reranker-v2-m3</strong>：多语言，多粒度</li>
+<li><strong>Cohere Rerank</strong>：商业 API</li>
+<li><strong>cross-encoder</strong>：Sentence-Transformers 系列</li>
+</ul>
+<h3 id="查询优化">
+<a class="header-anchor" href="#%e6%9f%a5%e8%af%a2%e4%bc%98%e5%8c%96"></a>
+查询优化
+</h3><p>用户的查询往往不是最优的检索查询，需要进行优化。</p>
+<h4 id="查询重写query-rewriting">
+<a class="header-anchor" href="#%e6%9f%a5%e8%af%a2%e9%87%8d%e5%86%99query-rewriting"></a>
+查询重写（Query Rewriting）
+</h4><p>让 LLM 将用户的自然语言问题改写为更适合检索的查询：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">用户问题：我怎么设置 VPN？
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">重写后的查询：
+</span></span><span class="line"><span class="cl">- VPN 设置教程
+</span></span><span class="line"><span class="cl">- 虚拟专用网络配置方法
+</span></span><span class="line"><span class="cl">- VPN 安装步骤
+</span></span></code></pre></div><h4 id="假设性文档生成hyde">
+<a class="header-anchor" href="#%e5%81%87%e8%ae%be%e6%80%a7%e6%96%87%e6%a1%a3%e7%94%9f%e6%88%90hyde"></a>
+假设性文档生成（HyDE）
+</h4><p>Hypothetical Document Embeddings（HyDE）的思路是：让 LLM 先根据问题生成一个假设的回答，然后用这个假设回答去检索。</p>
+<p>这样做的好处是：</p>
+<ul>
+<li>回答的向量表示可能比问题更接近真实文档</li>
+<li>可以弥合查询和文档之间的&quot;语义鸿沟&quot;</li>
+</ul>
+<h4 id="查询分解query-decomposition">
+<a class="header-anchor" href="#%e6%9f%a5%e8%af%a2%e5%88%86%e8%a7%a3query-decomposition"></a>
+查询分解（Query Decomposition）
+</h4><p>对于复杂的多跳问题，将其分解为多个子问题，分别检索后再综合：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">问题：张三比李四大几岁？
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">分解为：
+</span></span><span class="line"><span class="cl">1. 张三的年龄是多少？
+</span></span><span class="line"><span class="cl">2. 李四的年龄是多少？
+</span></span></code></pre></div><h2 id="生成阶段详解">
+<a class="header-anchor" href="#%e7%94%9f%e6%88%90%e9%98%b6%e6%ae%b5%e8%af%a6%e8%a7%a3"></a>
+生成阶段详解
+</h2><h3 id="prompt-工程">
+<a class="header-anchor" href="#prompt-%e5%b7%a5%e7%a8%8b"></a>
+Prompt 工程
+</h3><p>Prompt 是连接检索结果和 LLM 生成的桥梁，其质量直接影响最终回答的质量。</p>
+<h4 id="基础-rag-prompt-模板">
+<a class="header-anchor" href="#%e5%9f%ba%e7%a1%80-rag-prompt-%e6%a8%a1%e6%9d%bf"></a>
+基础 RAG Prompt 模板
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">你是一个专业的问答助手。请根据以下提供的上下文信息回答用户的问题。
+</span></span><span class="line"><span class="cl">如果上下文中没有相关信息，请回答&#34;根据现有资料无法回答这个问题&#34;，不要编造信息。
+</span></span><span class="line"><span class="cl">回答要简洁、准确、有条理。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">上下文信息：
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">{context}
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">用户问题：{question}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">请回答：
+</span></span></code></pre></div><h4 id="prompt-设计要点">
+<a class="header-anchor" href="#prompt-%e8%ae%be%e8%ae%a1%e8%a6%81%e7%82%b9"></a>
+Prompt 设计要点
+</h4><ol>
+<li><strong>明确角色</strong>：告诉模型它的身份和职责</li>
+<li><strong>设定规则</strong>：明确要求（如&quot;不要编造&quot;、&ldquo;引用来源&rdquo;）</li>
+<li><strong>提供上下文</strong>：清晰地呈现检索到的文档</li>
+<li><strong>指定输出格式</strong>：让回答更符合预期</li>
+<li><strong>控制回答长度</strong>：避免过长或过短</li>
+</ol>
+<h3 id="回答生成策略">
+<a class="header-anchor" href="#%e5%9b%9e%e7%ad%94%e7%94%9f%e6%88%90%e7%ad%96%e7%95%a5"></a>
+回答生成策略
+</h3><h4 id="纯生成式">
+<a class="header-anchor" href="#%e7%ba%af%e7%94%9f%e6%88%90%e5%bc%8f"></a>
+纯生成式
+</h4><p>直接将上下文和问题交给 LLM，让其自由生成回答。这是最常见的方式。</p>
+<h4 id="抽取式">
+<a class="header-anchor" href="#%e6%8a%bd%e5%8f%96%e5%bc%8f"></a>
+抽取式
+</h4><p>从检索到的文档中直接抽取答案片段。适合需要精确引用的场景。</p>
+<h4 id="摘要式">
+<a class="header-anchor" href="#%e6%91%98%e8%a6%81%e5%bc%8f"></a>
+摘要式
+</h4><p>对检索到的多篇文档进行总结归纳，生成综合性回答。</p>
+<h3 id="引用与溯源">
+<a class="header-anchor" href="#%e5%bc%95%e7%94%a8%e4%b8%8e%e6%ba%af%e6%ba%90"></a>
+引用与溯源
+</h3><p>让回答引用来源文档，可以提升可信度：</p>
+<ul>
+<li>在回答中标注来源编号</li>
+<li>列出参考文档列表</li>
+<li>提供原文片段对比</li>
+</ul>
+<h2 id="rag-评估">
+<a class="header-anchor" href="#rag-%e8%af%84%e4%bc%b0"></a>
+RAG 评估
+</h2><h3 id="为什么需要评估">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e8%af%84%e4%bc%b0"></a>
+为什么需要评估
+</h3><p>RAG 系统的效果受很多因素影响：</p>
+<ul>
+<li>分块策略</li>
+<li>Embedding 模型选择</li>
+<li>检索 top-k 数量</li>
+<li>Prompt 设计</li>
+<li>&hellip;</li>
+</ul>
+<p>没有评估，就无法知道改动是变好还是变坏。</p>
+<h3 id="评估维度">
+<a class="header-anchor" href="#%e8%af%84%e4%bc%b0%e7%bb%b4%e5%ba%a6"></a>
+评估维度
+</h3><h4 id="检索质量评估">
+<a class="header-anchor" href="#%e6%a3%80%e7%b4%a2%e8%b4%a8%e9%87%8f%e8%af%84%e4%bc%b0"></a>
+检索质量评估
+</h4><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>含义</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>召回率（Recall）</strong></td>
+					<td>相关文档被检索到的比例</td>
+			</tr>
+			<tr>
+					<td><strong>精确率（Precision）</strong></td>
+					<td>检索到的文档中相关的比例</td>
+			</tr>
+			<tr>
+					<td><strong>MRR</strong></td>
+					<td>第一个相关文档的排名倒数的均值</td>
+			</tr>
+			<tr>
+					<td><strong>NDCG</strong></td>
+					<td>考虑排名位置的综合指标</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="生成质量评估">
+<a class="header-anchor" href="#%e7%94%9f%e6%88%90%e8%b4%a8%e9%87%8f%e8%af%84%e4%bc%b0"></a>
+生成质量评估
+</h4><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>事实准确性</strong></td>
+					<td>回答是否符合事实，有无幻觉</td>
+			</tr>
+			<tr>
+					<td><strong>相关性</strong></td>
+					<td>回答是否针对问题</td>
+			</tr>
+			<tr>
+					<td><strong>完整性</strong></td>
+					<td>是否完整回答了问题</td>
+			</tr>
+			<tr>
+					<td><strong>流畅性</strong></td>
+					<td>语言是否自然流畅</td>
+			</tr>
+			<tr>
+					<td><strong>可溯源性</strong></td>
+					<td>回答内容能否在文档中找到依据</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="评估方法">
+<a class="header-anchor" href="#%e8%af%84%e4%bc%b0%e6%96%b9%e6%b3%95"></a>
+评估方法
+</h3><h4 id="人工评估">
+<a class="header-anchor" href="#%e4%ba%ba%e5%b7%a5%e8%af%84%e4%bc%b0"></a>
+人工评估
+</h4><p>最准确但成本最高的方式。适合小规模抽样评估。</p>
+<h4 id="自动评估">
+<a class="header-anchor" href="#%e8%87%aa%e5%8a%a8%e8%af%84%e4%bc%b0"></a>
+自动评估
+</h4><p>利用 LLM 作为评委进行自动评估：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">请评估以下回答的质量。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">问题：{question}
+</span></span><span class="line"><span class="cl">上下文：{context}
+</span></span><span class="line"><span class="cl">回答：{answer}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">请从以下几个维度评分（1-5分）：
+</span></span><span class="line"><span class="cl">1. 事实准确性：回答是否与上下文一致，有无编造
+</span></span><span class="line"><span class="cl">2. 相关性：回答是否针对问题
+</span></span><span class="line"><span class="cl">3. 完整性：回答是否完整
+</span></span><span class="line"><span class="cl">4. 流畅性：语言是否流畅自然
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">评分：
+</span></span></code></pre></div><h4 id="专用评估框架">
+<a class="header-anchor" href="#%e4%b8%93%e7%94%a8%e8%af%84%e4%bc%b0%e6%a1%86%e6%9e%b6"></a>
+专用评估框架
+</h4><ul>
+<li><strong>RAGAS</strong>：专门的 RAG 评估框架</li>
+<li><strong>TruLens</strong>：LLM 应用评估工具</li>
+<li><strong>DeepEval</strong>：LLM 测试评估框架</li>
+</ul>
+<h2 id="rag-优化策略">
+<a class="header-anchor" href="#rag-%e4%bc%98%e5%8c%96%e7%ad%96%e7%95%a5"></a>
+RAG 优化策略
+</h2><h3 id="检索优化">
+<a class="header-anchor" href="#%e6%a3%80%e7%b4%a2%e4%bc%98%e5%8c%96"></a>
+检索优化
+</h3><ol>
+<li><strong>优化分块策略</strong>：实验不同的分块大小和重叠比例</li>
+<li><strong>优化 Embedding 模型</strong>：选择更好的 Embedding 模型，或用领域数据微调</li>
+<li><strong>使用混合检索</strong>：结合向量检索和关键词检索</li>
+<li><strong>加入重排序</strong>：用 Reranker 提升检索精度</li>
+<li><strong>查询优化</strong>：查询重写、HyDE、查询分解</li>
+<li><strong>多层级检索</strong>：先粗筛后精排，兼顾效率和精度</li>
+<li><strong>元数据过滤</strong>：利用文档元数据（时间、类别等）进行预过滤</li>
+</ol>
+<h3 id="生成优化">
+<a class="header-anchor" href="#%e7%94%9f%e6%88%90%e4%bc%98%e5%8c%96"></a>
+生成优化
+</h3><ol>
+<li><strong>优化 Prompt</strong>：持续迭代 Prompt 模板</li>
+<li><strong>选择合适的模型</strong>：更强的模型生成质量更好</li>
+<li><strong>多文档融合</strong>：让模型综合多篇文档的信息</li>
+<li><strong>自我验证</strong>：让模型检查自己的回答是否有依据</li>
+<li><strong>引用溯源</strong>：强制模型引用来源，减少幻觉</li>
+</ol>
+<h3 id="系统优化">
+<a class="header-anchor" href="#%e7%b3%bb%e7%bb%9f%e4%bc%98%e5%8c%96"></a>
+系统优化
+</h3><ol>
+<li><strong>缓存机制</strong>：缓存常见问题的回答和检索结果</li>
+<li><strong>批量处理</strong>：批量向量化，提升效率</li>
+<li><strong>异步处理</strong>：索引更新异步进行</li>
+<li><strong>监控告警</strong>：监控系统性能和效果</li>
+</ol>
+<h2 id="高级-rag-技术">
+<a class="header-anchor" href="#%e9%ab%98%e7%ba%a7-rag-%e6%8a%80%e6%9c%af"></a>
+高级 RAG 技术
+</h2><h3 id="图-raggraph-rag">
+<a class="header-anchor" href="#%e5%9b%be-raggraph-rag"></a>
+图 RAG（Graph RAG）
+</h3><p>将知识图谱与 RAG 结合，利用实体和关系进行更智能的检索：</p>
+<ol>
+<li>从文档中提取实体和关系，构建知识图谱</li>
+<li>检索时不仅找相似文档，还找相关的实体和关系</li>
+<li>利用图结构进行推理和多跳问答</li>
+</ol>
+<h3 id="自适应-ragself-rag">
+<a class="header-anchor" href="#%e8%87%aa%e9%80%82%e5%ba%94-ragself-rag"></a>
+自适应 RAG（Self-RAG）
+</h3><p>让模型自己决定是否需要检索、检索什么、如何利用检索结果：</p>
+<ul>
+<li>模型判断是否需要检索</li>
+<li>模型生成检索查询</li>
+<li>模型评估检索结果的相关性</li>
+<li>模型根据检索结果调整回答</li>
+</ul>
+<h3 id="agentic-rag">
+<a class="header-anchor" href="#agentic-rag"></a>
+Agentic RAG
+</h3><p>将 RAG 与 Agent 结合，让系统具备规划、执行、反思的能力：</p>
+<ul>
+<li>可以进行多轮检索</li>
+<li>可以调用工具</li>
+<li>可以反思和修正</li>
+<li>可以处理复杂任务</li>
+</ul>
+<pre class="mermaid">
+  graph TD
+    A[用户问题] --> B[Agent 规划]
+    B --> C{需要检索吗?}
+    C -->|是| D[生成检索查询]
+    D --> E[执行检索]
+    E --> F[评估结果]
+    F --> C
+    C -->|否| G[生成回答]
+    G --> H{满意吗?}
+    H -->|是| I[输出回答]
+    H -->|否| J[反思改进]
+    J --> B
+</pre><h3 id="多模态-rag">
+<a class="header-anchor" href="#%e5%a4%9a%e6%a8%a1%e6%80%81-rag"></a>
+多模态 RAG
+</h3><p>不仅支持文本，还支持图片、表格、音频等多种模态：</p>
+<ul>
+<li>图片：使用多模态 Embedding 或图片描述</li>
+<li>表格：结构化解析 + 文本表示</li>
+<li>音频：转文字后处理</li>
+</ul>
+<h2 id="rag-实践指南">
+<a class="header-anchor" href="#rag-%e5%ae%9e%e8%b7%b5%e6%8c%87%e5%8d%97"></a>
+RAG 实践指南
+</h2><h3 id="快速上手步骤">
+<a class="header-anchor" href="#%e5%bf%ab%e9%80%9f%e4%b8%8a%e6%89%8b%e6%ad%a5%e9%aa%a4"></a>
+快速上手步骤
+</h3><ol>
+<li><strong>明确场景</strong>：确定应用场景和知识范围</li>
+<li><strong>准备数据</strong>：收集和整理知识库文档</li>
+<li><strong>选择技术栈</strong>：Embedding 模型、向量数据库、LLM</li>
+<li><strong>搭建原型</strong>：快速实现基础 RAG 系统</li>
+<li><strong>评估迭代</strong>：建立评估集，持续优化</li>
+<li><strong>部署上线</strong>：部署到生产环境</li>
+<li><strong>监控维护</strong>：持续监控效果，更新知识库</li>
+</ol>
+<h3 id="常见问题与解决方案">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b8%8e%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88"></a>
+常见问题与解决方案
+</h3><table>
+	<thead>
+			<tr>
+					<th>问题</th>
+					<th>可能原因</th>
+					<th>解决方案</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>检索不到相关文档</td>
+					<td>Embedding 质量差 / 分块不合理</td>
+					<td>更换 Embedding 模型 / 调优分块策略</td>
+			</tr>
+			<tr>
+					<td>回答有幻觉</td>
+					<td>检索文档不相关 / 模型编造</td>
+					<td>提升检索精度 / 优化 Prompt 约束</td>
+			</tr>
+			<tr>
+					<td>回答不完整</td>
+					<td>检索到的信息不全</td>
+					<td>增加 top-k / 优化分块大小</td>
+			</tr>
+			<tr>
+					<td>检索速度慢</td>
+					<td>数据量大 / 索引不合理</td>
+					<td>优化索引参数 / 增加缓存</td>
+			</tr>
+			<tr>
+					<td>回答偏离主题</td>
+					<td>Prompt 引导不足</td>
+					<td>优化 Prompt / 加入示例</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="成本优化">
+<a class="header-anchor" href="#%e6%88%90%e6%9c%ac%e4%bc%98%e5%8c%96"></a>
+成本优化
+</h3><ol>
+<li><strong>Embedding 成本</strong>：选择开源模型，本地部署</li>
+<li><strong>LLM 成本</strong>：用小模型处理简单问题，大模型处理复杂问题</li>
+<li><strong>向量数据库成本</strong>：选择合适的数据库，优化索引参数</li>
+<li><strong>缓存</strong>：缓存高频查询，减少重复计算</li>
+</ol>
+<h2 id="主流框架与工具">
+<a class="header-anchor" href="#%e4%b8%bb%e6%b5%81%e6%a1%86%e6%9e%b6%e4%b8%8e%e5%b7%a5%e5%85%b7"></a>
+主流框架与工具
+</h2><h3 id="langchain">
+<a class="header-anchor" href="#langchain"></a>
+LangChain
+</h3><p>最流行的 LLM 应用开发框架，提供了完整的 RAG 组件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain.vectorstores</span> <span class="kn">import</span> <span class="n">Chroma</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain.embeddings</span> <span class="kn">import</span> <span class="n">OpenAIEmbeddings</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain.chat_models</span> <span class="kn">import</span> <span class="n">ChatOpenAI</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">langchain.chains</span> <span class="kn">import</span> <span class="n">RetrievalQA</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 初始化向量数据库</span>
+</span></span><span class="line"><span class="cl"><span class="n">embeddings</span> <span class="o">=</span> <span class="n">OpenAIEmbeddings</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">vectorstore</span> <span class="o">=</span> <span class="n">Chroma</span><span class="p">(</span><span class="n">persist_directory</span><span class="o">=</span><span class="s2">&#34;./db&#34;</span><span class="p">,</span> <span class="n">embedding_function</span><span class="o">=</span><span class="n">embeddings</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 创建 RAG 链</span>
+</span></span><span class="line"><span class="cl"><span class="n">qa_chain</span> <span class="o">=</span> <span class="n">RetrievalQA</span><span class="o">.</span><span class="n">from_chain_type</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">llm</span><span class="o">=</span><span class="n">ChatOpenAI</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">chain_type</span><span class="o">=</span><span class="s2">&#34;stuff&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">retriever</span><span class="o">=</span><span class="n">vectorstore</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">(</span><span class="n">search_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&#34;k&#34;</span><span class="p">:</span> <span class="mi">5</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查询</span>
+</span></span><span class="line"><span class="cl"><span class="n">result</span> <span class="o">=</span> <span class="n">qa_chain</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&#34;什么是 RAG？&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="llamaindex">
+<a class="header-anchor" href="#llamaindex"></a>
+LlamaIndex
+</h3><p>专注于数据连接和索引的框架，RAG 功能强大：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">llama_index</span> <span class="kn">import</span> <span class="n">VectorStoreIndex</span><span class="p">,</span> <span class="n">SimpleDirectoryReader</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 加载文档</span>
+</span></span><span class="line"><span class="cl"><span class="n">documents</span> <span class="o">=</span> <span class="n">SimpleDirectoryReader</span><span class="p">(</span><span class="s2">&#34;./data&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 构建索引</span>
+</span></span><span class="line"><span class="cl"><span class="n">index</span> <span class="o">=</span> <span class="n">VectorStoreIndex</span><span class="o">.</span><span class="n">from_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 查询引擎</span>
+</span></span><span class="line"><span class="cl"><span class="n">query_engine</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">as_query_engine</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">response</span> <span class="o">=</span> <span class="n">query_engine</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&#34;什么是 RAG？&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="dify">
+<a class="header-anchor" href="#dify"></a>
+Dify
+</h3><p>可视化的 LLM 应用开发平台，无需代码即可搭建 RAG 应用。</p>
+<h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>检索增强生成（RAG）是大模型时代最重要的技术之一。它为大模型装上了&quot;外接大脑&quot;，让模型能够访问实时、准确、可更新的知识，有效缓解了幻觉问题，拓展了大模型的应用边界。</p>
+<p>从基础的两阶段 RAG 到进阶的混合检索、重排序，再到 Agentic RAG、Graph RAG，RAG 技术正在快速演进。但万变不离其宗，核心始终是：<strong>找到最相关的信息，用最好的方式呈现给模型，生成最准确的回答</strong>。</p>
+<p>构建一个好的 RAG 系统，不仅需要技术，更需要工程实践。从数据质量到分块策略，从检索算法到 Prompt 设计，每一个环节都需要精心打磨。建立评估体系，持续迭代优化，才能打造出真正好用的 RAG 应用。</p>
+<p>RAG 不是银弹，但它是目前让大模型落地最实用、最高效的方法之一。掌握 RAG 技术，是每个大模型应用开发者的必修课。</p>
+<hr>
+<p><strong>参考文献</strong>：</p>
+<ol>
+<li>Lewis P, et al. Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks. NeurIPS 2020.</li>
+<li>Gao L, et al. Precise Zero-Shot Dense Retrieval without Relevance Labels. ACL 2023.</li>
+<li>Ma X, et al. Lost in the Middle: How Language Models Use Long Contexts. 2023.</li>
+<li>Asai A, et al. Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection. ICLR 2024.</li>
+<li>Borgeaud S, et al. Improving language models by retrieving from trillions of tokens. ICML 2022.</li>
+</ol>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3/&amp;appkey=&amp;title=RAG%20%e6%a3%80%e7%b4%a2%e5%a2%9e%e5%bc%ba%e7%94%9f%e6%88%90%e6%8a%80%e6%9c%af%e8%af%a6%e8%a7%a3&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="RAG 检索增强生成技术详解">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3/&amp;title=RAG%20%e6%a3%80%e7%b4%a2%e5%a2%9e%e5%bc%ba%e7%94%9f%e6%88%90%e6%8a%80%e6%9c%af%e8%af%a6%e8%a7%a3&amp;desc=%e4%bb%8e%e5%9f%ba%e7%a1%80%e5%8e%9f%e7%90%86%e5%88%b0%e9%ab%98%e7%ba%a7%e4%bc%98%e5%8c%96%ef%bc%8c%e5%85%a8%e9%9d%a2%e6%8e%8c%e6%8f%a1%e6%a3%80%e7%b4%a2%e5%a2%9e%e5%bc%ba%e7%94%9f%e6%88%90%ef%bc%88RAG%ef%bc%89%e7%9a%84%e6%a0%b8%e5%bf%83%e6%8a%80%e6%9c%af%e4%b8%8e%e5%ae%9e%e8%b7%b5%e6%96%b9%e6%b3%95&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="RAG 检索增强生成技术详解">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="RAG 检索增强生成技术详解">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3/&amp;text=RAG%20%e6%a3%80%e7%b4%a2%e5%a2%9e%e5%bc%ba%e7%94%9f%e6%88%90%e6%8a%80%e6%9c%af%e8%af%a6%e8%a7%a3&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="RAG 检索增强生成技术详解">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3/" target="_blank" rel="noopener noreferrer" title="RAG 检索增强生成技术详解">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/rag%e5%85%a8%e6%b5%81%e7%a8%8b"
+      data-aos="zoom-in"
+      >RAG全流程</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/rag"
+        rel="tag"
+        >RAG</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e6%a3%80%e7%b4%a2%e5%a2%9e%e5%bc%ba%e7%94%9f%e6%88%90"
+        rel="tag"
+        >检索增强生成</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%a4%a7%e6%a8%a1%e5%9e%8b"
+        rel="tag"
+        >大模型</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%90%91%e9%87%8f%e6%95%b0%e6%8d%ae%e5%ba%93"
+        rel="tag"
+        >向量数据库</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e7%9f%a5%e8%af%86%e5%ba%93"
+        rel="tag"
+        >知识库</a
+      >
+    </li></ul>
+</footer>
+  </div></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#rag-基础概念">RAG 基础概念</a>
+      <ul>
+        <li><a href="#什么是-rag">什么是 RAG</a></li>
+        <li><a href="#rag-的核心优势">RAG 的核心优势</a></li>
+        <li><a href="#rag-vs-微调">RAG vs 微调</a></li>
+      </ul>
+    </li>
+    <li><a href="#rag-系统架构">RAG 系统架构</a>
+      <ul>
+        <li><a href="#基础-rag-架构">基础 RAG 架构</a></li>
+        <li><a href="#进阶-rag-架构">进阶 RAG 架构</a></li>
+      </ul>
+    </li>
+    <li><a href="#索引阶段详解">索引阶段详解</a>
+      <ul>
+        <li><a href="#文档采集">文档采集</a></li>
+        <li><a href="#文档清洗与预处理">文档清洗与预处理</a></li>
+        <li><a href="#文本分块chunking">文本分块（Chunking）</a></li>
+        <li><a href="#向量化embedding">向量化（Embedding）</a></li>
+        <li><a href="#向量数据库">向量数据库</a></li>
+      </ul>
+    </li>
+    <li><a href="#检索阶段详解">检索阶段详解</a>
+      <ul>
+        <li><a href="#向量检索">向量检索</a></li>
+        <li><a href="#关键词检索">关键词检索</a></li>
+        <li><a href="#混合检索hybrid-search">混合检索（Hybrid Search）</a></li>
+        <li><a href="#重排序reranking">重排序（Reranking）</a></li>
+        <li><a href="#查询优化">查询优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#生成阶段详解">生成阶段详解</a>
+      <ul>
+        <li><a href="#prompt-工程">Prompt 工程</a></li>
+        <li><a href="#回答生成策略">回答生成策略</a></li>
+        <li><a href="#引用与溯源">引用与溯源</a></li>
+      </ul>
+    </li>
+    <li><a href="#rag-评估">RAG 评估</a>
+      <ul>
+        <li><a href="#为什么需要评估">为什么需要评估</a></li>
+        <li><a href="#评估维度">评估维度</a></li>
+        <li><a href="#评估方法">评估方法</a></li>
+      </ul>
+    </li>
+    <li><a href="#rag-优化策略">RAG 优化策略</a>
+      <ul>
+        <li><a href="#检索优化">检索优化</a></li>
+        <li><a href="#生成优化">生成优化</a></li>
+        <li><a href="#系统优化">系统优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#高级-rag-技术">高级 RAG 技术</a>
+      <ul>
+        <li><a href="#图-raggraph-rag">图 RAG（Graph RAG）</a></li>
+        <li><a href="#自适应-ragself-rag">自适应 RAG（Self-RAG）</a></li>
+        <li><a href="#agentic-rag">Agentic RAG</a></li>
+        <li><a href="#多模态-rag">多模态 RAG</a></li>
+      </ul>
+    </li>
+    <li><a href="#rag-实践指南">RAG 实践指南</a>
+      <ul>
+        <li><a href="#快速上手步骤">快速上手步骤</a></li>
+        <li><a href="#常见问题与解决方案">常见问题与解决方案</a></li>
+        <li><a href="#成本优化">成本优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#主流框架与工具">主流框架与工具</a>
+      <ul>
+        <li><a href="#langchain">LangChain</a></li>
+        <li><a href="#llamaindex">LlamaIndex</a></li>
+        <li><a href="#dify">Dify</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "RAG 检索增强生成技术详解",
+          url: "https:\/\/dev.infiniteevo.online\/post\/llm\/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B\/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3\/",
+          description: "从基础原理到高级优化，全面掌握检索增强生成（RAG）的核心技术与实践方法",
+          cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
+        };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-MWNUH0WmtsYGhn2cbH6ELRCbf9LG3QDqCC&#43;gqPB3IBNO35xjZK3Ejb6oONRpDbPg" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/contrib/auto-render.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv&#43;fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script><script data-pjax>
+          var renderMath = () => {
+            if (!window.renderMathInElement) return;
+            window.renderMathInElement(_$("article"), {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+              ],
+            });
+          };
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderMath, { once: true });
+          } else {
+            renderMath();
+          }
+        </script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>

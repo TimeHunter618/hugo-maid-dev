@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>通信机制 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Mon, 01 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>Chrome Extension 通信机制详解</title>
+      <link>https://dev.infiniteevo.online/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/chrome%E6%8F%92%E4%BB%B6%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/</link>
+      <pubDate>Mon, 01 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/chrome%E6%8F%92%E4%BB%B6%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/</guid>
+      <description>
+        <![CDATA[<h1>Chrome Extension 通信机制详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>当你想在浏览器中集成 AI 能力——比如选中网页文本一键翻译、右键调用 LLM 总结长文、或者在任意页面注入 AI 对话窗口——Chrome Extension 是最自然的载体。然而，插件的开发难点不在于 UI，而在于<strong>通信</strong>。</p>
+        
+        <hr><p>本文2026-06-01首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-01</p>]]>
+      </description>
+      
+        <category>前端插件集成</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,2658 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比 | Aries
+</title>
+<meta name="description" content="从架构差异到能力评估，系统对比主流大语言模型的技术特点与选型策略"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比 | Aries" />
+  <meta
+    property="og:description"
+    content="从架构差异到能力评估，系统对比主流大语言模型的技术特点与选型策略"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-02-10T10:00:00&#43;08:00" />
+  <meta property="article:modified_time" content="2026-02-10T10:00:00&#43;08:00" /><meta property="article:tag" content="大模型, 模型选型, GPT, Qwen, Llama, DeepSeek, GLM" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200" alt="大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">从架构差异到能力评估，系统对比主流大语言模型的技术特点与选型策略</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container sticky"><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#选型维度框架">选型维度框架</a>
+      <ul>
+        <li><a href="#五大评估维度">五大评估维度</a></li>
+        <li><a href="#各维度详细说明">各维度详细说明</a></li>
+      </ul>
+    </li>
+    <li><a href="#gpt-系列openai">GPT 系列（OpenAI）</a>
+      <ul>
+        <li><a href="#模型谱系">模型谱系</a></li>
+        <li><a href="#架构特点">架构特点</a></li>
+        <li><a href="#能力特点">能力特点</a></li>
+        <li><a href="#api-与定价">API 与定价</a></li>
+        <li><a href="#适用场景">适用场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#qwen-系列阿里巴巴">Qwen 系列（阿里巴巴）</a>
+      <ul>
+        <li><a href="#模型谱系-1">模型谱系</a></li>
+        <li><a href="#架构特点-1">架构特点</a></li>
+        <li><a href="#能力特点-1">能力特点</a></li>
+        <li><a href="#开源策略">开源策略</a></li>
+        <li><a href="#部署方式">部署方式</a></li>
+      </ul>
+    </li>
+    <li><a href="#llama-系列meta">Llama 系列（Meta）</a>
+      <ul>
+        <li><a href="#模型谱系-2">模型谱系</a></li>
+        <li><a href="#架构特点-2">架构特点</a></li>
+        <li><a href="#能力特点-2">能力特点</a></li>
+        <li><a href="#许可证">许可证</a></li>
+        <li><a href="#社区生态">社区生态</a></li>
+      </ul>
+    </li>
+    <li><a href="#deepseek-系列深度求索">DeepSeek 系列（深度求索）</a>
+      <ul>
+        <li><a href="#模型谱系-3">模型谱系</a></li>
+        <li><a href="#架构创新">架构创新</a></li>
+        <li><a href="#能力特点-3">能力特点</a></li>
+        <li><a href="#开源与定价">开源与定价</a></li>
+        <li><a href="#适用场景-1">适用场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#glm-系列智谱ai">GLM 系列（智谱AI）</a>
+      <ul>
+        <li><a href="#模型谱系-4">模型谱系</a></li>
+        <li><a href="#架构特点-3">架构特点</a></li>
+        <li><a href="#能力特点-4">能力特点</a></li>
+        <li><a href="#开源情况">开源情况</a></li>
+        <li><a href="#适用场景-2">适用场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#横向对比">横向对比</a>
+      <ul>
+        <li><a href="#能力对比">能力对比</a></li>
+        <li><a href="#架构对比">架构对比</a></li>
+        <li><a href="#成本对比">成本对比</a></li>
+        <li><a href="#生态对比">生态对比</a></li>
+        <li><a href="#中文能力专项对比">中文能力专项对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#选型决策树">选型决策树</a>
+      <ul>
+        <li><a href="#决策流程图">决策流程图</a></li>
+        <li><a href="#场景化推荐">场景化推荐</a></li>
+      </ul>
+    </li>
+    <li><a href="#实践快速切换不同模型">实践：快速切换不同模型</a></li>
+    <li><a href="#结语">结语</a></li>
+    <li><a href="#参考文献">参考文献</a></li>
+  </ul>
+</nav>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div><div class="sidebar-widget"></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-02-10 10:00:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2026-02-10</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-02-10</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg2.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg2.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>2025 年以来，大语言模型领域呈现出前所未有的百花齐放态势。OpenAI 的 GPT 系列持续领跑闭源阵营，Meta 的 Llama、阿里巴巴的 Qwen、深度求索的 DeepSeek 以及智谱 AI 的 GLM 则在开源与商用之间开辟了各自的差异化路线。对于开发者和企业而言，面对如此众多的选择，<strong>模型选型已经成为一项关键的技术决策</strong>——它直接影响产品的能力上限、运营成本、数据合规和技术自主性。</p>
+<p>选型的核心矛盾在于<strong>闭源与开源的权衡</strong>。闭源模型（如 GPT 系列）通常能力最强、生态最成熟，但存在数据隐私风险、API 依赖和长期成本不可控等问题；开源模型（如 Llama、Qwen）则提供了数据主权和部署灵活性，但在顶尖能力上可能存在差距。DeepSeek 和 GLM 则介于两者之间，以开源权重配合极低 API 价格的方式提供了独特的性价比路线。</p>
+<p>本文将从选型维度框架出发，逐一深入解析 GPT、Qwen、Llama、DeepSeek、GLM 五大模型系列的技术特点，通过横向对比和决策树，为读者提供一份系统、可操作的选型指南。</p>
+<h2 id="选型维度框架">
+<a class="header-anchor" href="#%e9%80%89%e5%9e%8b%e7%bb%b4%e5%ba%a6%e6%a1%86%e6%9e%b6"></a>
+选型维度框架
+</h2><h3 id="五大评估维度">
+<a class="header-anchor" href="#%e4%ba%94%e5%a4%a7%e8%af%84%e4%bc%b0%e7%bb%b4%e5%ba%a6"></a>
+五大评估维度
+</h3><p>大模型选型不是简单的&quot;谁强选谁&quot;，而是一个多维度的综合决策过程。我们将选型维度归纳为五个核心方面：</p>
+<pre class="mermaid">
+  graph TD
+    A[大模型选型决策] --> B[能力维度]
+    A --> C[成本维度]
+    A --> D[部署维度]
+    A --> E[生态维度]
+    A --> F[合规维度]
+
+    B --> B1[推理能力]
+    B --> B2[代码能力]
+    B --> B3[多语言能力]
+    B --> B4[多模态能力]
+    B --> B5[工具调用]
+
+    C --> C1[API 调用价格]
+    C --> C2[部署硬件成本]
+    C --> C3[微调成本]
+
+    D --> D1[闭源 API / 开源权重]
+    D --> D2[本地部署 / 云端调用]
+    D --> D3[上下文长度需求]
+
+    E --> E1[社区活跃度]
+    E --> E2[微调生态]
+    E --> E3[推理框架支持]
+    E --> E4[工具链成熟度]
+
+    F --> F1[数据隐私]
+    F --> F2[许可证限制]
+    F --> F3[数据出境合规]
+</pre><h3 id="各维度详细说明">
+<a class="header-anchor" href="#%e5%90%84%e7%bb%b4%e5%ba%a6%e8%af%a6%e7%bb%86%e8%af%b4%e6%98%8e"></a>
+各维度详细说明
+</h3><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>关键考量点</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>能力</strong></td>
+					<td>推理深度、代码生成质量、中英文表现、多模态支持、工具调用稳定性</td>
+					<td>对输出质量要求高的核心业务</td>
+			</tr>
+			<tr>
+					<td><strong>成本</strong></td>
+					<td>API 每百万 token 价格、本地部署的 GPU 显存需求、微调数据与算力成本</td>
+					<td>大规模调用、预算敏感项目</td>
+			</tr>
+			<tr>
+					<td><strong>部署</strong></td>
+					<td>是否开源、支持本地部署、上下文窗口大小、并发吞吐能力</td>
+					<td>数据敏感场景、离线环境</td>
+			</tr>
+			<tr>
+					<td><strong>生态</strong></td>
+					<td>HuggingFace 下载量、微调工具支持（LoRA/QLoRA）、推理引擎适配（vLLM/SGLang）</td>
+					<td>需要深度定制和二次开发</td>
+			</tr>
+			<tr>
+					<td><strong>合规</strong></td>
+					<td>开源协议限制、数据出境风险、企业内部安全策略</td>
+					<td>金融、医疗、政务等强监管行业</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p><strong>实践建议</strong>：选型时应首先明确&quot;不可妥协的硬约束&quot;（如必须本地部署、数据不可出境），在此基础上再对各候选模型的能力和成本进行权衡。</p>
+</blockquote>
+<h2 id="gpt-系列openai">
+<a class="header-anchor" href="#gpt-%e7%b3%bb%e5%88%97openai"></a>
+GPT 系列（OpenAI）
+</h2><h3 id="模型谱系">
+<a class="header-anchor" href="#%e6%a8%a1%e5%9e%8b%e8%b0%b1%e7%b3%bb"></a>
+模型谱系
+</h3><p>GPT 系列是大语言模型时代的开创者，其发展历程清晰地映射了整个行业的技术演进：</p>
+<pre class="mermaid">
+  graph LR
+    G1[GPT-3.5<br/>2022] --> G2[GPT-4<br/>2023]
+    G2 --> G3[GPT-4 Turbo<br/>2023末]
+    G3 --> G4[GPT-4o<br/>2024]
+    G4 --> G5[GPT-4o mini<br/>2024]
+    G4 --> G6[o1<br/>2024]
+    G6 --> G7[o3<br/>2025]
+</pre><table>
+	<thead>
+			<tr>
+					<th>模型</th>
+					<th>发布时间</th>
+					<th>核心特点</th>
+					<th>定位</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>GPT-3.5</td>
+					<td>2022.11</td>
+					<td>ChatGPT 的初始模型，对话能力强</td>
+					<td>入门级</td>
+			</tr>
+			<tr>
+					<td>GPT-4</td>
+					<td>2023.03</td>
+					<td>多模态输入，推理能力大幅提升</td>
+					<td>旗舰级</td>
+			</tr>
+			<tr>
+					<td>GPT-4 Turbo</td>
+					<td>2023.11</td>
+					<td>128K 上下文，知识截止更新</td>
+					<td>高性能</td>
+			</tr>
+			<tr>
+					<td>GPT-4o</td>
+					<td>2024.05</td>
+					<td>原生多模态（文本/音频/图像），速度提升 2 倍</td>
+					<td>全能旗舰</td>
+			</tr>
+			<tr>
+					<td>GPT-4o mini</td>
+					<td>2024.07</td>
+					<td>轻量版，价格仅为 4o 的 1/15</td>
+					<td>高性价比</td>
+			</tr>
+			<tr>
+					<td>o1</td>
+					<td>2024.09</td>
+					<td>推理模型，内置思维链，数学/代码极强</td>
+					<td>深度推理</td>
+			</tr>
+			<tr>
+					<td>o3</td>
+					<td>2025.01</td>
+					<td>推理能力进一步增强，ARC-AGI 突破</td>
+					<td>顶尖推理</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="架构特点">
+<a class="header-anchor" href="#%e6%9e%b6%e6%9e%84%e7%89%b9%e7%82%b9"></a>
+架构特点
+</h3><p>GPT 系列采用经典的 <strong>Dense Transformer</strong> 解码器架构，其核心设计包括：</p>
+<ul>
+<li><strong>密集参数</strong>：所有参数在每次推理中全部激活，不做稀疏路由（与 MoE 架构不同）</li>
+<li><strong>多模态融合</strong>：GPT-4o 原生支持文本、图像、音频的统一编码与生成，而非外接模块</li>
+<li><strong>思维链推理</strong>：o1/o3 系列引入了隐式思维链（Chain-of-Thought），在输出最终答案前进行内部推理，显著提升了复杂数学和编程任务的表现</li>
+</ul>
+<p>GPT-4o 的多模态架构可以表示为：</p>
+$$
+\text{output} = \text{Transformer}\left(\text{Embed}_{\text{text}}(x_t) \oplus \text{Embed}_{\text{vision}}(x_v) \oplus \text{Embed}_{\text{audio}}(x_a)\right)
+$$<p>其中 $\oplus$ 表示模态特征的拼接融合，$\text{Embed}_{\text{modality}}$ 为各模态的编码器。</p>
+<h3 id="能力特点">
+<a class="header-anchor" href="#%e8%83%bd%e5%8a%9b%e7%89%b9%e7%82%b9"></a>
+能力特点
+</h3><p>GPT 系列在以下方面表现突出：</p>
+<ol>
+<li><strong>综合推理</strong>：GPT-4o 和 o1/o3 在 MMLU、GPQA 等综合推理基准上长期处于第一梯队</li>
+<li><strong>代码生成</strong>：HumanEval、LiveCodeBench 成绩领先，尤其 o1 在竞赛级编程上表现优异</li>
+<li><strong>多模态理解</strong>：GPT-4o 支持图像理解、语音对话，多模态融合能力业界最强</li>
+<li><strong>工具调用</strong>：Function Calling 机制成熟稳定，是构建 Agent 应用的首选</li>
+<li><strong>指令遵循</strong>：对复杂指令的理解和遵循能力出色，输出格式可控性强</li>
+</ol>
+<h3 id="api-与定价">
+<a class="header-anchor" href="#api-%e4%b8%8e%e5%ae%9a%e4%bb%b7"></a>
+API 与定价
+</h3><table>
+	<thead>
+			<tr>
+					<th>模型</th>
+					<th>上下文长度</th>
+					<th>输入价格 ($/1M tokens)</th>
+					<th>输出价格 ($/1M tokens)</th>
+					<th>特点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>GPT-4o</td>
+					<td>128K</td>
+					<td>$2.50</td>
+					<td>$10.00</td>
+					<td>全能旗舰</td>
+			</tr>
+			<tr>
+					<td>GPT-4o mini</td>
+					<td>128K</td>
+					<td>$0.15</td>
+					<td>$0.60</td>
+					<td>极高性价比</td>
+			</tr>
+			<tr>
+					<td>o1</td>
+					<td>200K</td>
+					<td>$15.00</td>
+					<td>$60.00</td>
+					<td>深度推理</td>
+			</tr>
+			<tr>
+					<td>o3</td>
+					<td>200K</td>
+					<td>$10.00</td>
+					<td>$40.00</td>
+					<td>推理增强</td>
+			</tr>
+			<tr>
+					<td>GPT-4 Turbo</td>
+					<td>128K</td>
+					<td>$10.00</td>
+					<td>$30.00</td>
+					<td>旧版旗舰</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p><strong>注意</strong>：o1/o3 的输出价格包含推理 token，实际使用中推理 token 可能占总 token 的 50% 以上，需特别注意成本控制。</p>
+</blockquote>
+<h3 id="适用场景">
+<a class="header-anchor" href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af"></a>
+适用场景
+</h3><ul>
+<li><strong>通用对话与内容生成</strong>：GPT-4o 是最稳妥的全能选择</li>
+<li><strong>复杂推理与数学证明</strong>：o1/o3 在需要深度思考的场景中优势明显</li>
+<li><strong>多模态应用</strong>：图像理解、语音交互等场景首选 GPT-4o</li>
+<li><strong>Agent 与工具调用</strong>：成熟的 Function Calling 生态使其成为 Agent 开发的事实标准</li>
+<li><strong>快速原型验证</strong>：GPT-4o mini 以极低成本提供接近旗舰的能力，适合 MVP 阶段</li>
+</ul>
+<h2 id="qwen-系列阿里巴巴">
+<a class="header-anchor" href="#qwen-%e7%b3%bb%e5%88%97%e9%98%bf%e9%87%8c%e5%b7%b4%e5%b7%b4"></a>
+Qwen 系列（阿里巴巴）
+</h2><h3 id="模型谱系-1">
+<a class="header-anchor" href="#%e6%a8%a1%e5%9e%8b%e8%b0%b1%e7%b3%bb-1"></a>
+模型谱系
+</h3><p>Qwen（通义千问）是阿里巴巴推出的大语言模型系列，以其全面的开源策略和均衡的中英文能力著称：</p>
+<pre class="mermaid">
+  graph LR
+    Q1[Qwen<br/>2023] --> Q2[Qwen1.5<br/>2024初]
+    Q2 --> Q3[Qwen2<br/>2024中]
+    Q3 --> Q4[Qwen2.5<br/>2024末]
+    Q4 --> Q5[QwQ<br/>2024末]
+    Q4 --> Q6[Qwen3<br/>2025]
+</pre><p>Qwen2.5 提供了从 0.5B 到 72B 的完整参数规模覆盖：</p>
+<table>
+	<thead>
+			<tr>
+					<th>参数规模</th>
+					<th>模型名称</th>
+					<th>适用场景</th>
+					<th>显存需求 (FP16)</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>0.5B</td>
+					<td>Qwen2.5-0.5B</td>
+					<td>端侧/移动设备</td>
+					<td>~1 GB</td>
+			</tr>
+			<tr>
+					<td>1.5B</td>
+					<td>Qwen2.5-1.5B</td>
+					<td>轻量级本地部署</td>
+					<td>~3 GB</td>
+			</tr>
+			<tr>
+					<td>3B</td>
+					<td>Qwen2.5-3B</td>
+					<td>边缘设备推理</td>
+					<td>~6 GB</td>
+			</tr>
+			<tr>
+					<td>7B</td>
+					<td>Qwen2.5-7B</td>
+					<td>通用本地部署</td>
+					<td>~14 GB</td>
+			</tr>
+			<tr>
+					<td>14B</td>
+					<td>Qwen2.5-14B</td>
+					<td>高质量本地推理</td>
+					<td>~28 GB</td>
+			</tr>
+			<tr>
+					<td>32B</td>
+					<td>Qwen2.5-32B</td>
+					<td>企业级部署</td>
+					<td>~64 GB</td>
+			</tr>
+			<tr>
+					<td>72B</td>
+					<td>Qwen2.5-72B</td>
+					<td>旗舰开源模型</td>
+					<td>~144 GB</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="架构特点-1">
+<a class="header-anchor" href="#%e6%9e%b6%e6%9e%84%e7%89%b9%e7%82%b9-1"></a>
+架构特点
+</h3><p>Qwen 系列在标准 Transformer 架构基础上引入了多项优化：</p>
+<ul>
+<li><strong>GQA（分组查询注意力）</strong>：将 Query 头分组共享 Key/Value，在保持性能的同时显著减少 KV Cache 显存占用</li>
+<li><strong>SwiGLU 激活函数</strong>：结合 Swish 和 Gated Linear Unit，相比传统 ReLU 在大模型上表现更优</li>
+<li><strong>RoPE（旋转位置编码）</strong>：支持长度外推，原生支持长上下文</li>
+<li><strong>Tie Embedding</strong>：小模型（&lt;3B）中绑定输入输出嵌入层参数，减少参数量</li>
+<li><strong>Dual Chunk Attention</strong>：Qwen2.5 引入的长上下文注意力优化，支持 128K 上下文</li>
+</ul>
+<p>SwiGLU 激活函数的定义为：</p>
+$$
+\text{SwiGLU}(x, W, V) = \text{Swish}(xW) \otimes (xV)
+$$<p>其中 $\text{Swish}(x) = x \cdot \sigma(\beta x)$，$\otimes$ 为逐元素乘法。</p>
+<h3 id="能力特点-1">
+<a class="header-anchor" href="#%e8%83%bd%e5%8a%9b%e7%89%b9%e7%82%b9-1"></a>
+能力特点
+</h3><p>Qwen 系列的能力特点体现在以下方面：</p>
+<ol>
+<li><strong>中英文均衡</strong>：在中文理解、中国文化常识方面表现突出，同时英文能力不逊于同规模竞品</li>
+<li><strong>代码能力</strong>：Qwen2.5-Coder 系列在 HumanEval 等代码基准上达到甚至超越同规模闭源模型</li>
+<li><strong>数学推理</strong>：Qwen2.5-Math 专门针对数学推理优化，QwQ 进一步引入思维链推理</li>
+<li><strong>工具调用</strong>：原生支持 Function Calling，ReAct 格式输出稳定</li>
+<li><strong>多模态扩展</strong>：Qwen-VL（视觉）、Qwen-Audio（语音）等多模态变体覆盖全面</li>
+</ol>
+<h3 id="开源策略">
+<a class="header-anchor" href="#%e5%bc%80%e6%ba%90%e7%ad%96%e7%95%a5"></a>
+开源策略
+</h3><p>Qwen 采用了业界最开放的开源策略之一：</p>
+<table>
+	<thead>
+			<tr>
+					<th>方面</th>
+					<th>详情</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>许可证</td>
+					<td>Apache 2.0（绝大多数模型）</td>
+			</tr>
+			<tr>
+					<td>商业使用</td>
+					<td>完全允许，无限制</td>
+			</tr>
+			<tr>
+					<td>模型权重</td>
+					<td>HuggingFace / ModelScope 公开下载</td>
+			</tr>
+			<tr>
+					<td>训练细节</td>
+					<td>公开技术报告，含数据处理方法</td>
+			</tr>
+			<tr>
+					<td>衍生模型</td>
+					<td>允许微调后以自有协议发布</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>Apache 2.0 是最宽松的开源协议之一，不限制商业使用、不要求开源衍生作品，对企业极其友好。</p>
+</blockquote>
+<h3 id="部署方式">
+<a class="header-anchor" href="#%e9%83%a8%e7%bd%b2%e6%96%b9%e5%bc%8f"></a>
+部署方式
+</h3><p>Qwen 支持多种部署方案，覆盖从消费级 GPU 到企业集群的全场景：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 方式一：使用 Ollama 快速本地部署（适合个人开发者）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 命令行: ollama run qwen2.5:7b</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 方式二：使用 vLLM 高性能部署（适合生产环境）</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">vllm</span> <span class="kn">import</span> <span class="n">LLM</span><span class="p">,</span> <span class="n">SamplingParams</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">llm</span> <span class="o">=</span> <span class="n">LLM</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model</span><span class="o">=</span><span class="s2">&#34;Qwen/Qwen2.5-7B-Instruct&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 以下为可选优化参数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tensor_parallel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>        <span class="c1"># GPU 并行数</span>
+</span></span><span class="line"><span class="cl">    <span class="n">max_model_len</span><span class="o">=</span><span class="mi">32768</span><span class="p">,</span>           <span class="c1"># 最大上下文长度</span>
+</span></span><span class="line"><span class="cl">    <span class="n">quantization</span><span class="o">=</span><span class="s2">&#34;awq&#34;</span><span class="p">,</span>            <span class="c1"># AWQ 量化，减少显存占用</span>
+</span></span><span class="line"><span class="cl">    <span class="n">gpu_memory_utilization</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>    <span class="c1"># GPU 显存利用率</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sampling_params</span> <span class="o">=</span> <span class="n">SamplingParams</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">top_p</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">max_tokens</span><span class="o">=</span><span class="mi">2048</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 批量推理</span>
+</span></span><span class="line"><span class="cl"><span class="n">prompts</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;请用三句话介绍量子计算。&#34;</span><span class="p">,</span> <span class="s2">&#34;写一个 Python 快速排序函数。&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">outputs</span> <span class="o">=</span> <span class="n">llm</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">prompts</span><span class="p">,</span> <span class="n">sampling_params</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 方式三：使用 llama.cpp CPU/GPU 混合推理（适合资源受限环境）</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 需先下载 GGUF 格式模型文件</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 命令行: llama-cli -m qwen2.5-7b-instruct-q4_k_m.gguf -p &#34;你好&#34; -n 512</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Python 绑定调用</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">llama_cpp</span> <span class="kn">import</span> <span class="n">Llama</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">llm</span> <span class="o">=</span> <span class="n">Llama</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model_path</span><span class="o">=</span><span class="s2">&#34;./qwen2.5-7b-instruct-q4_k_m.gguf&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n_ctx</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>        <span class="c1"># 上下文长度</span>
+</span></span><span class="line"><span class="cl">    <span class="n">n_gpu_layers</span><span class="o">=</span><span class="mi">35</span><span class="p">,</span>   <span class="c1"># 卸载到 GPU 的层数，0 表示纯 CPU</span>
+</span></span><span class="line"><span class="cl">    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">response</span> <span class="o">=</span> <span class="n">llm</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;请解释什么是梯度消失问题。&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">max_tokens</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">temperature</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">stop</span><span class="o">=</span><span class="p">[</span><span class="s2">&#34;&lt;|im_end|&gt;&#34;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&#34;choices&#34;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&#34;text&#34;</span><span class="p">])</span>
+</span></span></code></pre></div><h2 id="llama-系列meta">
+<a class="header-anchor" href="#llama-%e7%b3%bb%e5%88%97meta"></a>
+Llama 系列（Meta）
+</h2><h3 id="模型谱系-2">
+<a class="header-anchor" href="#%e6%a8%a1%e5%9e%8b%e8%b0%b1%e7%b3%bb-2"></a>
+模型谱系
+</h3><p>Llama 是 Meta 推出的开源大语言模型系列，被公认为开源 LLM 生态的奠基者：</p>
+<pre class="mermaid">
+  graph LR
+    L1[Llama<br/>2023初] --> L2[Llama 2<br/>2023中]
+    L2 --> L3[Llama 3<br/>2024初]
+    L3 --> L4[Llama 3.1<br/>2024中]
+    L4 --> L5[Llama 3.2<br/>2024末]
+    L4 --> L6[Llama 3.3<br/>2024末]
+</pre><table>
+	<thead>
+			<tr>
+					<th>版本</th>
+					<th>参数规模</th>
+					<th>上下文长度</th>
+					<th>关键改进</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Llama</td>
+					<td>7B / 13B / 33B / 65B</td>
+					<td>2K</td>
+					<td>初始版本，研究用途泄漏</td>
+			</tr>
+			<tr>
+					<td>Llama 2</td>
+					<td>7B / 13B / 70B</td>
+					<td>4K</td>
+					<td>商用许可，Chat 版本</td>
+			</tr>
+			<tr>
+					<td>Llama 3</td>
+					<td>8B / 70B</td>
+					<td>8K</td>
+					<td>训练数据量达 15T tokens</td>
+			</tr>
+			<tr>
+					<td>Llama 3.1</td>
+					<td>8B / 70B / 405B</td>
+					<td>128K</td>
+					<td>405B 旗舰，性能逼近 GPT-4</td>
+			</tr>
+			<tr>
+					<td>Llama 3.2</td>
+					<td>1B / 3B / 11B / 90B</td>
+					<td>128K</td>
+					<td>多模态（视觉）+ 端侧小模型</td>
+			</tr>
+			<tr>
+					<td>Llama 3.3</td>
+					<td>70B</td>
+					<td>128K</td>
+					<td>70B 参数达到 405B 级别性能</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="架构特点-2">
+<a class="header-anchor" href="#%e6%9e%b6%e6%9e%84%e7%89%b9%e7%82%b9-2"></a>
+架构特点
+</h3><p>Llama 系列采用标准的 <strong>Dense Transformer</strong> 解码器架构，技术选型稳健而成熟：</p>
+<ul>
+<li><strong>GQA（分组查询注意力）</strong>：从 Llama 2 70B 起引入，后续版本全面采用</li>
+<li><strong>RoPE 位置编码</strong>：全系列使用旋转位置编码，Llama 3.1 通过 RoPE 缩放扩展至 128K 上下文</li>
+<li><strong>SwiGLU 激活函数</strong>：从初代 Llama 即采用，成为后续开源模型的标配</li>
+<li><strong>RMSNorm</strong>：使用 Root Mean Square Normalization 替代 LayerNorm，计算更高效</li>
+<li><strong>词表扩展</strong>：Llama 3 将词表从 32K 扩展至 128K，显著提升多语言编码效率</li>
+</ul>
+<p>RMSNorm 的计算公式为：</p>
+$$
+\text{RMSNorm}(x) = \frac{x}{\sqrt{\frac{1}{d}\sum_{i=1}^{d} x_i^2 + \epsilon}} \cdot \gamma
+$$<p>相比标准 LayerNorm，RMSNorm 去除了均值减法操作，计算量减少约 7%-64%，且在大模型上效果几乎无损。</p>
+<h3 id="能力特点-2">
+<a class="header-anchor" href="#%e8%83%bd%e5%8a%9b%e7%89%b9%e7%82%b9-2"></a>
+能力特点
+</h3><p>Llama 系列的能力特点包括：</p>
+<ol>
+<li><strong>英文最强开源</strong>：Llama 3.1 405B 在 MMLU、HumanEval 等英文基准上接近或达到 GPT-4 水平</li>
+<li><strong>社区生态丰富</strong>：拥有最多的微调变体、量化方案和推理优化工具</li>
+<li><strong>多语言支持</strong>：Llama 3 系列训练数据涵盖 8% 的非英语数据，中文能力有所提升但仍不如 Qwen</li>
+<li><strong>多模态扩展</strong>：Llama 3.2 引入 Llama Vision，支持图像理解</li>
+<li><strong>指令遵循</strong>：Instruct 版本经过大量 RLHF 训练，对话和指令遵循能力优秀</li>
+</ol>
+<h3 id="许可证">
+<a class="header-anchor" href="#%e8%ae%b8%e5%8f%af%e8%af%81"></a>
+许可证
+</h3><p>Llama 采用<strong>自定义许可证</strong>（Llama License），并非标准的 Apache 2.0 或 MIT：</p>
+<table>
+	<thead>
+			<tr>
+					<th>条款</th>
+					<th>详情</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>商业使用</td>
+					<td>允许（有条件）</td>
+			</tr>
+			<tr>
+					<td>月活限制</td>
+					<td>7 亿月活以下免费使用，超过需向 Meta 申请许可</td>
+			</tr>
+			<tr>
+					<td>衍生模型</td>
+					<td>允许微调和衍生，但需标注 &ldquo;Built with Llama&rdquo;</td>
+			</tr>
+			<tr>
+					<td>商标使用</td>
+					<td>禁止使用 Llama 名称命名衍生模型</td>
+			</tr>
+			<tr>
+					<td>合规要求</td>
+					<td>禁止用于违法用途，需遵守使用政策</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p><strong>注意</strong>：7 亿月活的限制对绝大多数企业不构成实际影响，但对于超大规模平台（如月活数亿的社交应用）需要特别关注。</p>
+</blockquote>
+<h3 id="社区生态">
+<a class="header-anchor" href="#%e7%a4%be%e5%8c%ba%e7%94%9f%e6%80%81"></a>
+社区生态
+</h3><p>Llama 拥有开源 LLM 中最庞大的社区生态，这是其最大的差异化优势：</p>
+<table>
+	<thead>
+			<tr>
+					<th>生态维度</th>
+					<th>具体表现</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>微调模型</strong></td>
+					<td>海量社区微调版本：CodeLlama（代码）、Llama Guard（安全）、Alpaca/Vicuna（对话）等</td>
+			</tr>
+			<tr>
+					<td><strong>量化方案</strong></td>
+					<td>GGUF、AWQ、GPTQ、EXL2 等所有主流量化格式均首发支持 Llama</td>
+			</tr>
+			<tr>
+					<td><strong>推理框架</strong></td>
+					<td>vLLM、SGLang、TGI、llama.cpp、Ollama 等均以 Llama 为一等公民</td>
+			</tr>
+			<tr>
+					<td><strong>教程资源</strong></td>
+					<td>HuggingFace 课程、社区博客、视频教程数量远超其他模型</td>
+			</tr>
+			<tr>
+					<td><strong>评估基准</strong></td>
+					<td>几乎所有新基准测试都会将 Llama 作为参考基线</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="deepseek-系列深度求索">
+<a class="header-anchor" href="#deepseek-%e7%b3%bb%e5%88%97%e6%b7%b1%e5%ba%a6%e6%b1%82%e7%b4%a2"></a>
+DeepSeek 系列（深度求索）
+</h2><h3 id="模型谱系-3">
+<a class="header-anchor" href="#%e6%a8%a1%e5%9e%8b%e8%b0%b1%e7%b3%bb-3"></a>
+模型谱系
+</h3><p>DeepSeek（深度求索）凭借在架构创新上的大胆突破，以极高的性价比在开源社区异军突起：</p>
+<pre class="mermaid">
+  graph LR
+    D1[DeepSeek<br/>2024初] --> D2[DeepSeek-V2<br/>2024中]
+    D2 --> D3[DeepSeek-V3<br/>2024末]
+    D3 --> D4[DeepSeek-R1<br/>2025初]
+    D3 --> D5[DeepSeek-V3.1<br/>2025]
+</pre><table>
+	<thead>
+			<tr>
+					<th>版本</th>
+					<th>参数量</th>
+					<th>激活参数</th>
+					<th>上下文</th>
+					<th>核心亮点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>DeepSeek-V2</td>
+					<td>236B</td>
+					<td>21B</td>
+					<td>128K</td>
+					<td>首创 MLA 注意力，API 价格仅为 GPT-4 的 1%</td>
+			</tr>
+			<tr>
+					<td>DeepSeek-V3</td>
+					<td>671B</td>
+					<td>37B</td>
+					<td>128K</td>
+					<td>MoE 架构，性价比极致</td>
+			</tr>
+			<tr>
+					<td>DeepSeek-R1</td>
+					<td>671B</td>
+					<td>37B</td>
+					<td>128K</td>
+					<td>推理模型，纯 RL 训练达到 o1 水平</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="架构创新">
+<a class="header-anchor" href="#%e6%9e%b6%e6%9e%84%e5%88%9b%e6%96%b0"></a>
+架构创新
+</h3><p>DeepSeek 的核心竞争力在于其原创的架构创新，主要体现在三个方面：</p>
+<h4 id="moe混合专家架构">
+<a class="header-anchor" href="#moe%e6%b7%b7%e5%90%88%e4%b8%93%e5%ae%b6%e6%9e%b6%e6%9e%84"></a>
+MoE（混合专家）架构
+</h4><p>DeepSeek-V3 采用了 671B 总参数、37B 激活参数的 MoE 架构，即每次推理只激活约 5.5% 的参数：</p>
+<pre class="mermaid">
+  graph TD
+    subgraph MoE 前馈层
+        I[输入 token] --> Router[路由器 Gate]
+        Router -->|top-k 选择| E1[专家 1]
+        Router -->|top-k 选择| E2[专家 2]
+        Router -->|top-k 选择| EN[专家 N]
+        Router -->|未选中| ES[专家 - 稀疏]
+        E1 --> W1[加权求和]
+        E2 --> W1
+        EN --> W1
+        W1 --> O[输出]
+    end
+</pre><p>DeepSeek-V3 采用 256 个路由专家 + 1 个共享专家的细粒度 MoE 设计，每个 token 激活 8 个路由专家加 1 个共享专家。共享专家始终激活，负责通用知识；路由专家则根据输入动态选择，负责专精能力。</p>
+<p>MoE 路由的数学表达为：</p>
+$$
+\text{MoE}(x) = \text{Shared}(x) + \sum_{i \in \text{TopK}} g_i \cdot \text{Expert}_i(x)
+$$<p>其中 $g_i$ 为路由权重，$\text{Shared}(x)$ 为共享专家的输出。</p>
+<h4 id="mlamulti-head-latent-attention">
+<a class="header-anchor" href="#mlamulti-head-latent-attention"></a>
+MLA（Multi-Head Latent Attention）
+</h4><p>MLA 是 DeepSeek 独创的注意力机制，通过将 KV Cache 压缩到低维潜在空间，大幅减少推理时的显存占用：</p>
+<p>标准注意力中，KV Cache 的大小为：</p>
+$$
+\text{KV Cache} = 2 \times n_{\text{layers}} \times n_{\text{heads}} \times d_{\text{head}} \times \text{seq\_len}
+$$<p>MLA 通过将 Key 和 Value 联合压缩为低维潜在向量 $c_{KV}$，将 KV Cache 大小降低为：</p>
+$$
+\text{KV Cache}_{\text{MLA}} = n_{\text{layers}} \times d_c \times \text{seq\_len}
+$$<p>其中 $d_c$ 为压缩维度，远小于 $2 \times n_{\text{heads}} \times d_{\text{head}}$。实测中 MLA 可将 KV Cache 减少至标准 MHA 的约 1/4，同时保持甚至超越 GQA 的性能。</p>
+<h4 id="辅助损失自由负载均衡">
+<a class="header-anchor" href="#%e8%be%85%e5%8a%a9%e6%8d%9f%e5%a4%b1%e8%87%aa%e7%94%b1%e8%b4%9f%e8%bd%bd%e5%9d%87%e8%a1%a1"></a>
+辅助损失自由负载均衡
+</h4><p>传统 MoE 训练需要辅助损失（auxiliary loss）来均衡专家负载，但辅助损失会干扰主训练目标。DeepSeek-V3 提出了<strong>无辅助损失的负载均衡策略</strong>：通过为每个专家引入一个可学习的偏置项（bias），在路由时将 bias 加到路由分数上，动态调整专家选择概率。这种方法不改变训练梯度，实现了更干净的优化过程。</p>
+<h3 id="能力特点-3">
+<a class="header-anchor" href="#%e8%83%bd%e5%8a%9b%e7%89%b9%e7%82%b9-3"></a>
+能力特点
+</h3><p>DeepSeek 系列的能力亮点：</p>
+<ol>
+<li><strong>推理能力突出</strong>：DeepSeek-R1 通过纯强化学习训练（无 SFT 冷启动的 R1-Zero 版本），在 AIME、MATH-500 等数学推理基准上达到 o1 水平</li>
+<li><strong>代码能力极强</strong>：DeepSeek-V3 在 LiveCodeBench 等代码生成基准上表现优异</li>
+<li><strong>中英文兼顾</strong>：训练数据中包含大量中文语料，中文能力不逊于英文</li>
+<li><strong>性价比极致</strong>：V3 的 API 价格仅为 GPT-4o 的约 1/10，R1 仅为 o1 的约 1/30</li>
+</ol>
+<h3 id="开源与定价">
+<a class="header-anchor" href="#%e5%bc%80%e6%ba%90%e4%b8%8e%e5%ae%9a%e4%bb%b7"></a>
+开源与定价
+</h3><table>
+	<thead>
+			<tr>
+					<th>方面</th>
+					<th>详情</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>权重开源</td>
+					<td>V3 和 R1 均以 MIT License 开源</td>
+			</tr>
+			<tr>
+					<td>商业使用</td>
+					<td>完全允许</td>
+			</tr>
+			<tr>
+					<td>API 价格（V3）</td>
+					<td>输入 ¥1/1M tokens（缓存命中 ¥0.1），输出 ¥2/1M tokens</td>
+			</tr>
+			<tr>
+					<td>API 价格（R1）</td>
+					<td>输入 ¥4/1M tokens（缓存命中 ¥1），输出 ¥16/1M tokens</td>
+			</tr>
+			<tr>
+					<td>对比 GPT-4o</td>
+					<td>V3 价格约为 GPT-4o 的 1/10</td>
+			</tr>
+			<tr>
+					<td>对比 o1</td>
+					<td>R1 价格约为 o1 的 1/30</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>DeepSeek 以 MIT License 开源 671B 参数的模型权重，这是截至 2025 年最大规模的开源模型之一，对开源社区产生了深远影响。</p>
+</blockquote>
+<h3 id="适用场景-1">
+<a class="header-anchor" href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af-1"></a>
+适用场景
+</h3><ul>
+<li><strong>大规模低成本推理</strong>：V3 以极低价格提供接近 GPT-4o 的能力，适合高并发调用场景</li>
+<li><strong>深度推理任务</strong>：R1 适合数学证明、算法设计、复杂逻辑推理等需要思维链的任务</li>
+<li><strong>本地部署（有条件）</strong>：671B 参数全量部署需要约 8 张 H100，但通过量化可在 4 张 H100 上运行</li>
+<li><strong>研究与教育</strong>：MIT License 和公开的技术报告使其成为学术研究的理想对象</li>
+</ul>
+<h2 id="glm-系列智谱ai">
+<a class="header-anchor" href="#glm-%e7%b3%bb%e5%88%97%e6%99%ba%e8%b0%b1ai"></a>
+GLM 系列（智谱AI）
+</h2><h3 id="模型谱系-4">
+<a class="header-anchor" href="#%e6%a8%a1%e5%9e%8b%e8%b0%b1%e7%b3%bb-4"></a>
+模型谱系
+</h3><p>GLM（General Language Model）是智谱AI推出的大语言模型系列，以其独特的架构设计和强大的中文能力著称：</p>
+<pre class="mermaid">
+  graph LR
+    G1[ChatGLM-6B<br/>2023] --> G2[ChatGLM2<br/>2023中]
+    G2 --> G3[ChatGLM3<br/>2023末]
+    G3 --> G4[GLM-4<br/>2024初]
+    G4 --> G5[GLM-4-Plus<br/>2024中]
+    G4 --> G6[GLM-4-Flash<br/>免费]
+    G4 --> G7[GLM-4-Air<br/>轻量]
+</pre><table>
+	<thead>
+			<tr>
+					<th>模型</th>
+					<th>参数量</th>
+					<th>上下文</th>
+					<th>特点</th>
+					<th>开源情况</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>ChatGLM-6B</td>
+					<td>6B</td>
+					<td>32K</td>
+					<td>首个开源中英双语模型</td>
+					<td>开源</td>
+			</tr>
+			<tr>
+					<td>ChatGLM2-6B</td>
+					<td>6B</td>
+					<td>32K</td>
+					<td>性能提升，推理加速</td>
+					<td>开源</td>
+			</tr>
+			<tr>
+					<td>ChatGLM3-6B</td>
+					<td>6B</td>
+					<td>32K</td>
+					<td>工具调用、代码解释器</td>
+					<td>开源</td>
+			</tr>
+			<tr>
+					<td>GLM-4</td>
+					<td>~130B</td>
+					<td>128K</td>
+					<td>接近 GPT-4 水平</td>
+					<td>部分开源</td>
+			</tr>
+			<tr>
+					<td>GLM-4-Plus</td>
+					<td>~130B</td>
+					<td>128K</td>
+					<td>旗舰版，中文最强</td>
+					<td>闭源 API</td>
+			</tr>
+			<tr>
+					<td>GLM-4-Flash</td>
+					<td>-</td>
+					<td>128K</td>
+					<td>免费调用</td>
+					<td>闭源 API</td>
+			</tr>
+			<tr>
+					<td>GLM-4-Air</td>
+					<td>-</td>
+					<td>128K</td>
+					<td>低成本版</td>
+					<td>闭源 API</td>
+			</tr>
+			<tr>
+					<td>GLM-4V</td>
+					<td>-</td>
+					<td>2K</td>
+					<td>多模态（视觉）</td>
+					<td>部分开源</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="架构特点-3">
+<a class="header-anchor" href="#%e6%9e%b6%e6%9e%84%e7%89%b9%e7%82%b9-3"></a>
+架构特点
+</h3><p>GLM 系列在架构上与其他主流模型有显著差异，其核心创新是 <strong>GLM（自回归空白填充）</strong> 框架：</p>
+<p>传统的自回归模型（如 GPT）仅支持从左到右的生成，而 GLM 通过<strong>空白填充</strong>任务统一了理解和生成：</p>
+$$
+\mathcal{L}_{\text{GLM}} = \mathbb{E}_{\mathbf{x} \sim \mathcal{D}} \left[ \sum_{i \in S} -\log p(x_i | \mathbf{x}_{\backslash S}) \right]
+$$<p>其中 $S$ 为被遮蔽的 token 集合，$\mathbf{x}_{\backslash S}$ 为剩余的上下文。模型需要根据上下文预测被遮蔽的部分，这种设计天然支持双向注意力与生成任务的统一。</p>
+<p>GLM 的其他架构特点包括：</p>
+<ul>
+<li><strong>Prefix-LM</strong>：对输入前缀（prompt）使用双向注意力，对生成部分使用单向注意力，兼顾理解与生成</li>
+<li><strong>二维位置编码</strong>：区分段内位置和段间位置，支持多段文本的灵活组合</li>
+<li><strong>RMSNorm + RoPE</strong>：后续版本（GLM-4）也采用了与 Llama 类似的现代化组件</li>
+<li><strong>GQA</strong>：GLM-4 引入分组查询注意力以优化推理效率</li>
+</ul>
+<p>Prefix-LM 的注意力模式可以表示为：</p>
+$$
+A_{ij} = \begin{cases} 1, & \text{if } j \leq i \text{ or } i, j \in \text{Prefix} \\ 0, & \text{otherwise} \end{cases}
+$$<p>即前缀区域内为双向注意力，生成区域为因果（单向）注意力。</p>
+<h3 id="能力特点-4">
+<a class="header-anchor" href="#%e8%83%bd%e5%8a%9b%e7%89%b9%e7%82%b9-4"></a>
+能力特点
+</h3><p>GLM 系列的能力优势：</p>
+<ol>
+<li><strong>中文能力顶尖</strong>：GLM-4-Plus 在 C-Eval、CMMLU 等中文基准上长期领先</li>
+<li><strong>多模态能力</strong>：GLM-4V 支持图像理解，CogView 系列支持图像生成</li>
+<li><strong>Agent 能力</strong>：ChatGLM3 起原生支持代码执行器、工具调用和 Web 搜索</li>
+<li><strong>长文档处理</strong>：128K 上下文配合 All Tools 能力，适合文档分析和 RAG 场景</li>
+<li><strong>代码能力</strong>：CodeGeeX 系列在代码补全和生成方面有专门优化</li>
+</ol>
+<h3 id="开源情况">
+<a class="header-anchor" href="#%e5%bc%80%e6%ba%90%e6%83%85%e5%86%b5"></a>
+开源情况
+</h3><table>
+	<thead>
+			<tr>
+					<th>模型</th>
+					<th>开源状态</th>
+					<th>许可证</th>
+					<th>商用情况</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>ChatGLM-6B</td>
+					<td>开源</td>
+					<td>自定义（允许商用）</td>
+					<td>允许</td>
+			</tr>
+			<tr>
+					<td>ChatGLM2-6B</td>
+					<td>开源</td>
+					<td>自定义（允许商用）</td>
+					<td>允许</td>
+			</tr>
+			<tr>
+					<td>ChatGLM3-6B</td>
+					<td>开源</td>
+					<td>自定义（允许商用）</td>
+					<td>允许</td>
+			</tr>
+			<tr>
+					<td>GLM-4-9B</td>
+					<td>开源</td>
+					<td>自定义（允许商用）</td>
+					<td>允许</td>
+			</tr>
+			<tr>
+					<td>GLM-4-Plus</td>
+					<td>闭源</td>
+					<td>仅 API</td>
+					<td>-</td>
+			</tr>
+			<tr>
+					<td>GLM-4V-9B</td>
+					<td>开源</td>
+					<td>自定义（允许商用）</td>
+					<td>允许</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p>智谱AI的开源策略是&quot;小模型开源，大模型API&quot;，9B 及以下模型开源权重，旗舰模型通过 API 提供服务。</p>
+</blockquote>
+<h3 id="适用场景-2">
+<a class="header-anchor" href="#%e9%80%82%e7%94%a8%e5%9c%ba%e6%99%af-2"></a>
+适用场景
+</h3><ul>
+<li><strong>中文场景</strong>：GLM-4-Plus 在中文理解、中国文化、中文法律等领域表现最佳</li>
+<li><strong>Agent 应用</strong>：All Tools 能力和代码执行器使其适合构建智能体</li>
+<li><strong>教育与企业</strong>：智谱AI在国内政企市场有深厚积累，合规性强</li>
+<li><strong>本地部署</strong>：ChatGLM3-6B 和 GLM-4-9B 可在单张消费级 GPU 上运行</li>
+<li><strong>多模态需求</strong>：GLM-4V 提供开源的视觉理解能力</li>
+</ul>
+<h2 id="横向对比">
+<a class="header-anchor" href="#%e6%a8%aa%e5%90%91%e5%af%b9%e6%af%94"></a>
+横向对比
+</h2><h3 id="能力对比">
+<a class="header-anchor" href="#%e8%83%bd%e5%8a%9b%e5%af%b9%e6%af%94"></a>
+能力对比
+</h3><p>以下基于公开基准测试数据，对五大模型系列的旗舰版本进行综合能力评估（评分区间 1-10，10 为最高）：</p>
+<table>
+	<thead>
+			<tr>
+					<th>能力维度</th>
+					<th>GPT-4o</th>
+					<th>Qwen2.5-72B</th>
+					<th>Llama 3.1-405B</th>
+					<th>DeepSeek-V3</th>
+					<th>GLM-4-Plus</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>综合推理</td>
+					<td>9.5</td>
+					<td>8.5</td>
+					<td>9.0</td>
+					<td>9.0</td>
+					<td>8.5</td>
+			</tr>
+			<tr>
+					<td>数学推理</td>
+					<td>8.5</td>
+					<td>8.0</td>
+					<td>8.5</td>
+					<td>9.0</td>
+					<td>8.0</td>
+			</tr>
+			<tr>
+					<td>代码生成</td>
+					<td>9.0</td>
+					<td>8.5</td>
+					<td>8.5</td>
+					<td>9.0</td>
+					<td>8.0</td>
+			</tr>
+			<tr>
+					<td>中文理解</td>
+					<td>8.0</td>
+					<td>9.0</td>
+					<td>7.0</td>
+					<td>8.5</td>
+					<td>9.5</td>
+			</tr>
+			<tr>
+					<td>英文理解</td>
+					<td>9.5</td>
+					<td>8.5</td>
+					<td>9.5</td>
+					<td>8.5</td>
+					<td>8.0</td>
+			</tr>
+			<tr>
+					<td>多模态</td>
+					<td>9.5</td>
+					<td>7.5</td>
+					<td>7.0</td>
+					<td>6.0</td>
+					<td>8.0</td>
+			</tr>
+			<tr>
+					<td>工具调用</td>
+					<td>9.5</td>
+					<td>8.5</td>
+					<td>8.0</td>
+					<td>8.0</td>
+					<td>8.5</td>
+			</tr>
+			<tr>
+					<td>长上下文</td>
+					<td>8.5</td>
+					<td>8.5</td>
+					<td>8.5</td>
+					<td>8.5</td>
+					<td>8.5</td>
+			</tr>
+			<tr>
+					<td>指令遵循</td>
+					<td>9.5</td>
+					<td>8.5</td>
+					<td>8.5</td>
+					<td>8.5</td>
+					<td>8.5</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p><strong>说明</strong>：以上评分为基于 MMLU、C-Eval、HumanEval、GSM8K、MATH 等公开基准的综合评估，仅供参考。实际表现因任务类型和提示词设计而异。</p>
+</blockquote>
+<h3 id="架构对比">
+<a class="header-anchor" href="#%e6%9e%b6%e6%9e%84%e5%af%b9%e6%af%94"></a>
+架构对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>架构特征</th>
+					<th>GPT-4o</th>
+					<th>Qwen2.5</th>
+					<th>Llama 3.1</th>
+					<th>DeepSeek-V3</th>
+					<th>GLM-4</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>架构类型</td>
+					<td>Dense</td>
+					<td>Dense</td>
+					<td>Dense</td>
+					<td>MoE</td>
+					<td>Dense</td>
+			</tr>
+			<tr>
+					<td>参数量</td>
+					<td>未公开</td>
+					<td>0.5B-72B</td>
+					<td>8B-405B</td>
+					<td>671B(37B激活)</td>
+					<td>~130B</td>
+			</tr>
+			<tr>
+					<td>注意力机制</td>
+					<td>MHA/GQA</td>
+					<td>GQA</td>
+					<td>GQA</td>
+					<td>MLA</td>
+					<td>GQA</td>
+			</tr>
+			<tr>
+					<td>位置编码</td>
+					<td>RoPE</td>
+					<td>RoPE</td>
+					<td>RoPE</td>
+					<td>RoPE</td>
+					<td>2D-RoPE</td>
+			</tr>
+			<tr>
+					<td>激活函数</td>
+					<td>SwiGLU</td>
+					<td>SwiGLU</td>
+					<td>SwiGLU</td>
+					<td>SwiGLU</td>
+					<td>SwiGLU</td>
+			</tr>
+			<tr>
+					<td>归一化</td>
+					<td>RMSNorm</td>
+					<td>RMSNorm</td>
+					<td>RMSNorm</td>
+					<td>RMSNorm</td>
+					<td>RMSNorm</td>
+			</tr>
+			<tr>
+					<td>训练范式</td>
+					<td>AR</td>
+					<td>AR</td>
+					<td>AR</td>
+					<td>AR+MoE</td>
+					<td>Prefix-LM</td>
+			</tr>
+			<tr>
+					<td>词表大小</td>
+					<td>~100K</td>
+					<td>152K</td>
+					<td>128K</td>
+					<td>128K</td>
+					<td>~150K</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="成本对比">
+<a class="header-anchor" href="#%e6%88%90%e6%9c%ac%e5%af%b9%e6%af%94"></a>
+成本对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>成本项目</th>
+					<th>GPT-4o</th>
+					<th>Qwen2.5-72B</th>
+					<th>Llama 3.1-405B</th>
+					<th>DeepSeek-V3</th>
+					<th>GLM-4-Plus</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>API 输入 ($/1M)</td>
+					<td>$2.50</td>
+					<td>¥4 (~$0.55)</td>
+					<td>自部署</td>
+					<td>¥1 (~$0.14)</td>
+					<td>¥0.5 (~$0.07)</td>
+			</tr>
+			<tr>
+					<td>API 输出 ($/1M)</td>
+					<td>$10.00</td>
+					<td>¥12 (~$1.65)</td>
+					<td>自部署</td>
+					<td>¥2 (~$0.28)</td>
+					<td>¥0.5 (~$0.07)</td>
+			</tr>
+			<tr>
+					<td>开源部署</td>
+					<td>不支持</td>
+					<td>支持</td>
+					<td>支持</td>
+					<td>支持</td>
+					<td>部分支持</td>
+			</tr>
+			<tr>
+					<td>最低部署显存</td>
+					<td>-</td>
+					<td>14GB(7B)</td>
+					<td>16GB(8B)</td>
+					<td>~800GB(全量)</td>
+					<td>18GB(9B)</td>
+			</tr>
+			<tr>
+					<td>量化后显存</td>
+					<td>-</td>
+					<td>5GB(7B AWQ)</td>
+					<td>6GB(8B AWQ)</td>
+					<td>~200GB(4卡)</td>
+					<td>6GB(9B AWQ)</td>
+			</tr>
+			<tr>
+					<td>性价比排名</td>
+					<td>4</td>
+					<td>2</td>
+					<td>5</td>
+					<td>1</td>
+					<td>3</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p><strong>注意</strong>：Llama 3.1-405B 全量部署需要约 8 张 H100（约 320GB 显存），成本极高。但 Llama 3.1-8B 部署成本极低，适合资源受限场景。DeepSeek-V3 虽然总参数 671B，但 MoE 架构使得单次推理仅激活 37B，API 性价比极高。</p>
+</blockquote>
+<h3 id="生态对比">
+<a class="header-anchor" href="#%e7%94%9f%e6%80%81%e5%af%b9%e6%af%94"></a>
+生态对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>生态维度</th>
+					<th>GPT</th>
+					<th>Qwen</th>
+					<th>Llama</th>
+					<th>DeepSeek</th>
+					<th>GLM</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>开源协议</td>
+					<td>闭源</td>
+					<td>Apache 2.0</td>
+					<td>Llama License</td>
+					<td>MIT</td>
+					<td>自定义(商用)</td>
+			</tr>
+			<tr>
+					<td>HuggingFace 下载量</td>
+					<td>-</td>
+					<td>高</td>
+					<td>最高</td>
+					<td>高</td>
+					<td>中</td>
+			</tr>
+			<tr>
+					<td>社区活跃度</td>
+					<td>最高(API生态)</td>
+					<td>高</td>
+					<td>最高</td>
+					<td>快速增长</td>
+					<td>中</td>
+			</tr>
+			<tr>
+					<td>微调生态</td>
+					<td>不适用</td>
+					<td>LoRA/QLoRA</td>
+					<td>最丰富</td>
+					<td>增长中</td>
+					<td>有一定积累</td>
+			</tr>
+			<tr>
+					<td>vLLM 支持</td>
+					<td>原生API</td>
+					<td>一等公民</td>
+					<td>一等公民</td>
+					<td>一等公民</td>
+					<td>支持</td>
+			</tr>
+			<tr>
+					<td>llama.cpp 支持</td>
+					<td>不适用</td>
+					<td>支持</td>
+					<td>一等公民</td>
+					<td>支持</td>
+					<td>支持</td>
+			</tr>
+			<tr>
+					<td>Ollama 支持</td>
+					<td>不适用</td>
+					<td>支持</td>
+					<td>一等公民</td>
+					<td>支持</td>
+					<td>支持</td>
+			</tr>
+			<tr>
+					<td>Function Calling</td>
+					<td>最成熟</td>
+					<td>成熟</td>
+					<td>良好</td>
+					<td>良好</td>
+					<td>成熟</td>
+			</tr>
+			<tr>
+					<td>多模态变体</td>
+					<td>原生</td>
+					<td>Qwen-VL/Audio</td>
+					<td>Llama 3.2 Vision</td>
+					<td>无</td>
+					<td>GLM-4V/CogView</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="中文能力专项对比">
+<a class="header-anchor" href="#%e4%b8%ad%e6%96%87%e8%83%bd%e5%8a%9b%e4%b8%93%e9%a1%b9%e5%af%b9%e6%af%94"></a>
+中文能力专项对比
+</h3><p>中文能力是许多国内应用场景的核心考量。以下基于主流中文基准测试的对比：</p>
+<table>
+	<thead>
+			<tr>
+					<th>基准测试</th>
+					<th>GPT-4o</th>
+					<th>Qwen2.5-72B</th>
+					<th>Llama 3.1-405B</th>
+					<th>DeepSeek-V3</th>
+					<th>GLM-4-Plus</th>
+					<th>测试内容</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>C-Eval</td>
+					<td>87.6</td>
+					<td>91.2</td>
+					<td>78.5</td>
+					<td>90.1</td>
+					<td>92.3</td>
+					<td>中文综合能力</td>
+			</tr>
+			<tr>
+					<td>CMMLU</td>
+					<td>84.0</td>
+					<td>88.5</td>
+					<td>73.2</td>
+					<td>87.8</td>
+					<td>90.1</td>
+					<td>中文知识理解</td>
+			</tr>
+			<tr>
+					<td>GSM8K(中文)</td>
+					<td>92.0</td>
+					<td>91.5</td>
+					<td>85.0</td>
+					<td>93.2</td>
+					<td>89.0</td>
+					<td>中文数学推理</td>
+			</tr>
+			<tr>
+					<td>MMLU(中文)</td>
+					<td>82.5</td>
+					<td>86.0</td>
+					<td>75.0</td>
+					<td>85.2</td>
+					<td>88.5</td>
+					<td>中文多任务</td>
+			</tr>
+			<tr>
+					<td>AlignBench</td>
+					<td>7.8</td>
+					<td>7.5</td>
+					<td>6.5</td>
+					<td>7.6</td>
+					<td>8.0</td>
+					<td>中文对齐度</td>
+			</tr>
+			<tr>
+					<td>C-MTEB</td>
+					<td>65.0</td>
+					<td>68.5</td>
+					<td>55.0</td>
+					<td>67.0</td>
+					<td>70.2</td>
+					<td>中文文本嵌入</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p><strong>结论</strong>：中文场景下 GLM-4-Plus 和 Qwen2.5-72B 明显领先，DeepSeek-V3 紧随其后，GPT-4o 表现尚可但不及国产模型，Llama 3.1 在中文能力上存在明显短板。</p>
+</blockquote>
+<h2 id="选型决策树">
+<a class="header-anchor" href="#%e9%80%89%e5%9e%8b%e5%86%b3%e7%ad%96%e6%a0%91"></a>
+选型决策树
+</h2><h3 id="决策流程图">
+<a class="header-anchor" href="#%e5%86%b3%e7%ad%96%e6%b5%81%e7%a8%8b%e5%9b%be"></a>
+决策流程图
+</h3><pre class="mermaid">
+  graph TD
+    Start[开始选型] --> Q1{是否需要本地部署?}
+    Q1 -->|是| Q2{数据是否高度敏感?}
+    Q1 -->|否| Q3{是否需要顶级推理能力?}
+
+    Q2 -->|是| Q4{是否有充足GPU资源?}
+    Q2 -->|否| Q5{中文是否为主要语言?}
+
+    Q4 -->|是, 8卡H100| R1[DeepSeek-V3 开源部署]
+    Q4 -->|中, 单卡| Q6{中文场景为主?}
+    Q4 -->|低, 消费级| R2[Qwen2.5-7B / Llama3.1-8B]
+
+    Q6 -->|是| R3[GLM-4-9B 开源部署]
+    Q6 -->|否| R4[Llama 3.1-8B 开源部署]
+
+    Q5 -->|是| R5[Qwen2.5-72B API]
+    Q5 -->|否| R6[Llama 3.1 API服务]
+
+    Q3 -->|是| Q7{预算是否充足?}
+    Q3 -->|否| Q8{是否成本优先?}
+
+    Q7 -->|是| R7[OpenAI o1/o3]
+    Q7 -->|否| R8[DeepSeek-R1]
+
+    Q8 -->|是| R9[DeepSeek-V3 API]
+    Q8 -->|否| Q9{中文场景为主?}
+
+    Q9 -->|是| R10[GLM-4-Plus / Qwen API]
+    Q9 -->|否| R11[GPT-4o]
+</pre><h3 id="场景化推荐">
+<a class="header-anchor" href="#%e5%9c%ba%e6%99%af%e5%8c%96%e6%8e%a8%e8%8d%90"></a>
+场景化推荐
+</h3><table>
+	<thead>
+			<tr>
+					<th>场景</th>
+					<th>首选模型</th>
+					<th>备选方案</th>
+					<th>推荐理由</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>闭源 API 场景</strong></td>
+					<td>GPT-4o</td>
+					<td>GLM-4-Plus</td>
+					<td>综合能力最强，生态最成熟</td>
+			</tr>
+			<tr>
+					<td><strong>开源部署场景</strong></td>
+					<td>Qwen2.5-7B</td>
+					<td>Llama 3.1-8B</td>
+					<td>Apache 2.0 许可，部署门槛低</td>
+			</tr>
+			<tr>
+					<td><strong>中文场景</strong></td>
+					<td>GLM-4-Plus</td>
+					<td>Qwen2.5-72B</td>
+					<td>中文基准测试领先</td>
+			</tr>
+			<tr>
+					<td><strong>推理场景</strong></td>
+					<td>o1/o3</td>
+					<td>DeepSeek-R1</td>
+					<td>推理能力最强，R1 性价比极高</td>
+			</tr>
+			<tr>
+					<td><strong>成本优先场景</strong></td>
+					<td>DeepSeek-V3</td>
+					<td>Qwen2.5-72B</td>
+					<td>API 价格极低，开源可自部署</td>
+			</tr>
+			<tr>
+					<td><strong>多模态场景</strong></td>
+					<td>GPT-4o</td>
+					<td>Qwen-VL</td>
+					<td>原生多模态支持最完善</td>
+			</tr>
+			<tr>
+					<td><strong>Agent 场景</strong></td>
+					<td>GPT-4o</td>
+					<td>GLM-4-Plus</td>
+					<td>Function Calling 最成熟</td>
+			</tr>
+			<tr>
+					<td><strong>端侧部署</strong></td>
+					<td>Qwen2.5-0.5B</td>
+					<td>Llama 3.2-1B</td>
+					<td>超小参数，适合移动设备</td>
+			</tr>
+			<tr>
+					<td><strong>学术研究</strong></td>
+					<td>DeepSeek-V3/R1</td>
+					<td>Llama 3.1</td>
+					<td>MIT 开源，技术报告详尽</td>
+			</tr>
+			<tr>
+					<td><strong>企业私有化</strong></td>
+					<td>Qwen2.5-72B</td>
+					<td>GLM-4-9B</td>
+					<td>商用许可宽松，中文能力强</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="实践快速切换不同模型">
+<a class="header-anchor" href="#%e5%ae%9e%e8%b7%b5%e5%bf%ab%e9%80%9f%e5%88%87%e6%8d%a2%e4%b8%8d%e5%90%8c%e6%a8%a1%e5%9e%8b"></a>
+实践：快速切换不同模型
+</h2><p>在实际开发中，经常需要在多个模型之间切换以进行对比测试。以下示例展示了如何使用统一接口调用不同模型：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">统一 LLM 调用接口：支持 GPT / Qwen / Llama / DeepSeek / GLM
+</span></span></span><span class="line"><span class="cl"><span class="s2">通过适配 OpenAI 兼容 API 格式，实现一套代码调用多个模型
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@dataclass</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ModelConfig</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;模型配置&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>                    <span class="c1"># 显示名称</span>
+</span></span><span class="line"><span class="cl">    <span class="n">model</span><span class="p">:</span> <span class="nb">str</span>                   <span class="c1"># 模型标识</span>
+</span></span><span class="line"><span class="cl">    <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span>                <span class="c1"># API 地址</span>
+</span></span><span class="line"><span class="cl">    <span class="n">api_key_env</span><span class="p">:</span> <span class="nb">str</span>             <span class="c1"># 环境变量名</span>
+</span></span><span class="line"><span class="cl">    <span class="n">max_tokens</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4096</span>       <span class="c1"># 最大输出 token</span>
+</span></span><span class="line"><span class="cl">    <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span>     <span class="c1"># 温度</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 五大模型的配置（均兼容 OpenAI API 格式）</span>
+</span></span><span class="line"><span class="cl"><span class="n">MODEL_CONFIGS</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;gpt&#34;</span><span class="p">:</span> <span class="n">ModelConfig</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">name</span><span class="o">=</span><span class="s2">&#34;GPT-4o&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model</span><span class="o">=</span><span class="s2">&#34;gpt-4o&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">base_url</span><span class="o">=</span><span class="s2">&#34;https://api.openai.com/v1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">api_key_env</span><span class="o">=</span><span class="s2">&#34;OPENAI_API_KEY&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;qwen&#34;</span><span class="p">:</span> <span class="n">ModelConfig</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">name</span><span class="o">=</span><span class="s2">&#34;Qwen2.5-72B&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model</span><span class="o">=</span><span class="s2">&#34;qwen-plus&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">base_url</span><span class="o">=</span><span class="s2">&#34;https://dashscope.aliyuncs.com/compatible-mode/v1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">api_key_env</span><span class="o">=</span><span class="s2">&#34;DASHSCOPE_API_KEY&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;llama&#34;</span><span class="p">:</span> <span class="n">ModelConfig</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">name</span><span class="o">=</span><span class="s2">&#34;Llama-3.1-70B&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model</span><span class="o">=</span><span class="s2">&#34;meta-llama/Llama-3.1-70B-Instruct&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">base_url</span><span class="o">=</span><span class="s2">&#34;https://api.together.xyz/v1&#34;</span><span class="p">,</span>  <span class="c1"># Together AI 托管</span>
+</span></span><span class="line"><span class="cl">        <span class="n">api_key_env</span><span class="o">=</span><span class="s2">&#34;TOGETHER_API_KEY&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;deepseek&#34;</span><span class="p">:</span> <span class="n">ModelConfig</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">name</span><span class="o">=</span><span class="s2">&#34;DeepSeek-V3&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model</span><span class="o">=</span><span class="s2">&#34;deepseek-chat&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">base_url</span><span class="o">=</span><span class="s2">&#34;https://api.deepseek.com/v1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">api_key_env</span><span class="o">=</span><span class="s2">&#34;DEEPSEEK_API_KEY&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;glm&#34;</span><span class="p">:</span> <span class="n">ModelConfig</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">name</span><span class="o">=</span><span class="s2">&#34;GLM-4-Plus&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model</span><span class="o">=</span><span class="s2">&#34;glm-4-plus&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">base_url</span><span class="o">=</span><span class="s2">&#34;https://open.bigmodel.cn/api/paas/v4&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">api_key_env</span><span class="o">=</span><span class="s2">&#34;ZHIPU_API_KEY&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">),</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">chat</span><span class="p">(</span><span class="n">model_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&#34;你是一个有帮助的AI助手。&#34;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;统一调用接口&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">config</span> <span class="o">=</span> <span class="n">MODEL_CONFIGS</span><span class="p">[</span><span class="n">model_key</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">api_key_env</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&#34;[错误] 未设置环境变量: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">api_key_env</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">base_url</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">base_url</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">model</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;system&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">system</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="p">{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">max_tokens</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">max_tokens</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">temperature</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">temperature</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ===== 使用示例 =====</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">question</span> <span class="o">=</span> <span class="s2">&#34;请用三句话解释什么是 Transformer 架构。&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 调用单个模型</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;=&#34;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;调用 GPT-4o:&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">chat</span><span class="p">(</span><span class="s2">&#34;gpt&#34;</span><span class="p">,</span> <span class="n">question</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;=&#34;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 调用 DeepSeek（性价比最高）</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;调用 DeepSeek-V3:&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">chat</span><span class="p">(</span><span class="s2">&#34;deepseek&#34;</span><span class="p">,</span> <span class="n">question</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;=&#34;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 调用 GLM（中文最强）</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;调用 GLM-4-Plus:&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">chat</span><span class="p">(</span><span class="s2">&#34;glm&#34;</span><span class="p">,</span> <span class="n">question</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;=&#34;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+</span></span></code></pre></div><p>以下示例展示如何批量对比多个模型的输出，用于选型评估：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">批量模型对比：同一问题调用多个模型，对比输出质量
+</span></span></span><span class="line"><span class="cl"><span class="s2">适用于选型评估阶段
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">as_completed</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">compare_models</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">model_keys</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;批量调用多个模型并收集结果
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    Args:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        prompt: 测试问题
+</span></span></span><span class="line"><span class="cl"><span class="s2">        model_keys: 模型标识列表，如 [&#34;gpt&#34;, &#34;qwen&#34;, &#34;deepseek&#34;]
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">    Returns:
+</span></span></span><span class="line"><span class="cl"><span class="s2">        {model_key: {&#34;name&#34;: str, &#34;response&#34;: str, &#34;latency_ms&#34;: int, &#34;error&#34;: str|None}}
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">config</span> <span class="o">=</span> <span class="n">MODEL_CONFIGS</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">response</span> <span class="o">=</span> <span class="n">chat</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">latency</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;name&#34;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;response&#34;</span><span class="p">:</span> <span class="n">response</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;latency_ms&#34;</span><span class="p">:</span> <span class="n">latency</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;error&#34;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">latency</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;name&#34;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;response&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;latency_ms&#34;</span><span class="p">:</span> <span class="n">latency</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;error&#34;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 并发调用所有模型</span>
+</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">futures</span> <span class="o">=</span> <span class="p">{</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">_call</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">model_keys</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">key</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">results</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">results</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 评估用例集</span>
+</span></span><span class="line"><span class="cl"><span class="n">EVAL_CASES</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;category&#34;</span><span class="p">:</span> <span class="s2">&#34;中文理解&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;prompt&#34;</span><span class="p">:</span> <span class="s2">&#34;解释「庄周梦蝶」的哲学含义，不超过200字。&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;category&#34;</span><span class="p">:</span> <span class="s2">&#34;代码生成&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;prompt&#34;</span><span class="p">:</span> <span class="s2">&#34;用 Python 实现一个线程安全的单例模式，并添加注释。&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;category&#34;</span><span class="p">:</span> <span class="s2">&#34;数学推理&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;prompt&#34;</span><span class="p">:</span> <span class="s2">&#34;一个水池有两个进水管和一个出水管。A管单独注满需6小时，B管需8小时，&#34;</span>
+</span></span><span class="line"><span class="cl">                  <span class="s2">&#34;出水管单独排空需12小时。三管同时开放，几小时能注满？请给出详细推导。&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;category&#34;</span><span class="p">:</span> <span class="s2">&#34;工具调用&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;prompt&#34;</span><span class="p">:</span> <span class="s2">&#34;帮我查询北京今天的天气，并给出穿衣建议。（使用 function calling）&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;gpt&#34;</span><span class="p">,</span> <span class="s2">&#34;qwen&#34;</span><span class="p">,</span> <span class="s2">&#34;deepseek&#34;</span><span class="p">,</span> <span class="s2">&#34;glm&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="k">case</span> <span class="ow">in</span> <span class="n">EVAL_CASES</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">70</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;评估类别: </span><span class="si">{</span><span class="n">case</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;问题: </span><span class="si">{</span><span class="n">case</span><span class="p">[</span><span class="s1">&#39;prompt&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">70</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">results</span> <span class="o">=</span> <span class="n">compare_models</span><span class="p">(</span><span class="k">case</span><span class="p">[</span><span class="s2">&#34;prompt&#34;</span><span class="p">],</span> <span class="n">models</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">--- </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;latency_ms&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">ms) ---&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="s2">&#34;error&#34;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;  [错误] </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;error&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&#34;response&#34;</span><span class="p">][:</span><span class="mi">500</span><span class="p">])</span>  <span class="c1"># 截断显示</span>
+</span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>大模型选型没有&quot;唯一正确答案&quot;，关键在于<strong>明确需求约束、理解模型差异、做出合理权衡</strong>。回顾本文的五大模型系列：</p>
+<ul>
+<li><strong>GPT 系列</strong>：综合能力最强、生态最成熟，适合追求上限和快速落地的场景，但成本较高且存在数据依赖</li>
+<li><strong>Qwen 系列</strong>：开源最彻底（Apache 2.0）、中英文均衡、参数覆盖全，是本地部署和多语言场景的优选</li>
+<li><strong>Llama 系列</strong>：英文最强开源、社区生态最丰富，适合英文为主且需要深度定制的场景</li>
+<li><strong>DeepSeek 系列</strong>：架构创新最激进（MoE + MLA）、性价比极致，适合大规模低成本推理和深度推理任务</li>
+<li><strong>GLM 系列</strong>：中文能力顶尖、Agent 能力突出，适合中文为核心的政企应用场景</li>
+</ul>
+<p>展望未来，大模型领域的发展趋势值得关注：</p>
+<ol>
+<li><strong>推理模型普及化</strong>：o1/R1 开创的推理范式正在向更多模型扩散，推理能力将成为标配</li>
+<li><strong>MoE 成为主流</strong>：DeepSeek 的成功证明了 MoE 在性价比上的巨大优势，更多厂商将跟进</li>
+<li><strong>开源与闭源趋同</strong>：开源模型与闭源模型的能力差距正在快速缩小，甚至在部分维度已经反超</li>
+<li><strong>多模态融合深化</strong>：从文本+图像扩展到文本+音频+视频的统一理解和生成</li>
+<li><strong>端侧部署成熟</strong>：0.5B-3B 级别模型的成熟使得端侧 AI 成为现实</li>
+</ol>
+<p>最终，选型的核心原则是：<strong>没有最好的模型，只有最适合场景的模型</strong>。建议在实际选型中，先通过本文的决策框架缩小候选范围，再通过实际业务数据对候选模型进行 A/B 测试，用数据驱动最终决策。</p>
+<h2 id="参考文献">
+<a class="header-anchor" href="#%e5%8f%82%e8%80%83%e6%96%87%e7%8c%ae"></a>
+参考文献
+</h2><ol>
+<li>OpenAI. <em>GPT-4 Technical Report</em>. arXiv:2303.08774, 2023.</li>
+<li>Qwen Team. <em>Qwen2.5 Technical Report</em>. arXiv:2412.15115, 2024.</li>
+<li>Meta. <em>The Llama 3 Herd of Models</em>. arXiv:2407.21783, 2024.</li>
+<li>DeepSeek-AI. <em>DeepSeek-V3 Technical Report</em>. arXiv:2412.19437, 2024.</li>
+<li>Zhipu AI. <em>GLM-4 Technical Report</em>. arXiv:2406.12793, 2024.</li>
+<li>DeepSeek-AI. <em>DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</em>. arXiv:2501.12948, 2025.</li>
+<li>Du, Z. et al. <em>GLM: General Language Model Pretraining with Autoregressive Blank Infilling</em>. ACL 2022.</li>
+<li>Fedus, W. et al. <em>Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity</em>. JMLR, 2022.</li>
+<li>Su, J. et al. <em>RoFormer: Enhanced Transformer with Rotary Position Embedding</em>. Neurocomputing, 2024.</li>
+<li>Shazeer, N. <em>GLU Variants Improve Transformer</em>. arXiv:2002.05202, 2020.</li>
+</ol>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/&amp;appkey=&amp;title=%e5%a4%a7%e6%a8%a1%e5%9e%8b%e9%80%89%e5%9e%8b%e6%8c%87%e5%8d%97%ef%bc%9aGPT%e3%80%81Qwen%e3%80%81Llama%e3%80%81DeepSeek%e3%80%81GLM%20%e5%85%a8%e9%9d%a2%e5%af%b9%e6%af%94&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/&amp;title=%e5%a4%a7%e6%a8%a1%e5%9e%8b%e9%80%89%e5%9e%8b%e6%8c%87%e5%8d%97%ef%bc%9aGPT%e3%80%81Qwen%e3%80%81Llama%e3%80%81DeepSeek%e3%80%81GLM%20%e5%85%a8%e9%9d%a2%e5%af%b9%e6%af%94&amp;desc=%e4%bb%8e%e6%9e%b6%e6%9e%84%e5%b7%ae%e5%bc%82%e5%88%b0%e8%83%bd%e5%8a%9b%e8%af%84%e4%bc%b0%ef%bc%8c%e7%b3%bb%e7%bb%9f%e5%af%b9%e6%af%94%e4%b8%bb%e6%b5%81%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e6%8a%80%e6%9c%af%e7%89%b9%e7%82%b9%e4%b8%8e%e9%80%89%e5%9e%8b%e7%ad%96%e7%95%a5&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/&amp;text=%e5%a4%a7%e6%a8%a1%e5%9e%8b%e9%80%89%e5%9e%8b%e6%8c%87%e5%8d%97%ef%bc%9aGPT%e3%80%81Qwen%e3%80%81Llama%e3%80%81DeepSeek%e3%80%81GLM%20%e5%85%a8%e9%9d%a2%e5%af%b9%e6%af%94&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/" target="_blank" rel="noopener noreferrer" title="大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e5%a4%a7%e6%a8%a1%e5%9e%8b%e5%9f%ba%e7%a1%80%e4%b8%8e%e5%8e%9f%e7%90%86"
+      data-aos="zoom-in"
+      >大模型基础与原理</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%a4%a7%e6%a8%a1%e5%9e%8b"
+        rel="tag"
+        >大模型</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e6%a8%a1%e5%9e%8b%e9%80%89%e5%9e%8b"
+        rel="tag"
+        >模型选型</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/gpt"
+        rel="tag"
+        >GPT</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/qwen"
+        rel="tag"
+        >Qwen</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/llama"
+        rel="tag"
+        >Llama</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/deepseek"
+        rel="tag"
+        >DeepSeek</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/glm"
+        rel="tag"
+        >GLM</a
+      >
+    </li></ul>
+</footer>
+  </div><nav
+    id="article-nav"
+    aria-label="Article navigation"
+    data-aos="fade-up"
+  ><div class="article-nav-link-wrap left"><img
+              data-src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800"
+              data-sizes="auto"
+              alt="上下文窗口、Token 计算与 Hallucination 缓解"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AA%97%E5%8F%A3%E4%B8%8E%E5%B9%BB%E8%A7%89%E7%BC%93%E8%A7%A3/"
+          aria-label="前一篇:上下文窗口、Token 计算与 Hallucination 缓解"
+          title="前一篇:上下文窗口、Token 计算与 Hallucination 缓解"
+        ></a>
+        <div class="article-nav-caption">前一篇</div>
+        <h3 class="article-nav-title">上下文窗口、Token 计算与 Hallucination 缓解</h3>
+      </div><div class="article-nav-link-wrap right"><img
+              data-src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
+              data-sizes="auto"
+              alt="大模型训练全流程详解"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%85%A8%E6%B5%81%E7%A8%8B/"
+          aria-label="后一篇:大模型训练全流程详解"
+          title="后一篇:大模型训练全流程详解"
+        ></a>
+        <div class="article-nav-caption">后一篇</div>
+        <h3 class="article-nav-title">大模型训练全流程详解</h3>
+      </div></nav></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#选型维度框架">选型维度框架</a>
+      <ul>
+        <li><a href="#五大评估维度">五大评估维度</a></li>
+        <li><a href="#各维度详细说明">各维度详细说明</a></li>
+      </ul>
+    </li>
+    <li><a href="#gpt-系列openai">GPT 系列（OpenAI）</a>
+      <ul>
+        <li><a href="#模型谱系">模型谱系</a></li>
+        <li><a href="#架构特点">架构特点</a></li>
+        <li><a href="#能力特点">能力特点</a></li>
+        <li><a href="#api-与定价">API 与定价</a></li>
+        <li><a href="#适用场景">适用场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#qwen-系列阿里巴巴">Qwen 系列（阿里巴巴）</a>
+      <ul>
+        <li><a href="#模型谱系-1">模型谱系</a></li>
+        <li><a href="#架构特点-1">架构特点</a></li>
+        <li><a href="#能力特点-1">能力特点</a></li>
+        <li><a href="#开源策略">开源策略</a></li>
+        <li><a href="#部署方式">部署方式</a></li>
+      </ul>
+    </li>
+    <li><a href="#llama-系列meta">Llama 系列（Meta）</a>
+      <ul>
+        <li><a href="#模型谱系-2">模型谱系</a></li>
+        <li><a href="#架构特点-2">架构特点</a></li>
+        <li><a href="#能力特点-2">能力特点</a></li>
+        <li><a href="#许可证">许可证</a></li>
+        <li><a href="#社区生态">社区生态</a></li>
+      </ul>
+    </li>
+    <li><a href="#deepseek-系列深度求索">DeepSeek 系列（深度求索）</a>
+      <ul>
+        <li><a href="#模型谱系-3">模型谱系</a></li>
+        <li><a href="#架构创新">架构创新</a></li>
+        <li><a href="#能力特点-3">能力特点</a></li>
+        <li><a href="#开源与定价">开源与定价</a></li>
+        <li><a href="#适用场景-1">适用场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#glm-系列智谱ai">GLM 系列（智谱AI）</a>
+      <ul>
+        <li><a href="#模型谱系-4">模型谱系</a></li>
+        <li><a href="#架构特点-3">架构特点</a></li>
+        <li><a href="#能力特点-4">能力特点</a></li>
+        <li><a href="#开源情况">开源情况</a></li>
+        <li><a href="#适用场景-2">适用场景</a></li>
+      </ul>
+    </li>
+    <li><a href="#横向对比">横向对比</a>
+      <ul>
+        <li><a href="#能力对比">能力对比</a></li>
+        <li><a href="#架构对比">架构对比</a></li>
+        <li><a href="#成本对比">成本对比</a></li>
+        <li><a href="#生态对比">生态对比</a></li>
+        <li><a href="#中文能力专项对比">中文能力专项对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#选型决策树">选型决策树</a>
+      <ul>
+        <li><a href="#决策流程图">决策流程图</a></li>
+        <li><a href="#场景化推荐">场景化推荐</a></li>
+      </ul>
+    </li>
+    <li><a href="#实践快速切换不同模型">实践：快速切换不同模型</a></li>
+    <li><a href="#结语">结语</a></li>
+    <li><a href="#参考文献">参考文献</a></li>
+  </ul>
+</nav>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "大模型选型指南：GPT、Qwen、Llama、DeepSeek、GLM 全面对比",
+          url: "https:\/\/dev.infiniteevo.online\/post\/llm\/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86\/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94\/",
+          description: "从架构差异到能力评估，系统对比主流大语言模型的技术特点与选型策略",
+          cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
+        };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-MWNUH0WmtsYGhn2cbH6ELRCbf9LG3QDqCC&#43;gqPB3IBNO35xjZK3Ejb6oONRpDbPg" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/contrib/auto-render.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv&#43;fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script><script data-pjax>
+          var renderMath = () => {
+            if (!window.renderMathInElement) return;
+            window.renderMathInElement(_$("article"), {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+              ],
+            });
+          };
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderMath, { once: true });
+          } else {
+            renderMath();
+          }
+        </script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>

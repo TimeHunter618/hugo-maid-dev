@@ -1,0 +1,2062 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  日志收集与监控告警 | Aries
+</title>
+<meta name="description" content="结构化日志、Prometheus &#43; Grafana 监控、告警规则——AI 系统的可观测性基石"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="日志收集与监控告警 | Aries" />
+  <meta
+    property="og:description"
+    content="结构化日志、Prometheus &#43; Grafana 监控、告警规则——AI 系统的可观测性基石"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E4%B8%8E%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-06-01T10:00:00&#43;08:00" />
+  <meta property="article:modified_time" content="2026-06-01T10:00:00&#43;08:00" /><meta property="article:tag" content="大模型, 日志, Prometheus, Grafana, 告警" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200" alt="日志收集与监控告警"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">日志收集与监控告警</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">结构化日志、Prometheus &#43; Grafana 监控、告警规则——AI 系统的可观测性基石</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container sticky"><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#可观测性三支柱">可观测性三支柱</a>
+      <ul>
+        <li><a href="#日志指标追踪的定位">日志、指标、追踪的定位</a></li>
+        <li><a href="#三者的协同关系">三者的协同关系</a></li>
+      </ul>
+    </li>
+    <li><a href="#结构化日志">结构化日志</a>
+      <ul>
+        <li><a href="#为什么需要结构化日志">为什么需要结构化日志</a></li>
+        <li><a href="#python-结构化日志实践">Python 结构化日志实践</a></li>
+        <li><a href="#java-logback-结构化日志">Java Logback 结构化日志</a></li>
+      </ul>
+    </li>
+    <li><a href="#日志收集架构">日志收集架构</a>
+      <ul>
+        <li><a href="#elk--efk-stack">ELK / EFK Stack</a></li>
+        <li><a href="#grafana-loki-轻量方案">Grafana Loki 轻量方案</a></li>
+        <li><a href="#日志采集架构选型建议">日志采集架构选型建议</a></li>
+      </ul>
+    </li>
+    <li><a href="#prometheus-指标体系">Prometheus 指标体系</a>
+      <ul>
+        <li><a href="#指标类型详解">指标类型详解</a></li>
+        <li><a href="#python-应用埋点">Python 应用埋点</a></li>
+        <li><a href="#java-应用埋点micrometer">Java 应用埋点（Micrometer）</a></li>
+      </ul>
+    </li>
+    <li><a href="#grafana-仪表盘设计">Grafana 仪表盘设计</a>
+      <ul>
+        <li><a href="#ai-核心指标可视化">AI 核心指标可视化</a></li>
+        <li><a href="#关键-promql-查询">关键 PromQL 查询</a></li>
+        <li><a href="#grafana-仪表盘-json-片段">Grafana 仪表盘 JSON 片段</a></li>
+      </ul>
+    </li>
+    <li><a href="#ai-系统特有指标">AI 系统特有指标</a>
+      <ul>
+        <li><a href="#性能指标体系">性能指标体系</a></li>
+        <li><a href="#ttft-与-tpot-的关系">TTFT 与 TPOT 的关系</a></li>
+        <li><a href="#埋点示例流式响应的-ttfttpot-测量">埋点示例：流式响应的 TTFT/TPOT 测量</a></li>
+      </ul>
+    </li>
+    <li><a href="#告警规则设计">告警规则设计</a>
+      <ul>
+        <li><a href="#告警分级">告警分级</a></li>
+        <li><a href="#prometheus-告警规则">Prometheus 告警规则</a></li>
+        <li><a href="#alertmanager-告警路由">Alertmanager 告警路由</a></li>
+        <li><a href="#避免告警疲劳">避免告警疲劳</a></li>
+      </ul>
+    </li>
+    <li><a href="#完整架构总览">完整架构总览</a></li>
+    <li><a href="#结语">结语</a></li>
+    <li><a href="#参考文献">参考文献</a></li>
+  </ul>
+</nav>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div><div class="sidebar-widget"></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-06-01 10:00:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2026-06-01</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-06-01</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg1.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg1.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>当大模型服务从 Demo 走向生产，第一个要回答的问题不是&quot;准确率多少&quot;，而是&quot;现在出了什么问题&quot;。一个 RAG 系统由 API 网关、LLM 推理服务、向量数据库、Embedding 服务、缓存等多个组件构成，任何一环出现延迟飙升、错误率上升或资源耗尽，都会导致用户体验劣化甚至服务中断。如果没有完善的可观测性体系，运维人员只能面对用户的投诉&quot;回复变慢了&quot;&ldquo;偶尔报错&quot;而无从下手。</p>
+<p>可观测性（Observability）一词源自控制论，指的是通过系统的外部输出推断系统内部状态的能力。在软件工程中，它由三大支柱构成：<strong>日志（Logs）、指标（Metrics）和链路追踪（Traces）</strong>。对于 AI 系统而言，还需要在此基础上增加<strong>成本维度</strong>的观测——每次 LLM 调用都消耗真金白银的 Token。</p>
+<pre class="mermaid">
+  graph TD
+    O[可观测性体系] --> L[日志 Logs]
+    O --> M[指标 Metrics]
+    O --> T[链路追踪 Traces]
+
+    L --> L1[结构化日志]
+    L --> L2[集中收集]
+    L --> L3[全文检索]
+
+    M --> M1[系统指标]
+    M --> M2[业务指标]
+    M --> M3[告警规则]
+
+    T --> T1[请求链路]
+    T --> T2[性能瓶颈]
+    T --> T3[依赖拓扑]
+</pre><p>本文聚焦于日志收集与监控告警，涵盖可观测性三支柱的原理、结构化日志实践、Prometheus + Grafana 监控体系，以及面向 AI 系统的告警规则设计。链路追踪和成本监控将在后续文章中专题展开。</p>
+<h2 id="可观测性三支柱">
+<a class="header-anchor" href="#%e5%8f%af%e8%a7%82%e6%b5%8b%e6%80%a7%e4%b8%89%e6%94%af%e6%9f%b1"></a>
+可观测性三支柱
+</h2><h3 id="日志指标追踪的定位">
+<a class="header-anchor" href="#%e6%97%a5%e5%bf%97%e6%8c%87%e6%a0%87%e8%bf%bd%e8%b8%aa%e7%9a%84%e5%ae%9a%e4%bd%8d"></a>
+日志、指标、追踪的定位
+</h3><p>三者在数据特征、查询模式和用途上各有侧重，理解它们的差异是构建可观测性体系的基础。</p>
+<table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>日志 Logs</th>
+					<th>指标 Metrics</th>
+					<th>链路追踪 Traces</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>数据特征</strong></td>
+					<td>离散事件记录</td>
+					<td>聚合数值时间序列</td>
+					<td>有向无环图（请求树）</td>
+			</tr>
+			<tr>
+					<td><strong>基数</strong></td>
+					<td>高（每条日志唯一）</td>
+					<td>低（有限维度组合）</td>
+					<td>中（每个请求一条）</td>
+			</tr>
+			<tr>
+					<td><strong>查询方式</strong></td>
+					<td>全文检索、字段过滤</td>
+					<td>时间范围聚合查询</td>
+					<td>Trace ID 追溯</td>
+			</tr>
+			<tr>
+					<td><strong>主要用途</strong></td>
+					<td>排查具体错误</td>
+					<td>监控趋势、告警</td>
+					<td>定位性能瓶颈</td>
+			</tr>
+			<tr>
+					<td><strong>存储成本</strong></td>
+					<td>高</td>
+					<td>低</td>
+					<td>中</td>
+			</tr>
+			<tr>
+					<td><strong>典型工具</strong></td>
+					<td>ELK、Loki</td>
+					<td>Prometheus</td>
+					<td>Jaeger、Tempo</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="三者的协同关系">
+<a class="header-anchor" href="#%e4%b8%89%e8%80%85%e7%9a%84%e5%8d%8f%e5%90%8c%e5%85%b3%e7%b3%bb"></a>
+三者的协同关系
+</h3><p>在实际排障中，三者通常配合使用。一个典型的排查路径是：告警触发（Metrics）→ 定位时间窗口的异常请求（Traces）→ 查看具体错误信息（Logs）。</p>
+<pre class="mermaid">
+  sequenceDiagram
+    participant Alert as 告警系统
+    participant Trace as 链路追踪
+    participant Log as 日志系统
+
+    Alert->>Trace: P99 延迟超阈值<br/>锁定时间窗口
+    Note over Trace: 找到慢请求 Trace ID
+    Trace->>Trace: 分析 Span 耗时<br/>定位到 LLM 调用
+    Trace->>Log: 用 Trace ID 关联日志
+    Log->>Log: 检索该请求的完整日志
+    Note over Log: 发现 OOM 错误<br/>context_length_exceeded
+</pre><h2 id="结构化日志">
+<a class="header-anchor" href="#%e7%bb%93%e6%9e%84%e5%8c%96%e6%97%a5%e5%bf%97"></a>
+结构化日志
+</h2><h3 id="为什么需要结构化日志">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e7%bb%93%e6%9e%84%e5%8c%96%e6%97%a5%e5%bf%97"></a>
+为什么需要结构化日志
+</h3><p>传统的非结构化日志是一行行自由文本：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">2026-06-01 10:23:45 ERROR Failed to call LLM: timeout after 30s
+</span></span></code></pre></div><p>这种日志对人眼阅读友好，但对机器处理极不友好——要提取 <code>ERROR</code> 级别或 <code>timeout</code> 关键词，只能靠正则匹配，性能差且容易出错。</p>
+<p>结构化日志将每条日志组织为 JSON 对象，每个字段都有明确的类型和语义：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;timestamp&#34;</span><span class="p">:</span> <span class="s2">&#34;2026-06-01T10:23:45.123+08:00&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;level&#34;</span><span class="p">:</span> <span class="s2">&#34;ERROR&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;service&#34;</span><span class="p">:</span> <span class="s2">&#34;llm-gateway&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;trace_id&#34;</span><span class="p">:</span> <span class="s2">&#34;abc123def456&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;user_id&#34;</span><span class="p">:</span> <span class="s2">&#34;u_8821&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;model&#34;</span><span class="p">:</span> <span class="s2">&#34;gpt-4o&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;event&#34;</span><span class="p">:</span> <span class="s2">&#34;llm_call_failed&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;error_type&#34;</span><span class="p">:</span> <span class="s2">&#34;timeout&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;duration_ms&#34;</span><span class="p">:</span> <span class="mi">30000</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;message&#34;</span><span class="p">:</span> <span class="s2">&#34;Failed to call LLM: timeout after 30s&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>结构化日志的核心优势：</p>
+<ul>
+<li><strong>可高效检索</strong>：按字段索引和过滤，<code>level=ERROR AND service=llm-gateway</code> 比全文检索快几个数量级</li>
+<li><strong>可聚合分析</strong>：按 <code>error_type</code> 分组统计、按 <code>model</code> 维度做费用汇总</li>
+<li><strong>可关联追踪</strong>：<code>trace_id</code> 字段打通了日志与链路追踪的桥梁</li>
+</ul>
+<h3 id="python-结构化日志实践">
+<a class="header-anchor" href="#python-%e7%bb%93%e6%9e%84%e5%8c%96%e6%97%a5%e5%bf%97%e5%ae%9e%e8%b7%b5"></a>
+Python 结构化日志实践
+</h3><h4 id="标准库-logging--json-formatter">
+<a class="header-anchor" href="#%e6%a0%87%e5%87%86%e5%ba%93-logging--json-formatter"></a>
+标准库 logging + JSON Formatter
+</h4><p>Python 标准库 <code>logging</code> 配合 <code>python-json-logger</code> 可以输出结构化日志：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">logging</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pythonjsonlogger</span> <span class="kn">import</span> <span class="n">jsonlogger</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">CustomJsonFormatter</span><span class="p">(</span><span class="n">jsonlogger</span><span class="o">.</span><span class="n">JsonFormatter</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;自定义 JSON 日志格式器，添加 trace_id 等上下文&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">add_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log_record</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">message_dict</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_fields</span><span class="p">(</span><span class="n">log_record</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">message_dict</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 确保时间戳为 ISO 8601 格式</span>
+</span></span><span class="line"><span class="cl">        <span class="n">log_record</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">log_record</span><span class="p">[</span><span class="s1">&#39;level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">levelname</span>
+</span></span><span class="line"><span class="cl">        <span class="n">log_record</span><span class="p">[</span><span class="s1">&#39;service&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;llm-gateway&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">setup_logging</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;llm-gateway&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">formatter</span> <span class="o">=</span> <span class="n">CustomJsonFormatter</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">logger</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logging</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 业务日志示例</span>
+</span></span><span class="line"><span class="cl"><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;LLM call completed&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">extra</span><span class="o">=</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;trace_id&#39;</span><span class="p">:</span> <span class="s1">&#39;abc123def456&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;user_id&#39;</span><span class="p">:</span> <span class="s1">&#39;u_8821&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;gpt-4o&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;prompt_tokens&#39;</span><span class="p">:</span> <span class="mi">1523</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;completion_tokens&#39;</span><span class="p">:</span> <span class="mi">842</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;duration_ms&#39;</span><span class="p">:</span> <span class="mi">3200</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;event&#39;</span><span class="p">:</span> <span class="s1">&#39;llm_call_success&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></div><h4 id="structlog-进阶方案">
+<a class="header-anchor" href="#structlog-%e8%bf%9b%e9%98%b6%e6%96%b9%e6%a1%88"></a>
+structlog 进阶方案
+</h4><p><code>structlog</code> 提供了更优雅的结构化日志 API，支持上下文绑定和流水线处理：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">structlog</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">structlog.processors</span> <span class="kn">import</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">TimeStamperISO8601</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">JSONRenderer</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">StackInfoRenderer</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">format_exc_info</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 配置 structlog</span>
+</span></span><span class="line"><span class="cl"><span class="n">structlog</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">processors</span><span class="o">=</span><span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="n">structlog</span><span class="o">.</span><span class="n">stdlib</span><span class="o">.</span><span class="n">add_log_level</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">structlog</span><span class="o">.</span><span class="n">processors</span><span class="o">.</span><span class="n">TimeStamper</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;iso&#39;</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">StackInfoRenderer</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">        <span class="n">format_exc_info</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">JSONRenderer</span><span class="p">(),</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="n">wrapper_class</span><span class="o">=</span><span class="n">structlog</span><span class="o">.</span><span class="n">make_filtering_bound_logger</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cache_logger_on_first_use</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">log</span> <span class="o">=</span> <span class="n">structlog</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 绑定请求级上下文</span>
+</span></span><span class="line"><span class="cl"><span class="n">request_log</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">trace_id</span><span class="o">=</span><span class="s1">&#39;abc123def456&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">request_id</span><span class="o">=</span><span class="s1">&#39;req_001&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">user_id</span><span class="o">=</span><span class="s1">&#39;u_8821&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 在业务流程中记录事件</span>
+</span></span><span class="line"><span class="cl"><span class="n">request_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;llm_call_start&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;gpt-4o&#39;</span><span class="p">,</span> <span class="n">prompt_length</span><span class="o">=</span><span class="mi">1523</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">request_log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;llm_call_end&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;gpt-4o&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="n">prompt_tokens</span><span class="o">=</span><span class="mi">1523</span><span class="p">,</span> <span class="n">completion_tokens</span><span class="o">=</span><span class="mi">842</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="n">duration_ms</span><span class="o">=</span><span class="mi">3200</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">request_log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;llm_call_failed&#39;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="s1">&#39;gpt-4o&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                  <span class="n">error_type</span><span class="o">=</span><span class="s1">&#39;rate_limit&#39;</span><span class="p">,</span> <span class="n">retry_after</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</span></span></code></pre></div><p><code>structlog</code> 的 <code>bind()</code> 方法允许在请求处理链中持续传递上下文，避免每条日志重复写字段，这在异步框架（FastAPI、asyncio）中尤为实用。</p>
+<h3 id="java-logback-结构化日志">
+<a class="header-anchor" href="#java-logback-%e7%bb%93%e6%9e%84%e5%8c%96%e6%97%a5%e5%bf%97"></a>
+Java Logback 结构化日志
+</h3><p>Java 生态中，Logback 配合 <code>logstash-logback-encoder</code> 输出 JSON 格式日志。</p>
+<p><code>logback-spring.xml</code> 配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;configuration&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&#34;JSON_CONSOLE&#34;</span> <span class="na">class=</span><span class="s">&#34;ch.qos.logback.core.ConsoleAppender&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;encoder</span> <span class="na">class=</span><span class="s">&#34;net.logstash.logback.encoder.LogstashEncoder&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;customFields&gt;</span>
+</span></span><span class="line"><span class="cl">                {&#34;service&#34;:&#34;llm-gateway&#34;,&#34;env&#34;:&#34;prod&#34;}<span class="nt">&lt;/customFields&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;fieldNames&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;timestamp&gt;</span>@timestamp<span class="nt">&lt;/timestamp&gt;</span>
+</span></span><span class="line"><span class="cl">                <span class="nt">&lt;version&gt;</span>[ignore]<span class="nt">&lt;/version&gt;</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&lt;/fieldNames&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;/encoder&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/appender&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">&#34;ASYNC_JSON&#34;</span> <span class="na">class=</span><span class="s">&#34;ch.qos.logback.classic.AsyncAppender&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;queueSize&gt;</span>512<span class="nt">&lt;/queueSize&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;discardingThreshold&gt;</span>0<span class="nt">&lt;/discardingThreshold&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">&#34;JSON_CONSOLE&#34;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/appender&gt;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;root</span> <span class="na">level=</span><span class="s">&#34;INFO&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">&#34;ASYNC_JSON&#34;</span><span class="nt">/&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/root&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/configuration&gt;</span>
+</span></span></code></pre></div><p>在 Spring Boot 中使用 MDC（Mapped Diagnostic Context）注入请求上下文：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.slf4j.MDC</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.web.servlet.HandlerInterceptor</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Component</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TraceInterceptor</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">HandlerInterceptor</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="nf">preHandle</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                             </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                             </span><span class="n">Object</span><span class="w"> </span><span class="n">handler</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 从请求头提取或生成 trace_id</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">traceId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getHeader</span><span class="p">(</span><span class="s">&#34;X-Trace-Id&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">traceId</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="kc">null</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">traceId</span><span class="p">.</span><span class="na">isEmpty</span><span class="p">())</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">traceId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UUID</span><span class="p">.</span><span class="na">randomUUID</span><span class="p">().</span><span class="na">toString</span><span class="p">().</span><span class="na">replace</span><span class="p">(</span><span class="s">&#34;-&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">MDC</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&#34;trace_id&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">traceId</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">MDC</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&#34;request_path&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getRequestURI</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">MDC</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="s">&#34;method&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">request</span><span class="p">.</span><span class="na">getMethod</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">response</span><span class="p">.</span><span class="na">setHeader</span><span class="p">(</span><span class="s">&#34;X-Trace-Id&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">traceId</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Override</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">afterCompletion</span><span class="p">(</span><span class="n">HttpServletRequest</span><span class="w"> </span><span class="n">request</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="n">HttpServletResponse</span><span class="w"> </span><span class="n">response</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                                </span><span class="n">Object</span><span class="w"> </span><span class="n">handler</span><span class="p">,</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="n">ex</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">MDC</span><span class="p">.</span><span class="na">clear</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>MDC 中的字段会自动被 <code>logstash-logback-encoder</code> 写入 JSON 日志，无需在每条 <code>log.info()</code> 中手动传递。</p>
+<h2 id="日志收集架构">
+<a class="header-anchor" href="#%e6%97%a5%e5%bf%97%e6%94%b6%e9%9b%86%e6%9e%b6%e6%9e%84"></a>
+日志收集架构
+</h2><h3 id="elk--efk-stack">
+<a class="header-anchor" href="#elk--efk-stack"></a>
+ELK / EFK Stack
+</h3><p>ELK（Elasticsearch + Logstash + Kibana）是最经典的日志收集分析栈。在容器化环境中，通常用 Fluentd 或 Fluent Bit 替代 Logstash，形成 EFK 架构。</p>
+<pre class="mermaid">
+  graph LR
+    subgraph 应用层
+        A1[API Gateway] --> |stdout JSON| A2[Fluent Bit]
+        A3[LLM Service] --> |stdout JSON| A2
+        A4[Vector DB] --> |stdout JSON| A2
+    end
+
+    subgraph 收集层
+        A2 --> |tail/grep| B[Fluentd Aggregator]
+        B --> |buffer/retry| C[Elasticsearch]
+    end
+
+    subgraph 存储与展示
+        C --> D[Kibana]
+        D --> E[日志检索/仪表盘]
+    end
+</pre><p><strong>Fluent Bit</strong> 轻量级采集器配置示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># fluent-bit.conf</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">[</span><span class="l">SERVICE]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Flush         5</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Log_Level     info</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">[</span><span class="l">INPUT]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Name              tail</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Path              /var/log/containers/*.log</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Parser            docker</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Tag               kube.*</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Refresh_Interval  5</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Mem_Buf_Limit     50MB</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">[</span><span class="l">FILTER]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Name              kubernetes</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Match             kube.*</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Kube_URL          https://kubernetes.default.svc:443</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Merge_Log         On</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">K8S-Logging.Parser On</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">[</span><span class="l">OUTPUT]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Name              es</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Match             *</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Host              elasticsearch.logging.svc.cluster.local</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Port              9200</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Index             llm-logs</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Type              _doc</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">Retry_Limit       5</span><span class="w">
+</span></span></span></code></pre></div><h3 id="grafana-loki-轻量方案">
+<a class="header-anchor" href="#grafana-loki-%e8%bd%bb%e9%87%8f%e6%96%b9%e6%a1%88"></a>
+Grafana Loki 轻量方案
+</h3><p>ELK 的痛点在于 Elasticsearch 资源消耗大、运维成本高。Grafana Loki 采用不同的存储策略——<strong>只索引标签（Labels），不索引日志内容</strong>，大幅降低了存储和计算开销。</p>
+<table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>Elasticsearch (ELK)</th>
+					<th>Loki</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>索引策略</strong></td>
+					<td>全文倒排索引</td>
+					<td>仅标签索引</td>
+			</tr>
+			<tr>
+					<td><strong>存储成本</strong></td>
+					<td>高（SSD + 内存）</td>
+					<td>低（对象存储 S3/OSS）</td>
+			</tr>
+			<tr>
+					<td><strong>查询能力</strong></td>
+					<td>全文检索强</td>
+					<td>标签过滤 + LogQL</td>
+			</tr>
+			<tr>
+					<td><strong>资源消耗</strong></td>
+					<td>高</td>
+					<td>低</td>
+			</tr>
+			<tr>
+					<td><strong>适用场景</strong></td>
+					<td>需要全文检索</td>
+					<td>与 Grafana 无缝集成</td>
+			</tr>
+	</tbody>
+</table>
+<p>Loki 的查询语言 LogQL 类似 PromQL，可以同时做日志过滤和指标提取：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 过滤 ERROR 级别日志并提取 duration_ms 指标
+</span></span><span class="line"><span class="cl">{service=&#34;llm-gateway&#34;, level=&#34;ERROR&#34;}
+</span></span><span class="line"><span class="cl">  | json
+</span></span><span class="line"><span class="cl">  | error_type=&#34;timeout&#34;
+</span></span><span class="line"><span class="cl">  | __error__=&#34;&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 提取延迟分位数
+</span></span><span class="line"><span class="cl">quantile_over_time(
+</span></span><span class="line"><span class="cl">  0.99,
+</span></span><span class="line"><span class="cl">  {service=&#34;llm-gateway&#34;, event=&#34;llm_call_success&#34;}
+</span></span><span class="line"><span class="cl">    | json | unwrap duration_ms [5m]
+</span></span><span class="line"><span class="cl">)
+</span></span></code></pre></div><h3 id="日志采集架构选型建议">
+<a class="header-anchor" href="#%e6%97%a5%e5%bf%97%e9%87%87%e9%9b%86%e6%9e%b6%e6%9e%84%e9%80%89%e5%9e%8b%e5%bb%ba%e8%ae%ae"></a>
+日志采集架构选型建议
+</h3><pre class="mermaid">
+  graph TD
+    Q{日志量级?} --> |< 50GB/天| L[Loki 推荐]
+    Q --> |50-500GB/天| E1[ELK 或 Loki]
+    Q --> |> 500GB/天| E2[ELK + 冷热分层]
+
+    L --> L1{需要全文检索?}
+    L1 --> |否| L2[Loki + S3]
+    L1 --> |是| L3[ELK]
+
+    E2 --> E3[热数据: SSD + ES]
+    E2 --> E4[冷数据: 对象存储]
+</pre><h2 id="prometheus-指标体系">
+<a class="header-anchor" href="#prometheus-%e6%8c%87%e6%a0%87%e4%bd%93%e7%b3%bb"></a>
+Prometheus 指标体系
+</h2><h3 id="指标类型详解">
+<a class="header-anchor" href="#%e6%8c%87%e6%a0%87%e7%b1%bb%e5%9e%8b%e8%af%a6%e8%a7%a3"></a>
+指标类型详解
+</h3><p>Prometheus 定义了四种核心指标类型，理解它们的语义是正确埋点的前提。</p>
+<p><strong>Counter（计数器）</strong>：只增不减的累计值，如请求总数、错误总数。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 类型：单调递增
+</span></span><span class="line"><span class="cl">llm_requests_total{model=&#34;gpt-4o&#34;, status=&#34;success&#34;} 152340
+</span></span><span class="line"><span class="cl">llm_requests_total{model=&#34;gpt-4o&#34;, status=&#34;error&#34;} 203
+</span></span></code></pre></div><p><strong>Gauge（仪表盘）</strong>：可增可减的瞬时值，如当前并发数、队列长度。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 类型：当前瞬时值
+</span></span><span class="line"><span class="cl">llm_active_connections{model=&#34;gpt-4o&#34;} 47
+</span></span><span class="line"><span class="cl">llm_queue_depth{} 12
+</span></span></code></pre></div><p><strong>Histogram（直方图）</strong>：将观测值分桶统计，用于计算分位数（P50/P95/P99）。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 类型：累积桶计数 + 总和 + 总数
+</span></span><span class="line"><span class="cl">llm_request_duration_seconds_bucket{le=&#34;0.1&#34;} 5000
+</span></span><span class="line"><span class="cl">llm_request_duration_seconds_bucket{le=&#34;0.5&#34;} 12000
+</span></span><span class="line"><span class="cl">llm_request_duration_seconds_bucket{le=&#34;1.0&#34;} 15000
+</span></span><span class="line"><span class="cl">llm_request_duration_seconds_bucket{le=&#34;5.0&#34;} 15200
+</span></span><span class="line"><span class="cl">llm_request_duration_seconds_bucket{le=&#34;+Inf&#34;} 15234
+</span></span><span class="line"><span class="cl">llm_request_duration_seconds_sum 8421.5
+</span></span><span class="line"><span class="cl">llm_request_duration_seconds_count 15234
+</span></span></code></pre></div><p><strong>Summary（摘要）</strong>：在客户端预计算分位数，精度高但不可跨实例聚合。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 类型：客户端计算的量化值
+</span></span><span class="line"><span class="cl">llm_request_duration_seconds{quantile=&#34;0.5&#34;} 0.32
+</span></span><span class="line"><span class="cl">llm_request_duration_seconds{quantile=&#34;0.95&#34;} 1.85
+</span></span><span class="line"><span class="cl">llm_request_duration_seconds{quantile=&#34;0.99&#34;} 4.20
+</span></span></code></pre></div><p>Histogram 与 Summary 的选择：</p>
+<table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>Histogram</th>
+					<th>Summary</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>分位数计算</strong></td>
+					<td>服务端（PromQL）</td>
+					<td>客户端预计算</td>
+			</tr>
+			<tr>
+					<td><strong>跨实例聚合</strong></td>
+					<td>支持</td>
+					<td>不支持</td>
+			</tr>
+			<tr>
+					<td><strong>分位数精度</strong></td>
+					<td>受桶边界限制</td>
+					<td>高</td>
+			</tr>
+			<tr>
+					<td><strong>推荐场景</strong></td>
+					<td>多实例部署</td>
+					<td>单实例或固定分位数</td>
+			</tr>
+	</tbody>
+</table>
+<p>生产环境中推荐使用 <strong>Histogram</strong>，因为它支持跨实例聚合，适合微服务架构。</p>
+<h3 id="python-应用埋点">
+<a class="header-anchor" href="#python-%e5%ba%94%e7%94%a8%e5%9f%8b%e7%82%b9"></a>
+Python 应用埋点
+</h3><p>使用 <code>prometheus_client</code> 库为 LLM 服务埋点：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">Histogram</span><span class="p">,</span> <span class="n">Gauge</span><span class="p">,</span> <span class="n">start_http_server</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">functools</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 定义指标</span>
+</span></span><span class="line"><span class="cl"><span class="n">LLM_REQUESTS_TOTAL</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;llm_requests_total&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;Total LLM API requests&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;error_type&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">LLM_REQUEST_DURATION</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;llm_request_duration_seconds&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;LLM request duration in seconds&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">LLM_TOKENS_TOTAL</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;llm_tokens_total&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;Total tokens consumed&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">,</span> <span class="s1">&#39;token_type&#39;</span><span class="p">]</span>  <span class="c1"># token_type: prompt / completion</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">LLM_TTFT_SECONDS</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;llm_time_to_first_token_seconds&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;Time to first token in seconds (streaming)&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">LLM_ACTIVE_REQUESTS</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;llm_active_requests&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;Number of in-flight LLM requests&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">LLM_QUEUE_DEPTH</span> <span class="o">=</span> <span class="n">Gauge</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;llm_queue_depth&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;Number of requests waiting in queue&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 装饰器自动埋点</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">track_llm_call</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;LLM 调用埋点装饰器&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nd">@functools.wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">LLM_ACTIVE_REQUESTS</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ttft_recorded</span> <span class="o">=</span> <span class="kc">False</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># 如果是流式响应，记录首 Token 延迟</span>
+</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="s1">&#39;__iter__&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">def</span> <span class="nf">wrapped_stream</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">nonlocal</span> <span class="n">ttft_recorded</span>
+</span></span><span class="line"><span class="cl">                        <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                            <span class="k">if</span> <span class="ow">not</span> <span class="n">ttft_recorded</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                                <span class="n">ttft</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+</span></span><span class="line"><span class="cl">                                <span class="n">LLM_TTFT_SECONDS</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">ttft</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                                <span class="n">ttft_recorded</span> <span class="o">=</span> <span class="kc">True</span>
+</span></span><span class="line"><span class="cl">                            <span class="k">yield</span> <span class="n">chunk</span>
+</span></span><span class="line"><span class="cl">                    <span class="k">return</span> <span class="n">wrapped_stream</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">result</span>
+</span></span><span class="line"><span class="cl">            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">LLM_REQUESTS_TOTAL</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">error_type</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
+</span></span><span class="line"><span class="cl">                <span class="p">)</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">                <span class="k">raise</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">LLM_REQUESTS_TOTAL</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">                    <span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="s1">&#39;success&#39;</span><span class="p">,</span> <span class="n">error_type</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">                <span class="p">)</span><span class="o">.</span><span class="n">inc</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">finally</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+</span></span><span class="line"><span class="cl">                <span class="n">LLM_REQUEST_DURATION</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">LLM_ACTIVE_REQUESTS</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">dec</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">wrapper</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">decorator</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 启动 metrics 端点</span>
+</span></span><span class="line"><span class="cl"><span class="n">start_http_server</span><span class="p">(</span><span class="mi">9090</span><span class="p">)</span>
+</span></span></code></pre></div><h3 id="java-应用埋点micrometer">
+<a class="header-anchor" href="#java-%e5%ba%94%e7%94%a8%e5%9f%8b%e7%82%b9micrometer"></a>
+Java 应用埋点（Micrometer）
+</h3><p>Spring Boot 应用使用 Micrometer 自动桥接到 Prometheus：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">io.micrometer.core.instrument.Counter</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">io.micrometer.core.instrument.MeterRegistry</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">io.micrometer.core.instrument.Tags</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">io.micrometer.core.instrument.Timer</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Component</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Component</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">LlmMetricsRecorder</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">MeterRegistry</span><span class="w"> </span><span class="n">registry</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">LlmMetricsRecorder</span><span class="p">(</span><span class="n">MeterRegistry</span><span class="w"> </span><span class="n">registry</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">this</span><span class="p">.</span><span class="na">registry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">registry</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Timer</span><span class="p">.</span><span class="na">Sample</span><span class="w"> </span><span class="nf">startTimer</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">Timer</span><span class="p">.</span><span class="na">start</span><span class="p">(</span><span class="n">registry</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">recordLlmCall</span><span class="p">(</span><span class="n">Timer</span><span class="p">.</span><span class="na">Sample</span><span class="w"> </span><span class="n">sample</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                              </span><span class="n">String</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">promptTokens</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                              </span><span class="kt">long</span><span class="w"> </span><span class="n">completionTokens</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 记录延迟</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">sample</span><span class="p">.</span><span class="na">stop</span><span class="p">(</span><span class="n">Timer</span><span class="p">.</span><span class="na">builder</span><span class="p">(</span><span class="s">&#34;llm.request.duration&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">tags</span><span class="p">(</span><span class="n">Tags</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&#34;model&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">register</span><span class="p">(</span><span class="n">registry</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 记录请求计数</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Counter</span><span class="p">.</span><span class="na">builder</span><span class="p">(</span><span class="s">&#34;llm.requests.total&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">tags</span><span class="p">(</span><span class="n">Tags</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&#34;model&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;status&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">status</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">register</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">increment</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 记录 Token 消耗</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Counter</span><span class="p">.</span><span class="na">builder</span><span class="p">(</span><span class="s">&#34;llm.tokens.total&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">tags</span><span class="p">(</span><span class="n">Tags</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&#34;model&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;type&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;prompt&#34;</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">register</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">increment</span><span class="p">(</span><span class="n">promptTokens</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Counter</span><span class="p">.</span><span class="na">builder</span><span class="p">(</span><span class="s">&#34;llm.tokens.total&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">tags</span><span class="p">(</span><span class="n">Tags</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&#34;model&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;type&#34;</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;completion&#34;</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">register</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">increment</span><span class="p">(</span><span class="n">completionTokens</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="grafana-仪表盘设计">
+<a class="header-anchor" href="#grafana-%e4%bb%aa%e8%a1%a8%e7%9b%98%e8%ae%be%e8%ae%a1"></a>
+Grafana 仪表盘设计
+</h2><h3 id="ai-核心指标可视化">
+<a class="header-anchor" href="#ai-%e6%a0%b8%e5%bf%83%e6%8c%87%e6%a0%87%e5%8f%af%e8%a7%86%e5%8c%96"></a>
+AI 核心指标可视化
+</h3><p>一个面向 LLM 服务的 Grafana 仪表盘应分层展示：系统健康度、AI 服务性能、成本消耗。</p>
+<pre class="mermaid">
+  graph TD
+    D[Grafana AI 仪表盘] --> D1[系统概览]
+    D --> D2[AI 性能]
+    D --> D3[成本分析]
+    D --> D4[错误分析]
+
+    D1 --> D1a[QPS / 错误率]
+    D1 --> D1b[CPU / 内存 / GPU]
+
+    D2 --> D2a[TTFT 分布]
+    D2 --> D2b[P50/P95/P99 延迟]
+    D2 --> D2c[并发数 / 队列深度]
+
+    D3 --> D3a[Token 消耗趋势]
+    D3 --> D3b[费用估算]
+    D3 --> D3c[模型分布]
+
+    D4 --> D4a[错误类型分布]
+    D4 --> D4b[错误率趋势]
+</pre><h3 id="关键-promql-查询">
+<a class="header-anchor" href="#%e5%85%b3%e9%94%ae-promql-%e6%9f%a5%e8%af%a2"></a>
+关键 PromQL 查询
+</h3><p><strong>QPS（每秒请求数）</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="k">sum</span><span class="o">(</span><span class="kr">rate</span><span class="o">(</span><span class="nv">llm_requests_total</span><span class="p">{</span><span class="nl">status</span><span class="o">=</span><span class="p">&#34;</span><span class="s">success</span><span class="p">&#34;}[</span><span class="s">1m</span><span class="p">]</span><span class="o">))</span><span class="w">
+</span></span></span></code></pre></div><p><strong>错误率</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="k">sum</span><span class="o">(</span><span class="kr">rate</span><span class="o">(</span><span class="nv">llm_requests_total</span><span class="p">{</span><span class="nl">status</span><span class="o">=</span><span class="p">&#34;</span><span class="s">error</span><span class="p">&#34;}[</span><span class="s">5m</span><span class="p">]</span><span class="o">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">/</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">sum</span><span class="o">(</span><span class="kr">rate</span><span class="o">(</span><span class="nv">llm_requests_total</span><span class="p">[</span><span class="s">5m</span><span class="p">]</span><span class="o">))</span><span class="w">
+</span></span></span></code></pre></div><p><strong>P99 延迟</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="kr">histogram_quantile</span><span class="o">(</span><span class="mf">0.99</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">sum</span><span class="o">(</span><span class="kr">rate</span><span class="o">(</span><span class="nv">llm_request_duration_seconds_bucket</span><span class="p">[</span><span class="s">5m</span><span class="p">]</span><span class="o">))</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="nv">le</span><span class="p">,</span><span class="w"> </span><span class="nv">model</span><span class="o">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">)</span><span class="w">
+</span></span></span></code></pre></div><p><strong>TTFT P95（首 Token 延迟）</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="kr">histogram_quantile</span><span class="o">(</span><span class="mf">0.95</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">sum</span><span class="o">(</span><span class="kr">rate</span><span class="o">(</span><span class="nv">llm_time_to_first_token_seconds_bucket</span><span class="p">[</span><span class="s">5m</span><span class="p">]</span><span class="o">))</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="nv">le</span><span class="o">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">)</span><span class="w">
+</span></span></span></code></pre></div><p><strong>每分钟 Token 消耗速率</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="k">sum</span><span class="o">(</span><span class="kr">rate</span><span class="o">(</span><span class="nv">llm_tokens_total</span><span class="p">[</span><span class="s">1m</span><span class="p">]</span><span class="o">))</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="o">(</span><span class="nv">model</span><span class="p">,</span><span class="w"> </span><span class="nv">token_type</span><span class="o">)</span><span class="w">
+</span></span></span></code></pre></div><p><strong>预估费用（美元/分钟）</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-promql" data-lang="promql"><span class="line"><span class="cl"><span class="k">sum</span><span class="o">(</span><span class="kr">rate</span><span class="o">(</span><span class="nv">llm_tokens_total</span><span class="p">{</span><span class="nl">token_type</span><span class="o">=</span><span class="p">&#34;</span><span class="s">prompt</span><span class="p">&#34;}[</span><span class="s">1m</span><span class="p">]</span><span class="o">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.000005</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="o">+</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">sum</span><span class="o">(</span><span class="kr">rate</span><span class="o">(</span><span class="nv">llm_tokens_total</span><span class="p">{</span><span class="nl">token_type</span><span class="o">=</span><span class="p">&#34;</span><span class="s">completion</span><span class="p">&#34;}[</span><span class="s">1m</span><span class="p">]</span><span class="o">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.000015</span><span class="w">
+</span></span></span></code></pre></div><h3 id="grafana-仪表盘-json-片段">
+<a class="header-anchor" href="#grafana-%e4%bb%aa%e8%a1%a8%e7%9b%98-json-%e7%89%87%e6%ae%b5"></a>
+Grafana 仪表盘 JSON 片段
+</h3><p>以下是一个 TTFT 监控面板的 JSON 配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&#34;panels&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;title&#34;</span><span class="p">:</span> <span class="s2">&#34;Time to First Token (TTFT)&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;timeseries&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;datasource&#34;</span><span class="p">:</span> <span class="s2">&#34;Prometheus&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;gridPos&#34;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&#34;h&#34;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="nt">&#34;w&#34;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="nt">&#34;x&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nt">&#34;y&#34;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;targets&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;expr&#34;</span><span class="p">:</span> <span class="s2">&#34;histogram_quantile(0.50, sum(rate(llm_time_to_first_token_seconds_bucket[5m])) by (le))&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;legendFormat&#34;</span><span class="p">:</span> <span class="s2">&#34;P50&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;refId&#34;</span><span class="p">:</span> <span class="s2">&#34;A&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;expr&#34;</span><span class="p">:</span> <span class="s2">&#34;histogram_quantile(0.95, sum(rate(llm_time_to_first_token_seconds_bucket[5m])) by (le))&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;legendFormat&#34;</span><span class="p">:</span> <span class="s2">&#34;P95&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;refId&#34;</span><span class="p">:</span> <span class="s2">&#34;B&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;expr&#34;</span><span class="p">:</span> <span class="s2">&#34;histogram_quantile(0.99, sum(rate(llm_time_to_first_token_seconds_bucket[5m])) by (le))&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;legendFormat&#34;</span><span class="p">:</span> <span class="s2">&#34;P99&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;refId&#34;</span><span class="p">:</span> <span class="s2">&#34;C&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">],</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&#34;fieldConfig&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;defaults&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;unit&#34;</span><span class="p">:</span> <span class="s2">&#34;s&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;thresholds&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;steps&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">              <span class="p">{</span><span class="nt">&#34;color&#34;</span><span class="p">:</span> <span class="s2">&#34;green&#34;</span><span class="p">,</span> <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="kc">null</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">              <span class="p">{</span><span class="nt">&#34;color&#34;</span><span class="p">:</span> <span class="s2">&#34;yellow&#34;</span><span class="p">,</span> <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">              <span class="p">{</span><span class="nt">&#34;color&#34;</span><span class="p">:</span> <span class="s2">&#34;red&#34;</span><span class="p">,</span> <span class="nt">&#34;value&#34;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">]</span>
+</span></span><span class="line"><span class="cl">          <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="ai-系统特有指标">
+<a class="header-anchor" href="#ai-%e7%b3%bb%e7%bb%9f%e7%89%b9%e6%9c%89%e6%8c%87%e6%a0%87"></a>
+AI 系统特有指标
+</h2><h3 id="性能指标体系">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e6%8c%87%e6%a0%87%e4%bd%93%e7%b3%bb"></a>
+性能指标体系
+</h3><p>大模型服务有区别于传统 Web 服务的独特性能指标，它们直接决定用户体验。</p>
+<table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>全称</th>
+					<th>含义</th>
+					<th>目标值</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>TTFT</strong></td>
+					<td>Time To First Token</td>
+					<td>首 Token 延迟，用户等待第一个字的耗时</td>
+					<td>&lt; 1s</td>
+			</tr>
+			<tr>
+					<td><strong>TPOT</strong></td>
+					<td>Time Per Output Token</td>
+					<td>每个输出 Token 的平均生成耗时</td>
+					<td>&lt; 50ms</td>
+			</tr>
+			<tr>
+					<td><strong>TPS</strong></td>
+					<td>Tokens Per Second</td>
+					<td>每秒生成 Token 数（吞吐量）</td>
+					<td>&gt; 20 tokens/s</td>
+			</tr>
+			<tr>
+					<td><strong>E2E Latency</strong></td>
+					<td>End-to-End Latency</td>
+					<td>端到端延迟（从请求到完整响应）</td>
+					<td>视场景而定</td>
+			</tr>
+			<tr>
+					<td><strong>Queue Depth</strong></td>
+					<td>Queue Depth</td>
+					<td>等待处理的请求队列长度</td>
+					<td>&lt; 10</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="ttft-与-tpot-的关系">
+<a class="header-anchor" href="#ttft-%e4%b8%8e-tpot-%e7%9a%84%e5%85%b3%e7%b3%bb"></a>
+TTFT 与 TPOT 的关系
+</h3><p>对于流式响应，总延迟可以分解为：</p>
+$$
+T_{total} = TTFT + N_{completion} \times TPOT
+$$<p>其中 $N_{completion}$ 为输出 Token 数。这意味着：</p>
+<ul>
+<li>TTFT 主要由<strong>模型加载、Prompt 处理（Prefill 阶段）</strong> 决定</li>
+<li>TPOT 主要由<strong>模型解码速度（Decode 阶段）</strong> 决定</li>
+</ul>
+<pre class="mermaid">
+  graph LR
+    subgraph 请求生命周期
+        A[用户发送请求] --> B[队列等待]
+        B --> C[Prefill<br/>处理 Prompt]
+        C --> D[首 Token 输出<br/>TTFT]
+        D --> E[Decode<br/>逐 Token 生成]
+        E --> F[最后一个 Token<br/>E2E 完成]
+    end
+
+    style D fill:#ff9,stroke:#333
+    style F fill:#9f9,stroke:#333
+</pre><h3 id="埋点示例流式响应的-ttfttpot-测量">
+<a class="header-anchor" href="#%e5%9f%8b%e7%82%b9%e7%a4%ba%e4%be%8b%e6%b5%81%e5%bc%8f%e5%93%8d%e5%ba%94%e7%9a%84-ttfttpot-%e6%b5%8b%e9%87%8f"></a>
+埋点示例：流式响应的 TTFT/TPOT 测量
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">prometheus_client</span> <span class="kn">import</span> <span class="n">Histogram</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">TTFT</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="s1">&#39;llm_ttft_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time to first token&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">],</span> <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="n">TPOT</span> <span class="o">=</span> <span class="n">Histogram</span><span class="p">(</span><span class="s1">&#39;llm_tpot_seconds&#39;</span><span class="p">,</span> <span class="s1">&#39;Time per output token&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="p">[</span><span class="s1">&#39;model&#39;</span><span class="p">],</span> <span class="n">buckets</span><span class="o">=</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">async</span> <span class="k">def</span> <span class="nf">stream_llm_response</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;流式调用 LLM 并测量 TTFT/TPOT&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">request_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">first_token_time</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="n">last_token_time</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="n">token_count</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">messages</span><span class="o">=</span><span class="p">[{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">}],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">first_token_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">first_token_time</span> <span class="o">=</span> <span class="n">now</span>
+</span></span><span class="line"><span class="cl">            <span class="n">ttft</span> <span class="o">=</span> <span class="n">first_token_time</span> <span class="o">-</span> <span class="n">request_start</span>
+</span></span><span class="line"><span class="cl">            <span class="n">TTFT</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">ttft</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># 记录每个 Token 的间隔</span>
+</span></span><span class="line"><span class="cl">            <span class="n">interval</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">last_token_time</span>
+</span></span><span class="line"><span class="cl">            <span class="n">TPOT</span><span class="o">.</span><span class="n">labels</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">last_token_time</span> <span class="o">=</span> <span class="n">now</span>
+</span></span><span class="line"><span class="cl">        <span class="n">token_count</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="k">yield</span> <span class="n">chunk</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 总延迟分解</span>
+</span></span><span class="line"><span class="cl">    <span class="n">total</span> <span class="o">=</span> <span class="n">last_token_time</span> <span class="o">-</span> <span class="n">request_start</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ttft</span> <span class="o">=</span> <span class="n">first_token_time</span> <span class="o">-</span> <span class="n">request_start</span>
+</span></span><span class="line"><span class="cl">    <span class="n">decode_time</span> <span class="o">=</span> <span class="n">total</span> <span class="o">-</span> <span class="n">ttft</span>
+</span></span><span class="line"><span class="cl">    <span class="n">avg_tpot</span> <span class="o">=</span> <span class="n">decode_time</span> <span class="o">/</span> <span class="p">(</span><span class="n">token_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">token_count</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;stream_completed&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">ttft_ms</span><span class="o">=</span><span class="n">ttft</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">avg_tpot_ms</span><span class="o">=</span><span class="n">avg_tpot</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">             <span class="n">tokens</span><span class="o">=</span><span class="n">token_count</span><span class="p">,</span> <span class="n">total_ms</span><span class="o">=</span><span class="n">total</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="告警规则设计">
+<a class="header-anchor" href="#%e5%91%8a%e8%ad%a6%e8%a7%84%e5%88%99%e8%ae%be%e8%ae%a1"></a>
+告警规则设计
+</h2><h3 id="告警分级">
+<a class="header-anchor" href="#%e5%91%8a%e8%ad%a6%e5%88%86%e7%ba%a7"></a>
+告警分级
+</h3><p>不是所有异常都值得在凌晨 3 点叫醒运维人员。合理的告警分级是避免告警疲劳的关键。</p>
+<table>
+	<thead>
+			<tr>
+					<th>级别</th>
+					<th>含义</th>
+					<th>响应时间</th>
+					<th>通知方式</th>
+					<th>示例</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>P0 Critical</strong></td>
+					<td>服务完全不可用</td>
+					<td>立即</td>
+					<td>电话 + 短信 + IM</td>
+					<td>错误率 &gt; 50%、服务宕机</td>
+			</tr>
+			<tr>
+					<td><strong>P1 High</strong></td>
+					<td>严重降级</td>
+					<td>15 分钟</td>
+					<td>短信 + IM</td>
+					<td>P99 延迟 &gt; 10s、GPU 显存 &gt; 90%</td>
+			</tr>
+			<tr>
+					<td><strong>P2 Medium</strong></td>
+					<td>需要关注</td>
+					<td>1 小时</td>
+					<td>IM 通知</td>
+					<td>错误率 &gt; 5%、队列积压</td>
+			</tr>
+			<tr>
+					<td><strong>P3 Low</strong></td>
+					<td>信息记录</td>
+					<td>工作日处理</td>
+					<td>邮件</td>
+					<td>日费用超预期 80%、磁盘 &gt; 70%</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="prometheus-告警规则">
+<a class="header-anchor" href="#prometheus-%e5%91%8a%e8%ad%a6%e8%a7%84%e5%88%99"></a>
+Prometheus 告警规则
+</h3><p><code>prometheus.yml</code> 主配置：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">global</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">scrape_interval</span><span class="p">:</span><span class="w"> </span><span class="l">15s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">evaluation_interval</span><span class="p">:</span><span class="w"> </span><span class="l">15s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">rule_files</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="s2">&#34;rules/llm_alerts.yml&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="s2">&#34;rules/infrastructure_alerts.yml&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">alerting</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">alertmanagers</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">static_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span>- <span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;alertmanager:9093&#39;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">scrape_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;llm-gateway&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;llm-gateway:9090&#39;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span><span class="l">llm-gateway</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;llm-inference&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;llm-inference:9090&#39;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">service</span><span class="p">:</span><span class="w"> </span><span class="l">llm-inference</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">job_name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;vector-db&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">static_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">targets</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;vector-db:9090&#39;</span><span class="p">]</span><span class="w">
+</span></span></span></code></pre></div><p><code>rules/llm_alerts.yml</code> 告警规则：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">groups</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">llm_service_alerts</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">interval</span><span class="p">:</span><span class="w"> </span><span class="l">30s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">rules</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># P0: 服务完全不可用</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">alert</span><span class="p">:</span><span class="w"> </span><span class="l">LLMServiceDown</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="l">up{job=&#34;llm-gateway&#34;} == 0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">for</span><span class="p">:</span><span class="w"> </span><span class="l">1m</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">critical</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">team</span><span class="p">:</span><span class="w"> </span><span class="l">ai-platform</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;LLM Gateway 服务不可用&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;{{ $labels.instance }} 已离线超过 1 分钟&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># P1: 错误率过高</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">alert</span><span class="p">:</span><span class="w"> </span><span class="l">LLMHighErrorRate</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">          sum(rate(llm_requests_total{status=&#34;error&#34;}[5m]))
+</span></span></span><span class="line"><span class="cl"><span class="sd">            /
+</span></span></span><span class="line"><span class="cl"><span class="sd">          sum(rate(llm_requests_total[5m]))
+</span></span></span><span class="line"><span class="cl"><span class="sd">          &gt; 0.10</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">for</span><span class="p">:</span><span class="w"> </span><span class="l">5m</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">high</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">team</span><span class="p">:</span><span class="w"> </span><span class="l">ai-platform</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;LLM 错误率超过 10%&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;当前错误率: {{ $value | humanizePercentage }}&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># P1: P99 延迟过高</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">alert</span><span class="p">:</span><span class="w"> </span><span class="l">LLMHighLatencyP99</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">          histogram_quantile(0.99,
+</span></span></span><span class="line"><span class="cl"><span class="sd">            sum(rate(llm_request_duration_seconds_bucket[5m])) by (le)
+</span></span></span><span class="line"><span class="cl"><span class="sd">          ) &gt; 10</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">for</span><span class="p">:</span><span class="w"> </span><span class="l">5m</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">high</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;LLM P99 延迟超过 10 秒&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;当前 P99: {{ $value }}s&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># P1: TTFT 超标</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">alert</span><span class="p">:</span><span class="w"> </span><span class="l">LLMHighTTFT</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">          histogram_quantile(0.95,
+</span></span></span><span class="line"><span class="cl"><span class="sd">            sum(rate(llm_time_to_first_token_seconds_bucket[5m])) by (le)
+</span></span></span><span class="line"><span class="cl"><span class="sd">          ) &gt; 3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">for</span><span class="p">:</span><span class="w"> </span><span class="l">10m</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">high</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;TTFT P95 超过 3 秒&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;用户感知到明显的首字延迟&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># P2: GPU 显存告警</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">alert</span><span class="p">:</span><span class="w"> </span><span class="l">GPUMemoryHigh</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">          (nvidia_gpu_memory_used_bytes / nvidia_gpu_memory_total_bytes) &gt; 0.90</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">for</span><span class="p">:</span><span class="w"> </span><span class="l">5m</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">medium</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;GPU {{ $labels.gpu }} 显存使用率超过 90%&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># P2: 请求队列积压</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">alert</span><span class="p">:</span><span class="w"> </span><span class="l">LLMQueueBacklog</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="l">llm_queue_depth &gt; 50</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">for</span><span class="p">:</span><span class="w"> </span><span class="l">2m</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">medium</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;请求队列积压 {{ $value }} 个请求&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;可能需要扩容推理节点&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># P3: 日 Token 消耗异常</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">alert</span><span class="p">:</span><span class="w"> </span><span class="l">DailyTokenBudgetWarning</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">expr</span><span class="p">:</span><span class="w"> </span><span class="p">|</span><span class="sd">
+</span></span></span><span class="line"><span class="cl"><span class="sd">          sum(increase(llm_tokens_total[24h])) &gt; 500000000</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">labels</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">low</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">annotations</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">summary</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;日 Token 消耗超过 5 亿&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;预估费用可能超出预算&#34;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="alertmanager-告警路由">
+<a class="header-anchor" href="#alertmanager-%e5%91%8a%e8%ad%a6%e8%b7%af%e7%94%b1"></a>
+Alertmanager 告警路由
+</h3><p>Alertmanager 负责告警的去重、分组和路由：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># alertmanager.yml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">global</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">resolve_timeout</span><span class="p">:</span><span class="w"> </span><span class="l">5m</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">route</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">group_by</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;alertname&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;service&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;severity&#39;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">group_wait</span><span class="p">:</span><span class="w"> </span><span class="l">10s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">group_interval</span><span class="p">:</span><span class="w"> </span><span class="l">30s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">repeat_interval</span><span class="p">:</span><span class="w"> </span><span class="l">4h</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">receiver</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;default-im&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">routes</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># P0 Critical: 电话 + 短信 + IM</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">match</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">critical</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">receiver</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;critical-escalation&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">group_wait</span><span class="p">:</span><span class="w"> </span><span class="l">0s</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">repeat_interval</span><span class="p">:</span><span class="w"> </span><span class="l">30m</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># P1 High: 短信 + IM</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">match</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">high</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">receiver</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;high-priority&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">repeat_interval</span><span class="p">:</span><span class="w"> </span><span class="l">1h</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># P2 Medium: IM 通知</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>- <span class="nt">match</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">medium</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">receiver</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;default-im&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">repeat_interval</span><span class="p">:</span><span class="w"> </span><span class="l">2h</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">receivers</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;default-im&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">webhook_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;http://dingtalk-webhook/alertmanager&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">send_resolved</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;high-priority&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">webhook_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;http://dingtalk-webhook/alertmanager&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">pagerduty_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">routing_key</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;xxx&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;critical-escalation&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">webhook_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;http://dingtalk-webhook/alertmanager&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">pagerduty_configs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">routing_key</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;xxx&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">urgency</span><span class="p">:</span><span class="w"> </span><span class="l">high</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">inhibit_rules</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># 如果服务宕机告警触发，抑制该服务的其他告警</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>- <span class="nt">source_match</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">alertname</span><span class="p">:</span><span class="w"> </span><span class="l">LLMServiceDown</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">target_match_re</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">severity</span><span class="p">:</span><span class="w"> </span><span class="l">medium|low</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">equal</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s1">&#39;service&#39;</span><span class="p">]</span><span class="w">
+</span></span></span></code></pre></div><h3 id="避免告警疲劳">
+<a class="header-anchor" href="#%e9%81%bf%e5%85%8d%e5%91%8a%e8%ad%a6%e7%96%b2%e5%8a%b3"></a>
+避免告警疲劳
+</h3><p>告警疲劳（Alert Fatigue）是运维最常见的痛点——当每天收到数百条告警时，真正重要的告警会被淹没。以下是几条实践原则：</p>
+<pre class="mermaid">
+  graph TD
+    A[告警治理原则] --> B[可执行性<br/>每条告警都有明确动作]
+    A --> C[稀缺性<br/>每天 P0+P1 不超过 5 条]
+    A --> D[准确性<br/>误报率 < 5%]
+    A --> E[可恢复性<br/>自动/半自动解决]
+
+    B --> B1[告警中附带排障链接]
+    C --> C1[合并同源告警]
+    C --> C2[抑制下游告警]
+    D --> D1[多窗口确认 for 持续时间]
+    E --> E1[对接自动扩缩容]
+</pre><p><strong>关键实践</strong>：</p>
+<ol>
+<li><strong>设置 <code>for</code> 持续时间</strong>：避免瞬时抖动触发告警，<code>for: 5m</code> 表示异常持续 5 分钟才告警</li>
+<li><strong>使用 <code>group_by</code> 合并</strong>：同一服务的同类告警合并为一条通知</li>
+<li><strong>配置 <code>inhibit_rules</code></strong>：上游服务宕机时，抑制下游服务的衍生告警</li>
+<li><strong>定期审查告警</strong>：每月回顾告警触发统计，移除长期无效的规则</li>
+<li><strong>告警附带 Runbook</strong>：每条告警的 annotations 中包含排障文档链接</li>
+</ol>
+<h2 id="完整架构总览">
+<a class="header-anchor" href="#%e5%ae%8c%e6%95%b4%e6%9e%b6%e6%9e%84%e6%80%bb%e8%a7%88"></a>
+完整架构总览
+</h2><p>将日志、指标、告警整合在一起，一个生产级 AI 系统的可观测性架构如下：</p>
+<pre class="mermaid">
+  graph TB
+    subgraph 应用层
+        GW[API Gateway]
+        LLM[LLM 推理服务]
+        VDB[向量数据库]
+        EMB[Embedding 服务]
+    end
+
+    subgraph 指标层
+        GW --> |Prometheus /metrics| PROM[Prometheus]
+        LLM --> |Prometheus /metrics| PROM
+        VDB --> |Prometheus /metrics| PROM
+        PROM --> AM[Alertmanager]
+        AM --> |路由告警| DT[钉钉/短信/电话]
+    end
+
+    subgraph 日志层
+        GW --> |JSON stdout| FB[Fluent Bit]
+        LLM --> |JSON stdout| FB
+        FB --> |转发| LOKI[Loki]
+    end
+
+    subgraph 可视化层
+        PROM --> GRAF[Grafana]
+        LOKI --> GRAF
+        GRAF --> DASH[统一仪表盘]
+    end
+
+    subgraph 链路追踪
+        GW --> |OTel SDK| OTC[OTel Collector]
+        LLM --> |OTel SDK| OTC
+        VDB --> |OTel SDK| OTC
+        OTC --> JAEGER[Jaeger]
+        JAEGER --> GRAF
+    end
+</pre><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>可观测性不是某个工具或某套配置，而是一种贯穿系统全生命周期的工程实践。对于 AI 系统而言，由于多组件、高延迟、高成本的特性，可观测性的重要性更加突出。</p>
+<p>本文涵盖了从结构化日志到 Prometheus 监控再到告警路由的完整体系。在实践中，建议遵循以下原则：</p>
+<ol>
+<li><strong>日志先行</strong>：所有服务统一 JSON 结构化日志，注入 <code>trace_id</code>，这是后续一切分析的基础</li>
+<li><strong>指标分层</strong>：系统指标（CPU/内存）保证基础设施可见性，业务指标（TTFT/TPOT/Token）反映用户体验</li>
+<li><strong>告警克制</strong>：宁可少告不可错告，每条告警都必须可执行、可恢复</li>
+<li><strong>持续迭代</strong>：每次故障复盘后，审视是否缺少了对应的监控指标或告警规则，及时补齐</li>
+</ol>
+<p>下一篇将深入分布式链路追踪，探讨如何通过 OpenTelemetry 实现 AI 请求的全链路可视化，精准定位性能瓶颈。</p>
+<h2 id="参考文献">
+<a class="header-anchor" href="#%e5%8f%82%e8%80%83%e6%96%87%e7%8c%ae"></a>
+参考文献
+</h2><ul>
+<li><a href="https://prometheus.io/docs/concepts/metric_types/">Prometheus Documentation - Metric Types</a></li>
+<li><a href="https://grafana.com/docs/loki/latest/">Grafana Loki: Like Prometheus, but for logs</a></li>
+<li><a href="https://opentelemetry.io/docs/specs/otel/">OpenTelemetry Specification</a></li>
+<li><a href="https://www.structlog.org/">Python structlog Documentation</a></li>
+<li><a href="https://prometheus.io/docs/practices/alerting/">Prometheus Best Practices - Alerting</a></li>
+<li><a href="https://sre.google/sre-book/monitoring-distributed-systems/">Google SRE Book - Monitoring and Alerting</a></li>
+<li><a href="https://www.anyscale.com/blog/continuous-batching-llm-inference">LLM Inference Performance Metrics: TTFT, TPOT, Throughput</a></li>
+<li><a href="https://prometheus.io/docs/alerting/latest/alertmanager/">Alertmanager Configuration</a></li>
+</ul>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E4%B8%8E%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6/&amp;appkey=&amp;title=%e6%97%a5%e5%bf%97%e6%94%b6%e9%9b%86%e4%b8%8e%e7%9b%91%e6%8e%a7%e5%91%8a%e8%ad%a6&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="日志收集与监控告警">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E4%B8%8E%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6/&amp;title=%e6%97%a5%e5%bf%97%e6%94%b6%e9%9b%86%e4%b8%8e%e7%9b%91%e6%8e%a7%e5%91%8a%e8%ad%a6&amp;desc=%e7%bb%93%e6%9e%84%e5%8c%96%e6%97%a5%e5%bf%97%e3%80%81Prometheus%20&#43;%20Grafana%20%e7%9b%91%e6%8e%a7%e3%80%81%e5%91%8a%e8%ad%a6%e8%a7%84%e5%88%99%e2%80%94%e2%80%94AI%20%e7%b3%bb%e7%bb%9f%e7%9a%84%e5%8f%af%e8%a7%82%e6%b5%8b%e6%80%a7%e5%9f%ba%e7%9f%b3&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="日志收集与监控告警">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="日志收集与监控告警">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E4%B8%8E%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6/&amp;text=%e6%97%a5%e5%bf%97%e6%94%b6%e9%9b%86%e4%b8%8e%e7%9b%91%e6%8e%a7%e5%91%8a%e8%ad%a6&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="日志收集与监控告警">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E4%B8%8E%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6/" target="_blank" rel="noopener noreferrer" title="日志收集与监控告警">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e8%bf%90%e7%bb%b4%e4%b8%8e%e5%8f%af%e8%a7%82%e6%b5%8b%e6%80%a7"
+      data-aos="zoom-in"
+      >运维与可观测性</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%a4%a7%e6%a8%a1%e5%9e%8b"
+        rel="tag"
+        >大模型</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e6%97%a5%e5%bf%97"
+        rel="tag"
+        >日志</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/prometheus"
+        rel="tag"
+        >Prometheus</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/grafana"
+        rel="tag"
+        >Grafana</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%91%8a%e8%ad%a6"
+        rel="tag"
+        >告警</a
+      >
+    </li></ul>
+</footer>
+  </div><nav
+    id="article-nav"
+    aria-label="Article navigation"
+    data-aos="fade-up"
+  ><div class="article-nav-link-wrap left"><img
+              data-src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=800"
+              data-sizes="auto"
+              alt="分布式链路追踪"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/"
+          aria-label="前一篇:分布式链路追踪"
+          title="前一篇:分布式链路追踪"
+        ></a>
+        <div class="article-nav-caption">前一篇</div>
+        <h3 class="article-nav-title">分布式链路追踪</h3>
+      </div></nav></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#可观测性三支柱">可观测性三支柱</a>
+      <ul>
+        <li><a href="#日志指标追踪的定位">日志、指标、追踪的定位</a></li>
+        <li><a href="#三者的协同关系">三者的协同关系</a></li>
+      </ul>
+    </li>
+    <li><a href="#结构化日志">结构化日志</a>
+      <ul>
+        <li><a href="#为什么需要结构化日志">为什么需要结构化日志</a></li>
+        <li><a href="#python-结构化日志实践">Python 结构化日志实践</a></li>
+        <li><a href="#java-logback-结构化日志">Java Logback 结构化日志</a></li>
+      </ul>
+    </li>
+    <li><a href="#日志收集架构">日志收集架构</a>
+      <ul>
+        <li><a href="#elk--efk-stack">ELK / EFK Stack</a></li>
+        <li><a href="#grafana-loki-轻量方案">Grafana Loki 轻量方案</a></li>
+        <li><a href="#日志采集架构选型建议">日志采集架构选型建议</a></li>
+      </ul>
+    </li>
+    <li><a href="#prometheus-指标体系">Prometheus 指标体系</a>
+      <ul>
+        <li><a href="#指标类型详解">指标类型详解</a></li>
+        <li><a href="#python-应用埋点">Python 应用埋点</a></li>
+        <li><a href="#java-应用埋点micrometer">Java 应用埋点（Micrometer）</a></li>
+      </ul>
+    </li>
+    <li><a href="#grafana-仪表盘设计">Grafana 仪表盘设计</a>
+      <ul>
+        <li><a href="#ai-核心指标可视化">AI 核心指标可视化</a></li>
+        <li><a href="#关键-promql-查询">关键 PromQL 查询</a></li>
+        <li><a href="#grafana-仪表盘-json-片段">Grafana 仪表盘 JSON 片段</a></li>
+      </ul>
+    </li>
+    <li><a href="#ai-系统特有指标">AI 系统特有指标</a>
+      <ul>
+        <li><a href="#性能指标体系">性能指标体系</a></li>
+        <li><a href="#ttft-与-tpot-的关系">TTFT 与 TPOT 的关系</a></li>
+        <li><a href="#埋点示例流式响应的-ttfttpot-测量">埋点示例：流式响应的 TTFT/TPOT 测量</a></li>
+      </ul>
+    </li>
+    <li><a href="#告警规则设计">告警规则设计</a>
+      <ul>
+        <li><a href="#告警分级">告警分级</a></li>
+        <li><a href="#prometheus-告警规则">Prometheus 告警规则</a></li>
+        <li><a href="#alertmanager-告警路由">Alertmanager 告警路由</a></li>
+        <li><a href="#避免告警疲劳">避免告警疲劳</a></li>
+      </ul>
+    </li>
+    <li><a href="#完整架构总览">完整架构总览</a></li>
+    <li><a href="#结语">结语</a></li>
+    <li><a href="#参考文献">参考文献</a></li>
+  </ul>
+</nav>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "日志收集与监控告警",
+          url: "https:\/\/dev.infiniteevo.online\/post\/llm\/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7\/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E4%B8%8E%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6\/",
+          description: "结构化日志、Prometheus \u002b Grafana 监控、告警规则——AI 系统的可观测性基石",
+          cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
+        };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-MWNUH0WmtsYGhn2cbH6ELRCbf9LG3QDqCC&#43;gqPB3IBNO35xjZK3Ejb6oONRpDbPg" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/contrib/auto-render.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv&#43;fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script><script data-pjax>
+          var renderMath = () => {
+            if (!window.renderMathInElement) return;
+            window.renderMathInElement(_$("article"), {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+              ],
+            });
+          };
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderMath, { once: true });
+          } else {
+            renderMath();
+          }
+        </script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>

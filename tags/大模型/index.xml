@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>大模型 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:20:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>RAG 检索增强生成技术详解</title>
+      <link>https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Fri, 19 Jun 2026 03:20:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>RAG 检索增强生成技术详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）虽然展现出惊人的语言理解和生成能力，但也面临着一些固有的局限性：</p>
+<ol>
+<li><strong>知识时效性差</strong>：模型的知识截止于训练数据的时间点，无法获取最新信息</li>
+<li><strong>领域知识不足</strong>：在专业领域（如医疗、法律、企业内部）的知识往往不够深入</li>
+<li><strong>幻觉问题</strong>：模型可能会&quot;一本正经地胡说八道&quot;，生成看似合理但实际错误的内容</li>
+<li><strong>知识更新困难</strong>：通过微调更新知识成本高昂，且容易导致灾难性遗忘</li>
+</ol>
+<p>检索增强生成（Retrieval-Augmented Generation, RAG）为这些问题提供了一个优雅的解决方案。通过在生成过程中引入外部知识检索，RAG 让大模型能够&quot;查资料&quot;后再回答问题，从而大幅提升回答的准确性和时效性。</p>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>RAG全流程</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>大模型微调技术全攻略</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E6%8A%80%E6%9C%AF%E5%85%A8%E6%94%BB%E7%95%A5/</link>
+      <pubDate>Fri, 19 Jun 2026 03:15:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E6%8A%80%E6%9C%AF%E5%85%A8%E6%94%BB%E7%95%A5/</guid>
+      <description>
+        <![CDATA[<h1>大模型微调技术全攻略</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）在海量数据上预训练后，获得了强大的通用能力。但要将这些通用能力适配到特定领域或特定任务上，微调（Fine-tuning）是不可或缺的关键步骤。</p>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>大语言模型基础原理与发展历程</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Fri, 19 Jun 2026 03:05:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/</guid>
+      <description>
+        <![CDATA[<h1>大语言模型基础原理与发展历程</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（Large Language Model, LLM）正在深刻改变着人机交互的方式，推动着人工智能技术进入新的时代。从最初的统计语言模型到如今参数规模突破万亿的超大规模预训练模型，语言模型技术经历了数十年的演进与发展。本文将系统梳理大语言模型的发展历程，深入解析其核心技术原理，帮助读者建立对这一前沿技术的全面认知。</p>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>运维与可观测性</title>
+      <link>https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/</guid>
+      <description>
+        <![CDATA[<h1>运维与可观测性</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="分类介绍">
+<a class="header-anchor" href="#%e5%88%86%e7%b1%bb%e4%bb%8b%e7%bb%8d"></a>
+分类介绍
+</h2><p>生产级 AI 系统离不开完善的可观测性体系。本分类涵盖日志收集、监控告警、分布式链路追踪，以及 Token 成本监控。</p>
+<h3 id="文章列表">
+<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
+文章列表
+</h3><table>
+	<thead>
+			<tr>
+					<th>文章</th>
+					<th>简介</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86%E4%B8%8E%E7%9B%91%E6%8E%A7%E5%91%8A%E8%AD%A6/">日志收集与监控告警</a></td>
+					<td>结构化日志、Prometheus + Grafana 监控、告警规则设计</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/%E5%88%86%E5%B8%83%E5%BC%8F%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA/">分布式链路追踪</a></td>
+					<td>OpenTelemetry、Jaeger、调用链分析实践</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/8-%E8%BF%90%E7%BB%B4%E4%B8%8E%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/token%E6%88%90%E6%9C%AC%E7%9B%91%E6%8E%A7/">Token 成本监控</a></td>
+					<td>API 费用追踪、预算告警、成本优化策略</td>
+			</tr>
+	</tbody>
+</table>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>数据与评估</title>
+      <link>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/</guid>
+      <description>
+        <![CDATA[<h1>数据与评估</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="分类介绍">
+<a class="header-anchor" href="#%e5%88%86%e7%b1%bb%e4%bb%8b%e7%bb%8d"></a>
+分类介绍
+</h2><p>数据是 AI 系统的基石，评估是迭代的指南针。本分类涵盖数据集构建全流程、主流评估指标体系，以及 A/B 测试与持续迭代方法论。</p>
+<h3 id="文章列表">
+<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
+文章列表
+</h3><table>
+	<thead>
+			<tr>
+					<th>文章</th>
+					<th>简介</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E6%95%B0%E6%8D%AE%E9%9B%86%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%B8%85%E6%B4%97%E6%A0%87%E6%B3%A8/">数据集构建与清洗标注</a></td>
+					<td>数据采集、清洗去重、标注规范、质量控制全流程</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E8%AF%84%E4%BC%B0%E4%BD%93%E7%B3%BB%E4%B8%8E%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/">评估体系与基准测试</a></td>
+					<td>ROUGE、BLEU、MT-Bench 等主流评估指标原理与实践</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/ab%E6%B5%8B%E8%AF%95%E4%B8%8E%E8%BF%AD%E4%BB%A3%E6%B5%81%E7%A8%8B/">A/B 测试与迭代流程</a></td>
+					<td>在线 A/B 测试设计、效果监控、持续迭代闭环</td>
+			</tr>
+	</tbody>
+</table>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>前端与插件集成</title>
+      <link>https://dev.infiniteevo.online/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/</guid>
+      <description>
+        <![CDATA[<h1>前端与插件集成</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="分类介绍">
+<a class="header-anchor" href="#%e5%88%86%e7%b1%bb%e4%bb%8b%e7%bb%8d"></a>
+分类介绍
+</h2><p>AI 应用的前端集成是连接模型能力与用户体验的桥梁。本分类聚焦 Chrome Extension 开发、本地文件系统交互、跨域安全策略。</p>
+<h3 id="文章列表">
+<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
+文章列表
+</h3><table>
+	<thead>
+			<tr>
+					<th>文章</th>
+					<th>简介</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/chrome%E6%8F%92%E4%BB%B6%E9%80%9A%E4%BF%A1%E6%9C%BA%E5%88%B6/">Chrome Extension 通信机制</a></td>
+					<td>content script、background、popup 三方通信架构详解</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E4%B8%8E%E6%9D%83%E9%99%90/">本地文件读写与权限控制</a></td>
+					<td>File System API、权限申请、安全沙箱实践</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/%E8%B7%A8%E5%9F%9Fcors%E4%B8%8E%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5/">跨域 CORS 与安全策略</a></td>
+					<td>CORS 原理、CSP 策略、XSS/CSRF 防护</td>
+			</tr>
+	</tbody>
+</table>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>模型部署与推理优化</title>
+      <link>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/</guid>
+      <description>
+        <![CDATA[<h1>模型部署与推理优化</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="分类介绍">
+<a class="header-anchor" href="#%e5%88%86%e7%b1%bb%e4%bb%8b%e7%bb%8d"></a>
+分类介绍
+</h2><p>本分类聚焦大语言模型的部署与推理优化，涵盖本地化部署方案、模型量化技术、服务化 API 封装、Docker/K8s 容器化部署。</p>
+<h3 id="文章列表">
+<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
+文章列表
+</h3><table>
+	<thead>
+			<tr>
+					<th>文章</th>
+					<th>简介</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%AC%E5%9C%B0%E5%8C%96%E9%83%A8%E7%BD%B2/">模型本地化部署</a></td>
+					<td>Ollama、vLLM、TGI 三大部署方案对比与实践</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/">模型量化技术</a></td>
+					<td>INT4/INT8、GPTQ、AWQ 量化方案原理与实操</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E6%9C%8D%E5%8A%A1%E5%8C%96%E5%B0%81%E8%A3%85/">模型服务化封装</a></td>
+					<td>FastAPI、TorchServe、OpenAI 兼容接口的服务化实践</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/docker%E4%B8%8Ek8s%E9%83%A8%E7%BD%B2/">Docker 与 K8s 部署</a></td>
+					<td>从 Docker 单机到 Kubernetes 集群的模型部署实践</td>
+			</tr>
+	</tbody>
+</table>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>后端与 AI 工程</title>
+      <link>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/</guid>
+      <description>
+        <![CDATA[<h1>后端与 AI 工程</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="分类介绍">
+<a class="header-anchor" href="#%e5%88%86%e7%b1%bb%e4%bb%8b%e7%bb%8d"></a>
+分类介绍
+</h2><p>本分类聚焦 AI 应用的后端工程化实践，涵盖 Spring Boot + SpringAI 集成、API 健壮性设计、异步与事件驱动架构、配置与密钥安全管理。</p>
+<h3 id="文章列表">
+<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
+文章列表
+</h3><table>
+	<thead>
+			<tr>
+					<th>文章</th>
+					<th>简介</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/springai%E5%AE%8C%E6%95%B4%E9%9B%86%E6%88%90/">Spring Boot + SpringAI 完整集成</a></td>
+					<td>从项目搭建到模型调用、流式响应、Function Calling，完整实践 SpringAI 集成</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/api%E8%AE%BE%E8%AE%A1%E4%B8%8E%E9%99%90%E6%B5%81%E7%86%94%E6%96%AD/">API 设计与限流熔断</a></td>
+					<td>RESTful API 设计规范、限流策略、熔断降级、重试机制</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86%E4%B8%8E%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/">异步处理与消息队列</a></td>
+					<td>事件驱动架构、消息队列集成、异步任务编排</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E4%B8%8E%E5%AF%86%E9%92%A5%E5%AE%89%E5%85%A8/">配置管理与密钥安全</a></td>
+					<td>多环境配置隔离、密钥安全管理、配置中心实践</td>
+			</tr>
+	</tbody>
+</table>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>大语言模型技术专栏</title>
+      <link>https://dev.infiniteevo.online/post/llm/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/</guid>
+      <description>
+        <![CDATA[<h1>大语言模型技术专栏</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="专栏介绍">
+<a class="header-anchor" href="#%e4%b8%93%e6%a0%8f%e4%bb%8b%e7%bb%8d"></a>
+专栏介绍
+</h2><p>本专栏深入探讨大语言模型（Large Language Model, LLM）的核心技术与前沿进展，按面试与实战热点分为八大分类，帮助读者系统掌握大模型时代的技术能力。</p>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>大模型基础与原理</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/</link>
+      <pubDate>Fri, 19 Jun 2026 03:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/</guid>
+      <description>
+        <![CDATA[<h1>大模型基础与原理</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="分类介绍">
+<a class="header-anchor" href="#%e5%88%86%e7%b1%bb%e4%bb%8b%e7%bb%8d"></a>
+分类介绍
+</h2><p>本分类涵盖大语言模型的核心基础与原理，是面试和实际工作中的必备知识。</p>
+<h3 id="文章列表">
+<a class="header-anchor" href="#%e6%96%87%e7%ab%a0%e5%88%97%e8%a1%a8"></a>
+文章列表
+</h3><table>
+	<thead>
+			<tr>
+					<th>文章</th>
+					<th>简介</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/">大语言模型基础原理</a></td>
+					<td>从统计语言模型到 GPT 时代，全面梳理大语言模型的发展脉络与核心原理</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/">Transformer 架构深度解析</a></td>
+					<td>从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E5%85%A8%E6%B5%81%E7%A8%8B/">大模型训练全流程</a></td>
+					<td>从预训练到 SFT、DPO、RLHF、PPO，系统掌握大语言模型训练链路</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E6%8A%80%E6%9C%AF%E5%85%A8%E6%94%BB%E7%95%A5/">大模型微调技术全攻略</a></td>
+					<td>从全量微调到 LoRA、QLoRA，系统掌握大语言模型高效微调的核心技术</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F/">大模型知识蒸馏</a></td>
+					<td>从 logit 蒸馏到序列级蒸馏，系统掌握大语言模型知识蒸馏的核心方法</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/skill%E8%92%B8%E9%A6%8F%E4%B8%8E%E8%83%BD%E5%8A%9B%E8%90%83%E5%8F%96/">Skill 蒸馏与能力萃取</a></td>
+					<td>从能力识别到精准迁移，探索大语言模型特定能力的萃取与蒸馏方法</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E9%80%89%E5%9E%8B%E4%B8%8E%E5%AF%B9%E6%AF%94/">大模型选型与对比</a></td>
+					<td>GPT、Qwen、Llama、DeepSeek、GLM 等主流模型的差异与选型指南</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AA%97%E5%8F%A3%E4%B8%8E%E5%B9%BB%E8%A7%89%E7%BC%93%E8%A7%A3/">上下文窗口与幻觉缓解</a></td>
+					<td>Token 计算原理、上下文窗口优化与幻觉（Hallucination）缓解策略</td>
+			</tr>
+			<tr>
+					<td><a href="/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96%E4%B8%8E%E9%83%A8%E7%BD%B2/">大模型推理优化与部署</a></td>
+					<td>从量化压缩到推理引擎选型，全面掌握大语言模型推理加速与部署优化</td>
+			</tr>
+	</tbody>
+</table>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>人工智能</category>
+      
+    </item>
+    
+  </channel>
+</rss>

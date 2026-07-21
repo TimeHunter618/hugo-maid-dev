@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>搜索引擎 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/categories/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 06 Dec 2024 00:58:58 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/categories/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>Elasticsearch全文搜索引擎</title>
+      <link>https://dev.infiniteevo.online/post/middleware-ops/elasticsearch%E5%85%A8%E6%96%87%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</link>
+      <pubDate>Fri, 06 Dec 2024 00:58:58 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/middleware-ops/elasticsearch%E5%85%A8%E6%96%87%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/</guid>
+      <description>
+        <![CDATA[<h1>Elasticsearch全文搜索引擎</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2024-12-06首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-12-06</p>]]>
+      </description>
+      
+        <category>搜索引擎</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

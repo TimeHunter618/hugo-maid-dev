@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>消息队列 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Wed, 10 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>异步处理与消息队列</title>
+      <link>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86%E4%B8%8E%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/</link>
+      <pubDate>Wed, 10 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86%E4%B8%8E%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/</guid>
+      <description>
+        <![CDATA[<h1>异步处理与消息队列</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大模型应用中，&ldquo;慢&quot;是常态。一次文本生成可能耗时 5-30 秒，一次文档摘要可能需要 1 分钟，一次批量向量化可能持续数分钟。如果所有这些操作都在 HTTP 请求线程中同步执行，服务器线程池将在几秒内被耗尽，系统陷入瘫痪。</p>
+        
+        <hr><p>本文2026-06-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-10</p>]]>
+      </description>
+      
+        <category>后端与AI工程</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>Kafka高吞吐消息流处理</title>
+      <link>https://dev.infiniteevo.online/post/middleware-ops/kafka%E9%AB%98%E5%90%9E%E5%90%90%E6%B6%88%E6%81%AF%E6%B5%81%E5%A4%84%E7%90%86/</link>
+      <pubDate>Sat, 21 Feb 2026 11:21:06 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/middleware-ops/kafka%E9%AB%98%E5%90%9E%E5%90%90%E6%B6%88%E6%81%AF%E6%B5%81%E5%A4%84%E7%90%86/</guid>
+      <description>
+        <![CDATA[<h1>Kafka高吞吐消息流处理</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2026-02-21首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-02-21</p>]]>
+      </description>
+      
+        <category>消息队列</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>RabbitMQ消息队列详解</title>
+      <link>https://dev.infiniteevo.online/post/middleware-ops/rabbitmq%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Wed, 29 May 2024 07:22:08 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/middleware-ops/rabbitmq%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%A6%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>RabbitMQ消息队列详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2024-05-29首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-05-29</p>]]>
+      </description>
+      
+        <category>消息队列</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>Redis Stream消息队列与发布订阅实</title>
+      <link>https://dev.infiniteevo.online/post/middleware-ops/redisstream%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B8%8E%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Sat, 16 Dec 2023 00:46:36 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/middleware-ops/redisstream%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E4%B8%8E%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E5%AE%9E%E6%88%98/</guid>
+      <description>
+        <![CDATA[<h1>Redis Stream消息队列与发布订阅实</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2023-12-16首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-12-16</p>]]>
+      </description>
+      
+        <category>缓存中间</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

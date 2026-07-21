@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>RAG 全流程 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 19 Jun 2026 03:20:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>RAG 检索增强生成技术详解</title>
+      <link>https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3/</link>
+      <pubDate>Fri, 19 Jun 2026 03:20:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/2-rag%E5%85%A8%E6%B5%81%E7%A8%8B/rag%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90%E8%AF%A6%E8%A7%A3/</guid>
+      <description>
+        <![CDATA[<h1>RAG 检索增强生成技术详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）虽然展现出惊人的语言理解和生成能力，但也面临着一些固有的局限性：</p>
+<ol>
+<li><strong>知识时效性差</strong>：模型的知识截止于训练数据的时间点，无法获取最新信息</li>
+<li><strong>领域知识不足</strong>：在专业领域（如医疗、法律、企业内部）的知识往往不够深入</li>
+<li><strong>幻觉问题</strong>：模型可能会&quot;一本正经地胡说八道&quot;，生成看似合理但实际错误的内容</li>
+<li><strong>知识更新困难</strong>：通过微调更新知识成本高昂，且容易导致灾难性遗忘</li>
+</ol>
+<p>检索增强生成（Retrieval-Augmented Generation, RAG）为这些问题提供了一个优雅的解决方案。通过在生成过程中引入外部知识检索，RAG 让大模型能够&quot;查资料&quot;后再回答问题，从而大幅提升回答的准确性和时效性。</p>
+        
+        <hr><p>本文2026-06-19首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-19</p>]]>
+      </description>
+      
+        <category>RAG全流程</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

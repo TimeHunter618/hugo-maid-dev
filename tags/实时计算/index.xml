@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>实时计算 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E5%AE%9E%E6%97%B6%E8%AE%A1%E7%AE%97/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Wed, 12 May 2021 14:51:51 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E5%AE%9E%E6%97%B6%E8%AE%A1%E7%AE%97/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>Kafka Streams流处理实</title>
+      <link>https://dev.infiniteevo.online/post/middleware-ops/kafkastreams%E6%B5%81%E5%A4%84%E7%90%86%E5%AE%9E%E6%88%98/</link>
+      <pubDate>Wed, 12 May 2021 14:51:51 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/middleware-ops/kafkastreams%E6%B5%81%E5%A4%84%E7%90%86%E5%AE%9E%E6%88%98/</guid>
+      <description>
+        <![CDATA[<h1>Kafka Streams流处理实</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2021-05-12首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-05-12</p>]]>
+      </description>
+      
+        <category>消息队列</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

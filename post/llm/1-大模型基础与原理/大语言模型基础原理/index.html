@@ -1,0 +1,1196 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  大语言模型基础原理与发展历程 | Aries
+</title>
+<meta name="description" content="从统计语言模型到 GPT 时代，全面梳理大语言模型的发展脉络与核心原理"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="大语言模型基础原理与发展历程 | Aries" />
+  <meta
+    property="og:description"
+    content="从统计语言模型到 GPT 时代，全面梳理大语言模型的发展脉络与核心原理"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-06-19T03:05:00&#43;08:00" />
+  <meta property="article:modified_time" content="2026-06-19T03:05:00&#43;08:00" /><meta property="article:tag" content="大模型, LLM, 自然语言处理, GPT" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200" alt="大语言模型基础原理与发展历程"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">大语言模型基础原理与发展历程</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">从统计语言模型到 GPT 时代，全面梳理大语言模型的发展脉络与核心原理</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container sticky"><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#语言模型的定义与本质">语言模型的定义与本质</a>
+      <ul>
+        <li><a href="#什么是语言模型">什么是语言模型</a></li>
+        <li><a href="#语言模型的核心挑战">语言模型的核心挑战</a></li>
+      </ul>
+    </li>
+    <li><a href="#发展历程全景">发展历程全景</a>
+      <ul>
+        <li><a href="#萌芽期统计语言模型时代1980s-2017">萌芽期：统计语言模型时代（1980s-2017）</a></li>
+        <li><a href="#变革期transformer-的诞生2017">变革期：Transformer 的诞生（2017）</a></li>
+        <li><a href="#爆发期预训练语言模型时代2018-2020">爆发期：预训练语言模型时代（2018-2020）</a></li>
+        <li><a href="#新纪元大语言模型时代2022至今">新纪元：大语言模型时代（2022至今）</a></li>
+      </ul>
+    </li>
+    <li><a href="#大语言模型的核心技术原理">大语言模型的核心技术原理</a>
+      <ul>
+        <li><a href="#预训练pre-training">预训练（Pre-training）</a></li>
+        <li><a href="#缩放定律scaling-law">缩放定律（Scaling Law）</a></li>
+        <li><a href="#对齐alignment">对齐（Alignment）</a></li>
+      </ul>
+    </li>
+    <li><a href="#关键技术突破">关键技术突破</a>
+      <ul>
+        <li><a href="#位置编码的演进">位置编码的演进</a></li>
+        <li><a href="#注意力机制的优化">注意力机制的优化</a></li>
+        <li><a href="#训练技术创新">训练技术创新</a></li>
+      </ul>
+    </li>
+    <li><a href="#主流大语言模型概览">主流大语言模型概览</a></li>
+    <li><a href="#未来展望">未来展望</a>
+      <ul>
+        <li><a href="#技术发展方向">技术发展方向</a></li>
+        <li><a href="#应用场景拓展">应用场景拓展</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div><div class="sidebar-widget"></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-06-19 03:05:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2026-06-19</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-06-19</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg2.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg2.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（Large Language Model, LLM）正在深刻改变着人机交互的方式，推动着人工智能技术进入新的时代。从最初的统计语言模型到如今参数规模突破万亿的超大规模预训练模型，语言模型技术经历了数十年的演进与发展。本文将系统梳理大语言模型的发展历程，深入解析其核心技术原理，帮助读者建立对这一前沿技术的全面认知。</p>
+<h2 id="语言模型的定义与本质">
+<a class="header-anchor" href="#%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e5%ae%9a%e4%b9%89%e4%b8%8e%e6%9c%ac%e8%b4%a8"></a>
+语言模型的定义与本质
+</h2><h3 id="什么是语言模型">
+<a class="header-anchor" href="#%e4%bb%80%e4%b9%88%e6%98%af%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b"></a>
+什么是语言模型
+</h3><p>语言模型本质上是一个概率分布函数，用于计算一个句子或文本序列出现的概率。对于一个由 $n$ 个词组成的序列 $W = w_1, w_2, ..., w_n$，语言模型计算该序列的联合概率：</p>
+$$
+P(W) = P(w_1, w_2, ..., w_n)
+$$<p>根据链式法则，可以将其分解为：</p>
+$$
+P(W) = P(w_1)P(w_2|w_1)P(w_3|w_1w_2)...P(w_n|w_1w_2...w_{n-1})
+$$<h3 id="语言模型的核心挑战">
+<a class="header-anchor" href="#%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e6%a0%b8%e5%bf%83%e6%8c%91%e6%88%98"></a>
+语言模型的核心挑战
+</h3><p>语言建模面临的核心挑战在于<strong>维度灾难</strong>——随着上下文长度的增加，可能的词组合数量呈指数级增长，导致数据稀疏和计算不可行。如何有效地建模长距离依赖关系，始终是语言模型研究的核心课题。</p>
+<h2 id="发展历程全景">
+<a class="header-anchor" href="#%e5%8f%91%e5%b1%95%e5%8e%86%e7%a8%8b%e5%85%a8%e6%99%af"></a>
+发展历程全景
+</h2><h3 id="萌芽期统计语言模型时代1980s-2017">
+<a class="header-anchor" href="#%e8%90%8c%e8%8a%bd%e6%9c%9f%e7%bb%9f%e8%ae%a1%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e6%97%b6%e4%bb%a31980s-2017"></a>
+萌芽期：统计语言模型时代（1980s-2017）
+</h3><pre class="mermaid">
+  graph LR
+    A[N-gram模型] --> B[神经网络语言模型]
+    B --> C[RNN/LSTM]
+    C --> D[Transformer]
+    D --> E[预训练语言模型]
+    E --> F[大语言模型时代]
+</pre><h4 id="n-gram-模型">
+<a class="header-anchor" href="#n-gram-%e6%a8%a1%e5%9e%8b"></a>
+N-gram 模型
+</h4><p>N-gram 是最早的统计语言模型，基于马尔可夫假设，认为第 $n$ 个词的出现只与前面 $n-1$ 个词相关：</p>
+$$
+P(w_i|w_1^{i-1}) \approx P(w_i|w_{i-n+1}^{i-1})
+$$<p><strong>优点</strong>：简单直观，计算高效<br>
+<strong>缺点</strong>：无法建模长距离依赖，数据稀疏问题严重</p>
+<h4 id="神经网络语言模型nnlm">
+<a class="header-anchor" href="#%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8bnnlm"></a>
+神经网络语言模型（NNLM）
+</h4><p>2003年，Bengio 等人提出神经网络语言模型，通过词嵌入和前馈神经网络解决数据稀疏问题。模型将每个词映射为低维向量表示，大幅提升了模型的泛化能力。</p>
+<h4 id="rnnlstm-时代">
+<a class="header-anchor" href="#rnnlstm-%e6%97%b6%e4%bb%a3"></a>
+RNN/LSTM 时代
+</h4><p>循环神经网络（RNN）及其变体 LSTM、GRU 等通过循环连接理论上可以建模任意长度的序列依赖，成为序列建模的主流方法。然而，由于梯度消失问题，RNN 在实际应用中仍难以有效捕捉长距离依赖关系。</p>
+<h3 id="变革期transformer-的诞生2017">
+<a class="header-anchor" href="#%e5%8f%98%e9%9d%a9%e6%9c%9ftransformer-%e7%9a%84%e8%af%9e%e7%94%9f2017"></a>
+变革期：Transformer 的诞生（2017）
+</h3><p>2017年，Google 发表论文《Attention Is All You Need》，提出了 Transformer 架构，彻底改变了自然语言处理的发展轨迹。</p>
+<p>Transformer 的核心创新在于：</p>
+<ol>
+<li><strong>自注意力机制（Self-Attention）</strong>：允许序列中的每个位置直接关注其他所有位置，建模依赖关系不受距离限制</li>
+<li><strong>并行计算</strong>：与 RNN 的顺序计算不同，Transformer 可以并行处理整个序列，大幅提升训练效率</li>
+<li><strong>位置编码</strong>：通过位置编码保留序列的顺序信息</li>
+</ol>
+<h3 id="爆发期预训练语言模型时代2018-2020">
+<a class="header-anchor" href="#%e7%88%86%e5%8f%91%e6%9c%9f%e9%a2%84%e8%ae%ad%e7%bb%83%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e6%97%b6%e4%bb%a32018-2020"></a>
+爆发期：预训练语言模型时代（2018-2020）
+</h3><h4 id="gpt-系列">
+<a class="header-anchor" href="#gpt-%e7%b3%bb%e5%88%97"></a>
+GPT 系列
+</h4><p>OpenAI 于 2018 年提出 GPT（Generative Pre-trained Transformer），采用&quot;预训练+微调&quot;的两阶段范式：</p>
+<ul>
+<li><strong>GPT-1</strong>：1.17亿参数，验证了生成式预训练的有效性</li>
+<li><strong>GPT-2</strong>：15亿参数，展示了零样本学习能力</li>
+<li><strong>GPT-3</strong>：1750亿参数，展现了令人惊叹的少样本学习能力</li>
+</ul>
+<h4 id="bert-系列">
+<a class="header-anchor" href="#bert-%e7%b3%bb%e5%88%97"></a>
+BERT 系列
+</h4><p>Google 于 2018 年提出 BERT（Bidirectional Encoder Representations from Transformers），采用双向编码器架构，在多项 NLP 任务上取得了突破性成绩。</p>
+<h4 id="t5bart-等">
+<a class="header-anchor" href="#t5bart-%e7%ad%89"></a>
+T5、BART 等
+</h4><p>T5 提出统一的文本到文本框架，BART 结合了编码器和解码器的预训练策略，进一步丰富了预训练语言模型的技术路线。</p>
+<h3 id="新纪元大语言模型时代2022至今">
+<a class="header-anchor" href="#%e6%96%b0%e7%ba%aa%e5%85%83%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e6%97%b6%e4%bb%a32022%e8%87%b3%e4%bb%8a"></a>
+新纪元：大语言模型时代（2022至今）
+</h3><p>ChatGPT 的发布标志着大语言模型进入了新的发展阶段。模型能力实现了质的飞跃，涌现出诸多令人惊叹的能力：</p>
+<ul>
+<li><strong>涌现能力（Emergent Abilities）</strong>：当模型规模达到一定阈值后，突然获得某些之前不具备的能力</li>
+<li><strong>思维链（Chain of Thought）</strong>：模型可以通过逐步推理解决复杂问题</li>
+<li><strong>工具使用</strong>：模型能够调用外部工具扩展自身能力</li>
+<li><strong>多模态理解</strong>：从文本扩展到图像、音频等多种模态</li>
+</ul>
+<h2 id="大语言模型的核心技术原理">
+<a class="header-anchor" href="#%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e6%a0%b8%e5%bf%83%e6%8a%80%e6%9c%af%e5%8e%9f%e7%90%86"></a>
+大语言模型的核心技术原理
+</h2><h3 id="预训练pre-training">
+<a class="header-anchor" href="#%e9%a2%84%e8%ae%ad%e7%bb%83pre-training"></a>
+预训练（Pre-training）
+</h3><p>预训练是大语言模型能力的基础。模型在海量文本数据上通过自监督学习方式学习通用的语言表示。</p>
+<h4 id="自监督学习任务">
+<a class="header-anchor" href="#%e8%87%aa%e7%9b%91%e7%9d%a3%e5%ad%a6%e4%b9%a0%e4%bb%bb%e5%8a%a1"></a>
+自监督学习任务
+</h4><table>
+	<thead>
+			<tr>
+					<th>任务类型</th>
+					<th>代表模型</th>
+					<th>方法描述</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>因果语言建模</td>
+					<td>GPT系列</td>
+					<td>预测下一个词</td>
+			</tr>
+			<tr>
+					<td>掩码语言建模</td>
+					<td>BERT</td>
+					<td>预测被掩码的词</td>
+			</tr>
+			<tr>
+					<td>替换词检测</td>
+					<td>ELECTRA</td>
+					<td>判断词是否被替换</td>
+			</tr>
+			<tr>
+					<td>跨度边界目标</td>
+					<td>T5</td>
+					<td>填充被掩码的跨度</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="数据工程">
+<a class="header-anchor" href="#%e6%95%b0%e6%8d%ae%e5%b7%a5%e7%a8%8b"></a>
+数据工程
+</h4><p>数据是大模型的燃料。高质量的数据对于模型性能至关重要：</p>
+<ul>
+<li><strong>数据规模</strong>：从 GB 级到 PB 级</li>
+<li><strong>数据质量</strong>：需要经过清洗、去重、过滤等多道工序</li>
+<li><strong>数据多样性</strong>：涵盖网页、书籍、代码、对话等多种来源</li>
+</ul>
+<h3 id="缩放定律scaling-law">
+<a class="header-anchor" href="#%e7%bc%a9%e6%94%be%e5%ae%9a%e5%be%8bscaling-law"></a>
+缩放定律（Scaling Law）
+</h3><p>大语言模型的性能与模型规模、数据量、计算量之间存在着可预测的幂律关系：</p>
+$$
+L(N, D, C) = \left( \frac{N_c}{N} \right)^{\alpha_N} + \left( \frac{D_c}{D} \right)^{\alpha_D} + L_0
+$$<p>其中：</p>
+<ul>
+<li>$N$ 为模型参数数量</li>
+<li>$D$ 为训练数据量</li>
+<li>$C$ 为计算量</li>
+<li>$\alpha_N, \alpha_D$ 为缩放指数</li>
+</ul>
+<p>这一定律揭示了大模型发展的基本规律——只要不断增加模型规模和数据量，性能就会持续提升。</p>
+<h3 id="对齐alignment">
+<a class="header-anchor" href="#%e5%af%b9%e9%bd%90alignment"></a>
+对齐（Alignment）
+</h3><p>预训练模型虽然掌握了丰富的知识，但并不一定能按照人类的期望进行回答。对齐技术旨在使模型的输出符合人类的价值观和需求。</p>
+<h4 id="指令微调instruction-tuning">
+<a class="header-anchor" href="#%e6%8c%87%e4%bb%a4%e5%be%ae%e8%b0%83instruction-tuning"></a>
+指令微调（Instruction Tuning）
+</h4><p>通过在各种指令格式的数据上进行微调，使模型学会理解并遵循人类的指令。</p>
+<h4 id="基于人类反馈的强化学习rlhf">
+<a class="header-anchor" href="#%e5%9f%ba%e4%ba%8e%e4%ba%ba%e7%b1%bb%e5%8f%8d%e9%a6%88%e7%9a%84%e5%bc%ba%e5%8c%96%e5%ad%a6%e4%b9%a0rlhf"></a>
+基于人类反馈的强化学习（RLHF）
+</h4><pre class="mermaid">
+  sequenceDiagram
+    participant 人类标注者
+    participant 奖励模型
+    participant 大语言模型
+    
+    人类标注者->>大语言模型: 提供提示并对回答排序
+    大语言模型->>奖励模型: 生成多个回答样本
+    奖励模型-->>大语言模型: 学习人类偏好
+    大语言模型->>大语言模型: PPO 优化
+</pre><p>RLHF 的三个阶段：</p>
+<ol>
+<li><strong>监督微调（SFT）</strong>：使用高质量人工标注数据微调模型</li>
+<li><strong>奖励模型训练</strong>：训练一个模型学习人类的偏好</li>
+<li><strong>强化学习优化</strong>：使用 PPO 等算法以奖励模型为信号优化语言模型</li>
+</ol>
+<h2 id="关键技术突破">
+<a class="header-anchor" href="#%e5%85%b3%e9%94%ae%e6%8a%80%e6%9c%af%e7%aa%81%e7%a0%b4"></a>
+关键技术突破
+</h2><h3 id="位置编码的演进">
+<a class="header-anchor" href="#%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81%e7%9a%84%e6%bc%94%e8%bf%9b"></a>
+位置编码的演进
+</h3><ul>
+<li><strong>正弦位置编码</strong>：原始 Transformer 使用的固定位置编码</li>
+<li><strong>可学习位置编码</strong>：GPT 系列采用的方式</li>
+<li><strong>RoPE（旋转位置编码）</strong>：LLaMA 等模型采用，通过旋转实现相对位置编码</li>
+<li><strong>ALiBi</strong>：通过注意力偏置实现位置信息</li>
+</ul>
+<h3 id="注意力机制的优化">
+<a class="header-anchor" href="#%e6%b3%a8%e6%84%8f%e5%8a%9b%e6%9c%ba%e5%88%b6%e7%9a%84%e4%bc%98%e5%8c%96"></a>
+注意力机制的优化
+</h3><ul>
+<li><strong>稀疏注意力</strong>：如 Longformer、BigBird，降低计算复杂度</li>
+<li><strong>滑动窗口注意力</strong>：限制注意力的范围，提升长文本处理效率</li>
+<li><strong>FlashAttention</strong>：通过 IO 感知的算法大幅提升注意力计算速度</li>
+</ul>
+<h3 id="训练技术创新">
+<a class="header-anchor" href="#%e8%ae%ad%e7%bb%83%e6%8a%80%e6%9c%af%e5%88%9b%e6%96%b0"></a>
+训练技术创新
+</h3><ul>
+<li><strong>混合精度训练</strong>：使用 FP16/BF16 加速训练并节省显存</li>
+<li><strong>张量并行</strong>：将单个张量拆分到多个设备上</li>
+<li><strong>流水线并行</strong>：按层划分模型到不同设备</li>
+<li><strong>ZeRO 优化</strong>：零冗余优化器，减少显存占用</li>
+</ul>
+<h2 id="主流大语言模型概览">
+<a class="header-anchor" href="#%e4%b8%bb%e6%b5%81%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e6%a6%82%e8%a7%88"></a>
+主流大语言模型概览
+</h2><table>
+	<thead>
+			<tr>
+					<th>模型</th>
+					<th>发布方</th>
+					<th>参数规模</th>
+					<th>特点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>GPT-4</td>
+					<td>OpenAI</td>
+					<td>未公开</td>
+					<td>多模态，强大的推理能力</td>
+			</tr>
+			<tr>
+					<td>Claude</td>
+					<td>Anthropic</td>
+					<td>未公开</td>
+					<td>长上下文，安全对齐</td>
+			</tr>
+			<tr>
+					<td>LLaMA</td>
+					<td>Meta</td>
+					<td>7B-70B</td>
+					<td>开源，社区生态丰富</td>
+			</tr>
+			<tr>
+					<td>Qwen</td>
+					<td>阿里巴巴</td>
+					<td>0.5B-72B</td>
+					<td>开源，中英文能力均衡</td>
+			</tr>
+			<tr>
+					<td>DeepSeek</td>
+					<td>深度求索</td>
+					<td>7B-67B</td>
+					<td>开源，代码能力突出</td>
+			</tr>
+			<tr>
+					<td>Mistral</td>
+					<td>Mistral AI</td>
+					<td>7B-8x22B</td>
+					<td>开源，高效架构</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="未来展望">
+<a class="header-anchor" href="#%e6%9c%aa%e6%9d%a5%e5%b1%95%e6%9c%9b"></a>
+未来展望
+</h2><h3 id="技术发展方向">
+<a class="header-anchor" href="#%e6%8a%80%e6%9c%af%e5%8f%91%e5%b1%95%e6%96%b9%e5%90%91"></a>
+技术发展方向
+</h3><ol>
+<li><strong>多模态融合</strong>：文本、图像、音频、视频的统一建模</li>
+<li><strong>推理能力增强</strong>：从&quot;模仿&quot;走向&quot;思考&quot;</li>
+<li><strong>Agent 智能体</strong>：具备规划、执行、反思能力的自主智能体</li>
+<li><strong>小型化与高效化</strong>：在更小的模型上实现更强的能力</li>
+<li><strong>可解释性与可控性</strong>：理解模型内部机制，提升可控性</li>
+</ol>
+<h3 id="应用场景拓展">
+<a class="header-anchor" href="#%e5%ba%94%e7%94%a8%e5%9c%ba%e6%99%af%e6%8b%93%e5%b1%95"></a>
+应用场景拓展
+</h3><p>大语言模型正在渗透到各行各业：</p>
+<ul>
+<li><strong>软件开发</strong>：代码生成、测试、文档</li>
+<li><strong>教育领域</strong>：个性化辅导、智能批改</li>
+<li><strong>医疗健康</strong>：病历分析、医学问答</li>
+<li><strong>金融服务</strong>：风险评估、智能客服</li>
+<li><strong>创意创作</strong>：写作、设计、音乐</li>
+</ul>
+<h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>大语言模型的发展是人工智能领域最激动人心的技术突破之一。从统计语言模型到千亿参数的大模型，技术的演进不仅带来了能力的提升，更重塑了我们对人工智能的认知。</p>
+<p>然而，大模型技术仍处于快速发展阶段，还有诸多问题等待探索：如何实现更高效的训练？如何提升模型的推理能力？如何确保模型的安全性与可控性？这些问题既是挑战，也是机遇。</p>
+<p>站在大模型时代的起点，我们既是见证者，也是参与者。理解大语言模型的原理与发展，不仅是技术人员的必修课，也是每个希望把握时代脉搏的人的重要课题。</p>
+<hr>
+<p><strong>参考文献</strong>：</p>
+<ol>
+<li>Vaswani A, et al. Attention Is All You Need. NeurIPS 2017.</li>
+<li>Brown T B, et al. Language Models are Few-Shot Learners. NeurIPS 2020.</li>
+<li>Devlin J, et al. BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. NAACL 2019.</li>
+<li>Kaplan J, et al. Scaling Laws for Neural Language Models. 2020.</li>
+<li>Ouyang L, et al. Training language models to follow instructions with human feedback. NeurIPS 2022.</li>
+</ol>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/&amp;appkey=&amp;title=%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e5%9f%ba%e7%a1%80%e5%8e%9f%e7%90%86%e4%b8%8e%e5%8f%91%e5%b1%95%e5%8e%86%e7%a8%8b&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="大语言模型基础原理与发展历程">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/&amp;title=%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e5%9f%ba%e7%a1%80%e5%8e%9f%e7%90%86%e4%b8%8e%e5%8f%91%e5%b1%95%e5%8e%86%e7%a8%8b&amp;desc=%e4%bb%8e%e7%bb%9f%e8%ae%a1%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e5%88%b0%20GPT%20%e6%97%b6%e4%bb%a3%ef%bc%8c%e5%85%a8%e9%9d%a2%e6%a2%b3%e7%90%86%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e5%8f%91%e5%b1%95%e8%84%89%e7%bb%9c%e4%b8%8e%e6%a0%b8%e5%bf%83%e5%8e%9f%e7%90%86&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="大语言模型基础原理与发展历程">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="大语言模型基础原理与发展历程">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/&amp;text=%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e5%9f%ba%e7%a1%80%e5%8e%9f%e7%90%86%e4%b8%8e%e5%8f%91%e5%b1%95%e5%8e%86%e7%a8%8b&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="大语言模型基础原理与发展历程">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/" target="_blank" rel="noopener noreferrer" title="大语言模型基础原理与发展历程">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e5%a4%a7%e6%a8%a1%e5%9e%8b%e5%9f%ba%e7%a1%80%e4%b8%8e%e5%8e%9f%e7%90%86"
+      data-aos="zoom-in"
+      >大模型基础与原理</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%a4%a7%e6%a8%a1%e5%9e%8b"
+        rel="tag"
+        >大模型</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/llm"
+        rel="tag"
+        >LLM</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86"
+        rel="tag"
+        >自然语言处理</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/gpt"
+        rel="tag"
+        >GPT</a
+      >
+    </li></ul>
+</footer>
+  </div><nav
+    id="article-nav"
+    aria-label="Article navigation"
+    data-aos="fade-up"
+  ><div class="article-nav-link-wrap left"><img
+              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
+              data-sizes="auto"
+              alt="Transformer 架构深度解析"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/"
+          aria-label="前一篇:Transformer 架构深度解析"
+          title="前一篇:Transformer 架构深度解析"
+        ></a>
+        <div class="article-nav-caption">前一篇</div>
+        <h3 class="article-nav-title">Transformer 架构深度解析</h3>
+      </div></nav></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#语言模型的定义与本质">语言模型的定义与本质</a>
+      <ul>
+        <li><a href="#什么是语言模型">什么是语言模型</a></li>
+        <li><a href="#语言模型的核心挑战">语言模型的核心挑战</a></li>
+      </ul>
+    </li>
+    <li><a href="#发展历程全景">发展历程全景</a>
+      <ul>
+        <li><a href="#萌芽期统计语言模型时代1980s-2017">萌芽期：统计语言模型时代（1980s-2017）</a></li>
+        <li><a href="#变革期transformer-的诞生2017">变革期：Transformer 的诞生（2017）</a></li>
+        <li><a href="#爆发期预训练语言模型时代2018-2020">爆发期：预训练语言模型时代（2018-2020）</a></li>
+        <li><a href="#新纪元大语言模型时代2022至今">新纪元：大语言模型时代（2022至今）</a></li>
+      </ul>
+    </li>
+    <li><a href="#大语言模型的核心技术原理">大语言模型的核心技术原理</a>
+      <ul>
+        <li><a href="#预训练pre-training">预训练（Pre-training）</a></li>
+        <li><a href="#缩放定律scaling-law">缩放定律（Scaling Law）</a></li>
+        <li><a href="#对齐alignment">对齐（Alignment）</a></li>
+      </ul>
+    </li>
+    <li><a href="#关键技术突破">关键技术突破</a>
+      <ul>
+        <li><a href="#位置编码的演进">位置编码的演进</a></li>
+        <li><a href="#注意力机制的优化">注意力机制的优化</a></li>
+        <li><a href="#训练技术创新">训练技术创新</a></li>
+      </ul>
+    </li>
+    <li><a href="#主流大语言模型概览">主流大语言模型概览</a></li>
+    <li><a href="#未来展望">未来展望</a>
+      <ul>
+        <li><a href="#技术发展方向">技术发展方向</a></li>
+        <li><a href="#应用场景拓展">应用场景拓展</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "大语言模型基础原理与发展历程",
+          url: "https:\/\/dev.infiniteevo.online\/post\/llm\/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86\/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86\/",
+          description: "从统计语言模型到 GPT 时代，全面梳理大语言模型的发展脉络与核心原理",
+          cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
+        };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-MWNUH0WmtsYGhn2cbH6ELRCbf9LG3QDqCC&#43;gqPB3IBNO35xjZK3Ejb6oONRpDbPg" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/contrib/auto-render.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv&#43;fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script><script data-pjax>
+          var renderMath = () => {
+            if (!window.renderMathInElement) return;
+            window.renderMathInElement(_$("article"), {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+              ],
+            });
+          };
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderMath, { once: true });
+          } else {
+            renderMath();
+          }
+        </script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>

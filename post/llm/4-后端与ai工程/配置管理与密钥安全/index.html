@@ -1,0 +1,1927 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  配置管理与密钥安全 | Aries
+</title>
+<meta name="description" content="多环境配置隔离、密钥安全管理、配置中心实践——AI 应用的配置工程化"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="配置管理与密钥安全 | Aries" />
+  <meta
+    property="og:description"
+    content="多环境配置隔离、密钥安全管理、配置中心实践——AI 应用的配置工程化"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E4%B8%8E%E5%AF%86%E9%92%A5%E5%AE%89%E5%85%A8/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-06-15T10:00:00&#43;08:00" />
+  <meta property="article:modified_time" content="2026-06-15T10:00:00&#43;08:00" /><meta property="article:tag" content="大模型, 配置管理, 密钥安全, 后端工程" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200" alt="配置管理与密钥安全"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">配置管理与密钥安全</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">多环境配置隔离、密钥安全管理、配置中心实践——AI 应用的配置工程化</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container sticky"><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#多环境配置">多环境配置</a>
+      <ul>
+        <li><a href="#环境分层">环境分层</a></li>
+        <li><a href="#spring-profiles">Spring Profiles</a></li>
+        <li><a href="#配置优先级">配置优先级</a></li>
+      </ul>
+    </li>
+    <li><a href="#密钥安全管理">密钥安全管理</a>
+      <ul>
+        <li><a href="#密钥泄露的常见途径">密钥泄露的常见途径</a></li>
+        <li><a href="#第一道防线gitignore">第一道防线：.gitignore</a></li>
+        <li><a href="#第二道防线环境变量注入">第二道防线：环境变量注入</a></li>
+        <li><a href="#第三道防线密钥管理服务">第三道防线：密钥管理服务</a></li>
+        <li><a href="#密钥管理方案对比">密钥管理方案对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#配置中心">配置中心</a>
+      <ul>
+        <li><a href="#为什么需要配置中心">为什么需要配置中心</a></li>
+        <li><a href="#spring-cloud-config">Spring Cloud Config</a></li>
+        <li><a href="#nacos-配置中心">Nacos 配置中心</a></li>
+        <li><a href="#配置中心选型对比">配置中心选型对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#加密配置">加密配置</a>
+      <ul>
+        <li><a href="#对称加密">对称加密</a></li>
+        <li><a href="#非对称加密">非对称加密</a></li>
+      </ul>
+    </li>
+    <li><a href="#密钥轮换">密钥轮换</a>
+      <ul>
+        <li><a href="#为什么需要轮换">为什么需要轮换</a></li>
+        <li><a href="#轮换策略">轮换策略</a></li>
+      </ul>
+    </li>
+    <li><a href="#审计日志">审计日志</a>
+      <ul>
+        <li><a href="#密钥访问审计">密钥访问审计</a></li>
+        <li><a href="#审计日志查询">审计日志查询</a></li>
+      </ul>
+    </li>
+    <li><a href="#gitignore-与-git-hooks-防护">.gitignore 与 Git Hooks 防护</a>
+      <ul>
+        <li><a href="#预提交扫描">预提交扫描</a></li>
+        <li><a href="#常见密钥模式">常见密钥模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#最佳实践清单">最佳实践清单</a>
+      <ul>
+        <li><a href="#密钥安全检查清单">密钥安全检查清单</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+    <li><a href="#参考文献">参考文献</a></li>
+  </ul>
+</nav>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div><div class="sidebar-widget"></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-06-15 10:00:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2026-06-15</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-06-15</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg4.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg4.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在 AI 应用的所有工程实践中，配置管理与密钥安全往往是&quot;最容易被忽视、却最容易引发灾难&quot;的环节。一个泄露到 GitHub 的 OpenAI API Key，可能在几分钟内被脚本自动扫描到，并在数小时内消耗掉数千美元的配额。一个写死在代码里的数据库密码，会让一次代码泄露演变成全量数据泄露。</p>
+<pre class="mermaid">
+  graph TD
+    A[配置安全风险] --> B[密钥硬编码]
+    A --> C[多环境混淆]
+    A --> D[密钥不轮换]
+    A --> E[无审计追踪]
+
+    B --> F[代码泄露 = 密钥泄露]
+    C --> G[测试数据进生产]
+    D --> H[长期泄露无法发现]
+    E --> I[事故无法追溯]
+</pre><p>本文将系统讲解 AI 应用的配置工程化：多环境配置隔离、密钥安全管理、配置中心实践，以及密钥轮换与审计的最佳实践。</p>
+<h2 id="多环境配置">
+<a class="header-anchor" href="#%e5%a4%9a%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae"></a>
+多环境配置
+</h2><h3 id="环境分层">
+<a class="header-anchor" href="#%e7%8e%af%e5%a2%83%e5%88%86%e5%b1%82"></a>
+环境分层
+</h3><p>AI 应用通常需要至少三套环境，每套环境的模型、数据和密钥完全隔离：</p>
+<table>
+	<thead>
+			<tr>
+					<th>环境</th>
+					<th>用途</th>
+					<th>模型</th>
+					<th>数据</th>
+					<th>密钥</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>dev</strong></td>
+					<td>本地开发</td>
+					<td>小模型 / Mock</td>
+					<td>测试数据</td>
+					<td>开发专用 Key</td>
+			</tr>
+			<tr>
+					<td><strong>staging</strong></td>
+					<td>预发布验证</td>
+					<td>真实模型（低配额）</td>
+					<td>脱敏数据</td>
+					<td>预发布 Key</td>
+			</tr>
+			<tr>
+					<td><strong>prod</strong></td>
+					<td>生产运行</td>
+					<td>生产模型</td>
+					<td>真实数据</td>
+					<td>生产 Key（最高权限）</td>
+			</tr>
+	</tbody>
+</table>
+<blockquote>
+<p><strong>关键原则</strong>：绝不共享密钥。dev 环境的 Key 不应有权访问生产数据，prod 环境的 Key 绝不出现在开发机器上。</p>
+</blockquote>
+<h3 id="spring-profiles">
+<a class="header-anchor" href="#spring-profiles"></a>
+Spring Profiles
+</h3><p>Spring Boot 通过 Profile 机制实现多环境配置隔离：</p>
+<pre class="mermaid">
+  graph TD
+    A[application.yml<br/>通用配置] --> B{激活的 Profile}
+    B --> C[application-dev.yml]
+    B --> D[application-staging.yml]
+    B --> E[application-prod.yml]
+    C --> F[开发环境生效]
+    D --> G[预发布生效]
+    E --> H[生产生效]
+</pre><h4 id="基础配置所有环境共享">
+<a class="header-anchor" href="#%e5%9f%ba%e7%a1%80%e9%85%8d%e7%bd%ae%e6%89%80%e6%9c%89%e7%8e%af%e5%a2%83%e5%85%b1%e4%ba%ab"></a>
+基础配置（所有环境共享）
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># application.yml — 通用配置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">application</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ai-service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">jpa</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">open-in-view</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">jackson</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">default-property-inclusion</span><span class="p">:</span><span class="w"> </span><span class="l">non_null</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">server</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">8080</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c"># AI 通用配置（不含密钥）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">ai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">models</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">primary</span><span class="p">:</span><span class="w"> </span><span class="l">${AI_PRIMARY_MODEL:gpt-4o}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">fallback</span><span class="p">:</span><span class="w"> </span><span class="l">${AI_FALLBACK_MODEL:gpt-4o-mini}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">retry</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">max-attempts</span><span class="p">:</span><span class="w"> </span><span class="m">3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">backoff-initial</span><span class="p">:</span><span class="w"> </span><span class="m">1000</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">backoff-max</span><span class="p">:</span><span class="w"> </span><span class="m">30000</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">rate-limit</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span></code></pre></div><h4 id="环境特定配置">
+<a class="header-anchor" href="#%e7%8e%af%e5%a2%83%e7%89%b9%e5%ae%9a%e9%85%8d%e7%bd%ae"></a>
+环境特定配置
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># application-dev.yml — 开发环境</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">openai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">api-key</span><span class="p">:</span><span class="w"> </span><span class="l">${OPENAI_DEV_KEY}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">base-url</span><span class="p">:</span><span class="w"> </span><span class="l">https://api.openai.com</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">chat</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">options</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l">gpt-4o-mini   </span><span class="w"> </span><span class="c"># 开发用小模型省钱</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="m">0.9</span><span class="w">      </span><span class="c"># 开发环境可以更随机</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">datasource</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l">jdbc:postgresql://localhost:5432/ai_dev</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l">dev_user</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l">${DB_DEV_PASSWORD}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">logging</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">level</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">org.springframework.ai</span><span class="p">:</span><span class="w"> </span><span class="l">DEBUG</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">com.example.aiapp</span><span class="p">:</span><span class="w"> </span><span class="l">DEBUG</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c"># 开发环境关闭限流，方便调试</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">ai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">rate-limit</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># application-staging.yml — 预发布环境</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">openai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">api-key</span><span class="p">:</span><span class="w"> </span><span class="l">${OPENAI_STAGING_KEY}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">chat</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">options</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l">gpt-4o</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="m">0.7</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">datasource</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l">jdbc:postgresql://staging-db:5432/ai_staging</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l">${DB_STAGING_USER}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l">${DB_STAGING_PASSWORD}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">logging</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">level</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">org.springframework.ai</span><span class="p">:</span><span class="w"> </span><span class="l">INFO</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">ai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">rate-limit</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">rpm</span><span class="p">:</span><span class="w"> </span><span class="m">50</span><span class="w">    </span><span class="c"># 预发布限流较宽松</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># application-prod.yml — 生产环境</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">openai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">api-key</span><span class="p">:</span><span class="w"> </span><span class="l">${OPENAI_PROD_KEY}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">chat</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">options</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l">gpt-4o</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="m">0.3</span><span class="w">    </span><span class="c"># 生产环境偏确定性</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">max-tokens</span><span class="p">:</span><span class="w"> </span><span class="m">2048</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">datasource</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l">jdbc:postgresql://prod-db-cluster:5432/ai_prod</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l">${DB_PROD_USER}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l">${DB_PROD_PASSWORD}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">logging</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">level</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">root</span><span class="p">:</span><span class="w"> </span><span class="l">WARN</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">com.example.aiapp</span><span class="p">:</span><span class="w"> </span><span class="l">INFO</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="c"># 生产环境不记录敏感信息</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">ai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">rate-limit</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">rpm</span><span class="p">:</span><span class="w"> </span><span class="m">500</span><span class="w">
+</span></span></span></code></pre></div><h4 id="激活-profile">
+<a class="header-anchor" href="#%e6%bf%80%e6%b4%bb-profile"></a>
+激活 Profile
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 方式 1: 命令行参数</span>
+</span></span><span class="line"><span class="cl">java -jar ai-service.jar --spring.profiles.active<span class="o">=</span>prod
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 方式 2: 环境变量（推荐）</span>
+</span></span><span class="line"><span class="cl"><span class="nb">export</span> <span class="nv">SPRING_PROFILES_ACTIVE</span><span class="o">=</span>prod
+</span></span><span class="line"><span class="cl">java -jar ai-service.jar
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 方式 3: Docker</span>
+</span></span><span class="line"><span class="cl">docker run -e <span class="nv">SPRING_PROFILES_ACTIVE</span><span class="o">=</span>prod ai-service:latest
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># docker-compose.yml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ai-service</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l">ai-service:latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">SPRING_PROFILES_ACTIVE=prod</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">OPENAI_PROD_KEY=${OPENAI_PROD_KEY} </span><span class="w"> </span><span class="c"># 从 .env 读取</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="l">DB_PROD_PASSWORD=${DB_PROD_PASSWORD}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s2">&#34;8080:8080&#34;</span><span class="w">
+</span></span></span></code></pre></div><h3 id="配置优先级">
+<a class="header-anchor" href="#%e9%85%8d%e7%bd%ae%e4%bc%98%e5%85%88%e7%ba%a7"></a>
+配置优先级
+</h3><p>Spring Boot 的配置按以下优先级从高到低覆盖（高优先级覆盖低优先级）：</p>
+<pre class="mermaid">
+  graph TD
+    A[命令行参数<br/>--key=value] --> |最高| B[环境变量<br/>SPRING_*
+    B --> C[application-{profile}.yml]
+    C --> D[application.yml]
+    D --> |最低| E[代码默认值]
+</pre><blockquote>
+<p><strong>实践建议</strong>：密钥永远通过环境变量注入（最高优先级），永远不写进 yml 文件。</p>
+</blockquote>
+<h2 id="密钥安全管理">
+<a class="header-anchor" href="#%e5%af%86%e9%92%a5%e5%ae%89%e5%85%a8%e7%ae%a1%e7%90%86"></a>
+密钥安全管理
+</h2><h3 id="密钥泄露的常见途径">
+<a class="header-anchor" href="#%e5%af%86%e9%92%a5%e6%b3%84%e9%9c%b2%e7%9a%84%e5%b8%b8%e8%a7%81%e9%80%94%e5%be%84"></a>
+密钥泄露的常见途径
+</h3><pre class="mermaid">
+  graph TD
+    A[密钥泄露途径] --> B[代码提交到 Git]
+    A --> C[日志打印密钥]
+    A --> D[Docker 镜像层]
+    A --> E[配置文件打包进 JAR]
+    A --> F[异常堆栈暴露]
+
+    B --> B1[GitHub 自动扫描]
+    B --> B2[公开仓库爬虫]
+</pre><h3 id="第一道防线gitignore">
+<a class="header-anchor" href="#%e7%ac%ac%e4%b8%80%e9%81%93%e9%98%b2%e7%ba%bfgitignore"></a>
+第一道防线：.gitignore
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># .gitignore
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># === 密钥与证书 ===
+</span></span><span class="line"><span class="cl">*.pem
+</span></span><span class="line"><span class="cl">*.key
+</span></span><span class="line"><span class="cl">*.p12
+</span></span><span class="line"><span class="cl">*.jks
+</span></span><span class="line"><span class="cl">.env
+</span></span><span class="line"><span class="cl">.env.*
+</span></span><span class="line"><span class="cl">!.env.example        # 允许提交模板，但不提交真实值
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># === IDE 配置 ===
+</span></span><span class="line"><span class="cl">.idea/
+</span></span><span class="line"><span class="cl">*.iml
+</span></span><span class="line"><span class="cl">.vscode/
+</span></span><span class="line"><span class="cl">settings.xml         # Maven settings 可能含密码
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># === 日志 ===
+</span></span><span class="line"><span class="cl">*.log
+</span></span><span class="line"><span class="cl">logs/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># === 构建产物 ===
+</span></span><span class="line"><span class="cl">target/
+</span></span><span class="line"><span class="cl">build/
+</span></span><span class="line"><span class="cl">*.jar
+</span></span><span class="line"><span class="cl">!gradle-wrapper.jar
+</span></span></code></pre></div><h3 id="第二道防线环境变量注入">
+<a class="header-anchor" href="#%e7%ac%ac%e4%ba%8c%e9%81%93%e9%98%b2%e7%ba%bf%e7%8e%af%e5%a2%83%e5%8f%98%e9%87%8f%e6%b3%a8%e5%85%a5"></a>
+第二道防线：环境变量注入
+</h3><p>密钥通过环境变量注入，代码中用 <code>${}</code> 占位符引用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># application.yml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">openai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">api-key</span><span class="p">:</span><span class="w"> </span><span class="l">${OPENAI_API_KEY}   </span><span class="w"> </span><span class="c"># 从环境变量读取</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">datasource</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l">${DB_PASSWORD}       </span><span class="w"> </span><span class="c"># 从环境变量读取</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="c1">// 或者通过 @Value 注解</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Value</span><span class="p">(</span><span class="s">&#34;${spring.ai.openai.api-key}&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">apiKey</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="c1">// 通过 @ConfigurationProperties 批量绑定（推荐）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@ConfigurationProperties</span><span class="p">(</span><span class="n">prefix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;ai.providers&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">AiProviderConfig</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">openaiKey</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">anthropicKey</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">String</span><span class="w"> </span><span class="n">dashscopeKey</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">)</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="第三道防线密钥管理服务">
+<a class="header-anchor" href="#%e7%ac%ac%e4%b8%89%e9%81%93%e9%98%b2%e7%ba%bf%e5%af%86%e9%92%a5%e7%ae%a1%e7%90%86%e6%9c%8d%e5%8a%a1"></a>
+第三道防线：密钥管理服务
+</h3><p>对于企业级应用，环境变量仍然不够安全（进程环境变量可被 <code>/proc/PID/environ</code> 读取）。生产环境应使用专业的密钥管理服务：</p>
+<pre class="mermaid">
+  graph LR
+    A[应用启动] --> B[从 Vault 获取密钥]
+    B --> C[注入到 Spring 上下文]
+    C --> D[应用使用密钥]
+    D --> E[密钥轮换]
+    E --> B
+
+    F[Vault Server] --> B
+    G[审计日志] -.-> B
+</pre><h4 id="hashicorp-vault-集成">
+<a class="header-anchor" href="#hashicorp-vault-%e9%9b%86%e6%88%90"></a>
+HashiCorp Vault 集成
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.vault.authentication.TokenAuthentication</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.vault.client.VaultEndpoint</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.vault.core.VaultTemplate</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.context.annotation.Bean</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.context.annotation.Configuration</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Configuration</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">VaultConfig</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Bean</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">VaultTemplate</span><span class="w"> </span><span class="nf">vaultTemplate</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">VaultEndpoint</span><span class="w"> </span><span class="n">endpoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">VaultEndpoint</span><span class="p">.</span><span class="na">create</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">endpoint</span><span class="p">.</span><span class="na">setHost</span><span class="p">(</span><span class="s">&#34;vault.internal.company.com&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">endpoint</span><span class="p">.</span><span class="na">setPort</span><span class="p">(</span><span class="n">8200</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">endpoint</span><span class="p">.</span><span class="na">setScheme</span><span class="p">(</span><span class="s">&#34;https&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 使用 Kubernetes Service Account Token 认证</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">vaultToken</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">System</span><span class="p">.</span><span class="na">getenv</span><span class="p">(</span><span class="s">&#34;VAULT_TOKEN&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VaultTemplate</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">TokenAuthentication</span><span class="p">(</span><span class="n">vaultToken</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">VaultSecretService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">VaultTemplate</span><span class="w"> </span><span class="n">vaultTemplate</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 从 Vault 读取密钥
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getSecret</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">vaultTemplate</span><span class="p">.</span><span class="na">opsForVersionedKeyValue</span><span class="p">(</span><span class="s">&#34;secret&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">getData</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&#34;value&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">toString</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 安全地获取 OpenAI API Key
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">getOpenAiKey</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 从 Vault 的 ai/openai 路径读取</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vaultTemplate</span><span class="p">.</span><span class="na">opsForVersionedKeyValue</span><span class="p">(</span><span class="s">&#34;secret&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&#34;ai/openai&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">getData</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">response</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&#34;api-key&#34;</span><span class="p">).</span><span class="na">toString</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 写入新密钥（用于密钥轮换）
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">rotateKey</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">newKey</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="o">&gt;</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Map</span><span class="p">.</span><span class="na">of</span><span class="p">(</span><span class="s">&#34;value&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">newKey</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">vaultTemplate</span><span class="p">.</span><span class="na">opsForVersionedKeyValue</span><span class="p">(</span><span class="s">&#34;secret&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="n">data</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&#34;密钥已轮换: {}&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">path</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h4 id="动态密钥">
+<a class="header-anchor" href="#%e5%8a%a8%e6%80%81%e5%af%86%e9%92%a5"></a>
+动态密钥
+</h4><p>Vault 支持<strong>动态密钥</strong>（Dynamic Secrets），每次申请生成临时凭据，用完即弃：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm"> * 获取临时数据库凭据（动态生成，有效期 1 小时）
+</span></span></span><span class="line"><span class="cl"><span class="cm"> */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="n">DatabaseCredentials</span><span class="w"> </span><span class="nf">getTempDbCredentials</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="p">,</span><span class="w"> </span><span class="n">Object</span><span class="o">&gt;</span><span class="w"> </span><span class="n">response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vaultTemplate</span><span class="p">.</span><span class="na">opsForVersionedKeyValue</span><span class="p">(</span><span class="s">&#34;database&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">read</span><span class="p">(</span><span class="s">&#34;creds/ai-app-role&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="p">.</span><span class="na">getData</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">DatabaseCredentials</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">response</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&#34;username&#34;</span><span class="p">).</span><span class="na">toString</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">response</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="s">&#34;password&#34;</span><span class="p">).</span><span class="na">toString</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="密钥管理方案对比">
+<a class="header-anchor" href="#%e5%af%86%e9%92%a5%e7%ae%a1%e7%90%86%e6%96%b9%e6%a1%88%e5%af%b9%e6%af%94"></a>
+密钥管理方案对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>方案</th>
+					<th>安全等级</th>
+					<th>复杂度</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>硬编码</strong></td>
+					<td>❌ 极低</td>
+					<td>最低</td>
+					<td>绝对禁止</td>
+			</tr>
+			<tr>
+					<td><strong>环境变量</strong></td>
+					<td>⭐⭐ 中</td>
+					<td>低</td>
+					<td>开发、小项目</td>
+			</tr>
+			<tr>
+					<td><strong>.env 文件 + gitignore</strong></td>
+					<td>⭐⭐ 中</td>
+					<td>低</td>
+					<td>本地开发</td>
+			</tr>
+			<tr>
+					<td><strong>Spring Cloud Config 加密</strong></td>
+					<td>⭐⭐⭐ 较高</td>
+					<td>中</td>
+					<td>中型项目</td>
+			</tr>
+			<tr>
+					<td><strong>HashiCorp Vault</strong></td>
+					<td>⭐⭐⭐⭐ 高</td>
+					<td>高</td>
+					<td>企业级生产</td>
+			</tr>
+			<tr>
+					<td><strong>AWS Secrets Manager</strong></td>
+					<td>⭐⭐⭐⭐ 高</td>
+					<td>中</td>
+					<td>AWS 生态</td>
+			</tr>
+			<tr>
+					<td><strong>Kubernetes Secrets</strong></td>
+					<td>⭐⭐⭐ 较高</td>
+					<td>中</td>
+					<td>K8s 环境</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="配置中心">
+<a class="header-anchor" href="#%e9%85%8d%e7%bd%ae%e4%b8%ad%e5%bf%83"></a>
+配置中心
+</h2><h3 id="为什么需要配置中心">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e9%85%8d%e7%bd%ae%e4%b8%ad%e5%bf%83"></a>
+为什么需要配置中心
+</h3><p>当微服务数量增多时，本地配置文件的管理变得困难：</p>
+<table>
+	<thead>
+			<tr>
+					<th>痛点</th>
+					<th>本地配置的问题</th>
+					<th>配置中心的解决</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>修改需重启</strong></td>
+					<td>改配置要重新打包部署</td>
+					<td>热更新，无需重启</td>
+			</tr>
+			<tr>
+					<td><strong>多节点同步</strong></td>
+					<td>N 个节点要逐一修改</td>
+					<td>中心化，一处修改处处生效</td>
+			</tr>
+			<tr>
+					<td><strong>版本回滚</strong></td>
+					<td>靠 Git 回滚 + 重新部署</td>
+					<td>配置中心自带版本历史</td>
+			</tr>
+			<tr>
+					<td><strong>灰度发布</strong></td>
+					<td>难以按节点区分配置</td>
+					<td>按环境/集群/标签推送</td>
+			</tr>
+	</tbody>
+</table>
+<pre class="mermaid">
+  graph TD
+    subgraph 配置中心方案
+        CC[配置中心<br/>Nacos / Config Server] --> P[推送配置变更]
+        CC --> A1[服务 A]
+        CC --> A2[服务 B]
+        CC --> A3[服务 C]
+        P --> A1
+        P --> A2
+        P --> A3
+        A1 --> L[本地缓存配置]
+        A2 --> L
+        A3 --> L
+    end
+</pre><h3 id="spring-cloud-config">
+<a class="header-anchor" href="#spring-cloud-config"></a>
+Spring Cloud Config
+</h3><p>Spring Cloud Config 是 Spring 官方的配置中心方案：</p>
+<pre class="mermaid">
+  graph LR
+    subgraph Git 仓库
+        G[配置文件仓库]
+    end
+
+    CS[Config Server] --> G
+    A1[应用 A] --> CS
+    A2[应用 B] --> CS
+    A3[应用 C] --> CS
+</pre><h4 id="config-server">
+<a class="header-anchor" href="#config-server"></a>
+Config Server
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.SpringApplication</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.boot.autoconfigure.SpringBootApplication</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.cloud.config.server.EnableConfigServer</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@SpringBootApplication</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@EnableConfigServer</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ConfigServerApplication</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">SpringApplication</span><span class="p">.</span><span class="na">run</span><span class="p">(</span><span class="n">ConfigServerApplication</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># Config Server 的 application.yml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">server</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">8888</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">config</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">server</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">git</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">https://github.com/company/ai-config-repo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">username</span><span class="p">:</span><span class="w"> </span><span class="l">${GIT_USER}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l">${GIT_TOKEN}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="c"># 加密配置</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">encrypt</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span></code></pre></div><h4 id="config-client">
+<a class="header-anchor" href="#config-client"></a>
+Config Client
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># 应用端 bootstrap.yml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">config</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l">http://config-server:8888</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">ai-service         </span><span class="w"> </span><span class="c"># 对应配置文件名</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">profile</span><span class="p">:</span><span class="w"> </span><span class="l">${SPRING_PROFILES_ACTIVE:dev}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l">main              </span><span class="w"> </span><span class="c"># Git 分支</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># 启动时必须连上配置中心，否则启动失败</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">fail-fast</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">retry</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">max-attempts</span><span class="p">:</span><span class="w"> </span><span class="m">6</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">initial-interval</span><span class="p">:</span><span class="w"> </span><span class="m">1000</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">max-interval</span><span class="p">:</span><span class="w"> </span><span class="m">3000</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">multiplier</span><span class="p">:</span><span class="w"> </span><span class="m">1.2</span><span class="w">
+</span></span></span></code></pre></div><h4 id="配置热刷新">
+<a class="header-anchor" href="#%e9%85%8d%e7%bd%ae%e7%83%ad%e5%88%b7%e6%96%b0"></a>
+配置热刷新
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.cloud.context.config.annotation.RefreshScope</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Service</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@RefreshScope</span><span class="w">    </span><span class="c1">// 配置变更时自动刷新</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ChatService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Value</span><span class="p">(</span><span class="s">&#34;${ai.models.primary}&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">primaryModel</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Value</span><span class="p">(</span><span class="s">&#34;${ai.rate-limit.rpm:100}&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">rateLimit</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 当配置中心推送变更时，这些字段自动更新</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>触发刷新（通过 Actuator 端点）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -X POST http://ai-service:8080/actuator/refresh
+</span></span></code></pre></div><p>结合 Spring Cloud Bus + RabbitMQ/Kafka，可以实现<strong>集群广播刷新</strong>：</p>
+<pre class="mermaid">
+  sequenceDiagram
+    participant O as 运维
+    participant CS as Config Server
+    participant Bus as Bus (RabbitMQ)
+    participant A1 as 应用 A
+    participant A2 as 应用 B
+
+    O->>CS: 修改配置并推送
+    O->>CS: POST /actuator/busrefresh
+    CS->>Bus: 发送刷新消息
+    Bus->>A1: 广播刷新事件
+    Bus->>A2: 广播刷新事件
+    A1->>CS: 拉取最新配置
+    A2->>CS: 拉取最新配置
+</pre><h3 id="nacos-配置中心">
+<a class="header-anchor" href="#nacos-%e9%85%8d%e7%bd%ae%e4%b8%ad%e5%bf%83"></a>
+Nacos 配置中心
+</h3><p>Nacos（阿里开源）集服务发现和配置中心于一体，在国内使用广泛：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># application.yml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">cloud</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">nacos</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">config</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">server-addr</span><span class="p">:</span><span class="w"> </span><span class="l">nacos:8848</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l">${NAMESPACE:dev}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="l">AI_GROUP</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">file-extension</span><span class="p">:</span><span class="w"> </span><span class="l">yaml</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c"># 开启动态刷新</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">refresh-enabled</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">com.alibaba.cloud.nacos.annotation.NacosConfigListener</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.cloud.context.config.annotation.RefreshScope</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@RefreshScope</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ModelConfigService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 监听特定配置变更
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@NacosConfigListener</span><span class="p">(</span><span class="n">dataId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;ai-service.yaml&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">groupId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;AI_GROUP&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onConfigChange</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">config</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&#34;检测到配置变更，重新加载模型配置&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">reloadModelConfig</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">reloadModelConfig</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 重新初始化 ChatClient 等</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="配置中心选型对比">
+<a class="header-anchor" href="#%e9%85%8d%e7%bd%ae%e4%b8%ad%e5%bf%83%e9%80%89%e5%9e%8b%e5%af%b9%e6%af%94"></a>
+配置中心选型对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>Spring Cloud Config</th>
+					<th>Nacos</th>
+					<th>Apollo</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>存储</strong></td>
+					<td>Git 仓库</td>
+					<td>内置数据库</td>
+					<td>MySQL</td>
+			</tr>
+			<tr>
+					<td><strong>实时推送</strong></td>
+					<td>需 Bus + MQ</td>
+					<td>原生支持</td>
+					<td>原生支持</td>
+			</tr>
+			<tr>
+					<td><strong>多环境</strong></td>
+					<td>Profile + 分支</td>
+					<td>Namespace</td>
+					<td>Environment</td>
+			</tr>
+			<tr>
+					<td><strong>灰度发布</strong></td>
+					<td>不支持</td>
+					<td>支持</td>
+					<td>支持</td>
+			</tr>
+			<tr>
+					<td><strong>管理界面</strong></td>
+					<td>无</td>
+					<td>自带</td>
+					<td>自带</td>
+			</tr>
+			<tr>
+					<td><strong>适用场景</strong></td>
+					<td>Spring 生态纯度高</td>
+					<td>国内微服务</td>
+					<td>大型企业</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="加密配置">
+<a class="header-anchor" href="#%e5%8a%a0%e5%af%86%e9%85%8d%e7%bd%ae"></a>
+加密配置
+</h2><h3 id="对称加密">
+<a class="header-anchor" href="#%e5%af%b9%e7%a7%b0%e5%8a%a0%e5%af%86"></a>
+对称加密
+</h3><p>对于不便使用 Vault 的小型项目，Spring Cloud Config 提供了对配置值加密的能力：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 加密明文</span>
+</span></span><span class="line"><span class="cl">curl http://config-server:8888/encrypt -d <span class="s2">&#34;sk-xxxxxxxxxxxx&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 返回: AQBX...加密密文...</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 解密</span>
+</span></span><span class="line"><span class="cl">curl http://config-server:8888/decrypt -d <span class="s2">&#34;AQBX...&#34;</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># 配置文件中使用加密值（以 {cipher} 前缀标识）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">spring</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">datasource</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;{cipher}AQBX...加密密文...&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">ai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">openai</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">api-key</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;{cipher}AQBX...加密密文...&#39;</span><span class="w">
+</span></span></span></code></pre></div><p>需要配置加密密钥（JCE对称密钥）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># Config Server</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">encrypt</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l">${ENCRYPT_KEY}  </span><span class="w"> </span><span class="c"># 从环境变量读取，不能提交到 Git</span><span class="w">
+</span></span></span></code></pre></div><h3 id="非对称加密">
+<a class="header-anchor" href="#%e9%9d%9e%e5%af%b9%e7%a7%b0%e5%8a%a0%e5%af%86"></a>
+非对称加密
+</h3><p>生产环境推荐使用 RSA 非对称加密：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># 生成密钥对</span>
+</span></span><span class="line"><span class="cl">keytool -genkeypair -alias config-server-key <span class="se">\
+</span></span></span><span class="line"><span class="cl">       -keyalg RSA -keysize <span class="m">4096</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl">       -keystore config-server.jks <span class="se">\
+</span></span></span><span class="line"><span class="cl">       -storepass <span class="si">${</span><span class="nv">KEYSTORE_PASSWORD</span><span class="si">}</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">encrypt</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">key-store</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="l">classpath:/config-server.jks</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">password</span><span class="p">:</span><span class="w"> </span><span class="l">${KEYSTORE_PASSWORD}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">alias</span><span class="p">:</span><span class="w"> </span><span class="l">config-server-key</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">secret</span><span class="p">:</span><span class="w"> </span><span class="l">${KEY_SECRET}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="密钥轮换">
+<a class="header-anchor" href="#%e5%af%86%e9%92%a5%e8%bd%ae%e6%8d%a2"></a>
+密钥轮换
+</h2><h3 id="为什么需要轮换">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e8%bd%ae%e6%8d%a2"></a>
+为什么需要轮换
+</h3><p>即使密钥没有泄露，定期轮换也是安全最佳实践：</p>
+<table>
+	<thead>
+			<tr>
+					<th>风险</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>长期暴露</strong></td>
+					<td>密钥使用时间越长，被泄露的概率越高</td>
+			</tr>
+			<tr>
+					<td><strong>人员变动</strong></td>
+					<td>离职员工可能持有旧密钥</td>
+			</tr>
+			<tr>
+					<td><strong>未知泄露</strong></td>
+					<td>密钥可能已被泄露但尚未发现</td>
+			</tr>
+			<tr>
+					<td><strong>合规要求</strong></td>
+					<td>SOC2 / 等保要求定期轮换</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="轮换策略">
+<a class="header-anchor" href="#%e8%bd%ae%e6%8d%a2%e7%ad%96%e7%95%a5"></a>
+轮换策略
+</h3><pre class="mermaid">
+  graph TD
+    A[密钥轮换] --> B[生成新密钥]
+    B --> C[双密钥并行期<br/>新旧密钥同时有效]
+    C --> D[部署应用使用新密钥]
+    D --> E[验证服务正常]
+    E --> F[吊销旧密钥]
+    F --> G[更新审计记录]
+</pre><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Service</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">KeyRotationService</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">VaultSecretService</span><span class="w"> </span><span class="n">vaultService</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">AiProviderConfig</span><span class="w"> </span><span class="n">config</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 执行密钥轮换
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">RotationResult</span><span class="w"> </span><span class="nf">rotateOpenAiKey</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 1. 生成新密钥（通过 OpenAI API 或手动）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">newKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">generateNewKey</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 2. 写入 Vault（旧密钥保留在 history 路径）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">oldKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vaultService</span><span class="p">.</span><span class="na">getSecret</span><span class="p">(</span><span class="s">&#34;ai/openai/api-key&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">vaultService</span><span class="p">.</span><span class="na">writeSecret</span><span class="p">(</span><span class="s">&#34;ai/openai/api-key-history&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">oldKey</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">vaultService</span><span class="p">.</span><span class="na">writeSecret</span><span class="p">(</span><span class="s">&#34;ai/openai/api-key&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">newKey</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 3. 触发应用刷新（通过 RefreshScope 或重启）</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">publishRotationEvent</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 4. 等待验证期（如 24 小时）后吊销旧密钥</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">scheduleOldKeyRevocation</span><span class="p">(</span><span class="n">oldKey</span><span class="p">,</span><span class="w"> </span><span class="n">Duration</span><span class="p">.</span><span class="na">ofHours</span><span class="p">(</span><span class="n">24</span><span class="p">));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RotationResult</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="s">&#34;rotation-&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">UUID</span><span class="p">.</span><span class="na">randomUUID</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">java</span><span class="p">.</span><span class="na">time</span><span class="p">.</span><span class="na">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">(),</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="s">&#34;24h 后吊销旧密钥&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 回滚：如果新密钥有问题，恢复旧密钥
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">rollback</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">historyKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vaultService</span><span class="p">.</span><span class="na">getSecret</span><span class="p">(</span><span class="s">&#34;ai/openai/api-key-history&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">vaultService</span><span class="p">.</span><span class="na">writeSecret</span><span class="p">(</span><span class="s">&#34;ai/openai/api-key&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">historyKey</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">publishRotationEvent</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">warn</span><span class="p">(</span><span class="s">&#34;密钥已回滚到历史版本&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@Scheduled</span><span class="p">(</span><span class="n">cron</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;0 0 2 1 * ?&#34;</span><span class="p">)</span><span class="w"> </span><span class="c1">// 每月 1 日凌晨 2 点</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">scheduledRotation</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">log</span><span class="p">.</span><span class="na">info</span><span class="p">(</span><span class="s">&#34;执行定期密钥轮换&#34;</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">rotateOpenAiKey</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">publishRotationEvent</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">eventPublisher</span><span class="p">.</span><span class="na">publishEvent</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">KeyRotatedEvent</span><span class="p">(</span><span class="s">&#34;openai&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">java</span><span class="p">.</span><span class="na">time</span><span class="p">.</span><span class="na">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">()));</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="审计日志">
+<a class="header-anchor" href="#%e5%ae%a1%e8%ae%a1%e6%97%a5%e5%bf%97"></a>
+审计日志
+</h2><h3 id="密钥访问审计">
+<a class="header-anchor" href="#%e5%af%86%e9%92%a5%e8%ae%bf%e9%97%ae%e5%ae%a1%e8%ae%a1"></a>
+密钥访问审计
+</h3><p>所有密钥的读取和修改操作都应记录审计日志：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.context.event.EventListener</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kn">import</span><span class="w"> </span><span class="nn">org.springframework.stereotype.Component</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@Component</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">SecretAuditListener</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 监听密钥读取事件
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@EventListener</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onSecretAccess</span><span class="p">(</span><span class="n">SecretAccessEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">AuditLog</span><span class="w"> </span><span class="n">log</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AuditLog</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">eventType</span><span class="p">(</span><span class="s">&#34;SECRET_ACCESS&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">actor</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">actor</span><span class="p">())</span><span class="w">           </span><span class="c1">// 操作人/服务</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">resource</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">secretPath</span><span class="p">())</span><span class="w">   </span><span class="c1">// 密钥路径</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">action</span><span class="p">(</span><span class="s">&#34;READ&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">sourceIp</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">sourceIp</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">timestamp</span><span class="p">(</span><span class="n">java</span><span class="p">.</span><span class="na">time</span><span class="p">.</span><span class="na">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">status</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">success</span><span class="p">()</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&#34;SUCCESS&#34;</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="s">&#34;DENIED&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">();</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">auditRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">log</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="cm">/**
+</span></span></span><span class="line"><span class="cl"><span class="cm">     * 监听密钥修改事件
+</span></span></span><span class="line"><span class="cl"><span class="cm">     */</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@EventListener</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">onSecretModification</span><span class="p">(</span><span class="n">SecretModifiedEvent</span><span class="w"> </span><span class="n">event</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">AlertLevel</span><span class="w"> </span><span class="n">level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">action</span><span class="p">().</span><span class="na">equals</span><span class="p">(</span><span class="s">&#34;DELETE&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="o">?</span><span class="w"> </span><span class="n">AlertLevel</span><span class="p">.</span><span class="na">CRITICAL</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">:</span><span class="w"> </span><span class="n">AlertLevel</span><span class="p">.</span><span class="na">WARNING</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">auditRepository</span><span class="p">.</span><span class="na">save</span><span class="p">(</span><span class="n">AuditLog</span><span class="p">.</span><span class="na">builder</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">eventType</span><span class="p">(</span><span class="s">&#34;SECRET_MODIFICATION&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">actor</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">actor</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">resource</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">secretPath</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">action</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="na">action</span><span class="p">())</span><span class="w">       </span><span class="c1">// CREATE / UPDATE / DELETE</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">timestamp</span><span class="p">(</span><span class="n">java</span><span class="p">.</span><span class="na">time</span><span class="p">.</span><span class="na">Instant</span><span class="p">.</span><span class="na">now</span><span class="p">())</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="p">.</span><span class="na">build</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 修改操作触发告警</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">alertService</span><span class="p">.</span><span class="na">send</span><span class="p">(</span><span class="n">level</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="s">&#34;密钥变更告警: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">action</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34; &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">event</span><span class="p">.</span><span class="na">secretPath</span><span class="p">());</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h3 id="审计日志查询">
+<a class="header-anchor" href="#%e5%ae%a1%e8%ae%a1%e6%97%a5%e5%bf%97%e6%9f%a5%e8%af%a2"></a>
+审计日志查询
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@RestController</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nd">@RequestMapping</span><span class="p">(</span><span class="s">&#34;/api/admin/audit&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">AuditController</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nd">@GetMapping</span><span class="p">(</span><span class="s">&#34;/secrets&#34;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">Page</span><span class="o">&lt;</span><span class="n">AuditLog</span><span class="o">&gt;</span><span class="w"> </span><span class="nf">querySecretAudit</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nd">@RequestParam</span><span class="p">(</span><span class="n">required</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">secretPath</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nd">@RequestParam</span><span class="p">(</span><span class="n">required</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">actor</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nd">@RequestParam</span><span class="p">(</span><span class="n">required</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="nd">@DateTimeFormat</span><span class="p">(</span><span class="n">iso</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ISO</span><span class="p">.</span><span class="na">DATE</span><span class="p">)</span><span class="w"> </span><span class="n">LocalDate</span><span class="w"> </span><span class="n">from</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="nd">@RequestParam</span><span class="p">(</span><span class="n">required</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">false</span><span class="p">)</span><span class="w"> </span><span class="nd">@DateTimeFormat</span><span class="p">(</span><span class="n">iso</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ISO</span><span class="p">.</span><span class="na">DATE</span><span class="p">)</span><span class="w"> </span><span class="n">LocalDate</span><span class="w"> </span><span class="kd">to</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">            </span><span class="n">Pageable</span><span class="w"> </span><span class="n">pageable</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 只有管理员才能查看审计日志</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">auditRepository</span><span class="p">.</span><span class="na">querySecretAuditLogs</span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">                </span><span class="n">secretPath</span><span class="p">,</span><span class="w"> </span><span class="n">actor</span><span class="p">,</span><span class="w"> </span><span class="n">from</span><span class="p">,</span><span class="w"> </span><span class="kd">to</span><span class="p">,</span><span class="w"> </span><span class="n">pageable</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><h2 id="gitignore-与-git-hooks-防护">
+<a class="header-anchor" href="#gitignore-%e4%b8%8e-git-hooks-%e9%98%b2%e6%8a%a4"></a>
+.gitignore 与 Git Hooks 防护
+</h2><h3 id="预提交扫描">
+<a class="header-anchor" href="#%e9%a2%84%e6%8f%90%e4%ba%a4%e6%89%ab%e6%8f%8f"></a>
+预提交扫描
+</h3><p>使用 Git pre-commit hook 自动扫描代码中的密钥：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#!/bin/bash
+</span></span></span><span class="line"><span class="cl"><span class="c1"># .git/hooks/pre-commit</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 使用 truffleHog 或 detect-secrets 扫描</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="nb">command</span> -v detect-secrets <span class="p">&amp;</span>&gt; /dev/null<span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">    detect-secrets-hook --baseline .secrets.baseline <span class="k">$(</span>git diff --cached --name-only<span class="k">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> -ne <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s2">&#34;❌ 检测到可能的密钥泄露！请检查上述文件。&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s2">&#34;   如果是误报，请运行: detect-secrets scan --baseline .secrets.baseline&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">exit</span> <span class="m">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">echo</span> <span class="s2">&#34;✅ 密钥扫描通过&#34;</span>
+</span></span></code></pre></div><h3 id="常见密钥模式">
+<a class="header-anchor" href="#%e5%b8%b8%e8%a7%81%e5%af%86%e9%92%a5%e6%a8%a1%e5%bc%8f"></a>
+常见密钥模式
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># detect-secrets 配置示例</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;1.0.0&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;plugins_used&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;OpenAIDetector&#34;</span><span class="p">},</span>      <span class="c1"># OpenAI API Key: sk-*</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;AWSKeyDetector&#34;</span><span class="p">},</span>       <span class="c1"># AWS: AKIA*</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;PrivateKeyDetector&#34;</span><span class="p">},</span>   <span class="c1"># RSA private keys</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;BasicAuthDetector&#34;</span><span class="p">},</span>    <span class="c1"># http://user:pass@</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;KeywordDetector&#34;</span><span class="p">}</span>       <span class="c1"># password=, secret=, token=</span>
+</span></span><span class="line"><span class="cl">    <span class="p">],</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;filters_used&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;src/test/**&#34;</span><span class="p">},</span>          <span class="c1"># 排除测试目录</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;path&#34;</span><span class="p">:</span> <span class="s2">&#34;*.example&#34;</span><span class="p">}</span>             <span class="c1"># 排除示例文件</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><h2 id="最佳实践清单">
+<a class="header-anchor" href="#%e6%9c%80%e4%bd%b3%e5%ae%9e%e8%b7%b5%e6%b8%85%e5%8d%95"></a>
+最佳实践清单
+</h2><table>
+	<thead>
+			<tr>
+					<th>实践</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>密钥永不硬编码</strong></td>
+					<td>所有密钥通过环境变量或密钥服务注入</td>
+			</tr>
+			<tr>
+					<td><strong>.gitignore 必备</strong></td>
+					<td><code>.env</code>、<code>*.key</code>、<code>*.pem</code> 必须在忽略列表</td>
+			</tr>
+			<tr>
+					<td><strong>Profile 隔离</strong></td>
+					<td>dev/staging/prod 配置和密钥完全隔离</td>
+			</tr>
+			<tr>
+					<td><strong>生产用 Vault</strong></td>
+					<td>生产环境的密钥由专业密钥管理服务保管</td>
+			</tr>
+			<tr>
+					<td><strong>定期轮换</strong></td>
+					<td>至少每 90 天轮换一次 API Key</td>
+			</tr>
+			<tr>
+					<td><strong>全量审计</strong></td>
+					<td>所有密钥读写操作记录审计日志</td>
+			</tr>
+			<tr>
+					<td><strong>配置热更新</strong></td>
+					<td>使用配置中心实现不停机修改配置</td>
+			</tr>
+			<tr>
+					<td><strong>Git 钩子扫描</strong></td>
+					<td>提交前自动扫描密钥泄露</td>
+			</tr>
+			<tr>
+					<td><strong>最小权限</strong></td>
+					<td>每个 Key 只授予必要的最小权限</td>
+			</tr>
+			<tr>
+					<td><strong>双密钥过渡</strong></td>
+					<td>轮换时新旧密钥并行，验证后再吊销旧的</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="密钥安全检查清单">
+<a class="header-anchor" href="#%e5%af%86%e9%92%a5%e5%ae%89%e5%85%a8%e6%a3%80%e6%9f%a5%e6%b8%85%e5%8d%95"></a>
+密钥安全检查清单
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">□ 所有 API Key 使用 ${} 环境变量引用，无硬编码
+</span></span><span class="line"><span class="cl">□ .gitignore 包含 .env、*.key、*.pem
+</span></span><span class="line"><span class="cl">□ Git 历史中没有提交过密钥（用 git log -p 检查）
+</span></span><span class="line"><span class="cl">生产环境：
+</span></span><span class="line"><span class="cl">□ 密钥存储在 Vault 或云厂商密钥服务中
+</span></span><span class="line"><span class="cl">□ 配置了定期轮换计划（≥ 90 天）
+</span></span><span class="line"><span class="cl">□ 开启了审计日志
+</span></span><span class="line"><span class="cl">□ 密钥访问有告警通知
+</span></span><span class="line"><span class="cl">□ 使用了最小权限原则（API Key 限定模型、配额）
+</span></span></code></pre></div><h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>配置管理与密钥安全是 AI 应用工程化的&quot;最后一公里&quot;，也是最容易被轻视的一环。</p>
+<p><strong>多环境配置</strong>通过 Spring Profiles 实现了 dev/staging/prod 的彻底隔离。不同环境使用不同模型、不同数据、不同密钥，配置通过优先级机制灵活覆盖，确保开发环境的失误不会影响生产。</p>
+<p><strong>密钥安全</strong>遵循&quot;纵深防御&quot;原则——.gitignore 阻止密钥进入版本库、环境变量避免密钥出现在代码中、Vault 等密钥管理服务为生产环境提供企业级保护、定期轮换限制密钥泄露的影响窗口、审计日志让所有操作可追溯。</p>
+<p><strong>配置中心</strong>解决了分布式环境下的配置同步问题。一处修改、处处生效的热更新能力，让限流参数、模型选择等运营配置可以实时调整，无需重新部署。</p>
+<p>三者结合，加上 Git Hooks 的预提交扫描和最小权限原则，构成了 AI 应用配置安全的完整防线。记住：安全不是一蹴而就的功能，而是贯穿开发、部署、运维全流程的纪律。</p>
+<h2 id="参考文献">
+<a class="header-anchor" href="#%e5%8f%82%e8%80%83%e6%96%87%e7%8c%ae"></a>
+参考文献
+</h2><ol>
+<li>Spring Boot Externalized Configuration. <a href="https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config">https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config</a></li>
+<li>HashiCorp Vault Documentation. <a href="https://developer.hashicorp.com/vault/docs">https://developer.hashicorp.com/vault/docs</a></li>
+<li>Spring Cloud Config Reference. <a href="https://docs.spring.io/spring-cloud-config/docs/current/reference/html/">https://docs.spring.io/spring-cloud-config/docs/current/reference/html/</a></li>
+<li>Nacos Documentation. <a href="https://nacos.io/zh-cn/docs/what-is-nacos.html">https://nacos.io/zh-cn/docs/what-is-nacos.html</a></li>
+<li>OWASP - Cryptographic Storage Cheat Sheet. <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html">https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html</a></li>
+<li>detect-secrets Tool. <a href="https://github.com/Yelp/detect-secrets">https://github.com/Yelp/detect-secrets</a></li>
+<li>AWS Secrets Manager. <a href="https://docs.aws.amazon.com/secretsmanager/">https://docs.aws.amazon.com/secretsmanager/</a></li>
+</ol>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E4%B8%8E%E5%AF%86%E9%92%A5%E5%AE%89%E5%85%A8/&amp;appkey=&amp;title=%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86%e4%b8%8e%e5%af%86%e9%92%a5%e5%ae%89%e5%85%a8&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="配置管理与密钥安全">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E4%B8%8E%E5%AF%86%E9%92%A5%E5%AE%89%E5%85%A8/&amp;title=%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86%e4%b8%8e%e5%af%86%e9%92%a5%e5%ae%89%e5%85%a8&amp;desc=%e5%a4%9a%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae%e9%9a%94%e7%a6%bb%e3%80%81%e5%af%86%e9%92%a5%e5%ae%89%e5%85%a8%e7%ae%a1%e7%90%86%e3%80%81%e9%85%8d%e7%bd%ae%e4%b8%ad%e5%bf%83%e5%ae%9e%e8%b7%b5%e2%80%94%e2%80%94AI%20%e5%ba%94%e7%94%a8%e7%9a%84%e9%85%8d%e7%bd%ae%e5%b7%a5%e7%a8%8b%e5%8c%96&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="配置管理与密钥安全">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="配置管理与密钥安全">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E4%B8%8E%E5%AF%86%E9%92%A5%E5%AE%89%E5%85%A8/&amp;text=%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86%e4%b8%8e%e5%af%86%e9%92%a5%e5%ae%89%e5%85%a8&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="配置管理与密钥安全">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E4%B8%8E%E5%AF%86%E9%92%A5%E5%AE%89%E5%85%A8/" target="_blank" rel="noopener noreferrer" title="配置管理与密钥安全">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e5%90%8e%e7%ab%af%e4%b8%8eai%e5%b7%a5%e7%a8%8b"
+      data-aos="zoom-in"
+      >后端与AI工程</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%a4%a7%e6%a8%a1%e5%9e%8b"
+        rel="tag"
+        >大模型</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e9%85%8d%e7%bd%ae%e7%ae%a1%e7%90%86"
+        rel="tag"
+        >配置管理</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%af%86%e9%92%a5%e5%ae%89%e5%85%a8"
+        rel="tag"
+        >密钥安全</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%90%8e%e7%ab%af%e5%b7%a5%e7%a8%8b"
+        rel="tag"
+        >后端工程</a
+      >
+    </li></ul>
+</footer>
+  </div><nav
+    id="article-nav"
+    aria-label="Article navigation"
+    data-aos="fade-up"
+  ><div class="article-nav-link-wrap right"><img
+              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-sizes="auto"
+              alt="异步处理与消息队列"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B/%E5%BC%82%E6%AD%A5%E5%A4%84%E7%90%86%E4%B8%8E%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"
+          aria-label="后一篇:异步处理与消息队列"
+          title="后一篇:异步处理与消息队列"
+        ></a>
+        <div class="article-nav-caption">后一篇</div>
+        <h3 class="article-nav-title">异步处理与消息队列</h3>
+      </div></nav></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#多环境配置">多环境配置</a>
+      <ul>
+        <li><a href="#环境分层">环境分层</a></li>
+        <li><a href="#spring-profiles">Spring Profiles</a></li>
+        <li><a href="#配置优先级">配置优先级</a></li>
+      </ul>
+    </li>
+    <li><a href="#密钥安全管理">密钥安全管理</a>
+      <ul>
+        <li><a href="#密钥泄露的常见途径">密钥泄露的常见途径</a></li>
+        <li><a href="#第一道防线gitignore">第一道防线：.gitignore</a></li>
+        <li><a href="#第二道防线环境变量注入">第二道防线：环境变量注入</a></li>
+        <li><a href="#第三道防线密钥管理服务">第三道防线：密钥管理服务</a></li>
+        <li><a href="#密钥管理方案对比">密钥管理方案对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#配置中心">配置中心</a>
+      <ul>
+        <li><a href="#为什么需要配置中心">为什么需要配置中心</a></li>
+        <li><a href="#spring-cloud-config">Spring Cloud Config</a></li>
+        <li><a href="#nacos-配置中心">Nacos 配置中心</a></li>
+        <li><a href="#配置中心选型对比">配置中心选型对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#加密配置">加密配置</a>
+      <ul>
+        <li><a href="#对称加密">对称加密</a></li>
+        <li><a href="#非对称加密">非对称加密</a></li>
+      </ul>
+    </li>
+    <li><a href="#密钥轮换">密钥轮换</a>
+      <ul>
+        <li><a href="#为什么需要轮换">为什么需要轮换</a></li>
+        <li><a href="#轮换策略">轮换策略</a></li>
+      </ul>
+    </li>
+    <li><a href="#审计日志">审计日志</a>
+      <ul>
+        <li><a href="#密钥访问审计">密钥访问审计</a></li>
+        <li><a href="#审计日志查询">审计日志查询</a></li>
+      </ul>
+    </li>
+    <li><a href="#gitignore-与-git-hooks-防护">.gitignore 与 Git Hooks 防护</a>
+      <ul>
+        <li><a href="#预提交扫描">预提交扫描</a></li>
+        <li><a href="#常见密钥模式">常见密钥模式</a></li>
+      </ul>
+    </li>
+    <li><a href="#最佳实践清单">最佳实践清单</a>
+      <ul>
+        <li><a href="#密钥安全检查清单">密钥安全检查清单</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+    <li><a href="#参考文献">参考文献</a></li>
+  </ul>
+</nav>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "配置管理与密钥安全",
+          url: "https:\/\/dev.infiniteevo.online\/post\/llm\/4-%E5%90%8E%E7%AB%AF%E4%B8%8Eai%E5%B7%A5%E7%A8%8B\/%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86%E4%B8%8E%E5%AF%86%E9%92%A5%E5%AE%89%E5%85%A8\/",
+          description: "多环境配置隔离、密钥安全管理、配置中心实践——AI 应用的配置工程化",
+          cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
+        };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-MWNUH0WmtsYGhn2cbH6ELRCbf9LG3QDqCC&#43;gqPB3IBNO35xjZK3Ejb6oONRpDbPg" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/contrib/auto-render.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv&#43;fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script><script data-pjax>
+          var renderMath = () => {
+            if (!window.renderMathInElement) return;
+            window.renderMathInElement(_$("article"), {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+              ],
+            });
+          };
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderMath, { once: true });
+          } else {
+            renderMath();
+          }
+        </script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>

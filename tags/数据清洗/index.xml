@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>数据清洗 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Mon, 01 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E6%95%B0%E6%8D%AE%E6%B8%85%E6%B4%97/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>数据集构建、清洗与标注</title>
+      <link>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E6%95%B0%E6%8D%AE%E9%9B%86%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%B8%85%E6%B4%97%E6%A0%87%E6%B3%A8/</link>
+      <pubDate>Mon, 01 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E6%95%B0%E6%8D%AE%E9%9B%86%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%B8%85%E6%B4%97%E6%A0%87%E6%B3%A8/</guid>
+      <description>
+        <![CDATA[<h1>数据集构建、清洗与标注</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在大模型时代，业界有一句被反复验证的格言：<strong>&ldquo;Garbage In, Garbage Out&rdquo;（垃圾进，垃圾出）</strong>。一个千亿参数的模型，如果训练数据质量低劣，其表现甚至不如在高质量数据上训练的几十亿参数小模型。数据，而非模型架构，正日益成为决定大模型能力上限的核心因素。</p>
+        
+        <hr><p>本文2026-06-01首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-01</p>]]>
+      </description>
+      
+        <category>数据与评估</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>模型压缩 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E6%A8%A1%E5%9E%8B%E5%8E%8B%E7%BC%A9/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Mon, 20 Oct 2025 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E6%A8%A1%E5%9E%8B%E5%8E%8B%E7%BC%A9/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>大模型知识蒸馏技术详解</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F/</link>
+      <pubDate>Mon, 20 Oct 2025 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%9F%A5%E8%AF%86%E8%92%B8%E9%A6%8F/</guid>
+      <description>
+        <![CDATA[<h1>大模型知识蒸馏技术详解</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）的能力随着参数规模的增大而显著提升，但庞大的模型也带来了高昂的部署成本：推理延迟高、显存占用大、服务费用昂贵。与之相对，小模型部署轻快、成本低，但能力往往不足。这就形成了一个核心矛盾——<strong>能力与成本难以兼得</strong>。</p>
+        
+        <hr><p>本文2025-10-20首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-10-20</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

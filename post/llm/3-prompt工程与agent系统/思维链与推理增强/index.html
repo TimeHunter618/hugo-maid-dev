@@ -1,0 +1,1909 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  思维链、ReAct 与 Self-Consistency | Aries
+</title>
+<meta name="description" content="从 Chain-of-Thought 到 ReAct 再到自洽性采样，系统掌握大语言模型推理增强的核心方法"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="思维链、ReAct 与 Self-Consistency | Aries" />
+  <meta
+    property="og:description"
+    content="从 Chain-of-Thought 到 ReAct 再到自洽性采样，系统掌握大语言模型推理增强的核心方法"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E6%80%9D%E7%BB%B4%E9%93%BE%E4%B8%8E%E6%8E%A8%E7%90%86%E5%A2%9E%E5%BC%BA/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-03-20T10:00:00&#43;08:00" />
+  <meta property="article:modified_time" content="2026-03-20T10:00:00&#43;08:00" /><meta property="article:tag" content="大模型, 思维链, CoT, ReAct, Self-Consistency, 推理增强, Prompt 工程与 Agent 系统" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200" alt="思维链、ReAct 与 Self-Consistency"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">思维链、ReAct 与 Self-Consistency</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">从 Chain-of-Thought 到 ReAct 再到自洽性采样，系统掌握大语言模型推理增强的核心方法</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container sticky"><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#推理增强技术全景图">推理增强技术全景图</a></li>
+    <li><a href="#思维链chain-of-thought-cot">思维链（Chain-of-Thought, CoT）</a>
+      <ul>
+        <li><a href="#cot-的起源与原理">CoT 的起源与原理</a></li>
+        <li><a href="#zero-shot-cot">Zero-shot CoT</a></li>
+        <li><a href="#few-shot-cot">Few-shot CoT</a></li>
+        <li><a href="#cot-的理论基础">CoT 的理论基础</a></li>
+        <li><a href="#cot-的适用条件">CoT 的适用条件</a></li>
+      </ul>
+    </li>
+    <li><a href="#reactreasoning--acting">ReAct（Reasoning + Acting）</a>
+      <ul>
+        <li><a href="#react-的动机">ReAct 的动机</a></li>
+        <li><a href="#react-框架">ReAct 框架</a></li>
+        <li><a href="#react-prompt-模板">ReAct Prompt 模板</a></li>
+        <li><a href="#react-完整实现">ReAct 完整实现</a></li>
+        <li><a href="#react-的优势与局限">ReAct 的优势与局限</a></li>
+      </ul>
+    </li>
+    <li><a href="#self-consistency自洽性采样">Self-Consistency（自洽性采样）</a>
+      <ul>
+        <li><a href="#核心思想">核心思想</a></li>
+        <li><a href="#数学基础">数学基础</a></li>
+        <li><a href="#实现方法">实现方法</a></li>
+        <li><a href="#self-consistency-的开销与权衡">Self-Consistency 的开销与权衡</a></li>
+      </ul>
+    </li>
+    <li><a href="#进阶推理方法">进阶推理方法</a>
+      <ul>
+        <li><a href="#tree-of-thoughts-tot">Tree-of-Thoughts (ToT)</a></li>
+        <li><a href="#graph-of-thoughts-got">Graph-of-Thoughts (GoT)</a></li>
+        <li><a href="#plan-and-solve">Plan-and-Solve</a></li>
+        <li><a href="#方法对比表">方法对比表</a></li>
+      </ul>
+    </li>
+    <li><a href="#实践指南">实践指南</a>
+      <ul>
+        <li><a href="#方法选择决策树">方法选择决策树</a></li>
+        <li><a href="#prompt-工程技巧">Prompt 工程技巧</a></li>
+        <li><a href="#成本优化">成本优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#前沿方向">前沿方向</a>
+      <ul>
+        <li><a href="#o1o3-模型与内化推理">o1/o3 模型与内化推理</a></li>
+        <li><a href="#自动-prompt-优化">自动 Prompt 优化</a></li>
+        <li><a href="#推理与工具调用的深度融合">推理与工具调用的深度融合</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div><div class="sidebar-widget"></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-03-20 10:00:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2026-03-20</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-03-20</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg1.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg1.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型（LLM）在自然语言理解与生成上已经展现出惊人的能力，但在面对<strong>多步数学推理、逻辑演绎、复杂规划</strong>这类需要&quot;深度思考&quot;的任务时，直接让模型给出答案往往会得到令人失望的结果。一个典型的现象是：同一个模型，当你要求它&quot;直接回答&quot;时频频出错，而当你让它&quot;一步一步想&quot;时却能力大增。</p>
+<p>这正是**推理增强（Reasoning Enhancement）**技术要解决的核心问题——如何激发、引导并约束大模型的推理过程，使其在复杂任务上逼近甚至超越人类的解题能力。</p>
+<pre class="mermaid">
+  graph LR
+    A[直接回答 Direct Prompting] -->|准确率低| B[思维链 CoT]
+    B -->|多条路径投票| C[Self-Consistency]
+    B -->|结合工具| D[ReAct]
+    B -->|树形搜索| E[Tree-of-Thoughts]
+    D -->|深度融合| F[推理+工具一体化]
+    E -->|图结构| G[Graph-of-Thoughts]
+</pre><p>推理增强技术的演进脉络清晰可见：从最朴素的&quot;展示推理过程&quot;，到&quot;采样多条路径择优&quot;，再到&quot;推理与行动交织&quot;，直至&quot;在思维空间上做搜索&quot;。这些方法共同构成了当前 LLM 推理能力的基石，也是 Agent、RAG、自动化决策等上层应用的底层支撑。</p>
+<p>本文将从思维链（CoT）出发，系统讲解 ReAct、Self-Consistency 三大核心方法，并延伸到 Tree-of-Thoughts、Graph-of-Thoughts 等进阶范式，最后给出实践选型指南。</p>
+<h2 id="推理增强技术全景图">
+<a class="header-anchor" href="#%e6%8e%a8%e7%90%86%e5%a2%9e%e5%bc%ba%e6%8a%80%e6%9c%af%e5%85%a8%e6%99%af%e5%9b%be"></a>
+推理增强技术全景图
+</h2><p>在深入每个方法之前，先用一张分类图建立全局认知。推理增强技术可以按&quot;推理结构&quot;和&quot;信息来源&quot;两个维度来组织。</p>
+<pre class="mermaid">
+  graph TD
+    A[LLM 推理增强技术] --> B[线性推理]
+    A --> C[多路采样]
+    A --> D[推理+行动]
+    A --> E[搜索式推理]
+
+    B --> B1[Zero-shot CoT]
+    B --> B2[Few-shot CoT]
+    B --> B3[Plan-and-Solve]
+
+    C --> C1[Self-Consistency]
+    C --> C2[Universal SC]
+    C --> C3[加权采样]
+
+    D --> D1[ReAct]
+    D --> D2[Toolformer]
+    D --> D3[Reflexion]
+
+    E --> E1[Tree-of-Thoughts]
+    E --> E2[Graph-of-Thoughts]
+    E --> E3[Monte-Carlo Tree Search]
+</pre><p>理解这些方法的关键，在于抓住三个核心问题：</p>
+<ol>
+<li><strong>推理结构</strong>：线性展开、树形分支，还是图状连接？</li>
+<li><strong>信息来源</strong>：完全依赖模型内部知识，还是引入外部工具与检索？</li>
+<li><strong>答案聚合</strong>：单条路径直出，还是多路采样后投票择优？</li>
+</ol>
+<p>不同的回答组合，就衍生出不同的方法。下面逐一展开。</p>
+<h2 id="思维链chain-of-thought-cot">
+<a class="header-anchor" href="#%e6%80%9d%e7%bb%b4%e9%93%bechain-of-thought-cot"></a>
+思维链（Chain-of-Thought, CoT）
+</h2><h3 id="cot-的起源与原理">
+<a class="header-anchor" href="#cot-%e7%9a%84%e8%b5%b7%e6%ba%90%e4%b8%8e%e5%8e%9f%e7%90%86"></a>
+CoT 的起源与原理
+</h3><p>思维链的概念由 Google 的 Wei 等人在 2022 年的论文《Chain-of-Thought Prompting Elicits Reasoning in Large Language Models》中正式提出。他们发现了一个关键现象：<strong>当大语言模型的参数规模超过某个阈值（约 60B）后，在 prompt 中给出包含推理过程的示例，能显著提升模型在数学、逻辑、常识等复杂推理任务上的表现</strong>，这种现象被称为 CoT 能力的&quot;涌现&quot;。</p>
+<p>CoT 的核心思想极其朴素——<strong>让模型&quot;展示推理过程&quot;，而不是直接给出答案</strong>。</p>
+<p>对比一下两种 prompting 方式的差异：</p>
+<p><strong>直接回答（Standard Prompting）</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Q: 餐厅里有 23 个苹果，用掉 20 个做午餐，又买了 6 个，现在有多少苹果？
+</span></span><span class="line"><span class="cl">A: 9
+</span></span></code></pre></div><p><strong>思维链（Chain-of-Thought Prompting）</strong>：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Q: 餐厅里有 23 个苹果，用掉 20 个做午餐，又买了 6 个，现在有多少苹果？
+</span></span><span class="line"><span class="cl">A: 原来有 23 个苹果，用掉 20 个后剩下 23 - 20 = 3 个。
+</span></span><span class="line"><span class="cl">   又买了 6 个，所以现在有 3 + 6 = 9 个。答案是 9。
+</span></span></code></pre></div><p>仅仅是把&quot;推理步骤&quot;写出来，模型在 GSM8K（小学数学应用题基准）上的准确率就能从 17.7% 跃升到 58.1%（PaLM-540B）。这种&quot;展示过程&quot;为什么如此有效？背后的直觉是：<strong>复杂问题的答案无法一步映射得到，必须分解为若干可计算的中间步骤</strong>。</p>
+<h3 id="zero-shot-cot">
+<a class="header-anchor" href="#zero-shot-cot"></a>
+Zero-shot CoT
+</h3><p>Zero-shot CoT 由 Kojima 等人在 2022 年提出，它发现了一个几乎&quot;零成本&quot;的技巧——只需在 prompt 末尾加上一句 <strong>&ldquo;Let&rsquo;s think step by step&rdquo;</strong>（让我们一步一步来思考），即使不提供任何推理示例，大模型也会自发地展开推理过程。</p>
+<p>这句看似简单的提示被称为&quot;魔法咒语&quot;，其作用机制可以理解为：<strong>它激活了模型在预训练阶段习得的&quot;逐步推理&quot;行为模式</strong>，引导模型从&quot;直接生成答案&quot;切换到&quot;生成推理链&quot;。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">zero_shot_cot</span><span class="p">(</span><span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;Zero-shot CoT：用一句魔法提示激发逐步推理&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;Q: </span><span class="si">{</span><span class="n">question</span><span class="si">}</span><span class="se">\n</span><span class="s2">A: Let&#39;s think step by step.&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model</span><span class="o">=</span><span class="s2">&#34;gpt-4o&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">messages</span><span class="o">=</span><span class="p">[{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">}],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 示例</span>
+</span></span><span class="line"><span class="cl"><span class="n">question</span> <span class="o">=</span> <span class="s2">&#34;一个班级有 32 名学生，男生比女生多 4 人，男生有多少人？&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">zero_shot_cot</span><span class="p">(</span><span class="n">question</span><span class="p">))</span>
+</span></span></code></pre></div><p>输出示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">让我们一步一步来思考。
+</span></span><span class="line"><span class="cl">1. 设女生人数为 x，则男生人数为 x + 4。
+</span></span><span class="line"><span class="cl">2. 总人数为 x + (x + 4) = 32。
+</span></span><span class="line"><span class="cl">3. 解方程：2x + 4 = 32，得 2x = 28，x = 14。
+</span></span><span class="line"><span class="cl">4. 所以女生 14 人，男生 14 + 4 = 18 人。
+</span></span><span class="line"><span class="cl">答案是 18。
+</span></span></code></pre></div><p>Zero-shot CoT 的优势在于<strong>无需构造示例、即插即用</strong>，但它的推理格式不完全可控，且在特别复杂的任务上效果不如 Few-shot CoT 稳定。</p>
+<h3 id="few-shot-cot">
+<a class="header-anchor" href="#few-shot-cot"></a>
+Few-shot CoT
+</h3><p>Few-shot CoT 通过在 prompt 中提供若干<strong>带推理过程的问答示例</strong>，来引导模型模仿相同的推理格式。它的核心是&quot;示范&quot;——告诉模型&quot;你应该这样思考&quot;。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">FEW_SHOT_COT_PROMPT</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;以下是一些逐步推理的示例：
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">Q: 小明有 12 颗糖，给了小红 5 颗，妈妈又给他买了 8 颗，现在小明有多少颗糖？
+</span></span></span><span class="line"><span class="cl"><span class="s2">A: 小明原有 12 颗糖，给出去 5 颗后剩下 12 - 5 = 7 颗。
+</span></span></span><span class="line"><span class="cl"><span class="s2">   妈妈又买了 8 颗，所以现在有 7 + 8 = 15 颗。
+</span></span></span><span class="line"><span class="cl"><span class="s2">   答案是 15。
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">Q: 一本书有 240 页，小明每天看 30 页，看了 5 天，还剩多少页没看？
+</span></span></span><span class="line"><span class="cl"><span class="s2">A: 小明每天看 30 页，5 天共看了 30 × 5 = 150 页。
+</span></span></span><span class="line"><span class="cl"><span class="s2">   书一共 240 页，还剩 240 - 150 = 90 页。
+</span></span></span><span class="line"><span class="cl"><span class="s2">   答案是 90。
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">现在请回答：
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">Q: </span><span class="si">{question}</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">A:&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">few_shot_cot</span><span class="p">(</span><span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;Few-shot CoT：用示例引导推理格式&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">prompt</span> <span class="o">=</span> <span class="n">FEW_SHOT_COT_PROMPT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">question</span><span class="o">=</span><span class="n">question</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model</span><span class="o">=</span><span class="s2">&#34;gpt-4o&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">messages</span><span class="o">=</span><span class="p">[{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">}],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">temperature</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">few_shot_cot</span><span class="p">(</span><span class="s2">&#34;图书馆有 500 本书，借出 120 本，又购入 80 本，现在有多少本？&#34;</span><span class="p">))</span>
+</span></span></code></pre></div><p>Few-shot CoT 的关键在于<strong>示例的质量</strong>：示例的推理步骤应当清晰、正确、与目标任务风格一致。研究表明，示例中如果包含错误推理，反而会拖累模型表现。</p>
+<h3 id="cot-的理论基础">
+<a class="header-anchor" href="#cot-%e7%9a%84%e7%90%86%e8%ae%ba%e5%9f%ba%e7%a1%80"></a>
+CoT 的理论基础
+</h3><p>为什么&quot;展示推理过程&quot;如此有效？可以从两个角度理解。</p>
+<p><strong>问题分解降低复杂度</strong>。一个复杂问题 $Q$ 的直接求解可以看作从输入 $x$ 到答案 $y$ 的一次性映射 $P(y|x)$。当问题复杂时，这个映射的&quot;距离&quot;过大，模型难以一次命中。CoT 将其分解为 $n$ 个中间步骤 $s_1, s_2, \dots, s_n$，每一步只解决一个子问题：</p>
+$$P(y|x) = \prod_{i=1}^{n} P(s_i | x, s_{<i}) \cdot P(y | x, s_1, \dots, s_n)$$<p>其中 $s_{<i} = (s_1, \dots, s_{i-1})$ 表示前 $i-1$ 步的推理。每一步的条件概率分布都比直接映射 $P(y|x)$ &ldquo;更简单&rdquo;，因此模型更容易给出正确结果。</p>
+<p><strong>增加计算步数</strong>。Transformer 的前向计算量与输入 token 数成正比。CoT 实质上是用<strong>更长的输出序列</strong>换取<strong>更多的计算预算</strong>——模型在生成每个推理 token 时都做了一次前向传播，等于把&quot;思考&quot;展开到了时间维度上。这与&quot;System 2 慢思考&quot;的理念一致：<strong>用更多计算换取更高质量的输出</strong>。</p>
+<p>从信息论角度看，设问题的最优解所需信息量为 $H(y|x)$，单步生成能提供的信息量为 $I$，则直接回答需要 $H(y|x) / I$ 次有效计算。当 $H(y|x)$ 较大时，单次生成远远不够，而 CoT 通过分解使得每步的信息需求 $H(s_i | x, s_{<i})$ 接近 $I$，从而让模型&quot;够得着&quot;。</p>
+<h3 id="cot-的适用条件">
+<a class="header-anchor" href="#cot-%e7%9a%84%e9%80%82%e7%94%a8%e6%9d%a1%e4%bb%b6"></a>
+CoT 的适用条件
+</h3><p>CoT 并非万能，它的有效性依赖两个前提。</p>
+<p><strong>模型规模阈值</strong>。CoT 能力是一种<strong>涌现能力（emergent ability）</strong>——只有当模型参数量超过约 60B 时，CoT 才开始显著超越直接回答。小模型（如 10B 以下）使用 CoT 反而可能因为推理链本身出错而降低准确率。这一现象被称为&quot;反转缩放（inverse scaling）&ldquo;的反例：推理能力随规模增长而出现。</p>
+<pre class="mermaid">
+  graph LR
+    A[模型规模] --> B["< 10B: CoT 无效甚至有害"]
+    A --> C["10B ~ 60B: CoT 偶有效果"]
+    A --> D["> 60B: CoT 显著提升"]
+    D --> E[涌现推理能力]
+</pre><p><strong>任务类型</strong>。CoT 对不同任务的效果差异巨大：</p>
+<table>
+	<thead>
+			<tr>
+					<th>任务类型</th>
+					<th>CoT 效果</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>数学推理</strong>（GSM8K、MATH）</td>
+					<td>显著提升</td>
+					<td>多步计算，分解后每步可解</td>
+			</tr>
+			<tr>
+					<td><strong>符号推理</strong>（Last Letter、Coin Flip）</td>
+					<td>显著提升</td>
+					<td>严格逻辑，步骤明确</td>
+			</tr>
+			<tr>
+					<td><strong>逻辑演绎</strong>（LogiQA）</td>
+					<td>中等提升</td>
+					<td>需要推理链，但模型逻辑能力有上限</td>
+			</tr>
+			<tr>
+					<td><strong>常识推理</strong>（CommonsenseQA）</td>
+					<td>小幅提升</td>
+					<td>依赖知识广度，推理空间大</td>
+			</tr>
+			<tr>
+					<td><strong>简单问答</strong>（SQuAD、RACE）</td>
+					<td>几乎无效</td>
+					<td>单步即可解决，无需分解</td>
+			</tr>
+			<tr>
+					<td><strong>翻译/摘要</strong></td>
+					<td>无效甚至有害</td>
+					<td>生成性任务，非推理任务</td>
+			</tr>
+	</tbody>
+</table>
+<p>经验法则：<strong>只有当任务本身需要多步推理、且模型规模足够大时，CoT 才值得使用</strong>。对于单步任务或小模型，CoT 只是徒增 token 开销。</p>
+<h2 id="reactreasoning--acting">
+<a class="header-anchor" href="#reactreasoning--acting"></a>
+ReAct（Reasoning + Acting）
+</h2><h3 id="react-的动机">
+<a class="header-anchor" href="#react-%e7%9a%84%e5%8a%a8%e6%9c%ba"></a>
+ReAct 的动机
+</h3><p>思维链让模型&quot;会思考&rdquo;，但纯推理有其天花板。考虑这样一个问题：&ldquo;2026 年中国 GDP 总量是多少？&quot;——模型的知识截止于训练数据，无论推理多么缜密，都无法凭空得到一个它根本不知道的事实。这就是<strong>纯推理的局限：幻觉与知识盲区</strong>。</p>
+<p>反过来，纯行动（Act-only）也有问题：如果模型不经过推理就直接调用工具，往往不知道该调用什么工具、传什么参数、拿到结果后下一步该做什么。</p>
+<pre class="mermaid">
+  graph TD
+    A[纯推理 CoT] -->|局限| B[幻觉<br/>无法获取外部信息<br/>计算不可靠]
+    C[纯行动 Act-only] -->|局限| D[缺乏规划<br/>工具调用盲目<br/>无法处理多步任务]
+    B --> E[ReAct: 推理+行动结合]
+    D --> E
+    E --> F[推理指导行动<br/>行动反馈推理]
+</pre><p>ReAct（Reasoning + Acting）由 Yao 等人在 2022 年提出，核心思想是<strong>让推理与行动交替进行、相互驱动</strong>：模型先用推理决定下一步该做什么（Thought），然后执行一个行动（Action，通常是调用工具），再观察行动的结果（Observation），将观察结果纳入新一轮推理，如此循环直至得出最终答案。</p>
+<h3 id="react-框架">
+<a class="header-anchor" href="#react-%e6%a1%86%e6%9e%b6"></a>
+ReAct 框架
+</h3><p>ReAct 的执行流程是一个 <strong>Thought → Action → Observation</strong> 的循环：</p>
+<pre class="mermaid">
+  graph TD
+    Q[任务输入] --> T1[Thought 1: 分析任务，决定下一步]
+    T1 --> A1[Action 1: 调用工具]
+    A1 --> O1[Observation 1: 工具返回结果]
+    O1 --> T2[Thought 2: 结合观察，继续推理]
+    T2 --> A2[Action 2: 调用工具或准备回答]
+    A2 --> O2[Observation 2: 工具返回结果]
+    O2 --> T3[Thought 3: 信息充分，可得出结论]
+    T3 --> F[Final Answer: 输出最终答案]
+</pre><p>每一轮循环包含三个要素：</p>
+<ul>
+<li><strong>Thought（思考）</strong>：模型对当前状态的分析与规划，&ldquo;我现在知道什么？还需要什么？下一步该做什么？&rdquo;</li>
+<li><strong>Action（行动）</strong>：基于思考执行的具体操作，如搜索、计算、查询数据库</li>
+<li><strong>Observation（观察）</strong>：行动返回的结果，作为下一轮思考的输入</li>
+</ul>
+<p>这个循环的精妙之处在于<strong>推理与行动形成闭环</strong>：推理指导行动的方向，行动为推理提供新的信息。这使得模型既能&quot;想&quot;又能&quot;做&rdquo;，弥补了纯推理的知识盲区与纯行动的规划缺失。</p>
+<h3 id="react-prompt-模板">
+<a class="header-anchor" href="#react-prompt-%e6%a8%a1%e6%9d%bf"></a>
+ReAct Prompt 模板
+</h3><p>ReAct 的实现关键在于 Prompt 设计——用一个结构化的模板约束模型按 Thought/Action/Observation 格式输出。下面是一个典型的 ReAct Prompt 模板：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">REACT_PROMPT_TEMPLATE</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;你是一个能够使用工具解决问题的智能助手。
+</span></span></span><span class="line"><span class="cl"><span class="s2">请严格按照以下格式交替输出 Thought 和 Action，直到得出最终答案。
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">可用工具：
+</span></span></span><span class="line"><span class="cl"><span class="s2">- search(query): 搜索互联网获取信息
+</span></span></span><span class="line"><span class="cl"><span class="s2">- calculate(expression): 执行数学计算
+</span></span></span><span class="line"><span class="cl"><span class="s2">- lookup(keyword): 在上一次搜索结果中查找关键词
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">输出格式：
+</span></span></span><span class="line"><span class="cl"><span class="s2">Thought: 你对当前状态的分析与下一步计划
+</span></span></span><span class="line"><span class="cl"><span class="s2">Action: 工具名称(参数)
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">当你认为已经获得足够信息时，输出：
+</span></span></span><span class="line"><span class="cl"><span class="s2">Thought: 我已经得到答案
+</span></span></span><span class="line"><span class="cl"><span class="s2">Final Answer: 最终答案
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">示例：
+</span></span></span><span class="line"><span class="cl"><span class="s2">Question: 巴黎奥运会是第几届？举办地人口多少？
+</span></span></span><span class="line"><span class="cl"><span class="s2">Thought: 我需要先查找巴黎奥运会是第几届。
+</span></span></span><span class="line"><span class="cl"><span class="s2">Action: search(巴黎奥运会 第几届)
+</span></span></span><span class="line"><span class="cl"><span class="s2">Observation: 2024 年巴黎奥运会是第 33 届夏季奥林匹克运动会。
+</span></span></span><span class="line"><span class="cl"><span class="s2">Thought: 接着查找巴黎的人口。
+</span></span></span><span class="line"><span class="cl"><span class="s2">Action: search(巴黎 人口)
+</span></span></span><span class="line"><span class="cl"><span class="s2">Observation: 巴黎市区人口约 210 万。
+</span></span></span><span class="line"><span class="cl"><span class="s2">Thought: 我已获得所需信息。
+</span></span></span><span class="line"><span class="cl"><span class="s2">Final Answer: 2024 年巴黎奥运会是第 33 届夏季奥运会，举办地巴黎市区人口约 210 万。
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">现在请回答：
+</span></span></span><span class="line"><span class="cl"><span class="s2">Question: </span><span class="si">{question}</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span></code></pre></div><p>注意几个设计要点：格式约束要明确（<code>工具名称(参数)</code>）、工具描述要清晰、示例要覆盖完整的 Thought-Action-Observation 循环。Observation 字段由系统在执行 Action 后填充，而非模型生成。</p>
+<h3 id="react-完整实现">
+<a class="header-anchor" href="#react-%e5%ae%8c%e6%95%b4%e5%ae%9e%e7%8e%b0"></a>
+ReAct 完整实现
+</h3><p>下面实现一个完整的 ReAct Agent，包含搜索与计算工具，能自主完成多步任务：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">re</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">json</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ---------- 工具定义 ----------</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;模拟搜索工具（实际可接入搜索 API）&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;光速&#34;</span><span class="p">:</span> <span class="s2">&#34;真空中的光速约为 299792458 米/秒&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;地球到月球距离&#34;</span><span class="p">:</span> <span class="s2">&#34;地月平均距离约 384400 千米&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;太阳到地球距离&#34;</span><span class="p">:</span> <span class="s2">&#34;日地平均距离约 1.496 亿千米&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">db</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">val</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="sa">f</span><span class="s2">&#34;未找到关于「</span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">」的信息&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;数学计算工具&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="n">expression</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&#34;计算错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">TOOLS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;search&#34;</span><span class="p">:</span> <span class="n">search</span><span class="p">,</span> <span class="s2">&#34;calculate&#34;</span><span class="p">:</span> <span class="n">calculate</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ---------- ReAct Agent ----------</span>
+</span></span><span class="line"><span class="cl"><span class="n">REACT_SYSTEM</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;你是一个能使用工具解决问题的助手。
+</span></span></span><span class="line"><span class="cl"><span class="s2">可用工具：
+</span></span></span><span class="line"><span class="cl"><span class="s2">- search(query): 搜索信息
+</span></span></span><span class="line"><span class="cl"><span class="s2">- calculate(expression): 数学计算
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">严格按以下格式输出，每次只输出一个 Thought 和一个 Action：
+</span></span></span><span class="line"><span class="cl"><span class="s2">Thought: 你的分析与计划
+</span></span></span><span class="line"><span class="cl"><span class="s2">Action: 工具名(参数)
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">获得足够信息后输出：
+</span></span></span><span class="line"><span class="cl"><span class="s2">Thought: 分析总结
+</span></span></span><span class="line"><span class="cl"><span class="s2">Final Answer: 最终答案&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">parse_action</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;解析模型输出中的 Action 行&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&#34;Action:\s*(\w+)\((.*)\)&#34;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">m</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">react_agent</span><span class="p">(</span><span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">llm_call</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;完整的 ReAct Agent 主循环&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;system&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">REACT_SYSTEM</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&#34;Question: </span><span class="si">{</span><span class="n">question</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_steps</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 1. 模型生成 Thought + Action</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span> <span class="o">=</span> <span class="n">llm_call</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">--- Step </span><span class="si">{</span><span class="n">step</span> <span class="o">+</span> <span class="mi">1</span><span class="si">}</span><span class="s2"> ---</span><span class="se">\n</span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 2. 检查是否给出最终答案</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="s2">&#34;Final Answer:&#34;</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&#34;Final Answer:&#34;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 3. 解析并执行 Action</span>
+</span></span><span class="line"><span class="cl">        <span class="n">tool_name</span><span class="p">,</span> <span class="n">tool_arg</span> <span class="o">=</span> <span class="n">parse_action</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">tool_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TOOLS</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">observation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;未知工具: </span><span class="si">{</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">observation</span> <span class="o">=</span> <span class="n">TOOLS</span><span class="p">[</span><span class="n">tool_name</span><span class="p">](</span><span class="n">tool_arg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Observation: </span><span class="si">{</span><span class="n">observation</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 4. 将 Observation 反馈给模型，进入下一轮</span>
+</span></span><span class="line"><span class="cl">        <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;assistant&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">output</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&#34;Observation: </span><span class="si">{</span><span class="n">observation</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s2">&#34;达到最大步数，未能完成任务。&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># ---------- 模拟 LLM 调用 ----------</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">mock_llm</span><span class="p">(</span><span class="n">messages</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;模拟 LLM（实际替换为真实 API 调用）&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">last</span> <span class="o">=</span> <span class="n">messages</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s2">&#34;content&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="s2">&#34;光从太阳到地球需要多少秒&#34;</span> <span class="ow">in</span> <span class="n">last</span> <span class="ow">or</span> <span class="s2">&#34;Question:&#34;</span> <span class="ow">in</span> <span class="n">last</span> <span class="ow">and</span> <span class="s2">&#34;太阳&#34;</span> <span class="ow">in</span> <span class="n">last</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="s2">&#34;Observation&#34;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">last</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="p">(</span><span class="s2">&#34;Thought: 我需要先查太阳到地球的距离和光速。</span><span class="se">\n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;Action: search(太阳到地球距离 光速)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="s2">&#34;299792458&#34;</span> <span class="ow">in</span> <span class="n">last</span> <span class="ow">and</span> <span class="s2">&#34;1.496&#34;</span> <span class="ow">in</span> <span class="n">last</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="p">(</span><span class="s2">&#34;Thought: 距离 1.496 亿千米 = 1.496e8 千米，&#34;</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;光速 299792458 米/秒。用距离除以光速即可。</span><span class="se">\n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;Action: calculate(1.496e8 * 1000 / 299792458)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="s2">&#34;499&#34;</span> <span class="ow">in</span> <span class="n">last</span> <span class="ow">or</span> <span class="s2">&#34;4.9&#34;</span> <span class="ow">in</span> <span class="n">last</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="p">(</span><span class="s2">&#34;Thought: 计算结果约 499 秒，即约 8.3 分钟。</span><span class="se">\n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;Final Answer: 光从太阳传播到地球约需 499 秒，约 8.3 分钟。&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s2">&#34;Thought: 信息不足，无法继续。&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 运行</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">answer</span> <span class="o">=</span> <span class="n">react_agent</span><span class="p">(</span><span class="s2">&#34;光从太阳到地球需要多少秒？&#34;</span><span class="p">,</span> <span class="n">mock_llm</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">最终答案: </span><span class="si">{</span><span class="n">answer</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>运行流程：模型先 Thought 分析需要哪些信息 → Action 调用 search 查询距离与光速 → Observation 拿到数据 → Thought 决定用 calculate 计算 → Observation 得到约 499 秒 → Thought 总结 → Final Answer。整个过程<strong>推理指导了工具调用，工具返回又驱动了下一步推理</strong>。</p>
+<h3 id="react-的优势与局限">
+<a class="header-anchor" href="#react-%e7%9a%84%e4%bc%98%e5%8a%bf%e4%b8%8e%e5%b1%80%e9%99%90"></a>
+ReAct 的优势与局限
+</h3><table>
+	<thead>
+			<tr>
+					<th>维度</th>
+					<th>CoT（纯推理）</th>
+					<th>ReAct（推理+行动）</th>
+					<th>Act-only（纯行动）</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>外部信息获取</strong></td>
+					<td>无法获取，依赖内部知识</td>
+					<td>可调用工具获取实时信息</td>
+					<td>可获取，但调用盲目</td>
+			</tr>
+			<tr>
+					<td><strong>幻觉风险</strong></td>
+					<td>高，可能编造事实</td>
+					<td>低，基于观察结果推理</td>
+					<td>中，可能误用工具结果</td>
+			</tr>
+			<tr>
+					<td><strong>多步规划</strong></td>
+					<td>强，推理链连贯</td>
+					<td>强，推理驱动行动</td>
+					<td>弱，缺乏整体规划</td>
+			</tr>
+			<tr>
+					<td><strong>计算可靠性</strong></td>
+					<td>弱，模型算术易错</td>
+					<td>强，可调用计算工具</td>
+					<td>中，能算但不知何时算</td>
+			</tr>
+			<tr>
+					<td><strong>Token 开销</strong></td>
+					<td>中</td>
+					<td>高（含工具描述与观察）</td>
+					<td>中</td>
+			</tr>
+			<tr>
+					<td><strong>延迟</strong></td>
+					<td>低</td>
+					<td>高（多轮工具调用）</td>
+					<td>中</td>
+			</tr>
+			<tr>
+					<td><strong>适用场景</strong></td>
+					<td>纯逻辑/数学推理</td>
+					<td>需要外部信息的复杂任务</td>
+					<td>简单工具调用</td>
+			</tr>
+	</tbody>
+</table>
+<p>ReAct 的主要局限在于<strong>多轮交互带来的延迟与成本</strong>：每一步 Action 都要等待工具返回，整个任务可能需要 5-10 轮循环。此外，ReAct 依赖模型稳定遵循格式，小模型容易&quot;跑偏&quot;导致 Action 解析失败。</p>
+<h2 id="self-consistency自洽性采样">
+<a class="header-anchor" href="#self-consistency%e8%87%aa%e6%b4%bd%e6%80%a7%e9%87%87%e6%a0%b7"></a>
+Self-Consistency（自洽性采样）
+</h2><h3 id="核心思想">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e6%80%9d%e6%83%b3"></a>
+核心思想
+</h3><p>思维链让模型展开推理，但单条推理路径存在一个隐患——<strong>它可能恰好走错了一步</strong>。一个中间步骤的错误会像滚雪球一样传播到最终答案。Self-Consistency 的思路极其直接：<strong>既然一条路径可能出错，那就采样多条路径，看哪条路径得到的答案最&quot;一致&quot;</strong>。</p>
+<pre class="mermaid">
+  graph TD
+    Q[问题输入] --> S1[采样路径 1: 推理 → 答案 A]
+    Q --> S2[采样路径 2: 推理 → 答案 B]
+    Q --> S3[采样路径 3: 推理 → 答案 A]
+    Q --> S4[采样路径 4: 推理 → 答案 A]
+    Q --> S5[采样路径 5: 推理 → 答案 C]
+    S1 --> V[多数投票]
+    S2 --> V
+    S3 --> V
+    S4 --> V
+    S5 --> V
+    V --> F[最终答案: A 出现 3 次，最多]
+</pre><p>这个方法的直觉来自于一个观察：<strong>正确的推理路径可能有多条，但它们最终会收敛到同一个正确答案；而错误的路径往往各错各的，答案分散</strong>。因此，&ldquo;多数答案&quot;大概率就是正确答案。</p>
+<h3 id="数学基础">
+<a class="header-anchor" href="#%e6%95%b0%e5%ad%a6%e5%9f%ba%e7%a1%80"></a>
+数学基础
+</h3><p>Self-Consistency 的理论基础是<strong>对推理路径做边际化（marginalization）</strong>。直接回答只建模 $P(y|x)$，而 Self-Consistency 将推理路径 $s$ 作为隐变量，对所有可能的路径求和：</p>
+$$P(y|x) = \sum_{s_1, \dots, s_n} P(y, s_1, \dots, s_n | x) = \sum_{s} P(y|s, x) P(s|x)$$<p>其中 $s = (s_1, \dots, s_n)$ 是一条完整的推理路径。理论上，这个求和覆盖所有可能的推理路径，得到的 $P(y|x)$ 是&quot;积分掉推理过程&quot;后的真实答案分布。</p>
+<p>实践中无法穷举所有路径，于是用<strong>采样近似</strong>：从 $P(s|x)$ 中独立采样 $N$ 条路径 $\{s^{(1)}, \dots, s^{(N)}\}$，则：</p>
+$$\hat{P}(y|x) = \frac{1}{N} \sum_{i=1}^{N} P(y | s^{(i)}, x)$$<p>多数投票（majority voting）就是取 $\hat{P}(y|x)$ 最大的 $y$：</p>
+$$y^* = \arg\max_y \sum_{i=1}^{N} \mathbb{1}[y^{(i)} = y]$$<p>其中 $\mathbb{1}[\cdot]$ 是指示函数，$y^{(i)}$ 是第 $i$ 条路径推导出的答案。</p>
+<p><strong>多数投票的数学保证</strong>：假设每条路径独立的正确率为 $p$，采样 $N$ 条，则多数投票的正确率为 $\sum_{k=\lceil N/2 \rceil}^{N} \binom{N}{k} p^k (1-p)^{N-k}$。当 $p > 0.5$ 时，这个概率随 $N$ 增大趋近于 1。也就是说，<strong>只要单条路径的正确率超过 50%，采样足够多条就能把整体准确率推到接近 100%</strong>。</p>
+<h3 id="实现方法">
+<a class="header-anchor" href="#%e5%ae%9e%e7%8e%b0%e6%96%b9%e6%b3%95"></a>
+实现方法
+</h3><p>Self-Consistency 的实现有三个关键参数：温度、采样数量、投票策略。</p>
+<p><strong>温度参数</strong>：需要使用 $temperature > 0$ 来引入随机性，通常设为 $0.5 \sim 0.7$。温度太低则所有路径趋同（退化为单条 CoT），温度太高则推理质量下降。推荐 $temperature = 0.7$。</p>
+<p><strong>采样数量</strong>：通常 $5 \sim 40$ 条。研究表明，准确率随采样数增加呈对数增长——边际收益递减，因此不必盲目增加。一般 $20$ 条即可获得大部分收益。</p>
+<p><strong>投票策略</strong>：</p>
+<ul>
+<li><strong>多数投票（majority voting）</strong>：最简单，取出现次数最多的答案</li>
+<li><strong>加权投票（weighted voting）</strong>：按路径的 log-probability 加权，概率高的路径权重更大</li>
+<li><strong>Top-k 投票</strong>：只对 log-probability 最高的 k 条路径投票，过滤掉低质量路径</li>
+</ul>
+<p>下面是 Self-Consistency 的完整实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">client</span> <span class="o">=</span> <span class="n">OpenAI</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">COT_PROMPT</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;请一步步推理并回答以下问题。
+</span></span></span><span class="line"><span class="cl"><span class="s2">最后用 &#34;答案是：X&#34; 的格式给出最终答案（X 为具体数值）。
+</span></span></span><span class="line"><span class="cl"><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">问题：</span><span class="si">{question}</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">sample_reasoning_path</span><span class="p">(</span><span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;采样一条推理路径&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">prompt</span> <span class="o">=</span> <span class="n">COT_PROMPT</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">question</span><span class="o">=</span><span class="n">question</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="n">model</span><span class="o">=</span><span class="s2">&#34;gpt-4o&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="n">messages</span><span class="o">=</span><span class="p">[{</span><span class="s2">&#34;role&#34;</span><span class="p">:</span> <span class="s2">&#34;user&#34;</span><span class="p">,</span> <span class="s2">&#34;content&#34;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">}],</span>
+</span></span><span class="line"><span class="cl">        <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">extract_answer</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;从推理文本中提取最终答案&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="kn">import</span> <span class="nn">re</span>
+</span></span><span class="line"><span class="cl">    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&#34;答案是[：:]\s*(.+)&#34;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">m</span> <span class="k">else</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">self_consistency</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">num_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;Self-Consistency：多路采样 + 多数投票&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">answers</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_samples</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">path</span> <span class="o">=</span> <span class="n">sample_reasoning_path</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">ans</span> <span class="o">=</span> <span class="n">extract_answer</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">ans</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">answers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ans</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">answers</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s2">&#34;未能提取到答案&#34;</span><span class="p">,</span> <span class="n">paths</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 多数投票</span>
+</span></span><span class="line"><span class="cl">    <span class="n">vote</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">answers</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">best_answer</span><span class="p">,</span> <span class="n">best_count</span> <span class="o">=</span> <span class="n">vote</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="n">confidence</span> <span class="o">=</span> <span class="n">best_count</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">answers</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;答案分布: </span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">vote</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;置信度: </span><span class="si">{</span><span class="n">confidence</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">best_count</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">answers</span><span class="p">)</span><span class="si">}</span><span class="s2">)&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">best_answer</span><span class="p">,</span> <span class="n">paths</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 示例</span>
+</span></span><span class="line"><span class="cl"><span class="n">question</span> <span class="o">=</span> <span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;一个农场有鸡和兔，共 35 个头、94 只脚。&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;鸡和兔各有多少只？&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">answer</span><span class="p">,</span> <span class="n">paths</span> <span class="o">=</span> <span class="n">self_consistency</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">num_samples</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;最终答案: 鸡 </span><span class="si">{</span><span class="n">answer</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>输出示例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">答案分布: {&#39;鸡 23 只，兔 12 只&#39;: 16, &#39;鸡 12 只，兔 23 只&#39;: 3, &#39;鸡 23，兔 12&#39;: 1}
+</span></span><span class="line"><span class="cl">置信度: 80.0% (16/20)
+</span></span><span class="line"><span class="cl">最终答案: 鸡 23 只，兔 12 只
+</span></span></code></pre></div><p>可以看到，20 条路径中有 16 条得到&quot;鸡 23 只，兔 12 只&rdquo;，少数路径出错但被多数投票纠正。这正是 Self-Consistency 的威力——<strong>用冗余换取鲁棒性</strong>。</p>
+<h3 id="self-consistency-的开销与权衡">
+<a class="header-anchor" href="#self-consistency-%e7%9a%84%e5%bc%80%e9%94%80%e4%b8%8e%e6%9d%83%e8%a1%a1"></a>
+Self-Consistency 的开销与权衡
+</h3><p>Self-Consistency 的代价是显而易见的：<strong>采样 $N$ 条路径意味着 $N$ 倍的 API 调用与 token 开销</strong>。下表展示了采样数量与准确率、成本的权衡关系（以 GSM8K 为例的经验数据）：</p>
+<table>
+	<thead>
+			<tr>
+					<th>采样数 $N$</th>
+					<th>准确率（GPT-4o）</th>
+					<th>相对成本</th>
+					<th>边际收益</th>
+					<th>推荐场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>1（单条 CoT）</td>
+					<td>~85%</td>
+					<td>1×</td>
+					<td>—</td>
+					<td>日常任务、低成本场景</td>
+			</tr>
+			<tr>
+					<td>5</td>
+					<td>~91%</td>
+					<td>5×</td>
+					<td>+6%</td>
+					<td>中等价值任务</td>
+			</tr>
+			<tr>
+					<td>10</td>
+					<td>~93%</td>
+					<td>10×</td>
+					<td>+2%</td>
+					<td>较高价值任务</td>
+			</tr>
+			<tr>
+					<td>20</td>
+					<td>~95%</td>
+					<td>20×</td>
+					<td>+2%</td>
+					<td>高价值任务</td>
+			</tr>
+			<tr>
+					<td>40</td>
+					<td>~96%</td>
+					<td>40×</td>
+					<td>+1%</td>
+					<td>极高价值任务</td>
+			</tr>
+			<tr>
+					<td>100</td>
+					<td>~96.5%</td>
+					<td>100×</td>
+					<td>+0.5%</td>
+					<td>一般不推荐（边际过低）</td>
+			</tr>
+	</tbody>
+</table>
+<p>规律很清晰：<strong>准确率随采样数对数增长，成本线性增长</strong>。因此存在一个&quot;甜蜜点&quot;——通常在 $10 \sim 20$ 条之间，性价比最高。</p>
+<p>实践建议：</p>
+<ul>
+<li><strong>低价值任务</strong>（如日常聊天、简单问答）：用单条 CoT 即可，无需 Self-Consistency</li>
+<li><strong>中价值任务</strong>（如数据分析、代码生成）：采样 $5 \sim 10$ 条</li>
+<li><strong>高价值任务</strong>（如数学竞赛、医疗诊断辅助、金融决策）：采样 $20 \sim 40$ 条，值得为 1% 的准确率提升买单</li>
+</ul>
+<h2 id="进阶推理方法">
+<a class="header-anchor" href="#%e8%bf%9b%e9%98%b6%e6%8e%a8%e7%90%86%e6%96%b9%e6%b3%95"></a>
+进阶推理方法
+</h2><h3 id="tree-of-thoughts-tot">
+<a class="header-anchor" href="#tree-of-thoughts-tot"></a>
+Tree-of-Thoughts (ToT)
+</h3><p>思维链是线性的——一条路走到底。但人类解题时常会<strong>探索多个方向，遇到死胡同就回溯</strong>。Tree-of-Thoughts（ToT）将这一思路形式化：把推理过程组织成一棵<strong>搜索树</strong>，每个节点是一个&quot;思维状态&quot;，通过分支、评估、剪枝来寻找最优推理路径。</p>
+<pre class="mermaid">
+  graph TD
+    R[初始状态] --> A[思维状态 A]
+    R --> B[思维状态 B]
+    R --> C[思维状态 C]
+    A --> A1[子状态 A1]
+    A --> A2[子状态 A2]
+    B --> B1[子状态 B1: 评估低分，剪枝]
+    C --> C1[子状态 C1]
+    C1 --> C2[子状态 C2: 评估高分]
+    C2 --> F[最终解]
+</pre><p>ToT 的核心包含四个组件：</p>
+<ol>
+<li><strong>思维分解（Thought Decomposition）</strong>：将推理拆分为可评估的中间状态</li>
+<li><strong>状态生成（State Generator）</strong>：从当前状态生成 $k$ 个候选后续状态</li>
+<li><strong>状态评估（State Evaluator）</strong>：给每个状态打分，判断是否值得继续</li>
+<li><strong>搜索算法（Search Algorithm）</strong>：BFS、DFS 或束搜索（beam search）遍历思维树</li>
+</ol>
+<p>状态评估是 ToT 的关键。评估函数可以建模为：</p>
+$$V(s, x) = \text{LLM}_{\text{eval}}(s, x) \in [0, 1]$$<p>其中 $s$ 是当前思维状态，$x$ 是原始问题。评估方式有两种：</p>
+<ul>
+<li><strong>数值评估</strong>：让 LLM 给状态打一个 $0 \sim 1$ 的分数</li>
+<li><strong>排序评估</strong>：让 LLM 对多个候选状态排序，取前 $k$ 个</li>
+</ul>
+<p>搜索时，束搜索保留评估分最高的 $b$ 个分支继续展开：</p>
+$$\mathcal{B}_{t+1} = \text{Top}_b \{ (s, s') \mid s \in \mathcal{B}_t, s' \in \text{Children}(s) \}$$<p>ToT 在 24 点游戏、创意写作、填字游戏等需要&quot;探索-回溯&quot;的任务上显著优于 CoT。但代价是<strong>极大的计算开销</strong>——树深 $d$、分支数 $b$、每节点候选 $k$ 意味着 $O(k^d)$ 次 LLM 调用。</p>
+<h3 id="graph-of-thoughts-got">
+<a class="header-anchor" href="#graph-of-thoughts-got"></a>
+Graph-of-Thoughts (GoT)
+</h3><p>如果推理过程不是树而是一张<strong>图</strong>呢？现实中，思维之间往往存在<strong>合并、复用、循环</strong>的关系——解一道题时，两个不同的推理分支可能汇聚到同一个结论，或者某个中间结果可以被多个后续步骤复用。</p>
+<p>Graph-of-Thoughts（GoT）将推理过程建模为<strong>有向图</strong>，支持四种基本操作：</p>
+<pre class="mermaid">
+  graph LR
+    subgraph 分支
+        A1[思维 A] --> B1[思维 B1]
+        A1 --> B2[思维 B2]
+    end
+    subgraph 合并
+        C1[思维 C1] --> D[思维 D]
+        C2[思维 C2] --> D
+    end
+    subgraph 回溯
+        E[思维 E] -->|修正| E2[思维 E']
+    end
+    subgraph 复用
+        F[思维 F] --> G1[思维 G1]
+        F --> G2[思维 G2]
+    end
+</pre><ul>
+<li><strong>分支（Branch）</strong>：从一个思维状态生成多个后续</li>
+<li><strong>合并（Aggregate）</strong>：将多个思维状态融合为一个</li>
+<li><strong>回溯（Backtrack）</strong>：发现错误时修正之前的思维</li>
+<li><strong>复用（Reuse）</strong>：一个中间结果被多条路径共享</li>
+</ul>
+<p>GoT 的优势在于<strong>信息融合</strong>——可以把多条推理路径的结论合并成更全面的判断。其聚合操作可形式化为：</p>
+$$s_{\text{merged}} = \text{LLM}_{\text{merge}}(s_1, s_2, \dots, s_k, x)$$<p>GoT 在排序、摘要合并等需要&quot;综合多源信息&quot;的任务上表现突出，但实现复杂度也最高，工程落地难度大。</p>
+<h3 id="plan-and-solve">
+<a class="header-anchor" href="#plan-and-solve"></a>
+Plan-and-Solve
+</h3><p>Plan-and-Solve 是对 Zero-shot CoT 的改进。Zero-shot CoT 的&quot;Let&rsquo;s think step by step&quot;虽然有效，但模型有时会&quot;无计划地漫游&quot;。Plan-and-Solve 的思路是：<strong>先让模型制定一个解题计划，再按计划逐步执行</strong>。</p>
+<p>Prompt 设计如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Let&#39;s first understand the problem and devise a plan to solve it.
+</span></span><span class="line"><span class="cl">Then, let&#39;s carry out the plan to solve the problem step by step.
+</span></span></code></pre></div><p>分两阶段：</p>
+<ol>
+<li><strong>规划阶段</strong>：分析问题，列出解题步骤</li>
+<li><strong>执行阶段</strong>：按计划逐步执行，每步给出推理</li>
+</ol>
+<p>Plan-and-Solve 在 GSM8K 上比 Zero-shot CoT 提升约 5-8 个百分点，且无需示例，实现简单。它本质上是把 CoT 的&quot;隐式规划&quot;显式化。</p>
+<h3 id="方法对比表">
+<a class="header-anchor" href="#%e6%96%b9%e6%b3%95%e5%af%b9%e6%af%94%e8%a1%a8"></a>
+方法对比表
+</h3><table>
+	<thead>
+			<tr>
+					<th>方法</th>
+					<th>推理结构</th>
+					<th>外部工具</th>
+					<th>采样策略</th>
+					<th>计算开销</th>
+					<th>适用任务</th>
+					<th>实现难度</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>CoT</strong></td>
+					<td>线性</td>
+					<td>无</td>
+					<td>单条</td>
+					<td>低</td>
+					<td>数学/逻辑推理</td>
+					<td>极低</td>
+			</tr>
+			<tr>
+					<td><strong>Zero-shot CoT</strong></td>
+					<td>线性</td>
+					<td>无</td>
+					<td>单条</td>
+					<td>低</td>
+					<td>通用推理</td>
+					<td>极低</td>
+			</tr>
+			<tr>
+					<td><strong>Self-Consistency</strong></td>
+					<td>多条线性</td>
+					<td>无</td>
+					<td>多路投票</td>
+					<td>中高</td>
+					<td>高价值推理任务</td>
+					<td>低</td>
+			</tr>
+			<tr>
+					<td><strong>ReAct</strong></td>
+					<td>线性+循环</td>
+					<td>有</td>
+					<td>单条</td>
+					<td>中</td>
+					<td>需外部信息的任务</td>
+					<td>中</td>
+			</tr>
+			<tr>
+					<td><strong>ToT</strong></td>
+					<td>树形</td>
+					<td>可选</td>
+					<td>搜索</td>
+					<td>高</td>
+					<td>探索性强的问题</td>
+					<td>高</td>
+			</tr>
+			<tr>
+					<td><strong>GoT</strong></td>
+					<td>图形</td>
+					<td>可选</td>
+					<td>搜索+聚合</td>
+					<td>很高</td>
+					<td>信息融合任务</td>
+					<td>很高</td>
+			</tr>
+			<tr>
+					<td><strong>Plan-and-Solve</strong></td>
+					<td>规划+线性</td>
+					<td>无</td>
+					<td>单条</td>
+					<td>低中</td>
+					<td>复杂多步任务</td>
+					<td>低</td>
+			</tr>
+	</tbody>
+</table>
+<p>选型原则：<strong>从简单方法开始，只在简单方法不够时才升级</strong>。CoT → Self-Consistency → ReAct → ToT 是一条由简到繁的升级路径。</p>
+<h2 id="实践指南">
+<a class="header-anchor" href="#%e5%ae%9e%e8%b7%b5%e6%8c%87%e5%8d%97"></a>
+实践指南
+</h2><h3 id="方法选择决策树">
+<a class="header-anchor" href="#%e6%96%b9%e6%b3%95%e9%80%89%e6%8b%a9%e5%86%b3%e7%ad%96%e6%a0%91"></a>
+方法选择决策树
+</h3><p>面对一个具体任务，如何选择合适的推理增强方法？下面的决策流程图给出选型建议：</p>
+<pre class="mermaid">
+  graph TD
+    START[任务输入] --> Q1{需要外部信息或<br/>工具调用？}
+    Q1 -->|是| REACT[使用 ReAct]
+    Q1 -->|否| Q2{任务价值高<br/>且允许高延迟？}
+    Q2 -->|是| Q3{需要探索多个<br/>方向并回溯？}
+    Q2 -->|否| Q4{模型规模 > 60B？}
+    Q3 -->|是| TOT[使用 ToT]
+    Q3 -->|否| SC[使用 Self-Consistency]
+    Q4 -->|是| Q5{需要先规划<br/>再执行？}
+    Q4 -->|否| DIRECT[直接回答即可<br/>CoT 可能有害]
+    Q5 -->|是| PS[Plan-and-Solve]
+    Q5 -->|否| COT[使用 CoT]
+</pre><p>核心判断逻辑：</p>
+<ol>
+<li><strong>是否需要外部信息？</strong> 是 → ReAct（推理+工具）</li>
+<li><strong>任务价值是否足够高？</strong> 是 → 考虑 Self-Consistency 或 ToT</li>
+<li><strong>是否需要探索回溯？</strong> 是 → ToT；否 → Self-Consistency</li>
+<li><strong>模型是否足够大？</strong> 否 → 直接回答（CoT 可能有害）；是 → CoT 或 Plan-and-Solve</li>
+</ol>
+<h3 id="prompt-工程技巧">
+<a class="header-anchor" href="#prompt-%e5%b7%a5%e7%a8%8b%e6%8a%80%e5%b7%a7"></a>
+Prompt 工程技巧
+</h3><p>不同推理任务适合不同的 Prompt 模板：</p>
+<table>
+	<thead>
+			<tr>
+					<th>任务类型</th>
+					<th>推荐 Prompt 模板</th>
+					<th>示例</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>数学推理</strong></td>
+					<td>Few-shot CoT + 算式标注</td>
+					<td>&ldquo;请列出算式并计算：&hellip;&rdquo;</td>
+			</tr>
+			<tr>
+					<td><strong>逻辑推理</strong></td>
+					<td>Few-shot CoT + 假设检验</td>
+					<td>&ldquo;逐一验证每个假设&hellip;&rdquo;</td>
+			</tr>
+			<tr>
+					<td><strong>多步问答</strong></td>
+					<td>ReAct + 工具调用</td>
+					<td>&ldquo;Thought → Action → Observation&rdquo;</td>
+			</tr>
+			<tr>
+					<td><strong>创意写作</strong></td>
+					<td>ToT + 分支评估</td>
+					<td>&ldquo;生成 3 个方案，评估后选最优&hellip;&rdquo;</td>
+			</tr>
+			<tr>
+					<td><strong>代码生成</strong></td>
+					<td>Plan-and-Solve</td>
+					<td>&ldquo;先设计算法，再实现代码&hellip;&rdquo;</td>
+			</tr>
+			<tr>
+					<td><strong>事实核查</strong></td>
+					<td>ReAct + 搜索工具</td>
+					<td>&ldquo;搜索证据，验证每个声明&hellip;&rdquo;</td>
+			</tr>
+	</tbody>
+</table>
+<p>几个通用技巧：</p>
+<ul>
+<li><strong>明确输出格式</strong>：要求模型用固定格式输出答案（如&quot;答案是：X&quot;），便于后续解析与投票</li>
+<li><strong>加入自我验证</strong>：在推理后加一步&quot;检查上述推理是否正确&quot;，能进一步降低错误率</li>
+<li><strong>示例要高质量</strong>：Few-shot 的示例推理必须正确，错误示例会&quot;教坏&quot;模型</li>
+<li><strong>避免过度提示</strong>：简单任务不需要 CoT，强行加&quot;step by step&quot;反而增加开销</li>
+</ul>
+<h3 id="成本优化">
+<a class="header-anchor" href="#%e6%88%90%e6%9c%ac%e4%bc%98%e5%8c%96"></a>
+成本优化
+</h3><p>推理增强方法的 token 开销不可忽视。以一次 GSM8K 推理为例，分析各方法的成本：</p>
+<p><strong>单条 CoT 的 token 开销</strong>：</p>
+$$\text{Cost}_{\text{CoT}} = (L_{\text{prompt}} + L_{\text{reasoning}} + L_{\text{answer}}) \times P_{\text{token}}$$<p>其中 $L_{\text{prompt}}$ 是输入 prompt 长度，$L_{\text{reasoning}}$ 是推理链长度，$L_{\text{answer}}$ 是答案长度，$P_{\text{token}}$ 是每 token 价格。</p>
+<p><strong>Self-Consistency 的开销</strong>：</p>
+$$\text{Cost}_{\text{SC}} = N \times (L_{\text{prompt}} + L_{\text{reasoning}} + L_{\text{answer}}) \times P_{\text{token}}$$<p>采样 $N$ 条，成本直接翻 $N$ 倍。</p>
+<p><strong>ReAct 的开销</strong>：</p>
+$$\text{Cost}_{\text{ReAct}} = \sum_{t=1}^{T} (L_{\text{prompt}} + t \times L_{\text{round}}) \times P_{\text{token}}$$<p>其中 $T$ 是循环轮数，$L_{\text{round}}$ 是每轮 Thought+Action+Observation 的平均长度。注意 ReAct 的输入会随轮数累积（每轮都要带上历史上下文），成本呈二次增长。</p>
+<table>
+	<thead>
+			<tr>
+					<th>方法</th>
+					<th>典型 token 开销</th>
+					<th>相对成本</th>
+					<th>延迟</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>直接回答</td>
+					<td>~200 tokens</td>
+					<td>1×</td>
+					<td>低</td>
+			</tr>
+			<tr>
+					<td>单条 CoT</td>
+					<td>~500 tokens</td>
+					<td>2.5×</td>
+					<td>低</td>
+			</tr>
+			<tr>
+					<td>Self-Consistency (N=20)</td>
+					<td>~10000 tokens</td>
+					<td>50×</td>
+					<td>中（可并行）</td>
+			</tr>
+			<tr>
+					<td>ReAct (T=5)</td>
+					<td>~3000 tokens</td>
+					<td>15×</td>
+					<td>高（串行）</td>
+			</tr>
+			<tr>
+					<td>ToT (d=3, b=3, k=3)</td>
+					<td>~15000 tokens</td>
+					<td>75×</td>
+					<td>很高</td>
+			</tr>
+	</tbody>
+</table>
+<p>成本优化策略：</p>
+<ol>
+<li><strong>并行采样</strong>：Self-Consistency 的 $N$ 条路径互相独立，可并行请求，将延迟从 $O(N)$ 降为 $O(1)$</li>
+<li><strong>早停机制</strong>：当某答案的票数已超过 $N/2$，可提前终止采样</li>
+<li><strong>自适应采样</strong>：先采样少量（如 5 条），若答案高度一致则停止；若分散则继续采样</li>
+<li><strong>模型分级</strong>：用小模型做初步推理，低置信度时再用大模型 + Self-Consistency 复核</li>
+<li><strong>缓存复用</strong>：对相似问题缓存推理结果，避免重复计算</li>
+</ol>
+<p><strong>何时使用 Self-Consistency</strong>——一个简单的判断公式：</p>
+$$\text{Value of Accuracy Gain} > \text{Cost of Sampling}$$<p>即：准确率提升带来的价值（如避免一次错误决策的损失）应大于多采样的成本。对于医疗诊断、金融决策等&quot;错误代价极高&quot;的场景，即使成本翻 20 倍也值得；对于日常聊天，则完全没必要。</p>
+<h2 id="前沿方向">
+<a class="header-anchor" href="#%e5%89%8d%e6%b2%bf%e6%96%b9%e5%90%91"></a>
+前沿方向
+</h2><h3 id="o1o3-模型与内化推理">
+<a class="header-anchor" href="#o1o3-%e6%a8%a1%e5%9e%8b%e4%b8%8e%e5%86%85%e5%8c%96%e6%8e%a8%e7%90%86"></a>
+o1/o3 模型与内化推理
+</h3><p>2024 年 OpenAI 发布的 o1 模型标志着一个新范式：<strong>推理过程被内化到模型训练中</strong>。o1 通过大规模强化学习训练模型的&quot;内部思维链&quot;，使模型在输出前自动进行长链推理，而无需用户手动添加&quot;step by step&quot;提示。</p>
+<pre class="mermaid">
+  graph LR
+    A[外部 CoT: 用户提示<br/>模型被动推理] --> B[o1 内化推理: 模型自主<br/>长链思考]
+    B --> C[推理时计算缩放<br/>Scaling Test-time Compute]
+    C --> D[更强推理能力<br/>无需 Prompt 工程]
+</pre><p>这一方向的核心洞察是<strong>推理时计算缩放（test-time compute scaling）</strong>：与其一味增大模型参数，不如在推理时给模型更多&quot;思考预算&quot;。研究表明，o1 在数学竞赛（AIME）、编程竞赛（Codeforces）上的表现随推理 token 数增加而持续提升，打破了&quot;固定模型固定能力&quot;的假设。</p>
+<p>未来趋势：<strong>推理增强将从&quot;Prompt 工程&quot;走向&quot;模型内化&quot;</strong>，CoT、Self-Consistency 等技巧将逐渐被原生具备强推理能力的模型取代，但在开源模型与成本敏感场景中仍有长期价值。</p>
+<h3 id="自动-prompt-优化">
+<a class="header-anchor" href="#%e8%87%aa%e5%8a%a8-prompt-%e4%bc%98%e5%8c%96"></a>
+自动 Prompt 优化
+</h3><p>手工设计 Prompt 费时费力且依赖经验。自动 Prompt 优化（Automatic Prompt Optimization）用算法自动搜索最优 Prompt：</p>
+<ul>
+<li><strong>APE（Automatic Prompt Engineer）</strong>：让 LLM 生成候选 Prompt，在任务集上评估择优</li>
+<li><strong>OPRO（Optimization by PROmpting）</strong>：把 Prompt 优化建模为优化问题，用 LLM 作为优化器迭代改进</li>
+<li><strong>TextGrad</strong>：类比反向传播，把任务反馈作为&quot;梯度&quot;反向更新 Prompt</li>
+</ul>
+<p>这些方法让 Prompt 工程从&quot;手艺&quot;走向&quot;自动化&quot;，特别适合大规模部署场景。</p>
+<h3 id="推理与工具调用的深度融合">
+<a class="header-anchor" href="#%e6%8e%a8%e7%90%86%e4%b8%8e%e5%b7%a5%e5%85%b7%e8%b0%83%e7%94%a8%e7%9a%84%e6%b7%b1%e5%ba%a6%e8%9e%8d%e5%90%88"></a>
+推理与工具调用的深度融合
+</h3><p>ReAct 将推理与工具调用交替进行，但两者仍是&quot;分离&quot;的。前沿方向是让模型<strong>在推理过程中无缝内嵌工具调用</strong>——如 Toolformer 让模型在预训练阶段就学会&quot;何时该调用工具&quot;，Function Calling 让工具调用成为模型的原生能力。</p>
+<p>未来，推理增强与工具调用将进一步融合：模型在&quot;思考&quot;时可以随时调用工具获取信息、执行计算，而无需显式的 Thought-Action-Observation 三段式格式。这将大幅降低 Agent 的工程复杂度，同时提升推理质量。</p>
+<h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>从思维链到 ReAct，从 Self-Consistency 到 Tree-of-Thoughts，大语言模型的推理增强技术走过了一条清晰的演进之路：<strong>从&quot;展示过程&quot;到&quot;多路择优&quot;，从&quot;纯推理&quot;到&quot;推理+行动&quot;，从&quot;线性展开&quot;到&quot;搜索式推理&quot;</strong>。</p>
+<p>这些方法各有侧重，没有绝对的优劣：</p>
+<ul>
+<li><strong>CoT</strong> 是基石，简单有效，适合大多数推理任务</li>
+<li><strong>Self-Consistency</strong> 用冗余换鲁棒，适合高价值任务</li>
+<li><strong>ReAct</strong> 让模型拥有&quot;手脚&quot;，适合需要外部信息的任务</li>
+<li><strong>ToT/GoT</strong> 用搜索换质量，适合需要探索回溯的难题</li>
+</ul>
+<p>实践中的智慧在于<strong>按需选择、适度升级</strong>：从最简单的方法开始，只在不够时才增加复杂度。同时密切关注推理时计算缩放、模型内化推理等前沿趋势——未来的推理增强，可能越来越多地&quot;内置&quot;于模型本身。</p>
+<p>但无论模型如何进化，<strong>理解推理的本质——分解、搜索、验证、迭代——永远是构建高质量 AI 系统的基础</strong>。掌握这些原理，才能在任何模型时代都游刃有余。</p>
+<hr>
+<p><strong>参考文献</strong>：</p>
+<ol>
+<li>Wei J, et al. Chain-of-Thought Prompting Elicits Reasoning in Large Language Models. NeurIPS 2022.</li>
+<li>Kojima T, et al. Large Language Models are Zero-Shot Reasoners. NeurIPS 2022.</li>
+<li>Yao S, et al. ReAct: Synergizing Reasoning and Acting in Language Models. ICLR 2023.</li>
+<li>Wang X, et al. Self-Consistency Improves Chain of Thought Reasoning in Language Models. ICLR 2023.</li>
+<li>Yao S, et al. Tree of Thoughts: Deliberate Problem Solving with Large Language Models. NeurIPS 2023.</li>
+<li>Besta M, et al. Graph of Thoughts: Solving Elaborate Problems with Large Language Models. AAAI 2024.</li>
+</ol>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E6%80%9D%E7%BB%B4%E9%93%BE%E4%B8%8E%E6%8E%A8%E7%90%86%E5%A2%9E%E5%BC%BA/&amp;appkey=&amp;title=%e6%80%9d%e7%bb%b4%e9%93%be%e3%80%81ReAct%20%e4%b8%8e%20Self-Consistency&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="思维链、ReAct 与 Self-Consistency">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E6%80%9D%E7%BB%B4%E9%93%BE%E4%B8%8E%E6%8E%A8%E7%90%86%E5%A2%9E%E5%BC%BA/&amp;title=%e6%80%9d%e7%bb%b4%e9%93%be%e3%80%81ReAct%20%e4%b8%8e%20Self-Consistency&amp;desc=%e4%bb%8e%20Chain-of-Thought%20%e5%88%b0%20ReAct%20%e5%86%8d%e5%88%b0%e8%87%aa%e6%b4%bd%e6%80%a7%e9%87%87%e6%a0%b7%ef%bc%8c%e7%b3%bb%e7%bb%9f%e6%8e%8c%e6%8f%a1%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e6%8e%a8%e7%90%86%e5%a2%9e%e5%bc%ba%e7%9a%84%e6%a0%b8%e5%bf%83%e6%96%b9%e6%b3%95&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="思维链、ReAct 与 Self-Consistency">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="思维链、ReAct 与 Self-Consistency">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E6%80%9D%E7%BB%B4%E9%93%BE%E4%B8%8E%E6%8E%A8%E7%90%86%E5%A2%9E%E5%BC%BA/&amp;text=%e6%80%9d%e7%bb%b4%e9%93%be%e3%80%81ReAct%20%e4%b8%8e%20Self-Consistency&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="思维链、ReAct 与 Self-Consistency">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E6%80%9D%E7%BB%B4%E9%93%BE%E4%B8%8E%E6%8E%A8%E7%90%86%E5%A2%9E%E5%BC%BA/" target="_blank" rel="noopener noreferrer" title="思维链、ReAct 与 Self-Consistency">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/prompt%e5%b7%a5%e7%a8%8b%e4%b8%8eagent%e7%b3%bb%e7%bb%9f"
+      data-aos="zoom-in"
+      >Prompt工程与Agent系统</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%a4%a7%e6%a8%a1%e5%9e%8b"
+        rel="tag"
+        >大模型</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e6%80%9d%e7%bb%b4%e9%93%be"
+        rel="tag"
+        >思维链</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/cot"
+        rel="tag"
+        >CoT</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/react"
+        rel="tag"
+        >ReAct</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/self-consistency"
+        rel="tag"
+        >Self-Consistency</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e6%8e%a8%e7%90%86%e5%a2%9e%e5%bc%ba"
+        rel="tag"
+        >推理增强</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/prompt-%e5%b7%a5%e7%a8%8b%e4%b8%8e-agent-%e7%b3%bb%e7%bb%9f"
+        rel="tag"
+        >Prompt 工程与 Agent 系统</a
+      >
+    </li></ul>
+</footer>
+  </div><nav
+    id="article-nav"
+    aria-label="Article navigation"
+    data-aos="fade-up"
+  ><div class="article-nav-link-wrap left"><img
+              data-src="https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?w=800"
+              data-sizes="auto"
+              alt="多角色 Agent、工具调用与状态管理"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E5%A4%9A%E8%A7%92%E8%89%B2agent%E4%B8%8E%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/"
+          aria-label="前一篇:多角色 Agent、工具调用与状态管理"
+          title="前一篇:多角色 Agent、工具调用与状态管理"
+        ></a>
+        <div class="article-nav-caption">前一篇</div>
+        <h3 class="article-nav-title">多角色 Agent、工具调用与状态管理</h3>
+      </div><div class="article-nav-link-wrap right"><img
+              data-src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800"
+              data-sizes="auto"
+              alt="Agent 开发与多 Agent 协作"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/agent%E5%BC%80%E5%8F%91%E4%B8%8E%E5%A4%9Aagent%E5%8D%8F%E4%BD%9C/"
+          aria-label="后一篇:Agent 开发与多 Agent 协作"
+          title="后一篇:Agent 开发与多 Agent 协作"
+        ></a>
+        <div class="article-nav-caption">后一篇</div>
+        <h3 class="article-nav-title">Agent 开发与多 Agent 协作</h3>
+      </div></nav></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#推理增强技术全景图">推理增强技术全景图</a></li>
+    <li><a href="#思维链chain-of-thought-cot">思维链（Chain-of-Thought, CoT）</a>
+      <ul>
+        <li><a href="#cot-的起源与原理">CoT 的起源与原理</a></li>
+        <li><a href="#zero-shot-cot">Zero-shot CoT</a></li>
+        <li><a href="#few-shot-cot">Few-shot CoT</a></li>
+        <li><a href="#cot-的理论基础">CoT 的理论基础</a></li>
+        <li><a href="#cot-的适用条件">CoT 的适用条件</a></li>
+      </ul>
+    </li>
+    <li><a href="#reactreasoning--acting">ReAct（Reasoning + Acting）</a>
+      <ul>
+        <li><a href="#react-的动机">ReAct 的动机</a></li>
+        <li><a href="#react-框架">ReAct 框架</a></li>
+        <li><a href="#react-prompt-模板">ReAct Prompt 模板</a></li>
+        <li><a href="#react-完整实现">ReAct 完整实现</a></li>
+        <li><a href="#react-的优势与局限">ReAct 的优势与局限</a></li>
+      </ul>
+    </li>
+    <li><a href="#self-consistency自洽性采样">Self-Consistency（自洽性采样）</a>
+      <ul>
+        <li><a href="#核心思想">核心思想</a></li>
+        <li><a href="#数学基础">数学基础</a></li>
+        <li><a href="#实现方法">实现方法</a></li>
+        <li><a href="#self-consistency-的开销与权衡">Self-Consistency 的开销与权衡</a></li>
+      </ul>
+    </li>
+    <li><a href="#进阶推理方法">进阶推理方法</a>
+      <ul>
+        <li><a href="#tree-of-thoughts-tot">Tree-of-Thoughts (ToT)</a></li>
+        <li><a href="#graph-of-thoughts-got">Graph-of-Thoughts (GoT)</a></li>
+        <li><a href="#plan-and-solve">Plan-and-Solve</a></li>
+        <li><a href="#方法对比表">方法对比表</a></li>
+      </ul>
+    </li>
+    <li><a href="#实践指南">实践指南</a>
+      <ul>
+        <li><a href="#方法选择决策树">方法选择决策树</a></li>
+        <li><a href="#prompt-工程技巧">Prompt 工程技巧</a></li>
+        <li><a href="#成本优化">成本优化</a></li>
+      </ul>
+    </li>
+    <li><a href="#前沿方向">前沿方向</a>
+      <ul>
+        <li><a href="#o1o3-模型与内化推理">o1/o3 模型与内化推理</a></li>
+        <li><a href="#自动-prompt-优化">自动 Prompt 优化</a></li>
+        <li><a href="#推理与工具调用的深度融合">推理与工具调用的深度融合</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "思维链、ReAct 与 Self-Consistency",
+          url: "https:\/\/dev.infiniteevo.online\/post\/llm\/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F\/%E6%80%9D%E7%BB%B4%E9%93%BE%E4%B8%8E%E6%8E%A8%E7%90%86%E5%A2%9E%E5%BC%BA\/",
+          description: "从 Chain-of-Thought 到 ReAct 再到自洽性采样，系统掌握大语言模型推理增强的核心方法",
+          cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
+        };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-MWNUH0WmtsYGhn2cbH6ELRCbf9LG3QDqCC&#43;gqPB3IBNO35xjZK3Ejb6oONRpDbPg" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/contrib/auto-render.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv&#43;fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script><script data-pjax>
+          var renderMath = () => {
+            if (!window.renderMathInElement) return;
+            window.renderMathInElement(_$("article"), {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+              ],
+            });
+          };
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderMath, { once: true });
+          } else {
+            renderMath();
+          }
+        </script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>

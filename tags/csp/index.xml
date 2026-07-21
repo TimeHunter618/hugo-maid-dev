@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>CSP on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/csp/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Wed, 10 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/csp/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>跨域 CORS 与安全策略</title>
+      <link>https://dev.infiniteevo.online/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/%E8%B7%A8%E5%9F%9Fcors%E4%B8%8E%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5/</link>
+      <pubDate>Wed, 10 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/7-%E5%89%8D%E7%AB%AF%E6%8F%92%E4%BB%B6%E9%9B%86%E6%88%90/%E8%B7%A8%E5%9F%9Fcors%E4%B8%8E%E5%AE%89%E5%85%A8%E7%AD%96%E7%95%A5/</guid>
+      <description>
+        <![CDATA[<h1>跨域 CORS 与安全策略</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>当你写下第一行 <code>fetch('https://api.openai.com/v1/chat/completions', ...)</code> 并在浏览器中运行时，大概率会遇到这个报错：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Access to fetch at &#39;https://api.openai.com/...&#39; from origin &#39;http://localhost:3000&#39;
+</span></span><span class="line"><span class="cl">has been blocked by CORS policy: No &#39;Access-Control-Allow-Origin&#39; header is
+</span></span><span class="line"><span class="cl">present on the requested resource.
+</span></span></code></pre></div><p>这就是 <strong>CORS（Cross-Origin Resource Sharing，跨域资源共享）</strong> 机制在工作。对于 AI Web 应用来说，跨域问题是开发阶段最常见的&quot;拦路虎&quot;——前端需要直连 LLM API，但 API 服务器默认不允许浏览器跨域访问。</p>
+        
+        <hr><p>本文2026-06-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-10</p>]]>
+      </description>
+      
+        <category>前端插件集成</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

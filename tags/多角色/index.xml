@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>多角色 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E5%A4%9A%E8%A7%92%E8%89%B2/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 10 Apr 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E5%A4%9A%E8%A7%92%E8%89%B2/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>多角色 Agent、工具调用与状态管理</title>
+      <link>https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E5%A4%9A%E8%A7%92%E8%89%B2agent%E4%B8%8E%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/</link>
+      <pubDate>Fri, 10 Apr 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/3-prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/%E5%A4%9A%E8%A7%92%E8%89%B2agent%E4%B8%8E%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86/</guid>
+      <description>
+        <![CDATA[<h1>多角色 Agent、工具调用与状态管理</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>当单 Agent 系统在面对真实世界的复杂任务时，往往会暴露出三类核心缺陷：<strong>角色混淆</strong>（一个 Agent 既要规划又要执行，System Prompt 互相冲突）、<strong>上下文膨胀</strong>（所有工具描述、历史对话堆在同一上下文窗口中，Token 消耗急剧上升）、<strong>能力边界模糊</strong>（什么都做一点，什么都做不精）。</p>
+        
+        <hr><p>本文2026-04-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-04-10</p>]]>
+      </description>
+      
+        <category>Prompt工程与Agent系统</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

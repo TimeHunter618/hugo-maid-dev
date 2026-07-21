@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>量化 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E9%87%8F%E5%8C%96/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Sat, 30 May 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E9%87%8F%E5%8C%96/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>模型量化技术：INT4/INT8、GPTQ 与 AWQ</title>
+      <link>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/</link>
+      <pubDate>Sat, 30 May 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/%E6%A8%A1%E5%9E%8B%E9%87%8F%E5%8C%96%E6%8A%80%E6%9C%AF/</guid>
+      <description>
+        <![CDATA[<h1>模型量化技术：INT4/INT8、GPTQ 与 AWQ</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型的参数量从数十亿到数千亿不等，一个 70B 参数的模型仅权重就需要约 140GB 的 FP16 存储空间。庞大的显存需求将大模型限制在了少数拥有顶级 GPU 集群的机构手中。模型量化技术通过将高精度浮点数映射到低精度整数，在不显著损失精度的前提下大幅压缩模型体积，是大模型走向普及的关键技术。</p>
+        
+        <hr><p>本文2026-05-30首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-05-30</p>]]>
+      </description>
+      
+        <category>模型部署与推理优化</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>大模型推理优化与部署实践</title>
+      <link>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96%E4%B8%8E%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Mon, 15 Sep 2025 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96%E4%B8%8E%E9%83%A8%E7%BD%B2/</guid>
+      <description>
+        <![CDATA[<h1>大模型推理优化与部署实践</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>大语言模型在各项任务上展现出卓越的能力，但将它们从实验室推向生产环境却面临着严峻的工程挑战。一个千亿参数的模型，仅模型权重就需要数百 GB 的存储空间，推理时还需要额外的显存来存放激活值和 KV Cache。如何在有限的硬件资源下实现低延迟、高吞吐的推理服务，成为了大模型落地的关键瓶颈。</p>
+        
+        <hr><p>本文2025-09-15首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2025-09-15</p>]]>
+      </description>
+      
+        <category>大模型基础与原理</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

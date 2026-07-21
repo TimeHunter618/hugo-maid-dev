@@ -1,0 +1,1475 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  Transformer 架构深度解析 | Aries
+</title>
+<meta name="description" content="从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="Transformer 架构深度解析 | Aries" />
+  <meta
+    property="og:description"
+    content="从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-06-19T03:10:00&#43;08:00" />
+  <meta property="article:modified_time" content="2026-06-19T03:10:00&#43;08:00" /><meta property="article:tag" content="Transformer, 注意力机制, 深度学习, 神经网络" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://dev.infiniteevo.online/images/banner.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture><img  fetchpriority="high" src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200" alt="Transformer 架构深度解析"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">Transformer 架构深度解析</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container sticky"><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#整体架构概览">整体架构概览</a>
+      <ul>
+        <li><a href="#架构图">架构图</a></li>
+        <li><a href="#核心组件清单">核心组件清单</a></li>
+      </ul>
+    </li>
+    <li><a href="#自注意力机制transformer-的灵魂">自注意力机制：Transformer 的灵魂</a>
+      <ul>
+        <li><a href="#为什么需要注意力">为什么需要注意力</a></li>
+        <li><a href="#qkv-的含义">Q、K、V 的含义</a></li>
+        <li><a href="#scaled-dot-product-attention">Scaled Dot-Product Attention</a></li>
+        <li><a href="#多头注意力multi-head-attention">多头注意力（Multi-Head Attention）</a></li>
+        <li><a href="#掩码masking">掩码（Masking）</a></li>
+      </ul>
+    </li>
+    <li><a href="#位置编码让-transformer-感知顺序">位置编码：让 Transformer 感知顺序</a>
+      <ul>
+        <li><a href="#正弦位置编码">正弦位置编码</a></li>
+        <li><a href="#可学习位置编码">可学习位置编码</a></li>
+        <li><a href="#旋转位置编码rope">旋转位置编码（RoPE）</a></li>
+      </ul>
+    </li>
+    <li><a href="#前馈神经网络ffn">前馈神经网络（FFN）</a>
+      <ul>
+        <li><a href="#ffn-的作用">FFN 的作用</a></li>
+        <li><a href="#激活函数的选择">激活函数的选择</a></li>
+        <li><a href="#维度扩展因子">维度扩展因子</a></li>
+      </ul>
+    </li>
+    <li><a href="#残差连接与层归一化">残差连接与层归一化</a>
+      <ul>
+        <li><a href="#残差连接">残差连接</a></li>
+        <li><a href="#层归一化">层归一化</a></li>
+        <li><a href="#pre-ln-vs-post-ln">Pre-LN vs Post-LN</a></li>
+      </ul>
+    </li>
+    <li><a href="#位置-wise-前馈网络详解">位置-wise 前馈网络详解</a></li>
+    <li><a href="#完整的-transformer-层">完整的 Transformer 层</a></li>
+    <li><a href="#注意力机制的复杂度分析">注意力机制的复杂度分析</a>
+      <ul>
+        <li><a href="#时间复杂度">时间复杂度</a></li>
+        <li><a href="#空间复杂度">空间复杂度</a></li>
+        <li><a href="#与-rnn-的对比">与 RNN 的对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#注意力可视化与理解">注意力可视化与理解</a>
+      <ul>
+        <li><a href="#注意力模式">注意力模式</a></li>
+        <li><a href="#注意力可视化示例">注意力可视化示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#进阶话题">进阶话题</a>
+      <ul>
+        <li><a href="#flashattention">FlashAttention</a></li>
+        <li><a href="#稀疏注意力">稀疏注意力</a></li>
+        <li><a href="#线性注意力">线性注意力</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div><div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div></div>
+  </div><div class="sidebar-widget"></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-06-19 03:10:00 &#43;0800 &#43;0800" itemprop="datePublished"
+      >2026-06-19</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-06-19</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg3.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg3.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>Transformer 架构自 2017 年提出以来，已经成为自然语言处理乃至整个深度学习领域的基石。从 GPT 系列到 BERT，从 ViT 到 Diffusion Model，Transformer 的身影无处不在。本文将从第一性原理出发，深入拆解 Transformer 的每一个核心组件，帮助读者彻底理解这一革命性的架构设计。</p>
+<h2 id="整体架构概览">
+<a class="header-anchor" href="#%e6%95%b4%e4%bd%93%e6%9e%b6%e6%9e%84%e6%a6%82%e8%a7%88"></a>
+整体架构概览
+</h2><h3 id="架构图">
+<a class="header-anchor" href="#%e6%9e%b6%e6%9e%84%e5%9b%be"></a>
+架构图
+</h3><pre class="mermaid">
+  graph TD
+    subgraph 编码器 Encoder
+        E1[输入嵌入] --> E2[位置编码]
+        E2 --> E3[多头自注意力]
+        E3 --> E4[残差连接 + 层归一化]
+        E4 --> E5[前馈神经网络]
+        E5 --> E6[残差连接 + 层归一化]
+    end
+    
+    subgraph 解码器 Decoder
+        D1[输出嵌入] --> D2[位置编码]
+        D2 --> D3[掩码多头自注意力]
+        D3 --> D4[残差连接 + 层归一化]
+        D4 --> D5[编码器-解码器注意力]
+        D5 --> D6[残差连接 + 层归一化]
+        D6 --> D7[前馈神经网络]
+        D7 --> D8[残差连接 + 层归一化]
+        D8 --> D9[线性层 + Softmax]
+    end
+    
+    输入 --> E1
+    E6 --> D5
+    D9 --> 输出
+</pre><p>原始的 Transformer 采用编码器-解码器（Encoder-Decoder）架构，适用于序列到序列（seq2seq）任务。但在实际应用中，衍生出了三种主要变体：</p>
+<table>
+	<thead>
+			<tr>
+					<th>架构类型</th>
+					<th>代表模型</th>
+					<th>适用场景</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>编码器-only</td>
+					<td>BERT、RoBERTa</td>
+					<td>分类、命名实体识别等理解任务</td>
+			</tr>
+			<tr>
+					<td>解码器-only</td>
+					<td>GPT系列、LLaMA</td>
+					<td>文本生成、对话等生成任务</td>
+			</tr>
+			<tr>
+					<td>编码器-解码器</td>
+					<td>T5、BART</td>
+					<td>翻译、摘要等序列转换任务</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="核心组件清单">
+<a class="header-anchor" href="#%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6%e6%b8%85%e5%8d%95"></a>
+核心组件清单
+</h3><p>一个完整的 Transformer 层由以下组件构成：</p>
+<ol>
+<li><strong>输入嵌入（Input Embedding）</strong>：将离散 token 映射为连续向量</li>
+<li><strong>位置编码（Positional Encoding）</strong>：为序列注入位置信息</li>
+<li><strong>多头自注意力（Multi-Head Self-Attention）</strong>：建模序列内部的依赖关系</li>
+<li><strong>前馈神经网络（Feed-Forward Network）</strong>：对每个位置进行非线性变换</li>
+<li><strong>残差连接（Residual Connection）</strong>：缓解梯度消失，加深网络</li>
+<li><strong>层归一化（Layer Normalization）</strong>：稳定训练过程</li>
+</ol>
+<h2 id="自注意力机制transformer-的灵魂">
+<a class="header-anchor" href="#%e8%87%aa%e6%b3%a8%e6%84%8f%e5%8a%9b%e6%9c%ba%e5%88%b6transformer-%e7%9a%84%e7%81%b5%e9%ad%82"></a>
+自注意力机制：Transformer 的灵魂
+</h2><h3 id="为什么需要注意力">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%9c%80%e8%a6%81%e6%b3%a8%e6%84%8f%e5%8a%9b"></a>
+为什么需要注意力
+</h3><p>在 Transformer 之前，序列建模主要依赖 RNN 及其变体。但 RNN 存在两个根本性缺陷：</p>
+<ol>
+<li><strong>顺序计算瓶颈</strong>：必须按顺序处理，无法并行化</li>
+<li><strong>长距离依赖困难</strong>：信息在传递过程中逐渐衰减</li>
+</ol>
+<p>自注意力机制通过允许序列中每个位置直接关注其他所有位置，一举解决了这两个问题。</p>
+<h3 id="qkv-的含义">
+<a class="header-anchor" href="#qkv-%e7%9a%84%e5%90%ab%e4%b9%89"></a>
+Q、K、V 的含义
+</h3><p>自注意力机制引入了三个关键概念：查询（Query）、键（Key）和值（Value）。</p>
+<ul>
+<li><strong>Query（查询）</strong>：当前位置发出的&quot;询问&quot;，用于寻找相关的位置</li>
+<li><strong>Key（键）</strong>：每个位置的&quot;标识&quot;，用于被查询匹配</li>
+<li><strong>Value（值）</strong>：每个位置的实际内容，匹配后被提取</li>
+</ul>
+<p>这一设计灵感来源于检索系统：用户输入查询（Query），系统将其与文档的键（Key）进行匹配，返回相关的值（Value）。</p>
+<h3 id="scaled-dot-product-attention">
+<a class="header-anchor" href="#scaled-dot-product-attention"></a>
+Scaled Dot-Product Attention
+</h3><p>缩放点积注意力的计算公式：</p>
+$$
+Attention(Q, K, V) = softmax\left(\frac{QK^T}{\sqrt{d_k}}\right)V
+$$<p>其中：</p>
+<ul>
+<li>$Q \in \mathbb{R}^{n \times d_k}$：查询矩阵</li>
+<li>$K \in \mathbb{R}^{m \times d_k}$：键矩阵</li>
+<li>$V \in \mathbb{R}^{m \times d_v}$：值矩阵</li>
+<li>$d_k$：键的维度</li>
+<li>$n$：查询序列长度</li>
+<li>$m$：键/值序列长度</li>
+</ul>
+<h4 id="为什么要缩放">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e7%bc%a9%e6%94%be"></a>
+为什么要缩放
+</h4><p>缩放因子 $\sqrt{d_k}$ 的作用是防止点积结果过大。当 $d_k$ 较大时，点积的方差会增大，导致 softmax 函数进入饱和区域，梯度变得极小。通过缩放可以将点积结果的方差控制在 1 左右。</p>
+<p><strong>数学推导</strong>：</p>
+<p>假设 $q_i$ 和 $k_i$ 是均值为 0、方差为 1 的独立随机变量，则：</p>
+$$
+Var(q \cdot k) = \sum_{i=1}^{d_k} Var(q_i k_i) = d_k \cdot Var(q_i)Var(k_i) = d_k
+$$<p>因此，点积的标准差为 $\sqrt{d_k}$，除以 $\sqrt{d_k}$ 后方差变为 1。</p>
+<h4 id="pytorch-实现">
+<a class="header-anchor" href="#pytorch-%e5%ae%9e%e7%8e%b0"></a>
+PyTorch 实现
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">ScaledDotProductAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">d_k</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># 计算注意力得分</span>
+</span></span><span class="line"><span class="cl">        <span class="n">scores</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">d_k</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># 应用掩码</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">masked_fill</span><span class="p">(</span><span class="n">mask</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e9</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Softmax + Dropout</span>
+</span></span><span class="line"><span class="cl">        <span class="n">attn_weights</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">attn_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">attn_weights</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># 加权求和</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">attn_weights</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">attn_weights</span>
+</span></span></code></pre></div><h3 id="多头注意力multi-head-attention">
+<a class="header-anchor" href="#%e5%a4%9a%e5%a4%b4%e6%b3%a8%e6%84%8f%e5%8a%9bmulti-head-attention"></a>
+多头注意力（Multi-Head Attention）
+</h3><p>多头注意力将 Q、K、V 投影到多个子空间，在每个子空间中独立计算注意力，最后将结果拼接起来。</p>
+$$
+MultiHead(Q, K, V) = Concat(head_1, head_2, ..., head_h)W^O
+$$<p>其中每个头的计算为：</p>
+$$
+head_i = Attention(QW_i^Q, KW_i^K, VW_i^V)
+$$<h4 id="多头的意义">
+<a class="header-anchor" href="#%e5%a4%9a%e5%a4%b4%e7%9a%84%e6%84%8f%e4%b9%89"></a>
+多头的意义
+</h4><p>为什么需要多头？单一注意力头只能捕捉一种类型的依赖关系。通过多个头，模型可以：</p>
+<ol>
+<li><strong>关注不同类型的关系</strong>：语法关系、语义关系、共指关系等</li>
+<li><strong>多粒度信息融合</strong>：不同头关注不同范围的上下文</li>
+<li><strong>增加模型容量</strong>：相当于集成多个注意力机制</li>
+</ol>
+<h4 id="pytorch-实现-1">
+<a class="header-anchor" href="#pytorch-%e5%ae%9e%e7%8e%b0-1"></a>
+PyTorch 实现
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">MultiHeadAttention</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">assert</span> <span class="n">d_model</span> <span class="o">%</span> <span class="n">n_heads</span> <span class="o">==</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">d_model</span> <span class="o">=</span> <span class="n">d_model</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">n_heads</span> <span class="o">=</span> <span class="n">n_heads</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">d_k</span> <span class="o">=</span> <span class="n">d_model</span> <span class="o">//</span> <span class="n">n_heads</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Q, K, V 的线性投影</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">w_q</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">w_k</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">w_v</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># 输出投影</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">w_o</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">attention</span> <span class="o">=</span> <span class="n">ScaledDotProductAttention</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># 线性投影并拆分为多头</span>
+</span></span><span class="line"><span class="cl">        <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_q</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_heads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_k</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_k</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_heads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_k</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w_v</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_heads</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_k</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># 计算注意力</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span><span class="p">,</span> <span class="n">attn_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attention</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># 拼接多头结果</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># 输出投影 + Dropout</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w_o</span><span class="p">(</span><span class="n">output</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">output</span><span class="p">,</span> <span class="n">attn_weights</span>
+</span></span></code></pre></div><h3 id="掩码masking">
+<a class="header-anchor" href="#%e6%8e%a9%e7%a0%81masking"></a>
+掩码（Masking）
+</h3><p>在解码器的自注意力中，需要使用因果掩码（Causal Mask）来防止位置 $i$ 关注到位置 $i$ 之后的内容，保证生成的因果性。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">create_causal_mask</span><span class="p">(</span><span class="n">seq_len</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">mask</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">triu</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">seq_len</span><span class="p">,</span> <span class="n">seq_len</span><span class="p">),</span> <span class="n">diagonal</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span><span class="n">mask</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></span></code></pre></div><h2 id="位置编码让-transformer-感知顺序">
+<a class="header-anchor" href="#%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81%e8%ae%a9-transformer-%e6%84%9f%e7%9f%a5%e9%a1%ba%e5%ba%8f"></a>
+位置编码：让 Transformer 感知顺序
+</h2><p>由于自注意力机制本身是无序的（置换不变性），必须显式地为模型注入位置信息。</p>
+<h3 id="正弦位置编码">
+<a class="header-anchor" href="#%e6%ad%a3%e5%bc%a6%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81"></a>
+正弦位置编码
+</h3><p>原始 Transformer 使用正弦函数作为位置编码：</p>
+$$
+PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d_{model}}}\right)
+$$<p>
+</p>
+$$
+PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)
+$$<h4 id="为什么选择正弦函数">
+<a class="header-anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e9%80%89%e6%8b%a9%e6%ad%a3%e5%bc%a6%e5%87%bd%e6%95%b0"></a>
+为什么选择正弦函数
+</h4><p>正弦位置编码有两个独特的性质：</p>
+<ol>
+<li><strong>绝对位置编码</strong>：每个位置有唯一的编码</li>
+<li><strong>相对位置可计算</strong>：对于任意固定的偏移量 $k$，$PE_{pos+k}$ 可以表示为 $PE_{pos}$ 的线性函数</li>
+</ol>
+<p><strong>相对位置的数学证明</strong>：</p>
+<p>利用三角恒等式：</p>
+$$
+\sin(\alpha + \beta) = \sin\alpha\cos\beta + \cos\alpha\sin\beta
+$$<p>
+</p>
+$$
+\cos(\alpha + \beta) = \cos\alpha\cos\beta - \sin\alpha\sin\beta
+$$<p>因此，$PE_{pos+k}$ 可以通过 $PE_{pos}$ 与一个固定的线性变换相乘得到。</p>
+<h3 id="可学习位置编码">
+<a class="header-anchor" href="#%e5%8f%af%e5%ad%a6%e4%b9%a0%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81"></a>
+可学习位置编码
+</h3><p>GPT 系列采用可学习的位置编码，即直接将位置嵌入作为可训练参数。这种方式更简单，但泛化性较差——无法处理超过训练时最大长度的序列。</p>
+<h3 id="旋转位置编码rope">
+<a class="header-anchor" href="#%e6%97%8b%e8%bd%ac%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81rope"></a>
+旋转位置编码（RoPE）
+</h3><p>RoPE（Rotary Position Embedding）是目前最流行的位置编码方案之一，被 LLaMA、Qwen 等众多开源模型采用。</p>
+<p>RoPE 的核心思想是：<strong>通过旋转 Query 和 Key 来注入位置信息</strong>，而不是直接加到嵌入上。</p>
+<p>对于位置 $pos$ 和维度 $i$，旋转矩阵为：</p>
+$$
+R_i = \begin{pmatrix}
+\cos(pos \cdot \theta_i) & -\sin(pos \cdot \theta_i) \\
+\sin(pos \cdot \theta_i) & \cos(pos \cdot \theta_i)
+\end{pmatrix}
+$$<p>其中 $\theta_i = 10000^{-2i/d}$。</p>
+<p>RoPE 的优势：</p>
+<ul>
+<li>天然支持相对位置编码</li>
+<li>外推性好，支持更长的序列</li>
+<li>实现简洁，计算高效</li>
+</ul>
+<h2 id="前馈神经网络ffn">
+<a class="header-anchor" href="#%e5%89%8d%e9%a6%88%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9cffn"></a>
+前馈神经网络（FFN）
+</h2><p>每个 Transformer 层的注意力之后，都跟着一个前馈神经网络。FFN 对每个位置独立地进行两次线性变换和一次非线性激活。</p>
+$$
+FFN(x) = W_2 \cdot \text{GELU}(W_1 \cdot x + b_1) + b_2
+$$<h3 id="ffn-的作用">
+<a class="header-anchor" href="#ffn-%e7%9a%84%e4%bd%9c%e7%94%a8"></a>
+FFN 的作用
+</h3><p>注意力机制负责在序列间&quot;搬运&quot;信息，而 FFN 则负责对每个位置的表示进行&quot;加工&quot;和&quot;变换&quot;。两者配合，共同完成复杂的序列建模任务。</p>
+<h3 id="激活函数的选择">
+<a class="header-anchor" href="#%e6%bf%80%e6%b4%bb%e5%87%bd%e6%95%b0%e7%9a%84%e9%80%89%e6%8b%a9"></a>
+激活函数的选择
+</h3><p>从 ReLU 到 GELU 再到 SwiGLU，激活函数的演进反映了 Transformer 架构的优化历程：</p>
+<table>
+	<thead>
+			<tr>
+					<th>激活函数</th>
+					<th>公式</th>
+					<th>代表模型</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>ReLU</td>
+					<td>$\max(0, x)$</td>
+					<td>原始 Transformer</td>
+			</tr>
+			<tr>
+					<td>GELU</td>
+					<td>$x \cdot \Phi(x)$</td>
+					<td>GPT-2、BERT</td>
+			</tr>
+			<tr>
+					<td>SwiGLU</td>
+					<td>$x \cdot \sigma(x) \cdot Wx$</td>
+					<td>LLaMA、PaLM</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="维度扩展因子">
+<a class="header-anchor" href="#%e7%bb%b4%e5%ba%a6%e6%89%a9%e5%b1%95%e5%9b%a0%e5%ad%90"></a>
+维度扩展因子
+</h3><p>FFN 的中间层维度通常是输入维度的 4 倍（原始 Transformer）。但最新的研究表明，增大 FFN 维度可以更高效地提升模型性能。SwiGLU 激活函数通常配合 8/3 的扩展因子使用。</p>
+<h2 id="残差连接与层归一化">
+<a class="header-anchor" href="#%e6%ae%8b%e5%b7%ae%e8%bf%9e%e6%8e%a5%e4%b8%8e%e5%b1%82%e5%bd%92%e4%b8%80%e5%8c%96"></a>
+残差连接与层归一化
+</h2><h3 id="残差连接">
+<a class="header-anchor" href="#%e6%ae%8b%e5%b7%ae%e8%bf%9e%e6%8e%a5"></a>
+残差连接
+</h3><p>残差连接（Residual Connection）由 He 等人在 ResNet 中提出，通过跳跃连接缓解深层网络的梯度消失问题。</p>
+$$
+x_{l+1} = x_l + F(x_l)
+$$<p>在 Transformer 中，每个子层（注意力和 FFN）之后都有残差连接。</p>
+<h3 id="层归一化">
+<a class="header-anchor" href="#%e5%b1%82%e5%bd%92%e4%b8%80%e5%8c%96"></a>
+层归一化
+</h3><p>层归一化（Layer Normalization）对每个样本的特征维度进行归一化，稳定训练过程。</p>
+$$
+LN(x) = \gamma \cdot \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} + \beta
+$$<p>其中 $\mu$ 和 $\sigma$ 是特征维度上的均值和标准差，$\gamma$ 和 $\beta$ 是可学习的缩放和平移参数。</p>
+<h3 id="pre-ln-vs-post-ln">
+<a class="header-anchor" href="#pre-ln-vs-post-ln"></a>
+Pre-LN vs Post-LN
+</h3><p>层归一化的位置有两种安排：</p>
+<pre class="mermaid">
+  graph LR
+    subgraph Post-LN (原始Transformer)
+        A[输入] --> B[子层]
+        B --> C[残差连接]
+        C --> D[LayerNorm]
+        D --> E[输出]
+    end
+    
+    subgraph Pre-LN (GPT等现代架构)
+        F[输入] --> G[LayerNorm]
+        G --> H[子层]
+        H --> I[残差连接]
+        I --> J[输出]
+    end
+</pre><p><strong>Post-LN</strong>：残差连接后进行归一化（原始 Transformer）<br>
+<strong>Pre-LN</strong>：子层前进行归一化（GPT、LLaMA 等采用）</p>
+<p>Pre-LN 的训练更稳定，不需要 warmup 也能正常收敛，因此成为现代大模型的主流选择。</p>
+<h2 id="位置-wise-前馈网络详解">
+<a class="header-anchor" href="#%e4%bd%8d%e7%bd%ae-wise-%e5%89%8d%e9%a6%88%e7%bd%91%e7%bb%9c%e8%af%a6%e8%a7%a3"></a>
+位置-wise 前馈网络详解
+</h2><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">FeedForward</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;gelu&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">linear1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_ff</span><span class="p">,</span> <span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">activation</span> <span class="o">==</span> <span class="s1">&#39;relu&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">activation</span> <span class="o">==</span> <span class="s1">&#39;gelu&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">GELU</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">elif</span> <span class="n">activation</span> <span class="o">==</span> <span class="s1">&#39;swiglu&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">linear1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_ff</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">SiLU</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;activation&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">,</span> <span class="n">nn</span><span class="o">.</span><span class="n">SiLU</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># SwiGLU: x * sigmoid(x) * Wx</span>
+</span></span><span class="line"><span class="cl">            <span class="n">x_proj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">x_proj</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">x1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">x2</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">linear2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">linear1</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
+</span></span></code></pre></div><h2 id="完整的-transformer-层">
+<a class="header-anchor" href="#%e5%ae%8c%e6%95%b4%e7%9a%84-transformer-%e5%b1%82"></a>
+完整的 Transformer 层
+</h2><p>将以上组件组合起来，就构成了一个完整的 Transformer 编码器层：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">TransformerEncoderLayer</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">d_model</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;gelu&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">self_attn</span> <span class="o">=</span> <span class="n">MultiHeadAttention</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">dropout</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">ffn</span> <span class="o">=</span> <span class="n">FeedForward</span><span class="p">(</span><span class="n">d_model</span><span class="p">,</span> <span class="n">d_ff</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">activation</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">norm1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">norm2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">LayerNorm</span><span class="p">(</span><span class="n">d_model</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">dropout1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">dropout2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Pre-LN: Self-Attention</span>
+</span></span><span class="line"><span class="cl">        <span class="n">residual</span> <span class="o">=</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span><span class="p">,</span> <span class="n">attn_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">self_attn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="n">residual</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="c1"># Pre-LN: FFN</span>
+</span></span><span class="line"><span class="cl">        <span class="n">residual</span> <span class="o">=</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ffn</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">=</span> <span class="n">residual</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">attn_weights</span>
+</span></span></code></pre></div><h2 id="注意力机制的复杂度分析">
+<a class="header-anchor" href="#%e6%b3%a8%e6%84%8f%e5%8a%9b%e6%9c%ba%e5%88%b6%e7%9a%84%e5%a4%8d%e6%9d%82%e5%ba%a6%e5%88%86%e6%9e%90"></a>
+注意力机制的复杂度分析
+</h2><h3 id="时间复杂度">
+<a class="header-anchor" href="#%e6%97%b6%e9%97%b4%e5%a4%8d%e6%9d%82%e5%ba%a6"></a>
+时间复杂度
+</h3><p>对于长度为 $n$、维度为 $d$ 的序列，自注意力的时间复杂度为：</p>
+$$
+O(n^2 \cdot d)
+$$<p>瓶颈在于 $QK^T$ 的计算，需要进行 $n \times n$ 的矩阵乘法，每个元素是 $d$ 维向量的点积。</p>
+<h3 id="空间复杂度">
+<a class="header-anchor" href="#%e7%a9%ba%e9%97%b4%e5%a4%8d%e6%9d%82%e5%ba%a6"></a>
+空间复杂度
+</h3><p>注意力权重矩阵的大小为 $n \times n$，因此空间复杂度也是 $O(n^2)$。这也是 Transformer 处理长序列时显存占用激增的主要原因。</p>
+<h3 id="与-rnn-的对比">
+<a class="header-anchor" href="#%e4%b8%8e-rnn-%e7%9a%84%e5%af%b9%e6%af%94"></a>
+与 RNN 的对比
+</h3><table>
+	<thead>
+			<tr>
+					<th>特性</th>
+					<th>RNN</th>
+					<th>Transformer</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>时间复杂度</td>
+					<td>$O(n \cdot d^2)$</td>
+					<td>$O(n^2 \cdot d)$</td>
+			</tr>
+			<tr>
+					<td>并行度</td>
+					<td>低（顺序计算）</td>
+					<td>高（完全并行）</td>
+			</tr>
+			<tr>
+					<td>长距离依赖路径长度</td>
+					<td>$O(n)$</td>
+					<td>$O(1)$</td>
+			</tr>
+			<tr>
+					<td>短序列效率</td>
+					<td>高</td>
+					<td>低</td>
+			</tr>
+			<tr>
+					<td>长序列效率</td>
+					<td>中等</td>
+					<td>低（$O(n^2)$ 瓶颈）</td>
+			</tr>
+	</tbody>
+</table>
+<h2 id="注意力可视化与理解">
+<a class="header-anchor" href="#%e6%b3%a8%e6%84%8f%e5%8a%9b%e5%8f%af%e8%a7%86%e5%8c%96%e4%b8%8e%e7%90%86%e8%a7%a3"></a>
+注意力可视化与理解
+</h2><h3 id="注意力模式">
+<a class="header-anchor" href="#%e6%b3%a8%e6%84%8f%e5%8a%9b%e6%a8%a1%e5%bc%8f"></a>
+注意力模式
+</h3><p>研究表明，不同的注意力头倾向于学习不同的模式：</p>
+<ol>
+<li><strong>句法依赖头</strong>：关注主谓宾等句法关系</li>
+<li><strong>指代消解头</strong>：关注代词与其指代的名词</li>
+<li><strong>局部邻近头</strong>：主要关注相邻的 token</li>
+<li><strong>分隔符头</strong>：关注 &lt;[BOS_never_used_51bce0c785ca2f68081bfa7d91973934]&gt;、[SEP] 等特殊 token</li>
+</ol>
+<h3 id="注意力可视化示例">
+<a class="header-anchor" href="#%e6%b3%a8%e6%84%8f%e5%8a%9b%e5%8f%af%e8%a7%86%e5%8c%96%e7%a4%ba%e4%be%8b"></a>
+注意力可视化示例
+</h3><p>在实际应用中，我们可以通过可视化注意力权重来理解模型的决策过程。例如，在翻译任务中，我们可以观察源语言和目标语言之间的对齐关系。</p>
+<h2 id="进阶话题">
+<a class="header-anchor" href="#%e8%bf%9b%e9%98%b6%e8%af%9d%e9%a2%98"></a>
+进阶话题
+</h2><h3 id="flashattention">
+<a class="header-anchor" href="#flashattention"></a>
+FlashAttention
+</h3><p>FlashAttention 是一种 IO 感知的注意力算法，通过将注意力计算分块（tiling）并利用 SRAM，大幅减少了 HBM 访问次数，实现了：</p>
+<ul>
+<li>速度提升 2-4 倍</li>
+<li>显存占用减少</li>
+<li>数值精度损失可忽略</li>
+</ul>
+<h3 id="稀疏注意力">
+<a class="header-anchor" href="#%e7%a8%80%e7%96%8f%e6%b3%a8%e6%84%8f%e5%8a%9b"></a>
+稀疏注意力
+</h3><p>对于长序列，$O(n^2)$ 的注意力代价过高。稀疏注意力通过限制每个位置关注的范围来降低复杂度：</p>
+<ul>
+<li><strong>局部注意力</strong>：每个位置只关注一个窗口内的邻居</li>
+<li><strong>全局注意力</strong>：少数特殊位置可以被所有位置关注</li>
+<li><strong>扩张注意力</strong>：间隔地关注位置，类似膨胀卷积</li>
+</ul>
+<h3 id="线性注意力">
+<a class="header-anchor" href="#%e7%ba%bf%e6%80%a7%e6%b3%a8%e6%84%8f%e5%8a%9b"></a>
+线性注意力
+</h3><p>线性注意力通过核技巧将注意力计算转化为线性复杂度：</p>
+$$
+Attention(Q, K, V) = \frac{\phi(Q)(\phi(K)^T V)}{\phi(Q)\phi(K)^T}
+$$<p>时间复杂度从 $O(n^2d)$ 降低到 $O(nd^2)$，当 $n \gg d$ 时优势明显。</p>
+<h2 id="结语">
+<a class="header-anchor" href="#%e7%bb%93%e8%af%ad"></a>
+结语
+</h2><p>Transformer 架构的提出是深度学习发展史上的里程碑事件。它不仅彻底改变了自然语言处理的面貌，还在计算机视觉、语音、多模态等领域展现出强大的潜力。</p>
+<p>理解 Transformer 的每一个组件，不仅是掌握大模型技术的基础，更是进行创新研究的前提。从自注意力的数学原理到位置编码的巧妙设计，从残差连接的工程智慧到 FFN 的表达能力，Transformer 的每一个细节都值得深入品味。</p>
+<p>技术在不断演进，从 FlashAttention 到 Linear Attention，从 RoPE 到 ALiBi，研究者们仍在持续优化和改进 Transformer 架构。但万变不离其宗，掌握核心原理，才能在快速变化的技术浪潮中游刃有余。</p>
+<hr>
+<p><strong>参考文献</strong>：</p>
+<ol>
+<li>Vaswani A, et al. Attention Is All You Need. NeurIPS 2017.</li>
+<li>Devlin J, et al. BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding. NAACL 2019.</li>
+<li>Brown T B, et al. Language Models are Few-Shot Learners. NeurIPS 2020.</li>
+<li>Su J, et al. RoFormer: Enhanced Transformer with Rotary Position Embedding. 2021.</li>
+<li>Dao T, et al. Flashttention: Fast and Memory-Efficient Exact Attention with IO-Awareness. 2022.</li>
+</ol>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/&amp;appkey=&amp;title=Transformer%20%e6%9e%b6%e6%9e%84%e6%b7%b1%e5%ba%a6%e8%a7%a3%e6%9e%90&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="Transformer 架构深度解析">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/&amp;title=Transformer%20%e6%9e%b6%e6%9e%84%e6%b7%b1%e5%ba%a6%e8%a7%a3%e6%9e%90&amp;desc=%e4%bb%8e%e8%87%aa%e6%b3%a8%e6%84%8f%e5%8a%9b%e6%9c%ba%e5%88%b6%e5%88%b0%e4%bd%8d%e7%bd%ae%e7%bc%96%e7%a0%81%ef%bc%8c%e5%85%a8%e9%9d%a2%e6%8b%86%e8%a7%a3%20Transformer%20%e7%9a%84%e6%a0%b8%e5%bf%83%e7%bb%84%e4%bb%b6%e4%b8%8e%e5%ae%9e%e7%8e%b0%e7%bb%86%e8%8a%82&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="Transformer 架构深度解析">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="Transformer 架构深度解析">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/&amp;text=Transformer%20%e6%9e%b6%e6%9e%84%e6%b7%b1%e5%ba%a6%e8%a7%a3%e6%9e%90&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="Transformer 架构深度解析">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90/" target="_blank" rel="noopener noreferrer" title="Transformer 架构深度解析">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e5%a4%a7%e6%a8%a1%e5%9e%8b%e5%9f%ba%e7%a1%80%e4%b8%8e%e5%8e%9f%e7%90%86"
+      data-aos="zoom-in"
+      >大模型基础与原理</a
+    >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e6%8a%80%e6%9c%af%e5%88%86%e4%ba%ab"
+      data-aos="zoom-in"
+      >技术分享</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/transformer"
+        rel="tag"
+        >Transformer</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e6%b3%a8%e6%84%8f%e5%8a%9b%e6%9c%ba%e5%88%b6"
+        rel="tag"
+        >注意力机制</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0"
+        rel="tag"
+        >深度学习</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c"
+        rel="tag"
+        >神经网络</a
+      >
+    </li></ul>
+</footer>
+  </div><nav
+    id="article-nav"
+    aria-label="Article navigation"
+    data-aos="fade-up"
+  ><div class="article-nav-link-wrap left"><img
+              data-src="https://images.unsplash.com/photo-1518173946687-a4c036bc3c5a?w=800"
+              data-sizes="auto"
+              alt="大模型微调技术全攻略"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%BE%AE%E8%B0%83%E6%8A%80%E6%9C%AF%E5%85%A8%E6%94%BB%E7%95%A5/"
+          aria-label="前一篇:大模型微调技术全攻略"
+          title="前一篇:大模型微调技术全攻略"
+        ></a>
+        <div class="article-nav-caption">前一篇</div>
+        <h3 class="article-nav-title">大模型微调技术全攻略</h3>
+      </div><div class="article-nav-link-wrap right"><img
+              data-src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
+              data-sizes="auto"
+              alt="大语言模型基础原理与发展历程"
+              class="lazyload"
+            /><a
+          href="https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/"
+          aria-label="后一篇:大语言模型基础原理与发展历程"
+          title="后一篇:大语言模型基础原理与发展历程"
+        ></a>
+        <div class="article-nav-caption">后一篇</div>
+        <h3 class="article-nav-title">大语言模型基础原理与发展历程</h3>
+      </div></nav></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class">
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#引言">引言</a></li>
+    <li><a href="#整体架构概览">整体架构概览</a>
+      <ul>
+        <li><a href="#架构图">架构图</a></li>
+        <li><a href="#核心组件清单">核心组件清单</a></li>
+      </ul>
+    </li>
+    <li><a href="#自注意力机制transformer-的灵魂">自注意力机制：Transformer 的灵魂</a>
+      <ul>
+        <li><a href="#为什么需要注意力">为什么需要注意力</a></li>
+        <li><a href="#qkv-的含义">Q、K、V 的含义</a></li>
+        <li><a href="#scaled-dot-product-attention">Scaled Dot-Product Attention</a></li>
+        <li><a href="#多头注意力multi-head-attention">多头注意力（Multi-Head Attention）</a></li>
+        <li><a href="#掩码masking">掩码（Masking）</a></li>
+      </ul>
+    </li>
+    <li><a href="#位置编码让-transformer-感知顺序">位置编码：让 Transformer 感知顺序</a>
+      <ul>
+        <li><a href="#正弦位置编码">正弦位置编码</a></li>
+        <li><a href="#可学习位置编码">可学习位置编码</a></li>
+        <li><a href="#旋转位置编码rope">旋转位置编码（RoPE）</a></li>
+      </ul>
+    </li>
+    <li><a href="#前馈神经网络ffn">前馈神经网络（FFN）</a>
+      <ul>
+        <li><a href="#ffn-的作用">FFN 的作用</a></li>
+        <li><a href="#激活函数的选择">激活函数的选择</a></li>
+        <li><a href="#维度扩展因子">维度扩展因子</a></li>
+      </ul>
+    </li>
+    <li><a href="#残差连接与层归一化">残差连接与层归一化</a>
+      <ul>
+        <li><a href="#残差连接">残差连接</a></li>
+        <li><a href="#层归一化">层归一化</a></li>
+        <li><a href="#pre-ln-vs-post-ln">Pre-LN vs Post-LN</a></li>
+      </ul>
+    </li>
+    <li><a href="#位置-wise-前馈网络详解">位置-wise 前馈网络详解</a></li>
+    <li><a href="#完整的-transformer-层">完整的 Transformer 层</a></li>
+    <li><a href="#注意力机制的复杂度分析">注意力机制的复杂度分析</a>
+      <ul>
+        <li><a href="#时间复杂度">时间复杂度</a></li>
+        <li><a href="#空间复杂度">空间复杂度</a></li>
+        <li><a href="#与-rnn-的对比">与 RNN 的对比</a></li>
+      </ul>
+    </li>
+    <li><a href="#注意力可视化与理解">注意力可视化与理解</a>
+      <ul>
+        <li><a href="#注意力模式">注意力模式</a></li>
+        <li><a href="#注意力可视化示例">注意力可视化示例</a></li>
+      </ul>
+    </li>
+    <li><a href="#进阶话题">进阶话题</a>
+      <ul>
+        <li><a href="#flashattention">FlashAttention</a></li>
+        <li><a href="#稀疏注意力">稀疏注意力</a></li>
+        <li><a href="#线性注意力">线性注意力</a></li>
+      </ul>
+    </li>
+    <li><a href="#结语">结语</a></li>
+  </ul>
+</nav>
+</div></div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></div><div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "Transformer 架构深度解析",
+          url: "https:\/\/dev.infiniteevo.online\/post\/llm\/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86\/transformer%E6%9E%B6%E6%9E%84%E6%B7%B1%E5%BA%A6%E8%A7%A3%E6%9E%90\/",
+          description: "从自注意力机制到位置编码，全面拆解 Transformer 的核心组件与实现细节",
+          cover: "https:\/\/dev.infiniteevo.online\/images\/banner.webp",
+        };
+      </script><script
+    src="https://npm.webcache.cn/mermaid@11.12.0/dist/mermaid.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-o&#43;g/BxPwhi0C3RK7oQBxQuNimeafQ3GE/ST4iT2BxVI4Wzt60SH4pq9iXVYujjaS" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/dompurify@3.2.6/dist/purify.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla&#43;3" crossorigin="anonymous"></script><script data-pjax>
+        if (window.mermaid) {
+          
+          const elementCode = '.mermaid'
+          const processElements = (callback) => {
+            const els = _$$(elementCode);
+            if (!els.length) return Promise.resolve();
+            
+            return new Promise((resolve, reject) => {
+              try {
+                els.forEach(callback);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          };
+          const saveOriginalData = () => processElements(el => {
+            if (!el.getAttribute('data-original-code')) {
+              el.setAttribute('data-original-code', el.innerHTML);
+            }
+          });
+
+          const resetProcessed = () => processElements(el => {
+            const originalCode = el.getAttribute('data-original-code');
+            if (originalCode) {
+              el.removeAttribute('data-processed');
+              el.innerHTML = DOMPurify.sanitize(originalCode);
+            }
+          });
+          const loadMermaid = async (theme) => {
+            window.mermaid.initialize({theme, startOnLoad: false})
+            await window.mermaid.run({querySelector: elementCode, suppressErrors: true})
+            if (window.svgPanZoom) {
+              window.__panZoomList?.forEach(panZoom => {try {panZoom.destroy()} catch {}});
+              window.__panZoomList = [];
+              _$$('.mermaid > svg').forEach(el => {
+                const bbox = el.getBBox();
+                el.setAttribute('height', Math.max(bbox.height, 80));
+                window.__panZoomList.push(window.svgPanZoom(el, {
+                  zoomEnabled: true,
+                  controlIconsEnabled: true,
+                  fit: true,
+                  center: true
+                }));
+              });
+              if (window.__resizeMermaidSvg) {
+                window.removeEventListener('resize', window.__resizeMermaidSvg);
+              }
+              window.__resizeMermaidSvg = () => {
+                try {
+                  window.__panZoomList.forEach(panZoom => {
+                    panZoom.resize();
+                    panZoom.fit();
+                    panZoom.center();
+                  });
+                } catch {
+                  window.removeEventListener('resize', window.__resizeMermaidSvg);
+                  window.__panZoomList = [];
+                }
+              }
+              window.addEventListener('resize', window.__resizeMermaidSvg);
+            }
+          }
+          const initMermaid = async (theme) => {
+            try {
+              await saveOriginalData();
+              await resetProcessed();
+              await loadMermaid(theme);
+            } catch (error) {
+              console.error(error);
+            }
+          };
+          
+          document.body.addEventListener('reimu:theme-set', (e) => {
+            const isDark = e.detail.isDark;
+            initMermaid(isDark ? 'dark' : 'default');
+          });
+
+          const mode = localStorage.getItem('dark_mode');
+          if (mode === 'auto') {
+            const osMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+            initMermaid(osMode ? 'dark' : 'default');
+          } else {
+            initMermaid(mode === 'true' ? 'dark' : 'default');
+          }
+        }
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-MWNUH0WmtsYGhn2cbH6ELRCbf9LG3QDqCC&#43;gqPB3IBNO35xjZK3Ejb6oONRpDbPg" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/katex@0.16.24/dist/contrib/auto-render.min.js"
+    
+    
+    data-pjax
+    
+    integrity="sha384-hCXGrW6PitJEwbkoStFjeJxv&#43;fSOOQKOPbJxSfM6G5sWZjAyWhXiTIIAmQqnlLlh" crossorigin="anonymous"></script><script data-pjax>
+          var renderMath = () => {
+            if (!window.renderMathInElement) return;
+            window.renderMathInElement(_$("article"), {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "\\[", right: "\\]", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+              ],
+            });
+          };
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", renderMath, { once: true });
+          } else {
+            renderMath();
+          }
+        </script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>

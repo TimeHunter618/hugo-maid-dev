@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docker on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/docker/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Fri, 05 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/docker/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>Docker 与 Kubernetes 部署</title>
+      <link>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/docker%E4%B8%8Ek8s%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Fri, 05 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/5-%E6%A8%A1%E5%9E%8B%E9%83%A8%E7%BD%B2%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96/docker%E4%B8%8Ek8s%E9%83%A8%E7%BD%B2/</guid>
+      <description>
+        <![CDATA[<h1>Docker 与 Kubernetes 部署</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>容器化部署是大模型从开发环境走向生产环境的必经之路。大模型的部署面临独特的挑战：动辄数十 GB 的模型文件、对 GPU 硬件的强依赖、不均匀的计算负载、漫长的模型加载时间。传统的应用部署方式难以高效应对这些问题。</p>
+        
+        <hr><p>本文2026-06-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-05</p>]]>
+      </description>
+      
+        <category>模型部署与推理优化</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>Docker容器化部署实践</title>
+      <link>https://dev.infiniteevo.online/post/middleware-ops/docker%E5%AE%B9%E5%99%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E8%B7%B5/</link>
+      <pubDate>Tue, 05 Jan 2021 06:44:02 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/middleware-ops/docker%E5%AE%B9%E5%99%A8%E5%8C%96%E9%83%A8%E7%BD%B2%E5%AE%9E%E8%B7%B5/</guid>
+      <description>
+        <![CDATA[<h1>Docker容器化部署实践</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2021-01-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2021-01-05</p>]]>
+      </description>
+      
+        <category>容器化</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

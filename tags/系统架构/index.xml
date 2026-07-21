@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>系统架构 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Sun, 10 Dec 2023 18:37:24 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>后台项目整体说明</title>
+      <link>https://dev.infiniteevo.online/post/ats/backend/%E5%90%8E%E5%8F%B0%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E/</link>
+      <pubDate>Sun, 10 Dec 2023 18:37:24 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/ats/backend/%E5%90%8E%E5%8F%B0%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E/</guid>
+      <description>
+        <![CDATA[<h1>后台项目整体说明</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2023-12-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2023-12-10</p>]]>
+      </description>
+      
+        <category>轨道交通</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

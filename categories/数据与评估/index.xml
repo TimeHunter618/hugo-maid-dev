@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>数据与评估 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/categories/%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Wed, 10 Jun 2026 10:00:00 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/categories/%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>A/B 测试与持续迭代流程</title>
+      <link>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/ab%E6%B5%8B%E8%AF%95%E4%B8%8E%E8%BF%AD%E4%BB%A3%E6%B5%81%E7%A8%8B/</link>
+      <pubDate>Wed, 10 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/ab%E6%B5%8B%E8%AF%95%E4%B8%8E%E8%BF%AD%E4%BB%A3%E6%B5%81%E7%A8%8B/</guid>
+      <description>
+        <![CDATA[<h1>A/B 测试与持续迭代流程</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在 AI 产品开发中，一个永恒的难题是：<strong>我们怎么知道新版本真的更好了？</strong> 离线评估指标（如准确率、ROUGE 分数）的提升，并不总是能转化为线上用户体验的改善。一个在 MMLU 上得分更高的模型，可能因为回答过于冗长而让用户感到厌烦；一个在基准测试上表现平平的模型，可能因为回答更贴近用户直觉而获得更高的满意度。</p>
+        
+        <hr><p>本文2026-06-10首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-10</p>]]>
+      </description>
+      
+        <category>数据与评估</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>评估体系与基准测试</title>
+      <link>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E8%AF%84%E4%BC%B0%E4%BD%93%E7%B3%BB%E4%B8%8E%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/</link>
+      <pubDate>Fri, 05 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E8%AF%84%E4%BC%B0%E4%BD%93%E7%B3%BB%E4%B8%8E%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95/</guid>
+      <description>
+        <![CDATA[<h1>评估体系与基准测试</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>&ldquo;如果你不能衡量它，你就不能改进它。&rdquo; 这句管理学的经典格言在大模型领域同样适用。评估（Evaluation）是模型迭代的核心驱动力——没有科学的评估体系，我们就无法判断一个改进是否有效，无法比较不同方案的优劣，也无法向决策者证明投入的价值。</p>
+        
+        <hr><p>本文2026-06-05首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-05</p>]]>
+      </description>
+      
+        <category>数据与评估</category><category>技术分享</category>
+      
+    </item>
+    
+    
+
+    <item>
+      <title>数据集构建、清洗与标注</title>
+      <link>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E6%95%B0%E6%8D%AE%E9%9B%86%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%B8%85%E6%B4%97%E6%A0%87%E6%B3%A8/</link>
+      <pubDate>Mon, 01 Jun 2026 10:00:00 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/llm/6-%E6%95%B0%E6%8D%AE%E4%B8%8E%E8%AF%84%E4%BC%B0/%E6%95%B0%E6%8D%AE%E9%9B%86%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%B8%85%E6%B4%97%E6%A0%87%E6%B3%A8/</guid>
+      <description>
+        <![CDATA[<h1>数据集构建、清洗与标注</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          <h2 id="引言">
+<a class="header-anchor" href="#%e5%bc%95%e8%a8%80"></a>
+引言
+</h2><p>在大模型时代，业界有一句被反复验证的格言：<strong>&ldquo;Garbage In, Garbage Out&rdquo;（垃圾进，垃圾出）</strong>。一个千亿参数的模型，如果训练数据质量低劣，其表现甚至不如在高质量数据上训练的几十亿参数小模型。数据，而非模型架构，正日益成为决定大模型能力上限的核心因素。</p>
+        
+        <hr><p>本文2026-06-01首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2026-06-01</p>]]>
+      </description>
+      
+        <category>数据与评估</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

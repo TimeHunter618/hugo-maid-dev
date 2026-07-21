@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>区域管理 on Aries的研发手记</title>
+    <link>https://dev.infiniteevo.online/tags/%E5%8C%BA%E5%9F%9F%E7%AE%A1%E7%90%86/</link>
+    <description>Recent content from Aries的研发手记</description>
+    <generator>Hugo</generator>
+    <language>zh-CN</language>
+    
+    <managingEditor>xxx@example.com (Aries)</managingEditor>
+    <webMaster>xxx@example.com (Aries)</webMaster>
+    
+    <copyright>本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！</copyright>
+    
+    <lastBuildDate>Tue, 30 Apr 2024 15:33:15 +0800</lastBuildDate>
+    
+    
+    <atom:link href="https://dev.infiniteevo.online/tags/%E5%8C%BA%E5%9F%9F%E7%AE%A1%E7%90%86/index.xml" rel="self" type="application/rss&#43;xml" />
+    
+
+    
+    
+
+    <item>
+      <title>CmOperAreaManagePlug 操作区域管理插件</title>
+      <link>https://dev.infiniteevo.online/post/ats/frontend/cmoperareamanageplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/</link>
+      <pubDate>Tue, 30 Apr 2024 15:33:15 &#43;0800</pubDate>
+      <author>xxx@example.com (Aries)</author>
+      <guid>https://dev.infiniteevo.online/post/ats/frontend/cmoperareamanageplug%E6%A8%A1%E5%9D%97%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/</guid>
+      <description>
+        <![CDATA[<h1>CmOperAreaManagePlug 操作区域管理插件</h1><p>作者：Aries（xxx@example.com）</p>
+        
+          
+        
+        <hr><p>本文2024-04-30首发于<a href='https://dev.infiniteevo.online/'>Aries的研发手记</a>，最后修改于2024-04-30</p>]]>
+      </description>
+      
+        <category>轨道交</category><category>技术分享</category>
+      
+    </item>
+    
+  </channel>
+</rss>

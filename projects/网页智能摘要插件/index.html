@@ -1,0 +1,2189 @@
+<!doctype html>
+<html
+  lang="zh-CN" 
+  data-theme-mode="auto"
+  >
+  <head><meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/><title>
+  网页智能摘要插件 WebSum | Aries
+</title>
+<meta name="description" content="一款基于大语言模型的 Chrome 浏览器侧边栏插件，帮助用户快速总结网页内容，提升信息获取效率"/><script>
+  window.siteConfig = JSON.parse("{\"anchor\":{\"auto\":{\"enable\":false,\"length\":60},\"explicit\":{\"enable\":false,\"marker\":\"{#anchor-\",\"prefix\":\"anchor-\"}},\"anchor_icon\":null,\"base\":\"https://dev.infiniteevo.online/\",\"clipboard\":{\"copyright\":{\"count\":50,\"enable\":false,\"license_type\":\"by-nc-sa\"},\"fail\":{\"en\":\"Copy failed (ﾟ⊿ﾟ)ﾂ\",\"ja\":\"コピー失敗 (ﾟ⊿ﾟ)ﾂ\",\"pt-br\":\"Falha ao copiar (ﾟ⊿ﾟ)ﾂ\",\"zh-cn\":\"复制失败 (ﾟ⊿ﾟ)ﾂ\",\"zh-tw\":\"複製失敗 (ﾟ⊿ﾟ)ﾂ\"},\"success\":{\"en\":\"Copy successfully (*^▽^*)\",\"ja\":\"コピー成功 (*^▽^*)\",\"pt-br\":\"Copiado com sucesso (*^▽^*)\",\"zh-cn\":\"复制成功 (*^▽^*)\",\"zh-tw\":\"複製成功 (*^▽^*)\"}},\"code_block\":{\"expand\":true},\"i18n_languages\":[{\"label\":\"简体中文\",\"lang\":\"zh-cn\"},{\"label\":\"English\",\"lang\":\"en\"}],\"icon_font\":\"4552607_ex15nbittbh\",\"outdate\":{\"daysago\":180,\"enable\":false,\"message\":{\"en\":\"This article was last updated on {time}. Please note that the content may no longer be applicable.\",\"ja\":\"この記事は最終更新日：{time}。記載内容が現在有効でない可能性がありますのでご注意ください。\",\"pt-br\":\"Este artigo foi atualizado pela última vez em {time}. Observe que o conteúdo pode não ser mais aplicável.\",\"zh-cn\":\"本文最后更新于 {time}，请注意文中内容可能已不适用。\",\"zh-tw\":\"本文最後更新於 {time}，請注意文中內容可能已不適用。\"}}}");
+  
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic%7cNoto%20Serif%20SC:400,400italic,700,700italic%7c&amp;display=swap"
+  media="print"
+  onload="this.media='all'"
+/>
+<link
+    rel="preload"
+    href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin="anonymous"
+  /><link rel="stylesheet" href="https://dev.infiniteevo.online/css/loader.min.ac746e154f756f8220326eeb52a719f142ab038be5a8ddf30ea5ef15ef2356ea.css" /><meta property="og:type" content="website" />
+  <meta property="og:title" content="网页智能摘要插件 WebSum | Aries" />
+  <meta
+    property="og:description"
+    content="一款基于大语言模型的 Chrome 浏览器侧边栏插件，帮助用户快速总结网页内容，提升信息获取效率"
+  />
+  <meta property="og:url" content="https://dev.infiniteevo.online/projects/%E7%BD%91%E9%A1%B5%E6%99%BA%E8%83%BD%E6%91%98%E8%A6%81%E6%8F%92%E4%BB%B6/" />
+  <meta
+    property="og:site_name"
+    content="Aries的研发手记"
+  />
+  <meta property="og:image" content="https://d-sketon.top/img/backwebp/bg4.webp" />
+  <meta property="article:author" content="Aries" />
+  <meta property="article:published_time" content="2026-06-19T00:00:00&#43;00:00" />
+  <meta property="article:modified_time" content="2026-06-19T00:00:00&#43;00:00" /><meta property="article:tag" content="Chrome插件, LLM, AI, 前端" /><meta name="twitter:card" content="summary" /><meta name="twitter:image" content="https://d-sketon.top/img/backwebp/bg4.webp" />
+<link rel="shortcut icon" href="https://dev.infiniteevo.online/favicon.ico"><link rel="stylesheet" href="https://dev.infiniteevo.online/css/main.min.18c7a415b94dffa809863737e12d68d72597442bd92a7809b3cbf5a1d103cc70.css" /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/photoswipe@5.4.4/dist/photoswipe.css"
+    integrity="sha384-IfxC36XL/toUyJ939C73PcgMuRzAZuIzZxE38drsmO5p6jD7ei&#43;Zx/1oA/0l8ysE" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><link
+    rel="preload"
+    as="style"
+    href="https://npm.webcache.cn/katex@0.16.24/dist/katex.min.css"
+    integrity="sha384-tTgKLjMYmJr94v8qu2PE5MUGSMbyN2xiH266JUB3gpm8vnnJywd1dWSOEfrFz&#43;YI" crossorigin="anonymous"
+    onload="this.onload=null;this.rel='stylesheet'"
+  /><script
+    src="https://npm.webcache.cn/pace-js@1.2.4/pace.min.js"
+    
+    
+    
+    
+    integrity="sha384-k6YtvFUEIuEFBdrLKJ3YAUbBki333tj1CSUisai5Cswsg9wcLNaPzsTHDswp4Az8" crossorigin="anonymous"></script><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/@reimujs/aos@0.1.2/dist/aos.css"
+    integrity="sha384-GMRP93c6Hkz9JVKGAuRR3nTS7M07RwPgTFenXiosjq2VbVgvdDNcz1g6Mkj8AONa" crossorigin="anonymous"/><link
+    rel="stylesheet"
+    href="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.css"
+    integrity="sha384-tLMkTWh2pfXNWGFlUS0w1TFtRG5xZ9lPWFOooj&#43;vDDLIL&#43;xBGQU/voDBY5XE2lVh" crossorigin="anonymous"/></head>
+  <body><div id='loader'>
+    <div class="loading-left-bg loading-bg"></div>
+    <div class="loading-right-bg loading-bg"></div>
+    <div class="spinner-box">
+      <div class="loading-taichi rotate"><svg width="150" height="150" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="https://www.w3.org/2000/svg" shape-rendering="geometricPrecision">
+            <path d="M303.5 432A80 80 0 0 1 291.5 592A80 80 0 0 1 303.5 432z" fill="var(--red-1, #ff5252)" />
+            <path d="M512 65A447 447 0 0 1 512 959L512 929A417 417 0 0 0 512 95A417 417 0 0 0 512 929L512 959A447 447 0 0 1 512 65z 
+          M512 95A417 417 0 0 1 929 512A208.5 208.5 0 0 1 720.5 720.5L720.5 592A80 80 0 0 0 720.5 432A80 80 0 0 0 720.5 592L720.5 720.5A208.5 208.5 0 0 1 512 512A208.5 208.5 0 0 0 303.5 303.5A208.5 208.5 0 0 0 95 512A417 417 0 0 1 512 95z" fill="var(--red-1, #ff5252)" />
+          </svg></div><div class="loading-word">用代码编织理想，以技术探索无限可能</div>
+    </div>
+  </div>
+  </div>
+  <script>
+    var time = null;
+    var loaderEl = document.getElementById('loader');
+    var startLoading = () => {
+      time = Date.now();
+      loaderEl.classList.remove("loading");
+    }
+    var hideLoader = () => {
+      document.body.style.overflow = 'auto';
+      loader.classList.add('loading');
+    };
+
+    var endLoading = () => {
+      if (!time) {
+        hideLoader();
+      } else {
+        if (Date.now() - time > 500) {
+          time = null;
+          hideLoader();
+        } else {
+          setTimeout(endLoading, 500 - (Date.now() - time));
+          time = null;
+        }
+      }
+    }
+    window.addEventListener('DOMContentLoaded', endLoading);
+    loaderEl.addEventListener('click', endLoading);
+  </script><div id="copy-tooltip"></div>
+<div id="lang-tooltip">
+本文章没有找到对应的语言版本
+</div>
+<div id="heatmap-tooltip"></div><div id="container">
+      <div id="wrap"><div id="header-nav">
+  <nav id="main-nav" aria-label="Primary navigation"><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">首页</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/projects"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">项目介绍</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/archives"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">技术分享</span>
+      </a><a class="main-nav-link-wrap" href="https://dev.infiniteevo.online/about"><div class='main-nav-icon icon rotate'>&#xe62b;</div><span class="main-nav-link">关于</span>
+      </a><a id="main-nav-toggle" class="nav-icon" aria-label="Toggle navigation" role="button"></a>
+  </nav>
+  <nav id="sub-nav" aria-label="Secondary navigation"></nav><nav id="i18n-nav" aria-label="Language selection">
+      <div class="custom-dropdown">
+        <div class="select-selected" id="select-selected" role="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Language menu">
+          <span id="nav-language-btn" class="nav-icon" style="padding: 0 20px 0 0"></span>
+          <span id="selected-lang">简体中文</span>
+        </div>
+        <ul class="select-items" id="select-items" role="listbox" aria-label="Languages"><li data-value="zh-cn" role="option" class="selected" aria-selected="true" >简体中文</li></ul>
+      </div>
+      <script>
+        var selectSelected = document.getElementById("select-selected");
+        var selectedLang = document.getElementById("selected-lang");
+        var selectItems = document.getElementById("select-items");
+        var selectOptions = selectItems.querySelectorAll("li");
+
+        selectSelected.addEventListener("click", () => {
+          selectItems.classList.toggle("show");
+          var expanded = selectSelected.getAttribute("aria-expanded") === "true";
+          selectSelected.setAttribute("aria-expanded", (!expanded).toString());
+        });
+
+        selectOptions.forEach((item) => {
+          item.addEventListener("click", () => {
+            const langMap = {};selectedLang.textContent = item.textContent;
+            selectItems.classList.remove("show");
+            selectOptions.forEach((option) => {
+              option.classList.remove("selected");
+            });
+            item.classList.add("selected");
+            if (item.dataset.value === 'zh-cn') {
+              return;
+            }
+            if (!langMap[item.dataset.value]) {
+              _$("#lang-tooltip").style.opacity = "1";
+              setTimeout(() => {
+                _$("#lang-tooltip").style.opacity = "0";
+              }, 1000);
+              return;
+            }
+            window.location = langMap[item.dataset.value];
+          });
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".custom-dropdown")) {
+            selectItems.classList.remove("show");
+            selectSelected.setAttribute("aria-expanded", "false");
+          }
+        });
+      </script>
+    </nav><a href="https://github.com/TimeHunter618" class="triangle-badge" title="github" target="_blank" rel="noopener nofollow noreferrer">
+      <div class="icon icon-github triangle-badge-icon"></div>
+    </a></div>
+<header id="header" aria-label="Site header"><picture></picture>
+    <img  fetchpriority="high" src="https://d-sketon.top/img/backwebp/bg4.webp" alt="网页智能摘要插件 WebSum"><div id="header-outer">
+    <div id="header-title"><span id="logo">
+            <h1 data-aos="slide-up">网页智能摘要插件 WebSum</h1>
+          </span><h2 id="subtitle-wrap" data-aos="slide-down"><span id="subtitle">一款基于大语言模型的 Chrome 浏览器侧边栏插件，帮助用户快速总结网页内容，提升信息获取效率</span></h2></div>
+  </div>
+</header>
+<div id="content"
+          aria-label="Page content"
+          
+          class="sidebar-right"  ><aside id="sidebar" aria-label="Sidebar"><div class="sidebar-wrapper-container "><div class="sidebar-wrapper">
+    <div
+      class="sidebar-wrap"
+      data-aos="fade-up"
+    ><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div>
+  </div><div class="sidebar-widget"><div class="widget-wrapper">
+    <div
+      class="widget-wrap"
+      data-aos="fade-up"
+    >
+      <div style="display: flex; justify-content: space-between;">
+        <h3 class="widget-title">分类</h3><a class="widget-link" href="https://dev.infiniteevo.online/categories/">查看更多</a></div>
+      <div class="widget">
+        <ul class="category-list"><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/ai%E9%9D%A2%E8%AF%95/" 
+                  title="AI面试"
+                  >AI面试</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/prompt%E5%B7%A5%E7%A8%8B%E4%B8%8Eagent%E7%B3%BB%E7%BB%9F/" 
+                  title="Prompt工程与Agent系统"
+                  >Prompt工程与Agent系统</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/rag%E5%85%A8%E6%B5%81%E7%A8%8B/" 
+                  title="RAG全流程"
+                  >RAG全流程</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/web%E5%BC%80%E5%8F%91/" 
+                  title="Web开发"
+                  >Web开发</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/web%E6%9C%8D%E5%8A%A1/" 
+                  title="Web服务"
+                  >Web服务</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" 
+                  title="人工智能"
+                  >人工智能</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E4%BC%A0%E8%BE%93/" 
+                  title="传输"
+                  >传输</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E5%8D%8F/" 
+                  title="分布式协"
+                  >分布式协</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/" 
+                  title="创建型模式"
+                  >创建型模式</a
+                >
+              </li><li class="category-list-item">
+                <a class="category-list-link" href="https://dev.infiniteevo.online/categories/%E5%89%8D%E7%AB%AF%E5%BC%80%E5%8F%91/" 
+                  title="前端开发"
+                  >前端开发</a
+                >
+              </li></ul>
+      </div>
+    </div>
+  </div><div class="widget-wrapper">
+    <div
+      class="widget-wrap"
+      data-aos="fade-up"
+    >
+      <div style="display: flex; justify-content: space-between;">
+        <h3 class="widget-title">标签</h3><a class="widget-link" href="https://dev.infiniteevo.online/tags/">查看更多</a></div>
+      <div class="widget">
+        <ul class="tag-list" itemprop="keywords"><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/429%E9%94%99%E8%AF%AF/"
+                  aria-label="标签: 429错误"
+                  title="429错误"
+                >
+                  429错误
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ab%E6%B5%8B%E8%AF%95/"
+                  aria-label="标签: AB测试"
+                  title="AB测试"
+                >
+                  AB测试
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/agent/"
+                  aria-label="标签: Agent"
+                  title="Agent"
+                >
+                  Agent
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ai/"
+                  aria-label="标签: AI"
+                  title="AI"
+                >
+                  AI
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ai%E5%AE%89%E5%85%A8/"
+                  aria-label="标签: AI安全"
+                  title="AI安全"
+                >
+                  AI安全
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/ai%E9%9D%A2%E8%AF%95/"
+                  aria-label="标签: AI面试"
+                  title="AI面试"
+                >
+                  AI面试
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/amqp/"
+                  aria-label="标签: AMQP"
+                  title="AMQP"
+                >
+                  AMQP
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/api/"
+                  aria-label="标签: API"
+                  title="API"
+                >
+                  API
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/api%E7%BD%91%E5%85%B3/"
+                  aria-label="标签: API网关"
+                  title="API网关"
+                >
+                  API网关
+                </a>
+              </li><li class="tag-item">
+                <a
+                  class="tag-link"
+                  href="https://dev.infiniteevo.online/tags/api%E8%AE%BE%E8%AE%A1/"
+                  aria-label="标签: API设计"
+                  title="API设计"
+                >
+                  API设计
+                </a>
+              </li></ul>
+      </div>
+    </div>
+  </div><div class="widget-wrapper">
+  <div
+    class="widget-wrap"
+    data-aos="fade-up"
+  >
+    <h3 class="widget-title">标签云</h3><div class="widget tagcloud"><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/429%E9%94%99%E8%AF%AF/"
+            aria-label="标签: 429错误"
+            >429错误</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ab%E6%B5%8B%E8%AF%95/"
+            aria-label="标签: AB测试"
+            >AB测试</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/agent/"
+            aria-label="标签: Agent"
+            >Agent</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ai/"
+            aria-label="标签: AI"
+            >AI</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ai%E5%AE%89%E5%85%A8/"
+            aria-label="标签: AI安全"
+            >AI安全</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ai%E9%9D%A2%E8%AF%95/"
+            aria-label="标签: AI面试"
+            >AI面试</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/amqp/"
+            aria-label="标签: AMQP"
+            >AMQP</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/api/"
+            aria-label="标签: API"
+            >API</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/api%E7%BD%91%E5%85%B3/"
+            aria-label="标签: API网关"
+            >API网关</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/api%E8%AE%BE%E8%AE%A1/"
+            aria-label="标签: API设计"
+            >API设计</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/arthas/"
+            aria-label="标签: Arthas"
+            >Arthas</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/ats/"
+            aria-label="标签: ATS"
+            >ATS</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/avl%E6%A0%91/"
+            aria-label="标签: AVL树"
+            >AVL树</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/awq/"
+            aria-label="标签: AWQ"
+            >AWQ</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bbr/"
+            aria-label="标签: BBR"
+            >BBR</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bfs/"
+            aria-label="标签: BFS"
+            >BFS</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bitmap/"
+            aria-label="标签: BitMap"
+            >BitMap</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bleu/"
+            aria-label="标签: BLEU"
+            >BLEU</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/bst/"
+            aria-label="标签: BST"
+            >BST</a
+          ><a
+            style="font-size:10px"
+            href="https://dev.infiniteevo.online/tags/chrome/"
+            aria-label="标签: Chrome"
+            >Chrome</a
+          ></div>
+  </div>
+</div><div class="widget-wrapper">
+    <div
+      class="widget-wrap"
+      data-aos="fade-up"
+    >
+      <h3 class="widget-title">最新文章</h3>
+      <div class="widget">
+        <ul><li>
+              <a href="https://dev.infiniteevo.online/post/llm/1-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E4%B8%8E%E5%8E%9F%E7%90%86/%E5%A4%A7%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80%E5%8E%9F%E7%90%86/" title="大语言模型基础原理与发展历程">大语言模型基础原理与发展历程</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/middleware-ops/rabbitmq%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%E8%AF%A6%E8%A7%A3/" title="RabbitMQ消息队列详解">RabbitMQ消息队列详解</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/ats/backend/%E5%90%8E%E5%8F%B0%E6%95%B4%E4%BD%93%E8%AF%B4%E6%98%8E/" title="后台项目整体说明">后台项目整体说明</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/design-patterns/%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E8%AF%A6%E8%A7%A3/" title="单例模式详解">单例模式详解</a>
+            </li><li>
+              <a href="https://dev.infiniteevo.online/post/algorithm/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E8%AF%A6%E8%A7%A3/" title="排序算法详解">排序算法详解</a>
+            </li></ul>
+      </div>
+    </div>
+  </div></div></div></aside>
+<section id="main" aria-label="Main content"><article
+  class="h-entry article"
+  itemscope
+  itemtype="https://schema.org/BlogPosting"
+>
+  <div
+    class="article-inner"
+    data-aos="fade-up"
+  >
+    <div class="article-meta"><div class="article-date">
+  <span
+    class="article-date-link icon-calendar"
+    data-aos="zoom-in"
+  >
+    <time datetime="2026-06-19 00:00:00 &#43;0000 UTC" itemprop="datePublished"
+      >2026-06-19</time
+    >
+    <time style="display: none;" id="post-update-time"
+      >2026-06-19</time
+    >
+  </span></div>
+</div><div class="hr-line"></div><div class="article-gallery">
+    <div class="article-gallery-photos"><a class="article-gallery-img article-gallery-item" href="https://d-sketon.top/img/backwebp/bg4.webp" target="_blank">
+          <img src="https://d-sketon.top/img/backwebp/bg4.webp" itemprop="image" alt="gallery" onload="this.parentNode.dataset.pswpWidth = this.naturalWidth;this.parentNode.dataset.pswpHeight = this.naturalHeight;" >
+        </a></div>
+  </div><div class="e-content article-entry" itemprop="articleBody"><h2 id="项目演示">
+<a class="header-anchor" href="#%e9%a1%b9%e7%9b%ae%e6%bc%94%e7%a4%ba"></a>
+项目演示
+</h2><p><strong>要点提取模式</strong> — 从网页内容中自动提炼核心要点，生成结构化摘要：</p>
+<p><img src="https://dev.infiniteevo.online/projects/chrome-plugin-summary.png" alt="要点提取"></p>
+<p><strong>多角色讨论模式</strong> — 邀请费曼、芒格、马斯克等蒸馏角色，从不同视角分析网页内容：</p>
+<p><img src="https://dev.infiniteevo.online/projects/chrome-plugin-discussion.png" alt="多角色讨论"></p>
+<h2 id="1--项目概述">
+<a class="header-anchor" href="#1--%e9%a1%b9%e7%9b%ae%e6%a6%82%e8%bf%b0"></a>
+1. 📖 项目概述
+</h2><h3 id="11-产品定位">
+<a class="header-anchor" href="#11-%e4%ba%a7%e5%93%81%e5%ae%9a%e4%bd%8d"></a>
+1.1 产品定位
+</h3><p>WebSum 是一款基于大语言模型的 Chrome 浏览器侧边栏插件，帮助用户快速总结当前网页内容，提升信息获取效率。类似 Sider 的使用体验，但更轻量、更专注于网页摘要核心场景。</p>
+<p><strong>核心特点：</strong></p>
+<ul>
+<li>🎯 <strong>专注网页摘要</strong>：不追求大而全，聚焦于「读懂网页」这一核心场景</li>
+<li>🪶 <strong>轻量无依赖</strong>：纯原生 HTML/CSS/JS，无构建步骤，加载即用</li>
+<li>🔌 <strong>后端可选</strong>：开箱即用只需一个 LLM API Key，部署后端可解锁更多能力</li>
+<li>🛡️ <strong>隐私优先</strong>：所有数据本地存储，API Key 加密保存，不收集任何用户信息</li>
+<li>🎭 <strong>角色丰富</strong>：内置 18 个蒸馏角色（费曼、芒格、马斯克等），支持角色对话和圆桌讨论</li>
+</ul>
+<h3 id="12-目标用户与场景">
+<a class="header-anchor" href="#12-%e7%9b%ae%e6%a0%87%e7%94%a8%e6%88%b7%e4%b8%8e%e5%9c%ba%e6%99%af"></a>
+1.2 目标用户与场景
+</h3><table>
+	<thead>
+			<tr>
+					<th>用户画像</th>
+					<th>典型场景</th>
+					<th>推荐功能</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>🔬 <strong>研究人员</strong></td>
+					<td>阅读论文、技术博客，需要快速判断是否值得精读</td>
+					<td>深度分析模式 + 收藏管理</td>
+			</tr>
+			<tr>
+					<td>🎓 <strong>学生</strong></td>
+					<td>总结课程资料、整理学习笔记、备考复习</td>
+					<td>要点提取 + 角色对话（老师/学员小白）</td>
+			</tr>
+			<tr>
+					<td>💼 <strong>职场人士</strong></td>
+					<td>每天浏览大量新闻、行业报告，需要高效筛选信息</td>
+					<td>快速摘要 + 多角色讨论</td>
+			</tr>
+			<tr>
+					<td>✍️ <strong>内容创作者</strong></td>
+					<td>收集素材、提炼观点、寻找创作灵感</td>
+					<td>深度分析 + 角色对话（保罗·格雷厄姆/MrBeast）</td>
+			</tr>
+			<tr>
+					<td>📚 <strong>终身学习者</strong></td>
+					<td>阅读长文时希望有人「陪读」、答疑解惑</td>
+					<td>聊天问答 + 圆桌讨论</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="13-核心价值">
+<a class="header-anchor" href="#13-%e6%a0%b8%e5%bf%83%e4%bb%b7%e5%80%bc"></a>
+1.3 核心价值
+</h3><ul>
+<li>⚡ <strong>高效获取信息</strong>：一键生成网页摘要，30秒读完长文，流式输出无需等待</li>
+<li>🔍 <strong>多维度理解</strong>：4 种摘要模式 + 18 个角色视角，从不同角度深度理解内容</li>
+<li>📱 <strong>随时随地可用</strong>：侧边栏常驻，不打断浏览流程，支持自动检测页面切换</li>
+<li>🔒 <strong>数据隐私可控</strong>：支持 8+ LLM 提供商自由切换，API Key 本地 AES-GCM 加密存储</li>
+<li>🎭 <strong>多角色思维碰撞</strong>：邀请费曼、芒格、马斯克等角色一起讨论，获得多元视角</li>
+</ul>
+<h3 id="14-项目结构">
+<a class="header-anchor" href="#14-%e9%a1%b9%e7%9b%ae%e7%bb%93%e6%9e%84"></a>
+1.4 项目结构
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">f:\project\ai\chrome_plugin\
+</span></span><span class="line"><span class="cl">├── websum-extension/              # Chrome 扩展前端（核心）
+</span></span><span class="line"><span class="cl">│   ├── icons/                      # 图标文件（16/32/48/128px + SVG）
+</span></span><span class="line"><span class="cl">│   ├── manifest.json               # 扩展配置（Manifest V3）
+</span></span><span class="line"><span class="cl">│   └── src/
+</span></span><span class="line"><span class="cl">│       ├── content.js              # 内容脚本 - 网页正文提取
+</span></span><span class="line"><span class="cl">│       ├── content.css             # 内容脚本样式
+</span></span><span class="line"><span class="cl">│       ├── service-worker.js       # 服务工作线程 - 消息中转、API调用、存储
+</span></span><span class="line"><span class="cl">│       ├── sidepanel.html          # 侧边栏 UI 结构（4个Tab）
+</span></span><span class="line"><span class="cl">│       ├── sidepanel.css           # 侧边栏样式（浅色/深色主题）
+</span></span><span class="line"><span class="cl">│       ├── sidepanel.js            # 侧边栏逻辑（状态管理、事件处理）
+</span></span><span class="line"><span class="cl">│       └── skills.js               # 蒸馏角色库（18个角色的思维框架）
+</span></span><span class="line"><span class="cl">│
+</span></span><span class="line"><span class="cl">├── quantclass-backend-v0.2.4/     # 可选后端服务（FastAPI + Python）
+</span></span><span class="line"><span class="cl">│   └── backend/
+</span></span><span class="line"><span class="cl">│       ├── main.py                 # 后端入口
+</span></span><span class="line"><span class="cl">│       ├── config.py               # 配置管理
+</span></span><span class="line"><span class="cl">│       ├── routers/                # API 路由（auth/chat/summary/agent...）
+</span></span><span class="line"><span class="cl">│       ├── services/               # 业务服务（摘要/聊天/知识库/讨论）
+</span></span><span class="line"><span class="cl">│       ├── llm/                    # LLM 适配器（8+服务商统一接口）
+</span></span><span class="line"><span class="cl">│       ├── models/                 # 数据模型（Pydantic schemas）
+</span></span><span class="line"><span class="cl">│       ├── database/               # 数据库连接与初始化
+</span></span><span class="line"><span class="cl">│       └── skills/                 # 角色思维框架（13个 .md 文件）
+</span></span><span class="line"><span class="cl">│
+</span></span><span class="line"><span class="cl">└── quantclass-smart-v0.2.4/       # 参考项目（Chrome扩展，提供设计参考）
+</span></span><span class="line"><span class="cl">    └── extension/
+</span></span><span class="line"><span class="cl">        ├── manifest.json
+</span></span><span class="line"><span class="cl">        └── build/                  # 构建产物（popup/service-worker/content）
+</span></span></code></pre></div><h3 id="15-技术选型理由">
+<a class="header-anchor" href="#15-%e6%8a%80%e6%9c%af%e9%80%89%e5%9e%8b%e7%90%86%e7%94%b1"></a>
+1.5 技术选型理由
+</h3><table>
+	<thead>
+			<tr>
+					<th>选择</th>
+					<th>理由</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>Manifest V3</strong></td>
+					<td>Chrome 最新扩展标准，未来兼容性保障</td>
+			</tr>
+			<tr>
+					<td><strong>原生 JS（无框架）</strong></td>
+					<td>扩展体积小，加载快，无构建依赖，便于维护</td>
+			</tr>
+			<tr>
+					<td><strong>Side Panel API</strong></td>
+					<td>比 popup 更适合常驻使用，不遮挡网页内容</td>
+			</tr>
+			<tr>
+					<td><strong>chrome.storage.local</strong></td>
+					<td>数据完全本地化，隐私可控，无需后端数据库</td>
+			</tr>
+			<tr>
+					<td><strong>后端 FastAPI（可选）</strong></td>
+					<td>Python 生态丰富，异步支持好，适合 LLM 调用</td>
+			</tr>
+			<tr>
+					<td><strong>AES-GCM 加密</strong></td>
+					<td>浏览器原生 Web Crypto API，无需第三方库</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h2 id="2--功能特性">
+<a class="header-anchor" href="#2--%e5%8a%9f%e8%83%bd%e7%89%b9%e6%80%a7"></a>
+2. ✨ 功能特性
+</h2><h3 id="21-核心功能">
+<a class="header-anchor" href="#21-%e6%a0%b8%e5%bf%83%e5%8a%9f%e8%83%bd"></a>
+2.1 核心功能
+</h3><h4 id="211--网页内容摘要">
+<a class="header-anchor" href="#211--%e7%bd%91%e9%a1%b5%e5%86%85%e5%ae%b9%e6%91%98%e8%a6%81"></a>
+2.1.1 📄 网页内容摘要
+</h4><table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>一键摘要</td>
+					<td>点击按钮立即生成当前网页的结构化摘要</td>
+			</tr>
+			<tr>
+					<td>多种模式</td>
+					<td>快速摘要、要点提取、通俗解释、深度分析</td>
+			</tr>
+			<tr>
+					<td>流式输出</td>
+					<td>边生成边展示，减少等待感</td>
+			</tr>
+			<tr>
+					<td>重新生成</td>
+					<td>对结果不满意可重新生成</td>
+			</tr>
+			<tr>
+					<td>收藏保存</td>
+					<td>将网页及摘要保存到本地收藏夹</td>
+			</tr>
+			<tr>
+					<td>复制导出</td>
+					<td>一键复制摘要内容</td>
+			</tr>
+	</tbody>
+</table>
+<p><strong>摘要模式详解：</strong></p>
+<table>
+	<thead>
+			<tr>
+					<th>模式</th>
+					<th>适用场景</th>
+					<th>输出风格</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>⚡ <strong>快速摘要</strong></td>
+					<td>快速判断文章是否值得精读</td>
+					<td>3-5 句话概括全文核心</td>
+			</tr>
+			<tr>
+					<td>📝 <strong>要点提取</strong></td>
+					<td>整理笔记、备考复习</td>
+					<td>5-10 个核心要点列表</td>
+			</tr>
+			<tr>
+					<td>💬 <strong>通俗解释</strong></td>
+					<td>阅读专业文章时理解困难</td>
+					<td>用生活化类比解释复杂概念</td>
+			</tr>
+			<tr>
+					<td>🧠 <strong>深度分析</strong></td>
+					<td>研究论文、深度报道</td>
+					<td>分析论点结构、论据支撑、局限性</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="212--基于网页内容的问答">
+<a class="header-anchor" href="#212--%e5%9f%ba%e4%ba%8e%e7%bd%91%e9%a1%b5%e5%86%85%e5%ae%b9%e7%9a%84%e9%97%ae%e7%ad%94"></a>
+2.1.2 💬 基于网页内容的问答
+</h4><table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>上下文问答</td>
+					<td>自动注入当前网页内容作为对话上下文</td>
+			</tr>
+			<tr>
+					<td>多轮对话</td>
+					<td>支持追问，保留历史对话深入探讨</td>
+			</tr>
+			<tr>
+					<td>角色对话</td>
+					<td>可选 18 个蒸馏角色，以角色心智模型回答</td>
+			</tr>
+			<tr>
+					<td>打字机效果</td>
+					<td>流式响应，逐字显示，体验流畅</td>
+			</tr>
+			<tr>
+					<td>自动更新</td>
+					<td>切换网页/标签页时自动刷新上下文</td>
+			</tr>
+	</tbody>
+</table>
+<p><strong>角色对话示例：</strong></p>
+<ul>
+<li>选择「⚛️ 费曼」→ 用第一性原理拆解问题，化繁为简</li>
+<li>选择「📐 芒格」→ 用多元思维模型从多学科角度分析</li>
+<li>选择「🚀 马斯克」→ 用第一性原理+激进执行的视角看问题</li>
+</ul>
+<h4 id="213--多角色讨论圆桌讨论">
+<a class="header-anchor" href="#213--%e5%a4%9a%e8%a7%92%e8%89%b2%e8%ae%a8%e8%ae%ba%e5%9c%86%e6%a1%8c%e8%ae%a8%e8%ae%ba"></a>
+2.1.3 🎭 多角色讨论（圆桌讨论）
+</h4><table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>角色选择</td>
+					<td>从 18 个蒸馏角色中自由选择参与者</td>
+			</tr>
+			<tr>
+					<td>专家评审团</td>
+					<td>各角色独立发表观点，互不干扰</td>
+			</tr>
+			<tr>
+					<td>蒸馏角色</td>
+					<td>费曼、芒格、马斯克、张雪峰、MrBeast 等</td>
+			</tr>
+			<tr>
+					<td>一轮讨论</td>
+					<td>每个角色只发言一次，快速获取多角度观点</td>
+			</tr>
+			<tr>
+					<td>流式输出</td>
+					<td>每个角色逐字生成，实时可见</td>
+			</tr>
+			<tr>
+					<td>后端降级</td>
+					<td>无后端时自动用本地 LLM 串行调用</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="214--收藏管理">
+<a class="header-anchor" href="#214--%e6%94%b6%e8%97%8f%e7%ae%a1%e7%90%86"></a>
+2.1.4 ⭐ 收藏管理
+</h4><table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>添加收藏</td>
+					<td>将网页及其摘要一键保存到本地</td>
+			</tr>
+			<tr>
+					<td>搜索收藏</td>
+					<td>按标题、摘要内容关键词搜索</td>
+			</tr>
+			<tr>
+					<td>标签分类</td>
+					<td>支持标签筛选和分类管理</td>
+			</tr>
+			<tr>
+					<td>重新查看</td>
+					<td>点击收藏项重新打开原网页</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="22-辅助功能">
+<a class="header-anchor" href="#22-%e8%be%85%e5%8a%a9%e5%8a%9f%e8%83%bd"></a>
+2.2 辅助功能
+</h3><h4 id="221--多模型支持">
+<a class="header-anchor" href="#221--%e5%a4%9a%e6%a8%a1%e5%9e%8b%e6%94%af%e6%8c%81"></a>
+2.2.1 🤖 多模型支持
+</h4><p>支持 8+ LLM 提供商自由切换：</p>
+<table>
+	<thead>
+			<tr>
+					<th>服务商</th>
+					<th>代表模型</th>
+					<th>特点</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Anthropic</td>
+					<td>Claude Sonnet/Opus</td>
+					<td>长文本理解能力强</td>
+			</tr>
+			<tr>
+					<td>OpenAI</td>
+					<td>GPT-4o / GPT-5</td>
+					<td>综合能力全面</td>
+			</tr>
+			<tr>
+					<td>DeepSeek</td>
+					<td>DeepSeek-V3/R1</td>
+					<td>性价比高，中文好</td>
+			</tr>
+			<tr>
+					<td>通义千问</td>
+					<td>Qwen-Max</td>
+					<td>阿里云生态</td>
+			</tr>
+			<tr>
+					<td>Google Gemini</td>
+					<td>Gemini Pro/Flash</td>
+					<td>多模态能力</td>
+			</tr>
+			<tr>
+					<td>Kimi</td>
+					<td>moonshot-v1</td>
+					<td>超长上下文</td>
+			</tr>
+			<tr>
+					<td>智谱 AI</td>
+					<td>GLM-4</td>
+					<td>国产大模型</td>
+			</tr>
+			<tr>
+					<td>MiniMax</td>
+					<td>abab6.5</td>
+					<td>对话体验好</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="222--语言与主题">
+<a class="header-anchor" href="#222--%e8%af%ad%e8%a8%80%e4%b8%8e%e4%b8%bb%e9%a2%98"></a>
+2.2.2 🌐 语言与主题
+</h4><ul>
+<li><strong>界面语言</strong>：中文 / English</li>
+<li><strong>输出语言</strong>：跟随界面语言 / 固定中文 / 固定英文</li>
+<li><strong>默认强制中文输出</strong>：无论用什么语言提问，回答都是中文</li>
+<li><strong>主题切换</strong>：浅色 / 深色 / 跟随系统</li>
+<li><strong>字体大小</strong>：可调节（12px - 20px）</li>
+</ul>
+<h4 id="223--智能内容更新">
+<a class="header-anchor" href="#223--%e6%99%ba%e8%83%bd%e5%86%85%e5%ae%b9%e6%9b%b4%e6%96%b0"></a>
+2.2.3 🔄 智能内容更新
+</h4><table>
+	<thead>
+			<tr>
+					<th>场景</th>
+					<th>行为</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>打开侧边栏</td>
+					<td>自动提取当前页面内容</td>
+			</tr>
+			<tr>
+					<td>页内跳转（URL变化）</td>
+					<td>自动重新提取，Toast 提示</td>
+			</tr>
+			<tr>
+					<td>切换浏览器标签页</td>
+					<td>自动切换到新标签页内容</td>
+			</tr>
+			<tr>
+					<td>页面未加载完成</td>
+					<td>等待加载完成后自动提取</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h2 id="3--架构设计">
+<a class="header-anchor" href="#3--%e6%9e%b6%e6%9e%84%e8%ae%be%e8%ae%a1"></a>
+3. 🏗️ 架构设计
+</h2><h3 id="31-整体架构">
+<a class="header-anchor" href="#31-%e6%95%b4%e4%bd%93%e6%9e%b6%e6%9e%84"></a>
+3.1 整体架构
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">┌─────────────────────────────────────────────────────────────┐
+</span></span><span class="line"><span class="cl">│                        Chrome 浏览器                          │
+</span></span><span class="line"><span class="cl">│                                                              │
+</span></span><span class="line"><span class="cl">│  ┌──────────────┐     ┌──────────────┐     ┌─────────────┐  │
+</span></span><span class="line"><span class="cl">│  │  Side Panel  │────▶│Service Worker│────▶│ Content     │  │
+</span></span><span class="line"><span class="cl">│  │  (侧边栏UI)  │◀────│  (消息中转)   │◀────│ Script      │  │
+</span></span><span class="line"><span class="cl">│  │              │     │              │     │ (页面提取)   │  │
+</span></span><span class="line"><span class="cl">│  │ - 摘要Tab    │     │ - 消息路由   │     │ - DOM分析   │  │
+</span></span><span class="line"><span class="cl">│  │ - 聊天Tab    │     │ - LLM调用    │     │ - 正文提取  │  │
+</span></span><span class="line"><span class="cl">│  │ - 收藏Tab    │     │ - 存储管理   │     │ - 清洗过滤  │  │
+</span></span><span class="line"><span class="cl">│  │ - 讨论Tab    │     │ - 加密解密   │     │             │  │
+</span></span><span class="line"><span class="cl">│  └──────────────┘     └──────────────┘     └─────────────┘  │
+</span></span><span class="line"><span class="cl">│                            │                                │
+</span></span><span class="line"><span class="cl">│                            ▼                                │
+</span></span><span class="line"><span class="cl">│  ┌──────────────────────────────────────────────────────┐  │
+</span></span><span class="line"><span class="cl">│  │              chrome.storage.local (本地存储)           │  │
+</span></span><span class="line"><span class="cl">│  │                                                      │  │
+</span></span><span class="line"><span class="cl">│  │  websum_config     → 语言/主题/字体/默认模型           │  │
+</span></span><span class="line"><span class="cl">│  │  websum_providers  → 服务商配置(API Key加密存储)       │  │
+</span></span><span class="line"><span class="cl">│  │  websum_summaries  → 摘要缓存(30天过期)               │  │
+</span></span><span class="line"><span class="cl">│  │  websum_bookmarks  → 收藏夹列表                       │  │
+</span></span><span class="line"><span class="cl">│  │  websum_chat_*     → 聊天历史                         │  │
+</span></span><span class="line"><span class="cl">│  └──────────────────────────────────────────────────────┘  │
+</span></span><span class="line"><span class="cl">└─────────────────────────────────────────────────────────────┘
+</span></span><span class="line"><span class="cl">                             │
+</span></span><span class="line"><span class="cl">                             ▼ (可选)
+</span></span><span class="line"><span class="cl">┌─────────────────────────────────────────────────────────────┐
+</span></span><span class="line"><span class="cl">│                    后端服务 (可选)                            │
+</span></span><span class="line"><span class="cl">│  - FastAPI + Python                                          │
+</span></span><span class="line"><span class="cl">│  - LLM 适配器（8+ 供应商统一接口）                             │
+</span></span><span class="line"><span class="cl">│  - 摘要生成 / 聊天 / 知识库 / 圆桌讨论                          │
+</span></span><span class="line"><span class="cl">│  - 13 个角色思维框架（.md 文件）                               │
+</span></span><span class="line"><span class="cl">└─────────────────────────────────────────────────────────────┘
+</span></span><span class="line"><span class="cl">                             │
+</span></span><span class="line"><span class="cl">                             ▼
+</span></span><span class="line"><span class="cl">┌─────────────────────────────────────────────────────────────┐
+</span></span><span class="line"><span class="cl">│                    LLM 服务提供商                              │
+</span></span><span class="line"><span class="cl">│  OpenAI / Anthropic / DeepSeek / Qwen / Gemini / Kimi ...   │
+</span></span><span class="line"><span class="cl">└─────────────────────────────────────────────────────────────┘
+</span></span></code></pre></div><h3 id="32-架构模式">
+<a class="header-anchor" href="#32-%e6%9e%b6%e6%9e%84%e6%a8%a1%e5%bc%8f"></a>
+3.2 架构模式
+</h3><table>
+	<thead>
+			<tr>
+					<th>模式</th>
+					<th>说明</th>
+					<th>优势</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>🖥️ <strong>前端为主架构</strong></td>
+					<td>核心逻辑在 Chrome 扩展前端运行</td>
+					<td>零部署成本，开箱即用</td>
+			</tr>
+			<tr>
+					<td>⚙️ <strong>后端可选</strong></td>
+					<td>后端作为增强组件，非必需</td>
+					<td>用户自主选择，灵活部署</td>
+			</tr>
+			<tr>
+					<td>🤖 <strong>直接调用 LLM</strong></td>
+					<td>Service Worker 代理调用 LLM API</td>
+					<td>少一跳网络，响应更快</td>
+			</tr>
+			<tr>
+					<td>🛡️ <strong>全面降级方案</strong></td>
+					<td>所有后端依赖功能都有本地替代</td>
+					<td>无后端也能用全部功能</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="33-模块设计">
+<a class="header-anchor" href="#33-%e6%a8%a1%e5%9d%97%e8%ae%be%e8%ae%a1"></a>
+3.3 模块设计
+</h3><h4 id="331-chrome-扩展模块">
+<a class="header-anchor" href="#331-chrome-%e6%89%a9%e5%b1%95%e6%a8%a1%e5%9d%97"></a>
+3.3.1 Chrome 扩展模块
+</h4><table>
+	<thead>
+			<tr>
+					<th>模块</th>
+					<th>文件</th>
+					<th>职责</th>
+					<th>核心能力</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Manifest V3</td>
+					<td><code>manifest.json</code></td>
+					<td>扩展配置、权限声明</td>
+					<td>Side Panel / scripting / storage</td>
+			</tr>
+			<tr>
+					<td>Content Script</td>
+					<td><code>content.js</code></td>
+					<td>网页正文内容提取</td>
+					<td>DOM分析 / 文本密度 / 语义标签</td>
+			</tr>
+			<tr>
+					<td>Service Worker</td>
+					<td><code>service-worker.js</code></td>
+					<td>消息中转、LLM调用、存储</td>
+					<td>消息路由 / API代理 / AES加密</td>
+			</tr>
+			<tr>
+					<td>Side Panel</td>
+					<td><code>sidepanel.html/css/js</code></td>
+					<td>侧边栏 UI 与交互</td>
+					<td>4个Tab / 流式渲染 / 状态管理</td>
+			</tr>
+			<tr>
+					<td>Skills</td>
+					<td><code>skills.js</code></td>
+					<td>蒸馏角色库</td>
+					<td>18个角色 / 思维框架 / Prompt</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="332-后端模块可选">
+<a class="header-anchor" href="#332-%e5%90%8e%e7%ab%af%e6%a8%a1%e5%9d%97%e5%8f%af%e9%80%89"></a>
+3.3.2 后端模块（可选）
+</h4><p>基于 <code>quantclass-backend-v0.2.4</code>：</p>
+<table>
+	<thead>
+			<tr>
+					<th>模块</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>LLM 适配器</td>
+					<td>8+ 服务商统一接口，支持流式输出</td>
+			</tr>
+			<tr>
+					<td>摘要服务</td>
+					<td>流式/非流式摘要生成，缓存机制</td>
+			</tr>
+			<tr>
+					<td>聊天服务</td>
+					<td>多轮对话管理，上下文维护</td>
+			</tr>
+			<tr>
+					<td>知识库</td>
+					<td>向量检索，语义搜索</td>
+			</tr>
+			<tr>
+					<td>Agent 讨论</td>
+					<td>多角色并行调用 LLM，SSE 流式返回</td>
+			</tr>
+			<tr>
+					<td>角色框架</td>
+					<td>13 个 .md 文件，完整思维操作系统</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="34-消息协议">
+<a class="header-anchor" href="#34-%e6%b6%88%e6%81%af%e5%8d%8f%e8%ae%ae"></a>
+3.4 消息协议
+</h3><p>扩展内部使用统一的消息格式进行通信：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">type</span><span class="o">:</span> <span class="s2">&#34;MESSAGE_TYPE&#34;</span><span class="p">,</span>    <span class="c1">// 消息类型
+</span></span></span><span class="line"><span class="cl">  <span class="nx">payload</span><span class="o">:</span> <span class="p">{</span> <span class="p">...</span> <span class="p">},</span>        <span class="c1">// 消息内容
+</span></span></span><span class="line"><span class="cl">  <span class="nx">requestId</span><span class="o">:</span> <span class="s2">&#34;uuid&#34;</span>        <span class="c1">// 请求ID（用于流式匹配）
+</span></span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>核心消息类型一览：</strong></p>
+<table>
+	<thead>
+			<tr>
+					<th>消息类型</th>
+					<th>方向</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>EXTRACT_CONTENT</code></td>
+					<td>Panel → Content</td>
+					<td>请求提取页面内容</td>
+			</tr>
+			<tr>
+					<td><code>EXTRACT_PAGE_CONTENT</code></td>
+					<td>Panel → SW</td>
+					<td>请求提取页面内容（代理）</td>
+			</tr>
+			<tr>
+					<td><code>GENERATE_SUMMARY</code></td>
+					<td>Panel → SW</td>
+					<td>请求生成摘要</td>
+			</tr>
+			<tr>
+					<td><code>SUMMARY_CHUNK/DONE/ERROR</code></td>
+					<td>SW → Panel</td>
+					<td>摘要流式响应</td>
+			</tr>
+			<tr>
+					<td><code>CHAT</code></td>
+					<td>Panel → SW</td>
+					<td>发送聊天消息</td>
+			</tr>
+			<tr>
+					<td><code>CHAT_CHUNK/DONE/ERROR</code></td>
+					<td>SW → Panel</td>
+					<td>聊天流式响应</td>
+			</tr>
+			<tr>
+					<td><code>GET_AGENTS</code></td>
+					<td>Panel → SW</td>
+					<td>获取角色列表</td>
+			</tr>
+			<tr>
+					<td><code>RUN_DISCUSSION</code></td>
+					<td>Panel → SW</td>
+					<td>开始讨论</td>
+			</tr>
+			<tr>
+					<td><code>DISCUSSION_EVENT/DONE/ERROR</code></td>
+					<td>SW → Panel</td>
+					<td>讨论流式响应</td>
+			</tr>
+			<tr>
+					<td><code>GET_CONFIG/UPDATE_CONFIG</code></td>
+					<td>Panel → SW</td>
+					<td>配置管理</td>
+			</tr>
+			<tr>
+					<td><code>TEST_PROVIDER</code></td>
+					<td>Panel → SW</td>
+					<td>测试 LLM 连接</td>
+			</tr>
+			<tr>
+					<td><code>URL_CHANGED</code></td>
+					<td>SW → Panel</td>
+					<td>URL 变化通知</td>
+			</tr>
+			<tr>
+					<td><code>TAB_ACTIVATED</code></td>
+					<td>SW → Panel</td>
+					<td>标签页切换通知</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="35-数据流">
+<a class="header-anchor" href="#35-%e6%95%b0%e6%8d%ae%e6%b5%81"></a>
+3.5 数据流
+</h3><h4 id="351-摘要生成流程">
+<a class="header-anchor" href="#351-%e6%91%98%e8%a6%81%e7%94%9f%e6%88%90%e6%b5%81%e7%a8%8b"></a>
+3.5.1 摘要生成流程
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">用户点击「生成摘要」
+</span></span><span class="line"><span class="cl">        │
+</span></span><span class="line"><span class="cl">        ▼
+</span></span><span class="line"><span class="cl">Side Panel 发送 GENERATE_SUMMARY
+</span></span><span class="line"><span class="cl">        │
+</span></span><span class="line"><span class="cl">        ▼
+</span></span><span class="line"><span class="cl">Service Worker 调用 Content Script 提取网页正文
+</span></span><span class="line"><span class="cl">        │  ├─ 策略1: chrome.tabs.sendMessage
+</span></span><span class="line"><span class="cl">        │  └─ 策略2: chrome.scripting.executeScript（降级）
+</span></span><span class="line"><span class="cl">        ▼
+</span></span><span class="line"><span class="cl">Service Worker 根据「摘要模式」构建 Prompt，调用 LLM API（流式）
+</span></span><span class="line"><span class="cl">        │
+</span></span><span class="line"><span class="cl">        ▼
+</span></span><span class="line"><span class="cl">LLM 逐块返回 → SUMMARY_CHUNK → Side Panel 逐字显示
+</span></span><span class="line"><span class="cl">        │
+</span></span><span class="line"><span class="cl">        ▼
+</span></span><span class="line"><span class="cl">LLM 完成 → SUMMARY_DONE → 渲染 Markdown → 显示操作按钮
+</span></span></code></pre></div><h4 id="352-聊天流程">
+<a class="header-anchor" href="#352-%e8%81%8a%e5%a4%a9%e6%b5%81%e7%a8%8b"></a>
+3.5.2 聊天流程
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">用户输入问题并发送
+</span></span><span class="line"><span class="cl">        │
+</span></span><span class="line"><span class="cl">        ▼
+</span></span><span class="line"><span class="cl">Side Panel 获取当前网页内容作为上下文
+</span></span><span class="line"><span class="cl">        │  ├─ 检查页面是否变化
+</span></span><span class="line"><span class="cl">        │  └─ 如变化则重新提取
+</span></span><span class="line"><span class="cl">        ▼
+</span></span><span class="line"><span class="cl">构建 messages（system上下文 + 历史对话 + 用户问题）
+</span></span><span class="line"><span class="cl">        │  ├─ 如选了角色，注入角色 Prompt
+</span></span><span class="line"><span class="cl">        │  └─ 强制中文回答指令
+</span></span><span class="line"><span class="cl">        ▼
+</span></span><span class="line"><span class="cl">Service Worker 调用 LLM API（流式）
+</span></span><span class="line"><span class="cl">        │
+</span></span><span class="line"><span class="cl">        ▼
+</span></span><span class="line"><span class="cl">LLM 逐块返回 → CHAT_CHUNK → Side Panel 打字机效果显示
+</span></span><span class="line"><span class="cl">        │  └─ 使用 data-stream-id 精确定位DOM
+</span></span><span class="line"><span class="cl">        ▼
+</span></span><span class="line"><span class="cl">LLM 完成 → CHAT_DONE → 渲染 Markdown
+</span></span></code></pre></div><h4 id="353-讨论流程">
+<a class="header-anchor" href="#353-%e8%ae%a8%e8%ae%ba%e6%b5%81%e7%a8%8b"></a>
+3.5.3 讨论流程
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="err">用户选择角色并输入讨论主题</span>
+</span></span><span class="line"><span class="cl">        <span class="err">│</span>
+</span></span><span class="line"><span class="cl">        <span class="err">▼</span>
+</span></span><span class="line"><span class="cl"><span class="n">Side</span> <span class="ne">Panel</span> <span class="err">预渲染角色卡片（含</span> <span class="n">loading</span> <span class="err">动画）</span>
+</span></span><span class="line"><span class="cl">        <span class="err">│</span>
+</span></span><span class="line"><span class="cl">        <span class="err">▼</span>
+</span></span><span class="line"><span class="cl"><span class="n">Service</span> <span class="n">Worker</span> <span class="err">发送</span> <span class="n">RUN_DISCUSSION</span>
+</span></span><span class="line"><span class="cl">        <span class="err">│</span>
+</span></span><span class="line"><span class="cl">        <span class="err">├──▶</span> <span class="err">尝试后端</span> <span class="n">API</span><span class="err">（如可用）</span>
+</span></span><span class="line"><span class="cl">        <span class="err">│</span>    <span class="err">└─</span> <span class="n">POST</span> <span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">agents</span><span class="o">/</span><span class="n">discuss</span><span class="err">（</span><span class="n">SSE流式</span><span class="err">）</span>
+</span></span><span class="line"><span class="cl">        <span class="err">│</span>
+</span></span><span class="line"><span class="cl">        <span class="err">└──▶</span> <span class="err">降级为本地</span> <span class="n">LLM</span> <span class="err">调用（逐个角色串行）</span>
+</span></span><span class="line"><span class="cl">             <span class="err">└─</span> <span class="err">每个角色注入各自</span> <span class="n">Prompt</span>
+</span></span><span class="line"><span class="cl">                <span class="err">│</span>
+</span></span><span class="line"><span class="cl">                <span class="err">▼</span>
+</span></span><span class="line"><span class="cl">        <span class="err">每个角色流式返回</span> <span class="err">→</span> <span class="n">DISCUSSION_EVENT</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="err">│</span>
+</span></span><span class="line"><span class="cl">                <span class="err">▼</span>
+</span></span><span class="line"><span class="cl">        <span class="err">对应角色卡片逐字显示（</span><span class="nb">round</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="err">时跳过）</span>
+</span></span><span class="line"><span class="cl">                <span class="err">│</span>
+</span></span><span class="line"><span class="cl">                <span class="err">▼</span>
+</span></span><span class="line"><span class="cl">        <span class="err">全部完成</span> <span class="err">→</span> <span class="n">DISCUSSION_DONE</span>
+</span></span></code></pre></div><hr>
+<h2 id="4--技术实现">
+<a class="header-anchor" href="#4--%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0"></a>
+4. 🔧 技术实现
+</h2><h3 id="41-技术栈">
+<a class="header-anchor" href="#41-%e6%8a%80%e6%9c%af%e6%a0%88"></a>
+4.1 技术栈
+</h3><table>
+	<thead>
+			<tr>
+					<th>分类</th>
+					<th>技术</th>
+					<th>用途</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>扩展标准</td>
+					<td>Chrome Extension Manifest V3</td>
+					<td>扩展开发规范</td>
+			</tr>
+			<tr>
+					<td>前端语言</td>
+					<td>JavaScript (ES6+)</td>
+					<td>所有前端逻辑</td>
+			</tr>
+			<tr>
+					<td>后端语言</td>
+					<td>Python + FastAPI</td>
+					<td>可选后端服务</td>
+			</tr>
+			<tr>
+					<td>LLM SDK</td>
+					<td>openai-python（后端）/ fetch（前端）</td>
+					<td>LLM API 调用</td>
+			</tr>
+			<tr>
+					<td>本地存储</td>
+					<td>chrome.storage.local</td>
+					<td>配置/缓存/收藏</td>
+			</tr>
+			<tr>
+					<td>加密方案</td>
+					<td>AES-GCM 256位（Web Crypto API）</td>
+					<td>API Key 加密</td>
+			</tr>
+			<tr>
+					<td>样式方案</td>
+					<td>CSS3 自定义属性（CSS Variables）</td>
+					<td>主题切换</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="42-核心技术点">
+<a class="header-anchor" href="#42-%e6%a0%b8%e5%bf%83%e6%8a%80%e6%9c%af%e7%82%b9"></a>
+4.2 核心技术点
+</h3><h4 id="421--内容提取双策略机制">
+<a class="header-anchor" href="#421--%e5%86%85%e5%ae%b9%e6%8f%90%e5%8f%96%e5%8f%8c%e7%ad%96%e7%95%a5%e6%9c%ba%e5%88%b6"></a>
+4.2.1 🎯 内容提取双策略机制
+</h4><p><strong>问题</strong>：Content Script 可能因安全策略或加载顺序问题未注入</p>
+<p><strong>方案</strong>：双策略降级提取</p>
+<ol>
+<li><strong>策略一</strong>：尝试 <code>chrome.tabs.sendMessage</code> 消息通信（正常路径）</li>
+<li><strong>策略二</strong>：回退到 <code>chrome.scripting.executeScript</code> 直接执行（降级路径）</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-javascript" data-lang="javascript"><span class="line"><span class="cl"><span class="kd">let</span> <span class="nx">result</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">try</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">result</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">chrome</span><span class="p">.</span><span class="nx">tabs</span><span class="p">.</span><span class="nx">sendMessage</span><span class="p">(</span><span class="nx">tab</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="p">{</span> <span class="nx">type</span><span class="o">:</span> <span class="s1">&#39;EXTRACT_CONTENT&#39;</span> <span class="p">});</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="kr">const</span> <span class="nx">executeResult</span> <span class="o">=</span> <span class="kr">await</span> <span class="nx">chrome</span><span class="p">.</span><span class="nx">scripting</span><span class="p">.</span><span class="nx">executeScript</span><span class="p">({</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">target</span><span class="o">:</span> <span class="p">{</span> <span class="nx">tabId</span><span class="o">:</span> <span class="nx">tab</span><span class="p">.</span><span class="nx">id</span> <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">func</span><span class="o">:</span> <span class="nx">extractPageContentFallback</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="p">});</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">result</span> <span class="o">=</span> <span class="p">{</span> <span class="nx">success</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nx">data</span><span class="o">:</span> <span class="nx">executeResult</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">?</span><span class="p">.</span><span class="nx">result</span> <span class="p">};</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p><strong>优势</strong>：绕过 Content Script 注入问题，适用于所有网页</p>
+<h4 id="422--正文提取算法">
+<a class="header-anchor" href="#422--%e6%ad%a3%e6%96%87%e6%8f%90%e5%8f%96%e7%ae%97%e6%b3%95"></a>
+4.2.2 📊 正文提取算法
+</h4><p>基于 DOM 节点密度分析的智能提取：</p>
+<table>
+	<thead>
+			<tr>
+					<th>步骤</th>
+					<th>方法</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>1</td>
+					<td>移除噪音</td>
+					<td>删除 <code>&lt;script&gt;</code> <code>&lt;style&gt;</code> <code>&lt;nav&gt;</code> <code>&lt;footer&gt;</code> <code>&lt;aside&gt;</code></td>
+			</tr>
+			<tr>
+					<td>2</td>
+					<td>语义识别</td>
+					<td>优先匹配 <code>&lt;article&gt;</code> <code>&lt;main&gt;</code> <code>&lt;section&gt;</code></td>
+			</tr>
+			<tr>
+					<td>3</td>
+					<td>选择器匹配</td>
+					<td>尝试 <code>.post-content</code> <code>.article-body</code> 等常见类名</td>
+			</tr>
+			<tr>
+					<td>4</td>
+					<td>文本密度</td>
+					<td>计算文本长度/标签数量，取密度最高的区域</td>
+			</tr>
+			<tr>
+					<td>5</td>
+					<td>降级全量</td>
+					<td>以上都失败时取 <code>body.innerText</code></td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="423--api-key-加密存储">
+<a class="header-anchor" href="#423--api-key-%e5%8a%a0%e5%af%86%e5%ad%98%e5%82%a8"></a>
+4.2.3 🔐 API Key 加密存储
+</h4><table>
+	<thead>
+			<tr>
+					<th>项目</th>
+					<th>详情</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><strong>算法</strong></td>
+					<td>AES-GCM 256位（浏览器原生 Web Crypto API）</td>
+			</tr>
+			<tr>
+					<td><strong>密钥派生</strong></td>
+					<td>PBKDF2 + SHA-256，迭代 100,000 次</td>
+			</tr>
+			<tr>
+					<td><strong>盐值</strong></td>
+					<td>扩展 ID 派生的固定盐</td>
+			</tr>
+			<tr>
+					<td><strong>存储格式</strong></td>
+					<td>加密后的 Base64 字符串</td>
+			</tr>
+			<tr>
+					<td><strong>安全措施</strong></td>
+					<td>服务端返回配置时删除 apiKey，只返回 hasApiKey 标记</td>
+			</tr>
+	</tbody>
+</table>
+<h4 id="424--蒸馏角色系统">
+<a class="header-anchor" href="#424--%e8%92%b8%e9%a6%8f%e8%a7%92%e8%89%b2%e7%b3%bb%e7%bb%9f"></a>
+4.2.4 🎭 蒸馏角色系统
+</h4><p>18 个角色的思维框架内置在前端 <code>skills.js</code>，每个角色包含：</p>
+<ul>
+<li><strong>核心心智模型</strong>：角色的思维操作系统</li>
+<li><strong>决策启发式</strong>：角色做判断的捷径</li>
+<li><strong>表达 DNA</strong>：角色的语言风格</li>
+<li><strong>价值观与反模式</strong>：角色坚持什么、反对什么</li>
+</ul>
+<table>
+	<thead>
+			<tr>
+					<th>分类</th>
+					<th>角色</th>
+					<th>核心心智模型</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>思维大师</td>
+					<td>⚛️ 费曼</td>
+					<td>第一性原理、化繁为简</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>📐 芒格</td>
+					<td>多元思维模型、逆向思考</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>🧘 纳瓦尔</td>
+					<td>杠杆与财富、长期主义</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>✍️ 保罗·格雷厄姆</td>
+					<td>创业、独立思考、做不可扩展的事</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>🍎 乔布斯</td>
+					<td>极致产品、用户体验至上</td>
+			</tr>
+			<tr>
+					<td>实战派</td>
+					<td>🚀 马斯克</td>
+					<td>第一性原理、激进执行</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>🎲 塔勒布</td>
+					<td>反脆弱、黑天鹅、杠铃策略</td>
+			</tr>
+			<tr>
+					<td>AI专家</td>
+					<td>🔮 Ilya Sutskever</td>
+					<td>AI 前沿、 Scaling Law</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>🧪 Karpathy</td>
+					<td>AI 工程实践、简洁实现</td>
+			</tr>
+			<tr>
+					<td>中国视角</td>
+					<td>🎯 张一鸣</td>
+					<td>延迟满足、信息分发、全球化</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>🎓 张雪峰</td>
+					<td>现实主义升学就业指导</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>🇺🇸 特朗普</td>
+					<td>谈判艺术、媒体运营</td>
+			</tr>
+			<tr>
+					<td>内容创作</td>
+					<td>🎬 MrBeast</td>
+					<td>爆款内容、留存率优化</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>🐦 X 运营导师</td>
+					<td>社交媒体增长、个人品牌</td>
+			</tr>
+			<tr>
+					<td>学习辅助</td>
+					<td>🐣 学员小白</td>
+					<td>初学者视角、提出基础问题</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>👨‍🏫 老师</td>
+					<td>类比讲解、循序渐进</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>🧠 领域专家</td>
+					<td>深度解读、行业分析</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>🔧 工程师</td>
+					<td>实战角度、技术追问</td>
+			</tr>
+			<tr>
+					<td></td>
+					<td>🧐 审查者</td>
+					<td>纠偏评价、质量把关</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="43-本地存储结构">
+<a class="header-anchor" href="#43-%e6%9c%ac%e5%9c%b0%e5%ad%98%e5%82%a8%e7%bb%93%e6%9e%84"></a>
+4.3 本地存储结构
+</h3><table>
+	<thead>
+			<tr>
+					<th>Key</th>
+					<th>内容</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td><code>websum_config</code></td>
+					<td>语言、主题、字体大小、默认模型</td>
+					<td>全局配置</td>
+			</tr>
+			<tr>
+					<td><code>websum_providers</code></td>
+					<td>服务商列表、baseUrl、apiKey（加密）</td>
+					<td>LLM 配置</td>
+			</tr>
+			<tr>
+					<td><code>websum_summaries</code></td>
+					<td>URL摘要缓存（30天过期）</td>
+					<td>避免重复生成</td>
+			</tr>
+			<tr>
+					<td><code>websum_bookmarks</code></td>
+					<td>收藏的网页及摘要</td>
+					<td>收藏夹</td>
+			</tr>
+			<tr>
+					<td><code>websum_chat_sessions</code></td>
+					<td>聊天历史记录</td>
+					<td>多轮对话</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h2 id="5--核心问题与解决方案">
+<a class="header-anchor" href="#5--%e6%a0%b8%e5%bf%83%e9%97%ae%e9%a2%98%e4%b8%8e%e8%a7%a3%e5%86%b3%e6%96%b9%e6%a1%88"></a>
+5. 🔍 核心问题与解决方案
+</h2><h3 id="51-内容提取失败">
+<a class="header-anchor" href="#51-%e5%86%85%e5%ae%b9%e6%8f%90%e5%8f%96%e5%a4%b1%e8%b4%a5"></a>
+5.1 内容提取失败
+</h3><p><strong>现象</strong>：<code>Could not establish connection. Receiving end does not exist</code></p>
+<p><strong>原因</strong>：</p>
+<ol>
+<li>Content Script 未注入（CSP 策略阻止）</li>
+<li>消息监听器未注册（加载顺序问题）</li>
+<li>页面加载时机问题</li>
+</ol>
+<p><strong>解决方案</strong>：双策略提取机制（见 4.2.1），保证 100% 提取成功率</p>
+<h3 id="52-讨论重复角色卡片">
+<a class="header-anchor" href="#52-%e8%ae%a8%e8%ae%ba%e9%87%8d%e5%a4%8d%e8%a7%92%e8%89%b2%e5%8d%a1%e7%89%87"></a>
+5.2 讨论重复角色卡片
+</h3><p><strong>现象</strong>：每个角色显示两次</p>
+<p><strong>原因</strong>：预渲染和事件回调都在创建 DOM</p>
+<ol>
+<li><code>startDiscussion</code> 预渲染（带描述 + loading）</li>
+<li><code>round_start</code> 事件再次创建</li>
+</ol>
+<p><strong>解决方案</strong>：删除 <code>round_start</code> 中的重复创建逻辑，只保留预渲染</p>
+<h3 id="53-聊天打字机效果失效">
+<a class="header-anchor" href="#53-%e8%81%8a%e5%a4%a9%e6%89%93%e5%ad%97%e6%9c%ba%e6%95%88%e6%9e%9c%e5%a4%b1%e6%95%88"></a>
+5.3 聊天打字机效果失效
+</h3><p><strong>现象</strong>：消息一次性出现，没有逐字显示</p>
+<p><strong>原因</strong>：</p>
+<ol>
+<li><code>requestId</code> 在 service worker 生成，前端监听器注册滞后</li>
+<li>DOM 选择器错误（选中了 typing indicator 而非消息元素）</li>
+</ol>
+<p><strong>解决方案</strong>：</p>
+<ol>
+<li>前端生成 <code>requestId</code>，提前注册监听器</li>
+<li>使用 <code>data-stream-id</code> 属性精确定位消息元素</li>
+</ol>
+<h3 id="54-后端依赖降级">
+<a class="header-anchor" href="#54-%e5%90%8e%e7%ab%af%e4%be%9d%e8%b5%96%e9%99%8d%e7%ba%a7"></a>
+5.4 后端依赖降级
+</h3><p><strong>设计理念</strong>：确保无后端时所有功能可用，零功能损失</p>
+<table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>后端可用时</th>
+					<th>后端不可用时</th>
+					<th>影响</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>网页摘要</td>
+					<td>直连 LLM</td>
+					<td>直连 LLM</td>
+					<td>✅ 无影响</td>
+			</tr>
+			<tr>
+					<td>聊天对话</td>
+					<td>直连 LLM</td>
+					<td>直连 LLM</td>
+					<td>✅ 无影响</td>
+			</tr>
+			<tr>
+					<td>角色列表</td>
+					<td>后端 .md（13个）</td>
+					<td>本地 skills.js（18个）</td>
+					<td>✅ 本地更多</td>
+			</tr>
+			<tr>
+					<td>多角色讨论</td>
+					<td>后端并行调用</td>
+					<td>本地串行调用</td>
+					<td>⚠️ 稍慢但可用</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h2 id="6--后续规划">
+<a class="header-anchor" href="#6--%e5%90%8e%e7%bb%ad%e8%a7%84%e5%88%92"></a>
+6. 🚀 后续规划
+</h2><h3 id="61-近期规划">
+<a class="header-anchor" href="#61-%e8%bf%91%e6%9c%9f%e8%a7%84%e5%88%92"></a>
+6.1 近期规划
+</h3><table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>📄 PDF 文件摘要</td>
+					<td>支持 PDF 文档内容提取和摘要</td>
+			</tr>
+			<tr>
+					<td>📝 选中文字右键摘要</td>
+					<td>右键菜单快速摘要选中内容</td>
+			</tr>
+			<tr>
+					<td>🖼️ 摘要导出为图片</td>
+					<td>将摘要保存为图片分享</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="62-中期规划">
+<a class="header-anchor" href="#62-%e4%b8%ad%e6%9c%9f%e8%a7%84%e5%88%92"></a>
+6.2 中期规划
+</h3><table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>🔄 多网页对比摘要</td>
+					<td>对比多个网页的内容和观点</td>
+			</tr>
+			<tr>
+					<td>🎬 视频字幕摘要</td>
+					<td>YouTube、Bilibili 视频字幕摘要</td>
+			</tr>
+			<tr>
+					<td>👥 团队协作共享</td>
+					<td>收藏内容共享功能</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="63-远期规划">
+<a class="header-anchor" href="#63-%e8%bf%9c%e6%9c%9f%e8%a7%84%e5%88%92"></a>
+6.3 远期规划
+</h3><table>
+	<thead>
+			<tr>
+					<th>功能</th>
+					<th>说明</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>🔍 知识库语义搜索</td>
+					<td>基于收藏内容的语义搜索</td>
+			</tr>
+			<tr>
+					<td>📚 AI 阅读助手</td>
+					<td>自动标记重点、生成思维导图</td>
+			</tr>
+			<tr>
+					<td>☁️ 跨设备同步</td>
+					<td>数据云端同步</td>
+			</tr>
+	</tbody>
+</table>
+<hr>
+<h2 id="-非功能需求">
+<a class="header-anchor" href="#-%e9%9d%9e%e5%8a%9f%e8%83%bd%e9%9c%80%e6%b1%82"></a>
+⚙️ 非功能需求
+</h2><h3 id="性能要求">
+<a class="header-anchor" href="#%e6%80%a7%e8%83%bd%e8%a6%81%e6%b1%82"></a>
+性能要求
+</h3><table>
+	<thead>
+			<tr>
+					<th>指标</th>
+					<th>要求</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>页面内容提取</td>
+					<td>&lt; 1秒</td>
+			</tr>
+			<tr>
+					<td>首字生成时间</td>
+					<td>&lt; 3秒（流式输出）</td>
+			</tr>
+			<tr>
+					<td>侧边栏打开速度</td>
+					<td>&lt; 500ms</td>
+			</tr>
+	</tbody>
+</table>
+<h3 id="兼容性要求">
+<a class="header-anchor" href="#%e5%85%bc%e5%ae%b9%e6%80%a7%e8%a6%81%e6%b1%82"></a>
+兼容性要求
+</h3><ul>
+<li>Chrome 版本：≥ 114（支持 Side Panel API）</li>
+<li>支持 Edge、Brave 等 Chromium 内核浏览器</li>
+</ul>
+<h3 id="安全与隐私">
+<a class="header-anchor" href="#%e5%ae%89%e5%85%a8%e4%b8%8e%e9%9a%90%e7%a7%81"></a>
+安全与隐私
+</h3><ul>
+<li>API Key 使用 AES-GCM 加密存储</li>
+<li>用户数据全部存储在本地</li>
+<li>不收集用户浏览数据</li>
+<li>可选后端服务同步（需用户主动开启）</li>
+</ul>
+<hr>
+<p><em>Made with ❤️ by WebSum Team</em></p>
+</div>
+    <footer class="article-footer"><div class="share-wrapper"><a href="https://service.weibo.com/share/share.php?url=https://dev.infiniteevo.online/projects/%E7%BD%91%E9%A1%B5%E6%99%BA%E8%83%BD%E6%91%98%E8%A6%81%E6%8F%92%E4%BB%B6/&amp;appkey=&amp;title=%e7%bd%91%e9%a1%b5%e6%99%ba%e8%83%bd%e6%91%98%e8%a6%81%e6%8f%92%e4%bb%b6%20WebSum&amp;pic=&amp;ralateUid=" target="_blank" rel="noopener noreferrer" title="网页智能摘要插件 WebSum">
+      <div class="share-icon icon icon-weibo"></div>
+    </a><a href="https://connect.qq.com/widget/shareqq/index.html?url=https://dev.infiniteevo.online/projects/%E7%BD%91%E9%A1%B5%E6%99%BA%E8%83%BD%E6%91%98%E8%A6%81%E6%8F%92%E4%BB%B6/&amp;title=%e7%bd%91%e9%a1%b5%e6%99%ba%e8%83%bd%e6%91%98%e8%a6%81%e6%8f%92%e4%bb%b6%20WebSum&amp;desc=%e4%b8%80%e6%ac%be%e5%9f%ba%e4%ba%8e%e5%a4%a7%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%20Chrome%20%e6%b5%8f%e8%a7%88%e5%99%a8%e4%be%a7%e8%be%b9%e6%a0%8f%e6%8f%92%e4%bb%b6%ef%bc%8c%e5%b8%ae%e5%8a%a9%e7%94%a8%e6%88%b7%e5%bf%ab%e9%80%9f%e6%80%bb%e7%bb%93%e7%bd%91%e9%a1%b5%e5%86%85%e5%ae%b9%ef%bc%8c%e6%8f%90%e5%8d%87%e4%bf%a1%e6%81%af%e8%8e%b7%e5%8f%96%e6%95%88%e7%8e%87&amp;source=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="网页智能摘要插件 WebSum">
+      <div class="share-icon icon icon-qq"></div>
+    </a><a href="javascript:;"  title="网页智能摘要插件 WebSum">
+      <div class="share-icon icon icon-weixin"><div id="share-weixin">
+            <div class="share-weixin-dom">
+              <div class="share-weixin-content">
+                <img id="share-weixin-banner"> 
+                <div id="share-weixin-title"></div>
+                <div id="share-weixin-desc"></div>
+              </div>
+              <div class="share-weixin-qrcode">
+                <div class="share-weixin-info">
+                  <div id="share-weixin-author"></div>
+                  <div id="share-weixin-theme">Powered By hugo-theme-reimu</div>
+                </div>
+                <img id="share-weixin-qr" >
+              </div>
+            </div>
+            <div class="share-weixin-canvas"></div>
+          </div></div>
+    </a><a href="https://twitter.com/intent/tweet?url=https://dev.infiniteevo.online/projects/%E7%BD%91%E9%A1%B5%E6%99%BA%E8%83%BD%E6%91%98%E8%A6%81%E6%8F%92%E4%BB%B6/&amp;text=%e7%bd%91%e9%a1%b5%e6%99%ba%e8%83%bd%e6%91%98%e8%a6%81%e6%8f%92%e4%bb%b6%20WebSum&amp;via=https://dev.infiniteevo.online/" target="_blank" rel="noopener noreferrer" title="网页智能摘要插件 WebSum">
+      <div class="share-icon icon icon-twitter"></div>
+    </a><a href="https://www.facebook.com/sharer/sharer.php?u=https://dev.infiniteevo.online/projects/%E7%BD%91%E9%A1%B5%E6%99%BA%E8%83%BD%E6%91%98%E8%A6%81%E6%8F%92%E4%BB%B6/" target="_blank" rel="noopener noreferrer" title="网页智能摘要插件 WebSum">
+      <div class="share-icon icon icon-facebook"></div>
+    </a></div><ul class="article-category-list"><li class="article-tag-list-item" data-aos="zoom-in">
+    <a
+      class="article-category-link"
+      href="https://dev.infiniteevo.online/categories/%e5%89%8d%e7%ab%af%e5%bc%80%e5%8f%91"
+      data-aos="zoom-in"
+      >前端开发</a
+    >
+    </li></ul>
+<ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/chrome%e6%8f%92%e4%bb%b6"
+        rel="tag"
+        >Chrome插件</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/llm"
+        rel="tag"
+        >LLM</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/ai"
+        rel="tag"
+        >AI</a
+      >
+    </li><li class="article-tag-list-item" data-aos="zoom-in">
+      <a
+        class="article-tag-list-link"
+        href="https://dev.infiniteevo.online/tags/%e5%89%8d%e7%ab%af"
+        rel="tag"
+        >前端</a
+      >
+    </li></ul>
+</footer>
+  </div></article></section>
+        </div><footer id="footer" aria-label="Site footer">
+  <div style="width: 100%; overflow: hidden">
+    <div class="footer-line"></div>
+  </div>
+  <div id="footer-info"><div>
+      <span class="icon-copyright"></span>2020-2026<span class="footer-info-sep rotate"></span>Aries
+    </div><div>
+        基于&nbsp;<a
+          href="https://gohugo.io/"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Hugo</a
+        >&nbsp;Theme.<a
+          href="https://github.com/D-Sketon/hugo-theme-reimu"
+          target="_blank"
+          rel="noopener nofollow noreferrer"
+          >Reimu</a
+        >
+      </div><div>
+        <span class="icon-brush"
+          >&nbsp;218.1k</span
+        >
+        &nbsp;|&nbsp;
+        <span class="icon-coffee">&nbsp;07:36</span>
+      </div><div>
+        <span class="icon-eye"></span>
+        <span id="busuanzi_container_site_pv"
+          >总访问量&nbsp;<span
+            id="busuanzi_value_site_pv"
+          ></span
+        ></span>
+        &nbsp;|&nbsp;
+        <span class="icon-user"></span>
+        <span id="busuanzi_container_site_uv"
+          >总访客量&nbsp;<span
+            id="busuanzi_value_site_uv"
+          ></span
+        ></span>
+      </div></div>
+</footer>
+
+<script>
+  (function() {
+    var parallaxRate = 0.4;
+    var headerImg = document.querySelector('#header img');
+    if (!headerImg) return;
+
+    function updateParallax() {
+      var scrollY = window.scrollY || window.pageYOffset;
+      headerImg.style.transform = 'translateY(-' + (scrollY * parallaxRate) + 'px)';
+    }
+
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        window.requestAnimationFrame(function() {
+          updateParallax();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
+
+    updateParallax();
+  })();
+</script>
+<div class="sidebar-top">
+            <div class="sidebar-top-taichi rotate"></div>
+            <div class="arrow-up"></div>
+          </div><div id="mask" class="hide"></div>
+      </div><nav id="mobile-nav" aria-label="Mobile navigation">
+  <div class="sidebar-wrap"><div class="sidebar-author">
+  <img
+    data-src="https://dev.infiniteevo.online/avatar/aries.png"
+    data-sizes="auto"
+    alt="Aries"
+    class="lazyload"
+  />
+  <div class="sidebar-author-name">Aries</div>
+  <div class="sidebar-description">愿世界和平 ✨</div>
+</div>
+<div class="sidebar-state">
+  <div class="sidebar-state-article">
+    <div>文章</div><div class="sidebar-state-number">89</div>
+  </div>
+  <a class="sidebar-state-category" href="https://dev.infiniteevo.online/categories/" aria-label="sidebar-state-category-link">
+    <div>分类</div>
+    <div class="sidebar-state-number">
+      39
+    </div>
+  </a>
+  <a class="sidebar-state-tag" href="https://dev.infiniteevo.online/tags/" aria-label="sidebar-state-tag-link">
+    <div>标签</div>
+    <div class="sidebar-state-number">250</div>
+  </a>
+</div>
+<div class="sidebar-social" ></div><div class="sidebar-menu"><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">首页</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/projects"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">项目介绍</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/archives"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">技术分享</div>
+    </div><div class="sidebar-menu-link-wrap">
+      <a
+        class="sidebar-menu-link-dummy"
+        href="https://dev.infiniteevo.online/about"
+        aria-label=""
+      ></a><div class='sidebar-menu-icon icon rotate'>&#xe62b;</div><div class="sidebar-menu-link">关于</div>
+    </div></div></div></nav>
+</div><meting-js
+        theme="var(--color-link)"
+        id="2265921590"server="netease"type="playlist"fixed="true"autoplay="false"volume="0.4"mutex="true"list-folded="true">
+      </meting-js><script
+    src="https://npm.webcache.cn/lazysizes@5.3.2/lazysizes.min.js"
+    
+    
+    
+    
+    integrity="sha384-3gT/vsepWkfz/ff7PpWNUeMzeWoH3cDhm/A8jM7ouoAK0/fP/9bcHHR5kHq2nf&#43;e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/clipboard@2.0.11/dist/clipboard.min.js"
+    
+    
+    
+    
+    integrity="sha384-J08i8An/QeARD9ExYpvphB8BsyOj3Gh2TSh1aLINKO3L0cMSH2dN3E22zFoXEi0Q" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/main.js" integrity="" crossorigin="anonymous"  ></script><script src="https://dev.infiniteevo.online/js/aos.js" integrity="" crossorigin="anonymous"  ></script><script>
+    var aosInit = () => {
+      AOS.init({
+        duration: 1000,
+        easing: "ease",
+        once: true,
+        offset: 50,
+      });
+    };
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", aosInit);
+    } else {
+      aosInit();
+    }
+  </script><script src="https://dev.infiniteevo.online/js/pjax_main.js" integrity="" crossorigin="anonymous" data-pjax ></script><script>
+  var setupFirework = () => {
+    if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+      if (window.firework) {
+        const options = JSON.parse("{\"excludeelements\":[\"a\",\"button\"],\"particles\":[{\"colors\":[\"var(--red-1)\",\"var(--red-2)\",\"var(--red-3)\",\"var(--red-4)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"emit\"],\"number\":20,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.3,0.5],\"radius\":[16,32]}},{\"colors\":[\"var(--red-0)\"],\"duration\":[1200,1800],\"easing\":\"easeOutExpo\",\"move\":[\"diffuse\"],\"number\":1,\"shape\":\"circle\",\"shapeOptions\":{\"alpha\":[0.2,0.5],\"lineWidth\":6,\"radius\":20}}]}");
+        options.excludeElements = options.excludeelements;
+        delete options.excludeelements;
+        window.firework(options);
+      }
+    }
+  }
+</script><script
+    src="https://npm.webcache.cn/mouse-firework@0.2.0/dist/index.umd.js"
+    defer
+    
+    
+    onload="setupFirework()"
+    integrity="sha384-qi9WggRt19tv8Vc7pCHW3ulMNLwrn515zaLEWZjl1px07vz8&#43;pUoWX8n1rgq282T" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/theme-shokax-pjax@0.0.3/dist/index.umd.js"
+    
+    
+    
+    
+    integrity="sha384-xneY1WY8hOfUzswrE4CrYq35N4BdVcxqxwHPr9zawE/jMSCxD&#43;jAPU55x/jj3wlf" crossorigin="anonymous"></script><script src="https://dev.infiniteevo.online/js/pjax.js" integrity="" crossorigin="anonymous"  ></script><script
+    src="https://npm.webcache.cn/quicklink@3.0.1/dist/quicklink.umd.js"
+    
+    
+    
+    
+    integrity="sha384-caMDqvgav/HWdEYQU1QRRHMLleigpL1YHAG0m371DhzfL8rRzUyOb&#43;bEHtwlmYjD" crossorigin="anonymous"></script><script data-pjax>
+    window.quicklink?.listen({
+      timeout:  3000 ,
+      priority:  true ,
+      ignores: JSON.parse("[]")
+    });
+  </script>
+
+
+<div id="lazy-script">
+  <div><script data-pjax>
+        window.REIMU_POST = {
+          author: "Aries",
+          title: "网页智能摘要插件 WebSum",
+          url: "https:\/\/dev.infiniteevo.online\/projects\/%E7%BD%91%E9%A1%B5%E6%99%BA%E8%83%BD%E6%91%98%E8%A6%81%E6%8F%92%E4%BB%B6\/",
+          description: "一款基于大语言模型的 Chrome 浏览器侧边栏插件，帮助用户快速总结网页内容，提升信息获取效率",
+          cover: "https:\/\/d-sketon.top\/img\/backwebp\/bg4.webp",
+        };
+      </script><script src="https://dev.infiniteevo.online/js/insert_highlight.js" integrity="" crossorigin="anonymous" data-pjax ></script><script src="https://dev.infiniteevo.online/js/tabs.js" integrity="" crossorigin="anonymous" data-pjax defer></script><script type="module" data-pjax>const PhotoSwipeLightbox = (await safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe-lightbox.esm.min.js", "sha384-DiL6M\/gG\u002bwmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF\/N6lrZi\/")).default;const initPswp = (gallery, children) => {
+          if (_$$(`${gallery} ${children}`).length > 0) {
+            new PhotoSwipeLightbox({
+              gallery,
+              children,pswpModule: () => safeImport("https:\/\/npm.webcache.cn\/photoswipe@5.4.4\/dist\/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8\u002boTJ7m3DfYEWX1fu1scuS4\u002bs")}).init();
+          }
+        }
+        const pswp = () => {
+          initPswp('.article-entry', 'a.article-gallery-item');
+          initPswp('.article-gallery', 'a.article-gallery-item');
+        }
+        pswp()
+      </script><script
+    src="https://npm.webcache.cn/qrcode@1.5.1/build/qrcode.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-VT1EeewTCEXgndcPMQ0PzV&#43;uVFYjxFIjmAA7s5gcMX9t4Dt5TD&#43;OVQIn7NJWIXn7" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/@zumer/snapdom@1.9.14/dist/snapdom.min.js"
+    defer
+    
+    data-pjax
+    
+    integrity="sha384-OEQ&#43;fJp/Mvi2uzBREXybtxryJvLytWapuHu4EE6LPwTKUwATYcc55tPPcZTzVcmx" crossorigin="anonymous"></script></div>
+</div><script
+    src="https://npm.webcache.cn/busuanzi@2.3.0/bsz.pure.mini.js"
+    
+    async
+    
+    
+    integrity="sha384-0M75wtSkhjIInv4coYlaJU83&#43;OypaRCIq2SukQVQX04eGTCBXJDuWAbJet56id&#43;S" crossorigin="anonymous"></script><script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (let registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+  </script><script>
+  const reimuCopyright = String.raw`
+   ______     ______     __     __    __     __  __    
+  /\  == \   /\  ___\   /\ \   /\ "-./  \   /\ \/\ \   
+  \ \  __<   \ \  __\   \ \ \  \ \ \-./\ \  \ \ \_\ \  
+   \ \_\ \_\  \ \_____\  \ \_\  \ \_\ \ \_\  \ \_____\ 
+    \/_/ /_/   \/_____/   \/_/   \/_/  \/_/   \/_____/ 
+                                                    
+  `;
+  console.log(String.raw`%c ${reimuCopyright}`, "color: #ff5252;");
+  console.log(
+    "%c Theme.Reimu" + " %c https://github.com/D-Sketon/hugo-theme-reimu ",
+    "color: white; background: #ff5252; padding:5px 0;",
+    "padding:4px;border:1px solid #ff5252;",
+  );
+</script><script>
+    var setupAPlayer = () => {
+      if (! false  || !window.matchMedia('(max-width: 768px)').matches) {
+        if (window.matchMedia('(max-width: 959px)').matches) {
+          const meting = _$('meting-js');
+          if (meting) {
+            meting.setAttribute('fixed', 'true');
+            const aside = meting.parentNode?.parentNode;
+            if (aside?.tagName === 'ASIDE') {
+              meting.parentNode.removeChild(meting);
+              document.body.appendChild(meting);
+            }
+          }
+        }
+      }
+    };</script><script
+    src="https://npm.webcache.cn/aplayer@1.10.1/dist/APlayer.min.js"
+    defer
+    
+    
+    onload="setupAPlayer()"
+    integrity="sha384-gdGYZwHnfJM54evoZhpO0s6ZF5BQiybkiyW7VXr&#43;h5UfruuRL/aORyw&#43;5&#43;HZoU6e" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/meting@2.0.1/dist/Meting.min.js"
+    defer
+    
+    
+    
+    integrity="sha384-ASVlpKF80A22OXTK3tfEjZm1EL6uFMKIC4p8&#43;0maanw1S/IyB&#43;Y4JG&#43;ZDU7GpKE8" crossorigin="anonymous"></script><script
+    src="https://npm.webcache.cn/pangu@4.0.7/dist/browser/pangu.min.js"
+    
+    
+    
+    
+    integrity="sha384-HeUHqi0nVsPUm/E0ss7OfnIV/yD96JWB8ehZvUuoVax9DpNHL17jj9pdfXHzqDxm" crossorigin="anonymous"></script><script data-pjax>
+    if (document.readyState === "loading") {
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu?.spacingPage();
+      });
+    } else {
+      pangu?.spacingPage();
+    }
+  </script><script>
+  function updateThemeTooltip() {
+    const btn = document.querySelector('.dark-mode-btn');
+    if (!btn) return;
+    const mode = localStorage.getItem('dark_mode') || 'auto';
+    let tooltip = '';
+    if (mode === 'true') {
+      tooltip = '暗色模式';
+    } else if (mode === 'false') {
+      tooltip = '亮色模式';
+    } else {
+      tooltip = '跟随系统';
+    }
+    btn.setAttribute('title', tooltip);
+    btn.setAttribute('aria-label', tooltip);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateThemeTooltip();
+    const btn = document.querySelector('.dark-mode-btn');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        setTimeout(updateThemeTooltip, 100);
+      });
+    }
+  });
+</script>
+</body>
+</html>
